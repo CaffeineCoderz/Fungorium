@@ -15,10 +15,17 @@ chmod +x run.sh
 ./run.sh
 ```
 
+## Tesztek
+
 3. Tesztek futtatása:
 ```sh
 chmod +x test.sh
 ./test.sh
+```
+
+4. Specifikus tesztek futtatása:
+```sh
+java -jar lib/junit-platform-console-standalone-1.10.0.jar --classpath bin -c main.FungoriumTest
 ```
 
 Junit downloaded with:
