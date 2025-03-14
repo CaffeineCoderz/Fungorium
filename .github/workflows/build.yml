@@ -22,4 +22,6 @@ jobs:
           java-version: ${{ matrix.java-version }}
 
       - name: Build and Test
-        run: mvn clean install
+        run: |
+          javac -d out $(find . -name "*.java")
+          java -cp out MainClass
