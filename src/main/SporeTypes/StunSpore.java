@@ -1,5 +1,5 @@
 package SporeTypes;
 
-public class StunSpore {
+public class StunSpore extends Spore{
     
 }

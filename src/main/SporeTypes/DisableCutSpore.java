@@ -1,5 +1,5 @@
 package SporeTypes;
 
-public class DisableCutSpore {
-    
+public class DisableCutSpore extends Spore {
+
 }

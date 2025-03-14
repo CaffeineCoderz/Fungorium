@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.List;
-
 //! NEM TELJES IMPLEMENTÁCIÓ MÉG
 public class FungusSpecies {
     private int score;

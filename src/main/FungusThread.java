@@ -5,25 +5,17 @@ public class FungusThread {
     private int lifeSpan;
     private boolean bridge;
     private boolean isDying;
-    private List<Tekton> tektons;
+    // private List<Tekton> tektons;
 
     public FungusThread(int lifeSpan, boolean bridge) {
         this.lifeSpan = lifeSpan;
         this.bridge = bridge;
         this.isDying = false;
-        this.tektons = new ArrayList<>();
+        // this.tektons = new ArrayList<>();
     }
 
     public boolean isBridge() {
         return bridge;
-    }
-
-    public void setLifeSpan(int lifeSpan) {
-        this.lifeSpan = lifeSpan;
-    }
-
-    public int getLifeSpan() {
-        return lifeSpan;
     }
 
     public void decreaseLife() {
@@ -55,7 +47,7 @@ public class FungusThread {
     }
 
     public void destroy() {
-        // ! Implementáció
+        // ! Implementáció 
     }
 
 }

@@ -1,5 +1,5 @@
 package TektonTypes;
 
-public class DecreasingTekton {
+public class DecreasingTekton extends Tekton{
     
 }

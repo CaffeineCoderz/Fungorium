@@ -5,8 +5,8 @@ A projlab fungorium feladata
 
 #### 1. Fordításra a konzolba írd be: 
 ```sh
-chmod +x run.sh
-./run.sh
+chmod +x compile.sh
+./compile.sh
 ```
 
 #### 2. Futtatáshoz a konzolba írd be: 
