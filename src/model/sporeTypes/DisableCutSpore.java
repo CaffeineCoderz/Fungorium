@@ -1,4 +1,4 @@
-package SporeTypes;
+package sporeTypes;
 
 public class DisableCutSpore extends Spore {
 

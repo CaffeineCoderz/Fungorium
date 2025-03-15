@@ -1,3 +1,9 @@
+package insect;
+
+import interfaces.iControl;
+import tektonTypes.Tekton;
+
+
 public class Insect implements iControl{
     private Integer movingEffectTimer;
     private Integer abilityEffectTimer;
@@ -19,11 +25,11 @@ public class Insect implements iControl{
 
     // iControl interface
     public void override addScore(){
-        // Decrease tekton miatt kell implementálni
+        // ToDo
     }
 
     public void override decreaseScore(){
-        // Decrease tekton miatt kell implementálni
+        // ToDo
     }
 
     public void override timeElapsed(int Round){

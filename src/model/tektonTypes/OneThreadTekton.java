@@ -1,4 +1,4 @@
-package TektonTypes;
+package tektonTypes;
 
 public class OneThreadTekton extends Tekton {
     @Override

@@ -1,5 +1,10 @@
+package fungus;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import TektonTypes.Tekton;
+
 //! NEM TELJES IMPLEMENTÁCIÓ MÉG
 public class FungusThread {
     private int lifeSpan;
