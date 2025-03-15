@@ -1,13 +1,14 @@
-package SporeTypes;
+package sporeTypes;
 
-import TektonTypes.Tekton;
+import insect.Insect;
+import tektonTypes.Tekton;
 
 public class Spore {
     private Integer nutritionValue;
     private Tekton myTekton;
 
     public void consume(Insect insect) {
-        insect.consumeSpore(this);
+        // insect.consumeSpore(this);
     }
 
     public void setTekton(Tekton tekton) {

@@ -1,4 +1,4 @@
-package TektonTypes;
+package tektonTypes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +7,8 @@ import java.util.List;
  * interface dolgait imlementálni
  * package problémát megoldani
  */
+
+ import model.iControl;
 
 public class Tekton implements iControl {
     private boolean canGrowBody;
