@@ -6,9 +6,14 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Fungorium",
+            "name": "Run Fungorium",
             "request": "launch",
-            "mainClass": "main",
+            "mainClass": "main" // Ensure this is the fully qualified name of your main class
+        },
+        {
+            "type": "java",
+            "name": "Run Tests",
+            "request": "launch",
+            "mainClass": "TestMain" // Ensure this is the fully qualified name of your test main class
         }
-    ]
 }
