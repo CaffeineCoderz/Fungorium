@@ -1,7 +1,7 @@
 package fungus;
 import java.util.ArrayList;
 import java.util.List;
-
+import tektonTypes.Tekton;
 //! NEM TELJES IMPLEMENTÁCIÓ MÉG
 public class FungusBody {
     private Integer sporeCount;

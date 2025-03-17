@@ -1,9 +1,13 @@
 package tektonTypes;
 
 public class DecreasingTekton extends Tekton{
-    // ToDO Megvalósítani
-    @Override
-    public void TimeElapsed(){
 
+     public DecreasingTekton(){
+        super(true, true);
+    }
+
+    // @Override !!!! amig nincs felüldefiniálva addig errort dob.
+    public void TimeElapsed(int round){
+        // ToDo
     }
 }

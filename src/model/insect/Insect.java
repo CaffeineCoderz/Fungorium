@@ -24,17 +24,19 @@ public class Insect implements iControl{
     }
 
     // iControl interface
-    public void override addScore(){
+    @Override
+    public void addScore(){
         // ToDo
     }
 
-    public void override decreaseScore(){
+    @Override
+    public void decreaseScore(){
         // ToDo
     }
 
-    public void override timeElapsed(int Round){
-        // Idő mulása
+    @Override
+    public void  timeElapsed(int Round){
+        // ToDo
     }
-
 
 }

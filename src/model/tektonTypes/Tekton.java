@@ -1,38 +1,32 @@
 package tektonTypes;
 
+import fungus.FungusBody;
+import fungus.FungusThread;
+import insect.Insect;
+import interfaces.iControl;
 import java.util.ArrayList;
 import java.util.List;
-// ! TODO:
-/*
- * interface dolgait imlementálni
- * package problémát megoldani
- */
-
- import model.iControl;
+import sporeTypes.Spore;
+    // ! NEM TELJES IMPLEMENTÁCIÓ MÉG
 
 public class Tekton implements iControl {
     private boolean canGrowBody;
     private boolean canGrowThread;
 
-    // ! NEM TELJES IMPLEMENTÁCIÓ MÉG
-    /*
-     * private List<Spore> spores;
-     * private List<Insect> insects;
-     * private List<FungusThread> threads;
-     * private List<FungusBody> bodies;
-     * private List<Tekton> neighbours;
-     */
+    
+    private List<Spore> spores;
+    private List<Insect> insects;
+    private List<FungusThread> threads;
+    private List<FungusBody> bodies;
+    private List<Tekton> neighbours;
     public Tekton(boolean canGrowBody, boolean canGrowThread) {
         this.canGrowBody = canGrowBody;
         this.canGrowThread = canGrowThread;
-        // ! NEM TELJES IMPLEMENTÁCIÓ MÉG
-        /*
-         * this.spores = new ArrayList<>();
-         * this.insects = new ArrayList<>();
-         * this.threads = new ArrayList<>();
-         * this.bodies = new ArrayList<>();
-         * this.neighbours = new ArrayList<>();
-         */
+        this.spores = new ArrayList<>();
+        this.insects = new ArrayList<>();
+        this.threads = new ArrayList<>();
+        this.bodies = new ArrayList<>();
+        this.neighbours = new ArrayList<>();
     }
 
     public boolean isThereEnoughSpore(int amount) {
@@ -89,7 +83,7 @@ public class Tekton implements iControl {
     }
 
     public List<Spore> getSpores() {
-        // return spores;
+        return spores;
     }
 
     public boolean hasInsect() {
@@ -126,5 +120,21 @@ public class Tekton implements iControl {
 
     public List<Tekton> getNeighbours() {
         return neighbours;
+    }
+
+    // iControl interface
+    @Override
+    public void addScore(){
+        // ToDo
+    }
+
+    @Override
+    public void decreaseScore(){
+        // ToDo
+    }
+
+    @Override
+    public void  timeElapsed(int Round){
+        // ToDo
     }
 }
