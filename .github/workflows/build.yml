@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - Work
+
 jobs:
   test-matrix:
     runs-on: ubuntu-latest
@@ -21,5 +21,14 @@ jobs:
           distribution: temurin
           java-version: ${{ matrix.java-version }}
 
-      - name: Build and Test
-        run: mvn clean install
+      - name: Grant execute permissions
+        run: chmod +x compile.sh run.sh test.sh
+
+      - name: Compile
+        run: ./compile.sh
+
+      - name: Run
+        run: ./run.sh
+
+      - name: Test
+        run: ./test.sh

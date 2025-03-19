@@ -42,6 +42,5 @@ public class main {
         tekton.addThread(thread);
         tekton.addBody(body);
         System.out.println("Thread and Body added to Tekton: " + tekton.getThreads().size() + ", " + tekton.getBodies().size());
-    
     }
 }
