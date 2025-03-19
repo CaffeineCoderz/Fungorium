@@ -1,5 +1,6 @@
 package fungus;
 
+import java.util.ArrayList;
 import java.util.List;
 import tektonTypes.Tekton;
 
@@ -14,7 +15,7 @@ public class FungusThread {
         this.lifeSpan = lifeSpan;
         this.bridge = bridge;
         this.isDying = false;
-        // this.tektons = new ArrayList<>();
+        this.tektons = new ArrayList<>();
     }
 
     public boolean isBridge() {

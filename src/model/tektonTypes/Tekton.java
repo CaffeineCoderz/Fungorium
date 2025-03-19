@@ -12,13 +12,12 @@ import sporeTypes.Spore;
 public class Tekton implements iControl {
     private boolean canGrowBody;
     private boolean canGrowThread;
-
-    
     private List<Spore> spores;
     private List<Insect> insects;
     private List<FungusThread> threads;
     private List<FungusBody> bodies;
     private List<Tekton> neighbours;
+    
     public Tekton(boolean canGrowBody, boolean canGrowThread) {
         this.canGrowBody = canGrowBody;
         this.canGrowThread = canGrowThread;
@@ -46,40 +45,39 @@ public class Tekton implements iControl {
     }
 
     public void addSpore(Spore spore) {
-        // spores.add(spore);
+        spores.add(spore);
     }
 
     public void removeSpore(Spore spore) {
-        // spores.remove(spore);
+        spores.remove(spore);
     }
 
     public void addInsect(Insect insect) {
-        // insects.add(insect);
+        insects.add(insect);
     }
 
     public void removeInsect(Insect insect) {
-        // insects.remove(insect);
+        insects.remove(insect);
     }
 
     public void addThread(FungusThread thread) {
-        // threads.add(thread);
+        threads.add(thread);
     }
 
     public void removeThread(FungusThread thread) {
-        // threads.remove(thread);
+        threads.remove(thread);
     }
 
     public void addBody(FungusBody body) {
-        // bodies.add(body);
+        bodies.add(body);
     }
 
     public void removeBody(FungusBody body) {
-        // bodies.remove(body);
+        bodies.remove(body);
     }
 
     public boolean insectFree() {
-        // return insects.isEmpty();
-        return false;
+        return insects.isEmpty();
     }
 
     public List<Spore> getSpores() {

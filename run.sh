@@ -1,2 +1,2 @@
 #!/bin/bash
-java -cp out main.Fungorium
+java -cp out main
