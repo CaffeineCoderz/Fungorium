@@ -1,38 +1,31 @@
 package tektonTypes;
 
+import fungus.FungusBody;
+import fungus.FungusThread;
+import insect.Insect;
+import interfaces.iControl;
 import java.util.ArrayList;
 import java.util.List;
-// ! TODO:
-/*
- * interface dolgait imlementálni
- * package problémát megoldani
- */
-
- import model.iControl;
+import sporeTypes.Spore;
+    // ! NEM TELJES IMPLEMENTÁCIÓ MÉG
 
 public class Tekton implements iControl {
     private boolean canGrowBody;
     private boolean canGrowThread;
-
-    // ! NEM TELJES IMPLEMENTÁCIÓ MÉG
-    /*
-     * private List<Spore> spores;
-     * private List<Insect> insects;
-     * private List<FungusThread> threads;
-     * private List<FungusBody> bodies;
-     * private List<Tekton> neighbours;
-     */
+    private List<Spore> spores;
+    private List<Insect> insects;
+    private List<FungusThread> threads;
+    private List<FungusBody> bodies;
+    private List<Tekton> neighbours;
+    
     public Tekton(boolean canGrowBody, boolean canGrowThread) {
         this.canGrowBody = canGrowBody;
         this.canGrowThread = canGrowThread;
-        // ! NEM TELJES IMPLEMENTÁCIÓ MÉG
-        /*
-         * this.spores = new ArrayList<>();
-         * this.insects = new ArrayList<>();
-         * this.threads = new ArrayList<>();
-         * this.bodies = new ArrayList<>();
-         * this.neighbours = new ArrayList<>();
-         */
+        this.spores = new ArrayList<>();
+        this.insects = new ArrayList<>();
+        this.threads = new ArrayList<>();
+        this.bodies = new ArrayList<>();
+        this.neighbours = new ArrayList<>();
     }
 
     public boolean isThereEnoughSpore(int amount) {
@@ -52,44 +45,43 @@ public class Tekton implements iControl {
     }
 
     public void addSpore(Spore spore) {
-        // spores.add(spore);
+        spores.add(spore);
     }
 
     public void removeSpore(Spore spore) {
-        // spores.remove(spore);
+        spores.remove(spore);
     }
 
     public void addInsect(Insect insect) {
-        // insects.add(insect);
+        insects.add(insect);
     }
 
     public void removeInsect(Insect insect) {
-        // insects.remove(insect);
+        insects.remove(insect);
     }
 
     public void addThread(FungusThread thread) {
-        // threads.add(thread);
+        threads.add(thread);
     }
 
     public void removeThread(FungusThread thread) {
-        // threads.remove(thread);
+        threads.remove(thread);
     }
 
     public void addBody(FungusBody body) {
-        // bodies.add(body);
+        bodies.add(body);
     }
 
     public void removeBody(FungusBody body) {
-        // bodies.remove(body);
+        bodies.remove(body);
     }
 
     public boolean insectFree() {
-        // return insects.isEmpty();
-        return false;
+        return insects.isEmpty();
     }
 
     public List<Spore> getSpores() {
-        // return spores;
+        return spores;
     }
 
     public boolean hasInsect() {
@@ -126,5 +118,21 @@ public class Tekton implements iControl {
 
     public List<Tekton> getNeighbours() {
         return neighbours;
+    }
+
+    // iControl interface
+    @Override
+    public void addScore(){
+        // ToDo
+    }
+
+    @Override
+    public void decreaseScore(){
+        // ToDo
+    }
+
+    @Override
+    public void  timeElapsed(int Round){
+        // ToDo
     }
 }
