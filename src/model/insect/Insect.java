@@ -1,6 +1,8 @@
 package insect;
 
+import fungus.FungusThread;
 import interfaces.iControl;
+import sporeTypes.Spore;
 import tektonTypes.Tekton;
 
 
@@ -23,6 +25,46 @@ public class Insect implements iControl{
         this.recentTekton = null;
     }
 
+    public void countdown(){
+        // ToDo
+    }
+
+    public void stun(){
+        // ToDo
+    }
+
+    public void fast(){
+        // ToDo
+    }
+
+    public void slow(){
+        // ToDo
+    }
+
+    public void disableCut(){
+        // ToDo
+    }
+
+    public void setDecrease(Boolean b){
+        this.decreasing = b;
+    }
+
+    public void cut(FungusThread ft){
+        // ToDo
+    }
+
+    public void move(FungusThread ft){
+        // ToDo
+    }
+
+    public Boolean hasCutAbility(){
+        return this.canCut;
+    }
+
+    public void consumeSpore(Spore s){
+        // ToDo
+    }
+
     // iControl interface
     @Override
     public void addScore(){
@@ -38,5 +80,4 @@ public class Insect implements iControl{
     public void  timeElapsed(int Round){
         // ToDo
     }
-
 }

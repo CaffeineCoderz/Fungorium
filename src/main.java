@@ -1,12 +1,18 @@
 import fungus.FungusBody;
 import fungus.FungusThread;
 import insect.Insect;
+import logic.GameLogic;
 import sporeTypes.Spore;
 import tektonTypes.DecreasingTekton;
 import tektonTypes.Tekton;
-
 public class main {
+    
     public static void main(String[] args) {
+        // Display the test cases
+        GameLogic gameLogic = new GameLogic();
+        gameLogic.displayTests();
+
+
         System.out.println("Fungorium szimuláció elindult!");
         // Initialize a Tekton object
         Tekton tekton = new Tekton(true, true);
@@ -17,14 +23,14 @@ public class main {
         System.out.println("DecreasingTekton initialized: " + decreasingTekton);
 
         // Add some spores to the Tekton
-        Spore spore1 = new Spore(); // Assuming Spore has a default constructor
+        Spore spore1 = new Spore();
         Spore spore2 = new Spore();
         tekton.addSpore(spore1);
         tekton.addSpore(spore2);
         System.out.println("Spores added to Tekton: " + tekton.getSpores().size());
 
         // Add an insect to the Tekton
-        Insect insect = new Insect(); // Assuming Insect has a default constructor
+        Insect insect = new Insect();
         tekton.addInsect(insect);
         System.out.println("Insect added to Tekton: " + tekton.hasInsect());
 
