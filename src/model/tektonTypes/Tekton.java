@@ -33,7 +33,7 @@ public class Tekton implements iControl {
     }
 
     public void breakTekton() {
-        // Implementáció
+        // ! Implementáció
     }
 
     public void setGrowBody(boolean canGrowBody) {
