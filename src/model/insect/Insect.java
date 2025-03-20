@@ -26,23 +26,23 @@ public class Insect implements iControl{
     }
 
     public void countdown(){
-
+        // ToDo
     }
 
     public void stun(){
-
+        // ToDo
     }
 
     public void fast(){
-
+        // ToDo
     }
 
     public void slow(){
-
+        // ToDo
     }
 
     public void disableCut(){
-
+        // ToDo
     }
 
     public void setDecrease(Boolean b){
@@ -80,5 +80,4 @@ public class Insect implements iControl{
     public void  timeElapsed(int Round){
         // ToDo
     }
-
 }

@@ -32,10 +32,6 @@ public class Tekton implements iControl {
         return spores.size() >= amount;
     }
 
-    public void breakTekton() {
-        // ! Implementáció
-    }
-
     public void setGrowBody(boolean canGrowBody) {
         this.canGrowBody = canGrowBody;
     }
@@ -118,6 +114,12 @@ public class Tekton implements iControl {
 
     public List<Tekton> getNeighbours() {
         return neighbours;
+    }
+
+    // ! Not implemented yet
+    
+    public void breakTekton() {
+        // ToDo
     }
 
     // iControl interface

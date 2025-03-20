@@ -32,25 +32,26 @@ public class FungusBody {
         return tekton;
     }
 
-    void sporulate() {
+    // ! Not implemented yet
+    public void sporulate() {
         // implementáció
     }
 
-    Boolean timeToDie() {
-        // implementáció
-        return false;
-    }
-
-    void produceSpore() {
-        // implementáció
-    }
-
-    Boolean isThereEnough() {
+    public Boolean timeToDie() {
         // implementáció
         return false;
     }
 
-    void destroy() {
+    public void produceSpore() {
+        // implementáció
+    }
+
+    public Boolean isThereEnough() {
+        // implementáció
+        return false;
+    }
+
+    public void destroy() {
         // implementáció
     }
 }
