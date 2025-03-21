@@ -10,7 +10,6 @@ public class main {
     public static void main(String[] args) {
         // Display the test cases
         GameLogic gameLogic = new GameLogic();
-        gameLogic.displayTests();
 
         System.out.println("Fungorium szimuláció elindult!");
         // Initialize a Tekton object
