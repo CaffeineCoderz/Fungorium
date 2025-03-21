@@ -12,7 +12,6 @@ public class main {
         GameLogic gameLogic = new GameLogic();
         gameLogic.displayTests();
 
-
         System.out.println("Fungorium szimuláció elindult!");
         // Initialize a Tekton object
         Tekton tekton = new Tekton(true, true);
