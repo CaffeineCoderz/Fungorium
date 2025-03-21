@@ -3,7 +3,8 @@ name: Java Build Workflow
 on:
   push:
     branches:
-      - main
+      - Main
+      - Release-branch
 
 jobs:
   test-matrix:
