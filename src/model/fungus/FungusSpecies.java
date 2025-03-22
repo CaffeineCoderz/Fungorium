@@ -49,6 +49,7 @@ public class FungusSpecies implements iControl{
     }
 
     //szekvencia módosítás kellhet
+    //Teljes újragondolás biztosan kell
     public void growThread(FungusBody body, FungusThread thread) {             // ? Kell ide valszeg FungusThread, FungusBody paraméter ?
         // implementáció
         while(body.getTekton().canGrowThread()){
@@ -86,6 +87,7 @@ public class FungusSpecies implements iControl{
             }
             fb.setTekton(thread.getTekton());
             fb.addThread(thread);
+            bodies.add(fb);
         }
         else
             System.out.println("Nincs elegendo spóra");

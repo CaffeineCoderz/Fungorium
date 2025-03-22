@@ -8,8 +8,11 @@ public class OneThreadTekton extends Tekton {
     public void addThread(FungusThread f){
         if(getThreads().isEmpty()){
             getThreads().add(f);
-        } else{
-            return;
+        } 
+        else if(getThreads().get(0).getSpecies()==f.getSpecies()) {
+            getThreads().add(f);
+        else
+            return;    
         }
     }
 }
