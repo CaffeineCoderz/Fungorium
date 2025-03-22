@@ -8,7 +8,6 @@ import tektonTypes.Tekton;
 public class main {
     
     public static void main(String[] args) {
-        // Display the test cases
         GameLogic gameLogic = new GameLogic();
 
         System.out.println("Fungorium szimuláció elindult!");
@@ -38,11 +37,11 @@ public class main {
         System.out.println("Neighbor Tekton added: " + tekton.getNeighbours().size());
 
         // Add a thread and body to the Tekton
-        FungusThread thread = new FungusThread(15, true); // Initialize with lifeSpan = 15, bridge = true
-        thread.addTekton(tekton); // Associate the thread with the Tekton
-        FungusBody body = new FungusBody(10, 5); // Initialize with sporeCount = 10, sporulateLeft = 5
-        body.addThread(thread); // Add the thread to the FungusBody
-        body.setTekton(tekton); // Associate the FungusBody with the Tekton
+        FungusThread thread = new FungusThread(15, true); 
+        thread.addTekton(tekton); 
+        FungusBody body = new FungusBody(10, 5); 
+        body.addThread(thread); 
+        body.setTekton(tekton);
         tekton.addThread(thread);
         tekton.addBody(body);
         System.out.println("Thread and Body added to Tekton: " + tekton.getThreads().size() + ", " + tekton.getBodies().size());
