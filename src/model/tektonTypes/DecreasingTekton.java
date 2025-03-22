@@ -5,8 +5,5 @@ public class DecreasingTekton extends Tekton{
         super(true, true);
     }
 
-    // @Override !!!! amig nincs felüldefiniálva addig errort dob.
-    public void TimeElapsed(int round){
-        // ToDo
-    }
+        
 }

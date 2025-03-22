@@ -13,9 +13,9 @@ public class Tekton implements iControl {
     private boolean canGrowBody;
     private boolean canGrowThread;
     private List<Spore> spores;
-    private List<Insect> insects;
-    private List<FungusThread> threads;
-    private List<FungusBody> bodies;
+    protected List<Insect> insects;
+    protected List<FungusThread> threads;
+    protected List<FungusBody> bodies;
     private List<Tekton> neighbours;
     
     public Tekton(boolean canGrowBody, boolean canGrowThread) {

@@ -17,6 +17,7 @@ public class Spore {
 
     // ToDo mit jelent itt az absorbed? Implementáció
     public void absorbed() {
-        // implementáció
+        myTekton = null;
+        
     }
 }
