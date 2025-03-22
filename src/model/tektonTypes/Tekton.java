@@ -30,7 +30,8 @@ public class Tekton{
     public Boolean isThereEnoughSpore(Integer amount) {
         return spores.size() >= amount;
     }
-public Tekton(Tekton tekton) {
+
+    public Tekton(Tekton tekton) {
         this.canGrowBody = tekton.canGrowBody();
         this.canGrowThread = tekton.canGrowThread();
         this.spores = tekton.getSpores();
@@ -39,6 +40,7 @@ public Tekton(Tekton tekton) {
         this.body = tekton.getBody();
         this.neighbours = tekton.getNeighbours();
     }
+    
     public void setGrowBody(Boolean canGrowBody) {
         this.canGrowBody = canGrowBody;
     }
