@@ -132,12 +132,12 @@ public class Tekton{
             insect.move(neighbours.getFirst().getThreads().getFirst());
         }
         for (FungusThread ft: threads) {
-            ft.destroy();
+            ft.getSpecies().destroyThread(ft);
         }
         for (Spore spore : spores) {
             spore.absorbed();
         }
-        body.destroy();
+        body.getSpecies().destroyBody(body); // ? Kéne tudni
         Tekton t1 = new Tekton(this);
         Tekton t2 = new Tekton(this);
 

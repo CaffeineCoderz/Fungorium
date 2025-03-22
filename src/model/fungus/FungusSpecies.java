@@ -121,4 +121,20 @@ public class FungusSpecies implements iControl{
             }
         }
     }
+    public void destroyThread(FungusThread ft){
+        deleteThread(ft);
+        for (FungusBody body : bodies) {
+            if (body.removeThread(ft) == true) {
+                break;
+            }
+        }
+        ft.destroy();
+    }
+    public void destroyBody(FungusBody fb){
+        for (FungusThread ft : fb.getThreads()) {
+            destroyThread(ft);
+        }
+        fb.getTekton().setBody(null);
+
+    }
 }

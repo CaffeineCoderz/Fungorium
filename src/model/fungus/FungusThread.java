@@ -10,18 +10,22 @@ public class FungusThread {
     private Boolean bridge;
     private Boolean isDying;
     private List<Tekton> tektons;
+    private FungusSpecies species;
 
     public FungusThread(Integer lifeSpan, Boolean bridge) {
         this.lifeSpan = lifeSpan;
         this.bridge = bridge;
         this.isDying = false;
+        this.species = null;
         this.tektons = new ArrayList<>();
     }
 
     public Boolean isBridge() {
         return bridge;
     }
-
+    public FungusSpecies getSpecies(){
+        return species;
+    }
     public void decreaseLife() {
         lifeSpan--;
         if (lifeSpan <= 0) {
@@ -55,7 +59,9 @@ public class FungusThread {
     }
 
     public void destroy() {
-
+        for (Tekton tekton : tektons) {
+            tekton.removeThread(this);
+        }
     }
 
 }

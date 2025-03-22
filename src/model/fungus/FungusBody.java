@@ -9,20 +9,26 @@ public class FungusBody {
     private Integer sporulateLeft;
     private List<FungusThread> threads;
     private Tekton tekton;
+    private FungusSpecies species;
 
     public FungusBody(Integer sporeCount, Integer sporulateLeft) {
         this.sporeCount = sporeCount;
         this.sporulateLeft = sporulateLeft;
         this.threads = new ArrayList<>();
         this.tekton = null;
+        this.species = null;
+    }
+
+    public FungusSpecies getSpecies(){
+        return species;
     }
 
     public void addThread(FungusThread thread) {
         threads.add(thread);
     }
 
-    public void removeThread(FungusThread thread) {
-        threads.remove(thread);
+    public Boolean removeThread(FungusThread thread) {
+        return threads.remove(thread);
     }
 
     public void setTekton(Tekton tekton) {
@@ -31,6 +37,9 @@ public class FungusBody {
 
     public Tekton getTekton() {
         return tekton;
+    }
+    public List<FungusThread> getThreads(){
+        return threads;
     }
 
     // ! Not implemented yet
@@ -71,8 +80,5 @@ public class FungusBody {
         return sporeCount;
     }
 
-    public void destroy() {
-        // implementáció
-
-    }
+    
 }
