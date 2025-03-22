@@ -54,8 +54,7 @@ public class FungusThread {
     }
 
     public Tekton getTekton() {
-        // ! implementáció
-        return null;
+        return tektons.get(0);
     }
 
     public void destroy() {
