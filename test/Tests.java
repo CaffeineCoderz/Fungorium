@@ -244,8 +244,8 @@ public class Tests {
         body.addThread(thread); // Add the thread to the FungusBody
         body.setTekton(tekton); // Associate the FungusBody with the Tekton
         tekton.addThread(thread);
-        tekton.addBody(body);
-        System.out.println("Thread and Body added to Tekton: " + tekton.getThreads().size() + ", " + tekton.getBodies().size());
+        tekton.setBody(body);
+        System.out.println("Thread and Body added to Tekton: " + tekton.getThreads().size() + ", " + 1);
     }
 
     public static void main(String[] args) {

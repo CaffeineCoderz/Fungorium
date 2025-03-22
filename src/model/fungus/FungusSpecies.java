@@ -71,6 +71,22 @@ public class FungusSpecies implements iControl{
         body.addThread(thread);
     }
 
+    public void growBody(FungusThread thread) {
+        // implementáció
+        if (thread.isBridge()) {
+            return;
+        }
+        Integer atleast = 3;
+        if (thread.getTekton().isThereEnoughSpore(atleast)){
+            FungusBody fb= new FungusBody(null, null);
+            thread.getTekton().setBody(fb);
+            for (Integer i =  0; i < atleast; i++) {
+                thread.getTekton().removeSpore();
+            }
+            fb.setTekton(thread.getTekton());
+            fb.addThread(thread);}
+    }
+
     // iControl interface
     @Override
     public void addScore(Integer x){
