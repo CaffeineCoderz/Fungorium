@@ -87,11 +87,6 @@ public class FungusSpecies implements iControl{
             fb.addThread(thread);}
     }
 
-    public void destroyBody(FungusBody body){
-        // implementáció
-        
-    }
-
     // iControl interface
     @Override
     public void addScore(Integer x){
