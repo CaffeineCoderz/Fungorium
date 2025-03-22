@@ -1,6 +1,7 @@
 package fungus;
 import java.util.ArrayList;
 import java.util.List;
+import sporeTypes.Spore;
 import tektonTypes.Tekton;
 //! NEM TELJES IMPLEMENTÁCIÓ MÉG
 public class FungusBody {
@@ -35,19 +36,35 @@ public class FungusBody {
     // ! Not implemented yet
     public void sporulate() {
         // implementáció
+        if(isThereEnough()){
+            for(Tekton t : tekton.getNeighbours()){
+                Spore tempSpore = new Spore();
+                t.addSpore(tempSpore);
+                tempSpore.setTekton(t);
+                sporeCount--;
+            }
+        sporulateLeft--;
+        }
     }
 
     public Boolean timeToDie() {
         // implementáció
+        if(sporulateLeft <= 0){
+            return true;
+        }
         return false;
     }
 
     public void produceSpore() {
         // implementáció
+        sporeCount++;
     }
 
     public Boolean isThereEnough() {
         // implementáció
+        if(sporeCount > 0){
+            return true;
+        }
         return false;
     }
     public Integer getSporeCount(){
@@ -56,5 +73,6 @@ public class FungusBody {
 
     public void destroy() {
         // implementáció
+
     }
 }

@@ -9,15 +9,15 @@ import sporeTypes.Spore;
     // ! NEM TELJES IMPLEMENTÁCIÓ MÉG
 
 public class Tekton{
-    private boolean canGrowBody;
-    private boolean canGrowThread;
+    private Boolean canGrowBody;
+    private Boolean canGrowThread;
     private List<Spore> spores;
     protected List<Insect> insects;
     protected List<FungusThread> threads;
     protected FungusBody body;
     private List<Tekton> neighbours;
     
-    public Tekton(boolean canGrowBody, boolean canGrowThread) {
+    public Tekton(Boolean canGrowBody, Boolean canGrowThread) {
         this.canGrowBody = canGrowBody;
         this.canGrowThread = canGrowThread;
         this.spores = new ArrayList<>();
@@ -27,7 +27,10 @@ public class Tekton{
         this.neighbours = new ArrayList<>();
     }
 
-    public Tekton(Tekton tekton) {
+    public Boolean isThereEnoughSpore(Integer amount) {
+        return spores.size() >= amount;
+    }
+public Tekton(Tekton tekton) {
         this.canGrowBody = tekton.canGrowBody();
         this.canGrowThread = tekton.canGrowThread();
         this.spores = tekton.getSpores();
@@ -36,16 +39,11 @@ public class Tekton{
         this.body = tekton.getBody();
         this.neighbours = tekton.getNeighbours();
     }
-
-    public boolean isThereEnoughSpore(int amount) {
-        return spores.size() >= amount;
-    }
-
-    public void setGrowBody(boolean canGrowBody) {
+    public void setGrowBody(Boolean canGrowBody) {
         this.canGrowBody = canGrowBody;
     }
 
-    public void setGrowThread(boolean canGrowThread) {
+    public void setGrowThread(Boolean canGrowThread) {
         this.canGrowThread = canGrowThread;
     }
 
@@ -84,7 +82,7 @@ public class Tekton{
         return body;
     }
 
-    public boolean insectFree() {
+    public Boolean insectFree() {
         return insects.isEmpty();
     }
 
@@ -92,7 +90,7 @@ public class Tekton{
         return spores;
     }
 
-    public boolean hasInsect() {
+    public Boolean hasInsect() {
         return !insects.isEmpty();
     }
 
@@ -104,11 +102,11 @@ public class Tekton{
         neighbours.add(neighbour);
     }
 
-    public boolean canGrowBody() {
+    public Boolean canGrowBody() {
         return canGrowBody;
     }
 
-    public boolean canGrowThread() {
+    public Boolean canGrowThread() {
         return canGrowThread;
     }
 

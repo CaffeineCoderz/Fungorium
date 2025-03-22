@@ -1,26 +1,27 @@
 package fungus;
+import interfaces.iControl;
 import java.util.ArrayList;
 import java.util.List;
 import tektonTypes.Tekton;
 
 //! NEM TELJES IMPLEMENTÁCIÓ MÉG
-public class FungusSpecies {
-    private int score;
+public class FungusSpecies implements iControl{
+    private Integer score;
     private List<FungusBody> bodies;
     private List<FungusThread> threads;
 
-    public FungusSpecies(int score) {
+    public FungusSpecies(Integer score) {
         this.score = score;
         this.bodies = new ArrayList<>();
     }
 
-    public int getScore() {
+    public Integer getScore() {
         return score;
     }
 
-    public void setScore(int score) {
+    /*public void setScore(Integer score) {               // ? Biztos hogy kell ez a setter? nem jobb lenne a score-t növelni vagy csökkenteni simán interface?
         this.score = score;
-    }
+    }*/
 
     public List<FungusBody> getBodies() {
         return bodies;
@@ -39,17 +40,50 @@ public class FungusSpecies {
     // ! Not implemented yet
     public void addThread(FungusThread thread) {
         // implementáció
+        threads.add(thread);
     }
 
     public void deleteThread(FungusThread thread) {
         // implementáció
+        threads.remove(thread);
     }
 
-    public void growThread(Tekton tekton) {
+    //szekvencia módosítás kellhet
+    public void growThread(FungusBody body, FungusThread thread) {             // ? Kell ide valszeg FungusThread, FungusBody paraméter ?
         // implementáció
+        while(body.getTekton().canGrowThread()){
+            addThread(thread);
+            thread.addTekton(body.getTekton());
+            body.getTekton().addThread(thread);
+            body.addThread(thread);
+        }
+    }
+    
+    // szekvencia módosítás kellhet
+    public void growBridge(FungusBody body, FungusThread thread, Tekton tekton2) { // ? Kell ide valszeg FungusThread, FungusBody paraméter ?
+        // implementáció
+        addThread(thread);
+        thread.addTekton(body.getTekton());
+        thread.addTekton(tekton2);
+        thread.setBridge(true);
+        body.getTekton().addThread(thread);
+        tekton2.addThread(thread);
+        body.addThread(thread);
     }
 
-    public void growBridge(Tekton tekton1, Tekton tekton2) {
-        // implementáció
+    // iControl interface
+    @Override
+    public void addScore(Integer x){
+        score += x;
+    }
+
+    @Override
+    public void decreaseScore(Integer x){
+        score -= x;
+    }
+
+    @Override
+    public void timeElapsed(Integer Round){
+        // ToDo
     }
 }
