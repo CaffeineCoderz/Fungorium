@@ -10,6 +10,7 @@ public class DecomposingTekton extends Tekton{
 
     @Override
     public void addThread(FungusThread t){
-        // ToDo
+        t.decreaseLife();
+        threads.add(t);
     }
 }
