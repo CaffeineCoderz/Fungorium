@@ -81,11 +81,7 @@ public class FungusSpecies implements iControl{
                 thread.getTekton().removeSpore();
             }
             fb.setTekton(thread.getTekton());
-
-            fb.addThread(thread);
-        }
-        else
-            System.out.println("Nincs elegendo spóra");
+            fb.addThread(thread);}
     }
 
     // iControl interface
