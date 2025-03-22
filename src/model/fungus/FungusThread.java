@@ -47,11 +47,24 @@ public class FungusThread {
     }
 
     public void growBody() {
-        // ! Implementáció
+        // ! implement better
+        /**if (bridge) {
+            return;
+        }
+        Integer atleast = 3;
+        if (tektons.getFirst().isThereEnoughSpore(atleast)){
+            FungusBody fb= new FungusBody(null, null);
+            tektons.getFirst().setBody(fb);
+            for (Integer i =  0; i < atleast; i++) {
+                tektons.getFirst().removeSpore();
+            }
+            fb.setTekton(tektons.getFirst());
+            fb.addThread(this);
+        }**/
     }
 
     public void destroy() {
-        // ! Implementáció 
+
     }
 
 }
