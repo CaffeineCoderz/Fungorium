@@ -9,7 +9,7 @@ public class OnlyThreadTekton extends Tekton{
     }
     
     @Override
-    public void addBody(FungusBody fb) {
+    public void setBody(FungusBody fb) {
         // Do nothing, as OnlyThreadTekton should not add bodies
     }
 }

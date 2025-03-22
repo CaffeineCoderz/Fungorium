@@ -14,7 +14,7 @@ public class Tekton{
     private List<Spore> spores;
     protected List<Insect> insects;
     protected List<FungusThread> threads;
-    protected List<FungusBody> bodies;
+    protected FungusBody body;
     private List<Tekton> neighbours;
     
     public Tekton(boolean canGrowBody, boolean canGrowThread) {
@@ -23,8 +23,18 @@ public class Tekton{
         this.spores = new ArrayList<>();
         this.insects = new ArrayList<>();
         this.threads = new ArrayList<>();
-        this.bodies = new ArrayList<>();
+        this.body = new FungusBody(null, null);
         this.neighbours = new ArrayList<>();
+    }
+
+    public Tekton(Tekton tekton) {
+        this.canGrowBody = tekton.canGrowBody();
+        this.canGrowThread = tekton.canGrowThread();
+        this.spores = tekton.getSpores();
+        this.insects = tekton.getInsects();
+        this.threads = tekton.getThreads();
+        this.body = tekton.getBody();
+        this.neighbours = tekton.getNeighbours();
     }
 
     public boolean isThereEnoughSpore(int amount) {
@@ -46,6 +56,9 @@ public class Tekton{
     public void removeSpore(Spore spore) {
         spores.remove(spore);
     }
+    public void removeSpore(){
+        spores.removeFirst();
+    }
 
     public void addInsect(Insect insect) {
         insects.add(insect);
@@ -63,12 +76,12 @@ public class Tekton{
         threads.remove(thread);
     }
 
-    public void addBody(FungusBody body) {
-        bodies.add(body);
+    public void setBody(FungusBody body) {
+        this.body = body;
     }
 
-    public void removeBody(FungusBody body) {
-        bodies.remove(body);
+    public FungusBody getBody() {
+        return body;
     }
 
     public boolean insectFree() {
@@ -107,9 +120,6 @@ public class Tekton{
         return threads;
     }
 
-    public List<FungusBody> getBodies() {
-        return bodies;
-    }
 
     public List<Tekton> getNeighbours() {
         return neighbours;
@@ -118,7 +128,26 @@ public class Tekton{
     // ! Not implemented yet
     
     public void breakTekton() {
-        // ToDo
+        for (Insect insect : insects) {
+            insect.move(neighbours.getFirst().getThreads().getFirst());
+        }
+        for (FungusThread ft: threads) {
+            ft.destroy();
+        }
+        for (Spore spore : spores) {
+            spore.absorbed();
+        }
+        body.destroy();
+        Tekton t1 = new Tekton(this);
+        Tekton t2 = new Tekton(this);
+
+        for (Tekton tekton : neighbours) {
+            tekton.removeNeighbour(this);
+            tekton.addNeighbour(t1);
+            tekton.addNeighbour(t2);
+        }
+        t1.addNeighbour(t2);
+        t2.addNeighbour(t1);
     }
 
     

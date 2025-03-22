@@ -50,6 +50,9 @@ public class FungusBody {
         // implementáció
         return false;
     }
+    public Integer getSporeCount(){
+        return sporeCount;
+    }
 
     public void destroy() {
         // implementáció
