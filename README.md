@@ -22,14 +22,3 @@ chmod +x run.sh
 chmod +x test.sh
 ./test.sh
 ```
-
-#### 4. Specifikus tesztek futtatása:
-```sh
-java -jar lib/junit-platform-console-standalone-1.10.0.jar --classpath bin -c main.FungoriumTest
-```
-
-Junit downloaded with:
-```sh
-mkdir -p lib
-curl -o lib/junit-platform-console-standalone-1.10.0.jar https://repo1.maven.org/maven2/org/junit/platform/junit-platform-console-standalone/1.10.0/junit-platform-console-standalone-1.10.0.jar
-```
