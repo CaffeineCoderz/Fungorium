@@ -6,7 +6,7 @@ import sporeTypes.Spore;
 import tektonTypes.Tekton;
 
 enum InsectEffects{
-    NORMAL,STUN,NO_CUT, FAST, SLOW
+    NORMAL, STUN, NO_CUT, FAST, SLOW
 }
 
 public class Insect implements iControl{
@@ -14,7 +14,7 @@ public class Insect implements iControl{
     private Integer abilityEffectTimer;
     private Boolean canCut;
     private InsectEffects effect;
-    private Boolean  Ondecreasing;
+    private Boolean onDecreasing;
     private Integer score;
     private Tekton recentTekton;
     private FungusThread thread;
@@ -23,26 +23,34 @@ public class Insect implements iControl{
         this.movingEffectTimer = 0;
         this.abilityEffectTimer = 0;
         this.canCut = true;
-        this.Ondecreasing = false;
+        this.onDecreasing = false;
         this.score = 0;
         this.recentTekton = null;
         this.effect = InsectEffects.NORMAL;
     }
 
-    public void countdown(){
+    /*public void countdown(){                // ? Kell ide egyáltalán ?
         // ToDo
-    }
+    }*/
 
     public void stun(){
         effect = InsectEffects.STUN;
     }
 
     public void fast(){
-        effect = InsectEffects.FAST;
+        if(effect == InsectEffects.SLOW){
+            effect = InsectEffects.NORMAL;
+        }
+        else
+            effect = InsectEffects.FAST;
     }
 
     public void slow(){
-        effect = InsectEffects.SLOW;
+        if(effect == InsectEffects.FAST){
+            effect = InsectEffects.NORMAL;
+        }
+        else
+            effect = InsectEffects.SLOW;
     }
 
     public void disableCut(){
@@ -50,7 +58,7 @@ public class Insect implements iControl{
     }
 
     public void setDecrease(Boolean b){
-        this.Ondecreasing = b;
+        this.onDecreasing = b;
     }
 
     public void cut(FungusThread ft){
@@ -94,5 +102,31 @@ public class Insect implements iControl{
     @Override
     public void timeElapsed(Integer Round){
         // ToDo
+        for(Insect i: recentTekton.getInsects()){
+            if (true == onDecreasing){
+                i.decreaseScore(1);
+            }
+            if(i.effect == InsectEffects.FAST){
+                i.movingEffectTimer = 3;
+            }
+            if(i.effect == InsectEffects.SLOW){
+                i.movingEffectTimer = 3;
+            }
+            if(i.effect == InsectEffects.NO_CUT){
+                i.abilityEffectTimer = 3;
+            }
+            if(i.movingEffectTimer > 0){
+                i.movingEffectTimer--;
+            }
+            if(i.abilityEffectTimer > 0){
+                i.abilityEffectTimer--;
+            }
+            if(i.movingEffectTimer == 0){
+                i.effect = InsectEffects.NORMAL;
+            }
+            if(i.abilityEffectTimer == 0){
+                i.effect = InsectEffects.NORMAL;
+            }
+        }
     }
 }
