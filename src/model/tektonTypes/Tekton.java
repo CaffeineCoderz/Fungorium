@@ -56,6 +56,9 @@ public class Tekton{
     public void removeSpore(Spore spore) {
         spores.remove(spore);
     }
+    public void removeSpore(){
+        spores.removeFirst();
+    }
 
     public void addInsect(Insect insect) {
         insects.add(insect);
