@@ -3,13 +3,12 @@ package tektonTypes;
 import fungus.FungusBody;
 import fungus.FungusThread;
 import insect.Insect;
-import interfaces.iControl;
 import java.util.ArrayList;
 import java.util.List;
 import sporeTypes.Spore;
     // ! NEM TELJES IMPLEMENTÁCIÓ MÉG
 
-public class Tekton implements iControl {
+public class Tekton{
     private boolean canGrowBody;
     private boolean canGrowThread;
     private List<Spore> spores;
@@ -122,19 +121,5 @@ public class Tekton implements iControl {
         // ToDo
     }
 
-    // iControl interface
-    @Override
-    public void addScore(){
-        // ToDo
-    }
-
-    @Override
-    public void decreaseScore(){
-        // ToDo
-    }
-
-    @Override
-    public void  timeElapsed(int Round){
-        // ToDo
-    }
+    
 }

@@ -1,9 +1,9 @@
 package interfaces;
 
 public interface iControl {
-    void addScore();
+    void addScore(Integer x);
 
-    void decreaseScore();
+    void decreaseScore(Integer x);
 
     void timeElapsed(int Round);
 }

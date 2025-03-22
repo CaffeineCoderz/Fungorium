@@ -16,8 +16,7 @@ public class Spore {
         nutritionValue = nutval;
     }
 
-    public void consume(Insect insect) {
-        insect.consumeSpore(this);
+    public void consume(Insect insect){
         absorbed();
     }
 
