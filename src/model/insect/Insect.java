@@ -61,6 +61,10 @@ public class Insect implements iControl{
         this.onDecreasing = b;
     }
 
+    public void setRecentTekton(Tekton t){
+        recentTekton = t;
+    }
+
     public void cut(FungusThread ft){
         //Legyen meg a képessége, hogy fonalat vágjon és Ne vágja maga alatt a fát.
         if(canCut == true && effect != InsectEffects.STUN && thread != ft){

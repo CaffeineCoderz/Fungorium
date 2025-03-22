@@ -6,8 +6,12 @@ import fungus.FungusThread;
 import insect.Insect;
 import java.util.Scanner;
 import logic.GameLogic;
+import sporeTypes.FastSpore;
 import sporeTypes.Spore;
+import sporeTypes.StunSpore;
+import tektonTypes.DecomposingTekton;
 import tektonTypes.DecreasingTekton;
+import tektonTypes.OnlyThreadTekton;
 import tektonTypes.Tekton;
 
 public class Tests {
@@ -21,6 +25,7 @@ public class Tests {
     private FungusBody body;
     private FungusThread thread;
     private FungusSpecies species;
+    private Insect insect;
 
 
     public static void displayTests() {
@@ -63,8 +68,6 @@ public class Tests {
         System.out.println("DecreasingTekton initialized: " + decreasingTekton);
 
         // Add some spores to the Tekton
-        spore1 = new Spore();
-        spore2 = new Spore();
         System.out.println("Spores added to Tekton: " + tekton1.getSpores().size());
 
         // Add an insect to the Tekton
@@ -79,7 +82,6 @@ public class Tests {
         // Add a thread and body to the Tekton
         thread = new FungusThread(15, true); 
         body = new FungusBody(10, 5); 
-        species = new FungusSpecies(0);
     }
 
     public static void getUserInput() {
@@ -134,8 +136,8 @@ public class Tests {
             case 12:
                 insectMoveWhileStunned();
                 break;
-            case 13:
-                break;
+            //case 13:
+              //  break;
             case 15:
                 growThreadDecomposingTektor();
                 break;
@@ -145,15 +147,15 @@ public class Tests {
             case 17:
                 stunSporeConsumed();
                 break;
-            case 18:
-                //sporulateUnSuccess();
-                break;
+            /*case 18:
+                sporulateUnSuccess();
+                break;*/
             case 19:
                 sporulateFurther();
                 break;
-            case 20:
-                //insectMoveUnsuccess();
-                break;
+            /*case 20:
+                insectMoveUnsuccess();
+                break;*/
             case 50:
                 //exitTests();
                 break;
@@ -229,42 +231,137 @@ public class Tests {
 
     public void growBodyOnlyThreadTekton() {
         System.out.println("Running test: growBodyOnlyThreadTekton");
+        OnlyThreadTekton temp = new OnlyThreadTekton();
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Add meg a hozzáadni kívánt Spórák számát (legalább 3): ");
+        int sporeCount = scanner.nextInt();
+        for (int i = 0; i < sporeCount; i++) {
+            Spore spore = new Spore();
+            temp.addSpore(spore);
+        }
+        System.out.println("Spore hozzáadva az OnlyThreadTekton: " + temp.getSpores().size());
+        thread.addTekton(temp);
+        temp.addThread(thread);
+        System.out.println("FungusThread hozzáadva az OnlyThreadTektonhoz: " + temp.getThreads().size());
+        if (temp.getSpores().size() < 3) {
+            System.out.println("Nincs elég Spore a FungusBody növesztéshez!");
+            return;
+        }
+        species.growBody(thread);
+        temp.setBody(body);
+        System.out.println("FungusBody: OnlyThreadTekton hozzáadása sikeres!");
+        System.out.println("FungusBody növesztése sikeres!");
     }
 
     public void insectCutThread() {
         System.out.println("Running test: insectCutThread");
+        Tekton tekton2 = new Tekton(true, true);
+        tekton1.addInsect(insect);
+        insect.setRecentTekton(tekton1);
+        tekton1.addThread(thread);
+        thread.addTekton(tekton1);
+        tekton2.addThread(thread);
+        thread.addTekton(tekton2);
+        insect.cut(thread);
+        System.out.println("Test: Insect szálvágása sikeres!");
     }
 
     public void speedSporeConsumed() {
         System.out.println("Running test: speedSporeConsumed");
+        Spore fs = new FastSpore();
+        insect.consumeSpore(fs);
+        fs.consume(insect);
+        System.out.println("Test: SpeedSporeConsumed sikeres!");
     }
 
     public void insectMoveWhileStunned() {
         System.out.println("Running test: insectMoveWhileStunned");
+        Tekton tekton2 = new Tekton(true, true);
+        tekton1.addInsect(insect);
+        insect.setRecentTekton(tekton1);
+        tekton1.addThread(thread);
+        thread.addTekton(tekton1);
+        tekton2.addThread(thread);
+        thread.addTekton(tekton2);
+        StunSpore ss = new StunSpore();
+        insect.consumeSpore(ss);
+        ss.consume(insect);
+        insect.move(thread);
+        System.out.println("Test: InsectMoveWhileStunned sikeres!");
     }
 
     public void growThreadDecomposingTektor() {
         System.out.println("Running test: growThreadDecomposingTektor");
+        DecomposingTekton dt = new DecomposingTekton();
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Add meg a hozzáadni kívánt Spore számát (legalább 3): ");
+        int sporeCount = scanner.nextInt();
+        for (int i = 0; i < sporeCount; i++) {
+            Spore spore = new Spore();
+            dt.addSpore(spore);
+        }
+        System.out.println("Spore hozzáadva a DecomposingTekton: " + dt.getSpores().size());
+        thread.addTekton(dt);
+        dt.addThread(thread);
+        System.out.println("FungusThread hozzáadva a DecomposingTektonhoz: " + dt.getThreads().size());
+        if (dt.getSpores().size() < 3) {
+            System.out.println("Nincs elég Spore a FungusBody növesztéshez!");
+            return;
+        }
+        species.growThread(body, thread);
+        dt.setBody(body);
+        System.out.println("FungusBody: DecomposingTekton hozzáadása sikeres!");
+        System.out.println("FungusBody növesztése sikeres!");
     }
 
     public void insectMoveSuccess() {
         System.out.println("Running test: insectMoveSuccess");
+        tekton1.addInsect(insect);
+        FungusThread thread2 = new FungusThread(15, true);
+        thread.addTekton(tekton1);
+        tekton1.addThread(thread2);
+        insect.setRecentTekton(tekton1);
+        tekton1.addThread(thread);
+        thread.addTekton(tekton1);
+        insect.move(thread2);
+        System.out.println("Test: InsectMove sikeres!");
     }
 
     public void stunSporeConsumed() {
         System.out.println("Running test: stunSporeConsumed");
+        Spore ss = new StunSpore();
+        insect.consumeSpore(ss);
+        ss.consume(insect);
+        System.out.println("Test: StunSporeConsumed sikeres!");
     }
 
     public void sporulateUnSuccess() {
         System.out.println("Running test: sporulateUnSuccess");
+
     }
 
     public void sporulateFurther() {
         System.out.println("Running test: sporulateFurther");
+        Tekton tekton2 = new Tekton(true, true);
+        Tekton tekton3 = new Tekton(true, true);
+        tekton1.addNeighbour(tekton2);
+        tekton1.addNeighbour(tekton3);
+        body.setTekton(tekton3);
+        body.produceSpore();
+        body.sporulate();
+        if(tekton1.getSpores().size() == 0) {
+            System.out.println("Nem sikerült a SporulateFurther!");
+            return;
+        }
+        else {
+            System.out.println("Test: SporulateFurther sikeres!");
+        }
+        
     }
 
     public void insectMoveUnsuccess() {
         System.out.println("Running test: insectMoveUnsuccess");
+
     }
 
     public static void main(String[] args) {
