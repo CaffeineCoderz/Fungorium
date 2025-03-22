@@ -40,18 +40,35 @@ public class FungusSpecies implements iControl{
     // ! Not implemented yet
     public void addThread(FungusThread thread) {
         // implementáció
+        threads.add(thread);
     }
 
     public void deleteThread(FungusThread thread) {
         // implementáció
+        threads.remove(thread);
     }
 
-    public void growThread(Tekton tekton) {
+    //szekvencia módosítás kellhet
+    public void growThread(FungusBody body, FungusThread thread) {             // ? Kell ide valszeg FungusThread, FungusBody paraméter ?
         // implementáció
+        while(body.getTekton().canGrowThread()){
+            addThread(thread);
+            thread.addTekton(body.getTekton());
+            body.getTekton().addThread(thread);
+            body.addThread(thread);
+        }
     }
-
-    public void growBridge(Tekton tekton1, Tekton tekton2) {
+    
+    // szekvencia módosítás kellhet
+    public void growBridge(FungusBody body, FungusThread thread, Tekton tekton2) { // ? Kell ide valszeg FungusThread, FungusBody paraméter ?
         // implementáció
+        addThread(thread);
+        thread.addTekton(body.getTekton());
+        thread.addTekton(tekton2);
+        thread.setBridge(true);
+        body.getTekton().addThread(thread);
+        tekton2.addThread(thread);
+        body.addThread(thread);
     }
 
     // iControl interface
