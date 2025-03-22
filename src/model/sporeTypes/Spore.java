@@ -11,7 +11,7 @@ public class Spore {
         nutritionValue = 10;
         myTekton = null;
     }
-    public Spore(Tekton t,Integer nutval){
+    public Spore(Tekton t, Integer nutval){
         myTekton = t;
         nutritionValue = nutval;
     }

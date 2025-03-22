@@ -14,7 +14,7 @@ public class Insect implements iControl{
     private Integer abilityEffectTimer;
     private Boolean canCut;
     private InsectEffects effect;
-    private Boolean Ondecreasing;
+    private Boolean  Ondecreasing;
     private Integer score;
     private Tekton recentTekton;
     private FungusThread thread;
@@ -92,7 +92,7 @@ public class Insect implements iControl{
     }
 
     @Override
-    public void  timeElapsed(int Round){
+    public void timeElapsed(Integer Round){
         // ToDo
     }
 }
