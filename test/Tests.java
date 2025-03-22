@@ -1,6 +1,7 @@
 package test;
 
 import fungus.FungusBody;
+import fungus.FungusSpecies;
 import fungus.FungusThread;
 import insect.Insect;
 import java.util.Scanner;
@@ -19,6 +20,7 @@ public class Tests {
     private Spore spore3;
     private FungusBody body;
     private FungusThread thread;
+    private FungusSpecies species;
 
 
     public static void displayTests() {
@@ -63,13 +65,10 @@ public class Tests {
         // Add some spores to the Tekton
         spore1 = new Spore();
         spore2 = new Spore();
-        tekton1.addSpore(spore1);
-        tekton1.addSpore(spore2);
         System.out.println("Spores added to Tekton: " + tekton1.getSpores().size());
 
         // Add an insect to the Tekton
         Insect insect = new Insect();
-        tekton1.addInsect(insect);
         System.out.println("Insect added to Tekton: " + tekton1.hasInsect());
 
         // Add a neighbor Tekton
@@ -79,12 +78,8 @@ public class Tests {
 
         // Add a thread and body to the Tekton
         thread = new FungusThread(15, true); 
-        thread.addTekton(tekton1); 
         body = new FungusBody(10, 5); 
-        body.addThread(thread); 
-        body.setTekton(tekton1);
-        tekton1.addThread(thread);
-        tekton1.setBody(body);
+        species = new FungusSpecies(0);
     }
 
     public static void getUserInput() {
@@ -151,13 +146,13 @@ public class Tests {
                 stunSporeConsumed();
                 break;
             case 18:
-                sporulateUnSuccess();
+                //sporulateUnSuccess();
                 break;
             case 19:
                 sporulateFurther();
                 break;
             case 20:
-                insectMoveUnsuccess();
+                //insectMoveUnsuccess();
                 break;
             case 50:
                 //exitTests();
@@ -171,11 +166,41 @@ public class Tests {
 
     public void growBodyDefTektonSuccess() {
         System.out.println("Running test: growBodyDefTektonSuccess");
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Van-e mar test a tektonon? (y/n)");
+        char key = scanner.next().charAt(0);
+        species.addThread(thread);
+        tekton1.addThread(thread);
+        FungusThread thread2 = new FungusThread(5,false);
+        thread.addTekton(tekton1);
+        species.addThread(thread2);
+        thread.addTekton(neighborTekton);
+        thread2.addTekton(tekton1);
+        tekton1.addThread(thread2);
+
+        if(key== 'y'){
+            FungusBody body2 = new FungusBody(10, 5);
+            tekton1.setBody(body2);
+            species.growBody(thread2);    
+        }
+        else if(key == 'n'){
+            System.out.println("Van a tektonon elég spóra?(y/n)");
+            char key2 = scanner.next().charAt(0);
+            if(key2 == 'y'){
+                tekton1.addSpore(spore1);
+                tekton1.addSpore(spore2);
+                species.growBody(thread2);
+            }
+            else if(key2=='n'){
+                species.growBody(thread2);
+            }
+        }
 
     }
 
     public void growThreadOneThreadTektonSuccess() {
         System.out.println("Running test: growThreadOneThreadTektonSuccess");
+        
     }
 
     public void growThreadDefTekton() {
