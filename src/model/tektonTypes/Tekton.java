@@ -23,7 +23,7 @@ public class Tekton{
         this.spores = new ArrayList<>();
         this.insects = new ArrayList<>();
         this.threads = new ArrayList<>();
-        this.body = new FungusBody(null, null);
+        this.body = null;
         this.neighbours = new ArrayList<>();
     }
 
@@ -76,8 +76,15 @@ public class Tekton{
         threads.remove(thread);
     }
 
-    public void setBody(FungusBody body) {
-        this.body = body;
+    public void setBody(FungusBody nbody) {
+        if(nbody == null)
+            body=null;
+        else if(body == null){
+            this.body = nbody;
+        }
+        else
+            System.out.println("Már van a tektonon gombatest");
+        
     }
 
     public FungusBody getBody() {

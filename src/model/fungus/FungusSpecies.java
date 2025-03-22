@@ -76,20 +76,19 @@ public class FungusSpecies implements iControl{
         if (thread.isBridge()) {
             return;
         }
-        Integer atleast = 3;
-        if (thread.getTekton().isThereEnoughSpore(atleast)){
+        Integer atleast = 2;
+        boolean enoughSpore=thread.getTekton().isThereEnoughSpore(atleast);
+        if (enoughSpore){
             FungusBody fb= new FungusBody(null, null);
             thread.getTekton().setBody(fb);
             for (Integer i =  0; i < atleast; i++) {
                 thread.getTekton().removeSpore();
             }
             fb.setTekton(thread.getTekton());
-            fb.addThread(thread);}
-    }
-
-    public void destroyBody(FungusBody body){
-        // implementáció
-        
+            fb.addThread(thread);
+        }
+        else
+            System.out.println("Nincs elegendo spóra");
     }
 
     // iControl interface
