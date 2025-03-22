@@ -19,10 +19,6 @@ public class FungusSpecies implements iControl{
         return score;
     }
 
-    /*public void setScore(Integer score) {               // ? Biztos hogy kell ez a setter? nem jobb lenne a score-t növelni vagy csökkenteni simán interface?
-        this.score = score;
-    }*/
-
     public List<FungusBody> getBodies() {
         return bodies;
     }
@@ -85,6 +81,7 @@ public class FungusSpecies implements iControl{
                 thread.getTekton().removeSpore();
             }
             fb.setTekton(thread.getTekton());
+
             fb.addThread(thread);
         }
         else
