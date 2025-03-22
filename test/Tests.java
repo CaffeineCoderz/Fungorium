@@ -1,12 +1,26 @@
 package test;
 
-import fungus.*;
+import fungus.FungusBody;
+import fungus.FungusThread;
 import insect.Insect;
 import java.util.Scanner;
-import sporeTypes.*;
-import tektonTypes.*;
+import logic.GameLogic;
+import sporeTypes.Spore;
+import tektonTypes.DecreasingTekton;
+import tektonTypes.Tekton;
 
 public class Tests {
+    
+    private Tekton tekton1;
+    private DecreasingTekton Dtekton;
+    private Tekton neighborTekton;
+    private Spore spore1;
+    private Spore spore2;
+    private Spore spore3;
+    private FungusBody body;
+    private FungusThread thread;
+
+
     public static void displayTests() {
         System.out.println(
             "/-----------------------------------------------------------\\\n" +
@@ -34,6 +48,44 @@ public class Tests {
             "\\-----------------------------------------------------------/\n"
         );
     }
+    public void setup(){
+        GameLogic gameLogic = new GameLogic();
+
+        System.out.println("Fungorium szimuláció elindult!");
+        // Initialize a Tekton object
+        tekton1 = new Tekton(true, true);
+        System.out.println("Tekton initialized: " + tekton1);
+
+        // Initialize a DecreasingTekton object
+        DecreasingTekton decreasingTekton = new DecreasingTekton();
+        System.out.println("DecreasingTekton initialized: " + decreasingTekton);
+
+        // Add some spores to the Tekton
+        spore1 = new Spore();
+        spore2 = new Spore();
+        tekton1.addSpore(spore1);
+        tekton1.addSpore(spore2);
+        System.out.println("Spores added to Tekton: " + tekton1.getSpores().size());
+
+        // Add an insect to the Tekton
+        Insect insect = new Insect();
+        tekton1.addInsect(insect);
+        System.out.println("Insect added to Tekton: " + tekton1.hasInsect());
+
+        // Add a neighbor Tekton
+        neighborTekton = new Tekton(false, true);
+        tekton1.addNeighbour(neighborTekton);
+        System.out.println("Neighbor Tekton added: " + tekton1.getNeighbours().size());
+
+        // Add a thread and body to the Tekton
+        thread = new FungusThread(15, true); 
+        thread.addTekton(tekton1); 
+        body = new FungusBody(10, 5); 
+        body.addThread(thread); 
+        body.setTekton(tekton1);
+        tekton1.addThread(thread);
+        tekton1.setBody(body);
+    }
 
     public static void getUserInput() {
         Scanner scanner = new Scanner(System.in);
@@ -48,7 +100,7 @@ public class Tests {
         
     // }
 
-    /* 
+    
     private void executeTestCase(int testCase) {
         switch (testCase) {
             case 1:
@@ -88,10 +140,6 @@ public class Tests {
                 insectMoveWhileStunned();
                 break;
             case 13:
-                growBodyDefTektonUnSuccessNotEnoughSpare();
-                break;
-            case 14:
-                growBodyDefTektonUnSuccessAlreadyBody();
                 break;
             case 15:
                 growThreadDecomposingTektor();
@@ -112,26 +160,18 @@ public class Tests {
                 insectMoveUnsuccess();
                 break;
             case 50:
-                exitTests();
+                //exitTests();
                 break;
             default:
                 System.out.println("Invalid test case number.");
                 break;
         }
     }
-    */
+    
 
-    public void growBodyDefTekton() {
+    public void growBodyDefTektonSuccess() {
         System.out.println("Running test: growBodyDefTektonSuccess");
-        System.out.println("Van már gombatest a tektonon? (y/n)");
-        Scanner scanner = new Scanner(System.in);
-        char c = scanner.next().charAt(0);
-        switch(c){
-            case 'y':
-                // tekton.addBody();
-                break;
 
-        }
     }
 
     public void growThreadOneThreadTektonSuccess() {
@@ -178,14 +218,6 @@ public class Tests {
         System.out.println("Running test: insectMoveWhileStunned");
     }
 
-    public void growBodyDefTektonUnSuccessNotEnoughSpare() {
-        System.out.println("Running test: growBodyDefTektonUnSuccessNotEnoughSpare");
-    }
-
-    public void growBodyDefTektonUnSuccessAlreadyBody() {
-        System.out.println("Running test: growBodyDefTektonUnSuccessAlreadyBody");
-    }
-
     public void growThreadDecomposingTektor() {
         System.out.println("Running test: growThreadDecomposingTektor");
     }
@@ -210,49 +242,13 @@ public class Tests {
         System.out.println("Running test: insectMoveUnsuccess");
     }
 
-    public static void setup(){
-        System.out.println("Fungorium szimuláció elindult!");
-        // Initialize a Tekton object
-        Tekton tekton = new Tekton(true, true);
-        System.out.println("Tekton initialized: " + tekton);
-
-        // Initialize a DecreasingTekton object
-        DecreasingTekton decreasingTekton = new DecreasingTekton();
-        System.out.println("DecreasingTekton initialized: " + decreasingTekton);
-
-        // Add some spores to the Tekton
-        Spore spore1 = new Spore();
-        Spore spore2 = new Spore();
-        tekton.addSpore(spore1);
-        tekton.addSpore(spore2);
-        System.out.println("Spores added to Tekton: " + tekton.getSpores().size());
-
-        // Add an insect to the Tekton
-        Insect insect = new Insect();
-        tekton.addInsect(insect);
-        System.out.println("Insect added to Tekton: " + tekton.hasInsect());
-
-        // Add a neighbor Tekton
-        Tekton neighborTekton = new Tekton(false, true);
-        tekton.addNeighbour(neighborTekton);
-        System.out.println("Neighbor Tekton added: " + tekton.getNeighbours().size());
-
-        // Add a thread and body to the Tekton
-        FungusThread thread = new FungusThread(15, true); // Initialize with lifeSpan = 15, bridge = true
-        thread.addTekton(tekton); // Associate the thread with the Tekton
-        FungusBody body = new FungusBody(10, 5); // Initialize with sporeCount = 10, sporulateLeft = 5
-        body.addThread(thread); // Add the thread to the FungusBody
-        body.setTekton(tekton); // Associate the FungusBody with the Tekton
-        tekton.addThread(thread);
-        tekton.setBody(body);
-        System.out.println("Thread and Body added to Tekton: " + tekton.getThreads().size() + ", " + 1);
-    }
-
     public static void main(String[] args) {
-        Tests tests = new Tests();
-        setup();
+        
         displayTests();
         getUserInput();
+        
+
+        Tests tests = new Tests();
 
         System.out.println("Starting all tests...");
 
