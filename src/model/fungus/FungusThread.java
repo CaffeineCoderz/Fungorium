@@ -2,26 +2,23 @@ package fungus;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.text.html.ListView;
-
 import tektonTypes.Tekton;
 
 //! NEM TELJES IMPLEMENTÁCIÓ MÉG
 public class FungusThread {
-    private int lifeSpan;
-    private boolean bridge;
-    private boolean isDying;
+    private Integer lifeSpan;
+    private Boolean bridge;
+    private Boolean isDying;
     private List<Tekton> tektons;
 
-    public FungusThread(int lifeSpan, boolean bridge) {
+    public FungusThread(Integer lifeSpan, Boolean bridge) {
         this.lifeSpan = lifeSpan;
         this.bridge = bridge;
         this.isDying = false;
         this.tektons = new ArrayList<>();
     }
 
-    public boolean isBridge() {
+    public Boolean isBridge() {
         return bridge;
     }
 
@@ -36,11 +33,11 @@ public class FungusThread {
         tektons.add(tekton);
     }
 
-    public void setBridge(boolean bridge) {
+    public void setBridge(Boolean bridge) {
         this.bridge = bridge;
     }
 
-    public boolean isDying() {
+    public Boolean setIsDying() {
         return isDying;
     }
 

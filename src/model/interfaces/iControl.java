@@ -5,5 +5,5 @@ public interface iControl {
 
     void decreaseScore(Integer x);
 
-    void timeElapsed(int Round);
+    void timeElapsed(Integer Round);
 }
