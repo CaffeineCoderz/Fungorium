@@ -1,5 +1,7 @@
 package pkg.utils;
 import java.util.HashMap;
+package pkg.utils;
+import java.util.HashMap;
 import java.util.Scanner;
 
 /**
