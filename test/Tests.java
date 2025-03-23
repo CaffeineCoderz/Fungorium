@@ -28,6 +28,10 @@ public class Tests {
     private Insect insect;
 
 
+    /**
+     * Prints out all the test cases that can be run. The numbers in the menu
+     * correspond to the numbers in the switch statement in the main method.
+     */
     public static void displayTests() {
         System.out.println(
             "/-----------------------------------------------------------\\\n" +
@@ -55,6 +59,12 @@ public class Tests {
             "\\-----------------------------------------------------------/\n"
         );
     }
+    /**
+     * Sets up the test environment by creating a GameLogic object, a Tekton, a
+     * DecreasingTekton, adding some spores to the Tekton, adding an insect to the
+     * Tekton, adding a neighbor Tekton to the Tekton, and adding a thread and body
+     * to the Tekton.
+     */
     public void setup(){
         GameLogic gameLogic = new GameLogic();
 
@@ -98,6 +108,18 @@ public class Tests {
     // }
 
     
+    /**
+     * Executes a test case based on the provided test case number.
+     * 
+     * Given a test case number, this method calls the corresponding test method.
+     * The switch statement maps test case numbers to their respective methods,
+     * allowing different tests to be run based on the input.
+     * 
+     * @param testCase the number representing the test case to execute. If the 
+     * number does not correspond to a valid test case, a message indicating 
+     * an invalid test case number is printed.
+     */
+
     private void executeTestCase(int testCase) {
         switch (testCase) {
             case 1:
