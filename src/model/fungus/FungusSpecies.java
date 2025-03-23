@@ -84,13 +84,13 @@ public class FungusSpecies implements iControl{
      * @param body the FungusBody instance to which the FungusThread will be added.
      * @param thread the FungusThread instance to add.
      */
-    public void growThread(FungusBody body, FungusThread thread) {             // ? Kell ide valszeg FungusThread, FungusBody paraméter ?
+    public void growThread(Tekton targetTekton, FungusThread oThread, FungusThread nThread) {             // ? Kell ide valszeg FungusThread, FungusBody paraméter ?
         // implementáció
-        while(body.getTekton().canGrowThread()){
-            addThread(thread);
-            thread.addTekton(body.getTekton());
-            body.getTekton().addThread(thread);
-            body.addThread(thread);
+        if(targetTekton.canGrowThread()){
+            addThread(nThread);
+            nThread.addTekton(targetTekton);
+            targetTekton.addThread(nThread);
+            oThread.setNextThread(nThread);      
         }
     }
     
@@ -134,6 +134,8 @@ public class FungusSpecies implements iControl{
         }
         Integer atleast = 2;
         boolean enoughSpore=thread.getTekton().isThereEnoughSpore(atleast);
+        if(!thread.getTekton().canGrowBody())
+            return;
         if (enoughSpore){
             FungusBody fb= new FungusBody(null, null);
             thread.getTekton().setBody(fb);
