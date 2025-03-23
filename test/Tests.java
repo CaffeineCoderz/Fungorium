@@ -296,6 +296,15 @@ public class Tests {
 
     public void insectCutThreadWhileNoCutAbility() {
         System.out.println("Running test: insectCutThreadWhileNoCutAbility");
+        insect.move(thread);
+        insect.disableCut();
+        FungusThread thread2 = new FungusThread(5,false);
+        tekton1.addThread(thread2);
+        insect.cut(thread2);
+        if(tekton1.getThreads().contains(thread2))
+            System.out.println("A fonál elvágása sikertelen a hatás miatt");
+        else
+            System.out.println("A hatás nem gátolta a fonálvágást");
     }
 
     public void growBodyOnlyThreadTekton() {
