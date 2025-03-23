@@ -17,4 +17,14 @@ public class OnlyThreadTekton extends Tekton{
     public void setBody(FungusBody fb) {
         // Do nothing, as OnlyThreadTekton should not add bodies
     }
+    
+    /**
+     * Does nothing, as OnlyThreadTekton doesn't allow to grow body on it.
+     * 
+     * @param canGrowBody 
+     */
+    @Override
+    public void setGrowBody(Boolean canGrowBody){
+        //Do nothing, as OnlyThreadTekton not allows bodies to grow on it.
+    }
 }

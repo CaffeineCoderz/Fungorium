@@ -3,9 +3,10 @@ package tektonTypes;
 import fungus.FungusBody;
 import fungus.FungusThread;
 import insect.Insect;
+
+import sporeTypes.Spore;
 import java.util.ArrayList;
 import java.util.List;
-import sporeTypes.Spore;
     // ! NEM TELJES IMPLEMENTÁCIÓ MÉG
 
 public class Tekton{
@@ -138,7 +139,7 @@ public class Tekton{
             this.body = nbody;
         }
         else
-            System.out.println("Már van a tektonon gombatest");
+            System.out.println("Mar van a tektonon gombatest");
         
     }
 
@@ -167,15 +168,6 @@ public class Tekton{
      */
     public List<Spore> getSpores() {
         return spores;
-    }
-
-    /**
-     * Checks if there is at least one insect on this Tekton.
-     * 
-     * @return true if there is at least one insect on this Tekton, false otherwise.
-     */
-    public Boolean hasInsect() {
-        return !insects.isEmpty();
     }
 
     /**
