@@ -7,7 +7,7 @@ import insect.Insect;
 import sporeTypes.Spore;
 import java.util.ArrayList;
 import java.util.List;
-    // ! NEM TELJES IMPLEMENTÁCIÓ MÉG
+    // ! NEM TELJES IMPLEMENTACIO MEG
 import utils.Logger;
 public class Tekton{
     private Boolean canGrowBody;
