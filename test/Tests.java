@@ -82,7 +82,7 @@ public class Tests {
 
         // Add an insect to the Tekton
         Insect insect = new Insect();
-        System.out.println("Insect added to Tekton: " + tekton1.hasInsect());
+        System.out.println("Insect added to Tekton: " + tekton1.insectFree());
 
         // Add a neighbor Tekton
         neighborTekton = new Tekton(false, true);
