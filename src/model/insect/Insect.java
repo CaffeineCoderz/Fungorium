@@ -37,6 +37,10 @@ public class Insect implements iControl{
      * Sets the effect of the insect to STUN.
      * This prevents the insect from performing actions like moving.
      */
+
+    public InsectEffects gEffect(){
+        return effect;
+    }
     public void stun(){
         effect = InsectEffects.STUN;
     }

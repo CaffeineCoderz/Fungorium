@@ -91,6 +91,8 @@ public class FungusBody {
             }
         sporulateLeft--;
         }
+        else
+            System.err.println("A gombatest még nem tud spórát szórni.");
     }
 
     /**
