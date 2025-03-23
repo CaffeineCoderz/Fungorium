@@ -5,7 +5,7 @@ import fungus.FungusSpecies;
 import fungus.FungusThread;
 import insect.Insect;
 import java.util.Scanner;
-import logic.GameLogic;
+import pkg.logic.GameLogic;
 import sporeTypes.FastSpore;
 import sporeTypes.Spore;
 import sporeTypes.StunSpore;

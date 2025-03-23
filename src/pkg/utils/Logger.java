@@ -1,6 +1,6 @@
-package utils;
-import java.util.Scanner;
+package pkg.utils;
 import java.util.HashMap;
+import java.util.Scanner;
 
 
 public class Logger{
