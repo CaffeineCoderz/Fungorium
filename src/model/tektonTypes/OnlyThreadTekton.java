@@ -8,6 +8,11 @@ public class OnlyThreadTekton extends Tekton{
         super(false, true);
     }
     
+    /**
+     * Does nothing, as OnlyThreadTekton should not add bodies.
+     * 
+     * @param fb the FungusBody to be set, which is ignored.
+     */
     @Override
     public void setBody(FungusBody fb) {
         // Do nothing, as OnlyThreadTekton should not add bodies

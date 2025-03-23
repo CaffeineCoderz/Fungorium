@@ -8,6 +8,12 @@ public class DecomposingTekton extends Tekton{
         super(true, true);
     }
 
+    /**
+     * Adds a FungusThread instance to the list of threads associated with this DecomposingTekton.
+     * 
+     * When a FungusThread is added to this DecomposingTekton, it automatically decreases the life span of the thread by one.
+     * @param t the FungusThread instance to add to the list of associated threads.
+     */
     @Override
     public void addThread(FungusThread t){
         
