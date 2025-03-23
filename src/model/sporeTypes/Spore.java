@@ -32,7 +32,7 @@ public class Spore {
      * Akkor hívódik meg, amikor a spórát egy (paraméterben megadott) rovar elfogyasztja. A rovarnak kiosztja a saját effektjét.
      * @param insect Az a rovar, ami el akarja fogyasztani
      */
-    public void consume(Insect insect){ // ? Ebben legyen a pontszám hozzáadás?
+    public void consume(Insect insect){
         absorbed();
     }
 
