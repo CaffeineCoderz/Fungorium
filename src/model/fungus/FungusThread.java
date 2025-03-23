@@ -12,12 +12,40 @@ public class FungusThread {
     private List<Tekton> tektons;
     private FungusSpecies species;
 
+    private FungusThread prevThread;
+    private FungusThread nextThread;
+
     public FungusThread(Integer lifeSpan, Boolean bridge) {
         this.lifeSpan = lifeSpan;
         this.bridge = bridge;
         this.isDying = false;
         this.species = null;
         this.tektons = new ArrayList<>();
+        prevThread = null;
+        nextThread = null;
+    }
+
+    public FungusThread(Integer lifeSpan, Boolean bridge, FungusThread prev) {
+        this.lifeSpan = lifeSpan;
+        this.bridge = bridge;
+        this.isDying = false;
+        this.species = null;
+        this.tektons = new ArrayList<>();
+        prevThread = prev;
+        nextThread = null;
+    }
+
+    public void setPrevThread(FungusThread f){
+        prevThread = f;
+    }
+    public void setNextThread(FungusThread f){
+        nextThread = f;
+    }
+    public FungusThread getPrev(){
+        return prevThread;
+    }
+    public FungusThread getNext(){
+        return nextThread;
     }
 
     /**

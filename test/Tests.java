@@ -225,7 +225,7 @@ public class Tests {
                     System.out.println("Sikeres testnövesztés");
                 }
             }
-            else if(key2=='n'){
+            else if(key2=="n"){
                 species.growBody(thread2);
                 if(tekton1.getBody()== null){
                     System.out.println("Sikertelen testnövesztés");
@@ -292,7 +292,6 @@ public class Tests {
         Spore sSpore = new SlowSpore();
         insect.consumeSpore(sSpore);
         sSpore.consume(insect);
-        //!Enum typeot itt hogyan kellene összehasonlítani?
         if(/*insect.gEffect()==SLOW*/false){
             System.out.println("Slow Spóra elfogyasztva, hatott a rovarra");
         }
