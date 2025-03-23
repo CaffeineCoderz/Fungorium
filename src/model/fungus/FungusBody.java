@@ -85,12 +85,27 @@ public class FungusBody {
     public void sporulate() {
         // implementáció
         if(isThereEnough()){
-            for(Tekton t : tekton.getNeighbours()){
-                Spore tempSpore = new Spore();
-                t.addSpore(tempSpore);
-                tempSpore.setTekton(t);
-                sporeCount--;
+            if(sporeCount<10){
+                for(Tekton t : tekton.getNeighbours()){
+                    Spore tempSpore = new Spore();
+                    t.addSpore(tempSpore);
+                    tempSpore.setTekton(t);
+                }
             }
+            else
+                {
+                    for(Tekton t : tekton.getNeighbours()){
+                        Spore tempSpore = new Spore();
+                        t.addSpore(tempSpore);
+                        tempSpore.setTekton(t);
+                        sporeCount--;
+                        for(Tekton tt: t.getNeighbours()){
+                            Spore tempSpore2 = new Spore();
+                            t.addSpore(tempSpore2);
+                            tempSpore2.setTekton(t);
+                        }
+                    }
+                }
         sporulateLeft--;
         }
         else

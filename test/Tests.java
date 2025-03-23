@@ -87,7 +87,7 @@ public class Tests {
 
         // Add a thread and body to the Tekton
         thread = new FungusThread(15, true); 
-        body = new FungusBody(10, 5); 
+        body = new FungusBody(9, 5); 
     }
 
     /**
@@ -250,15 +250,44 @@ public class Tests {
 
     public void growThreadOneThreadTektonSuccess() {
         System.out.println("Running test: growThreadOneThreadTektonSuccess");
+        String key = log.askQ("Van-e mar fonal a tektonon? (y/n)", true);
+        OnlyThreadTekton oTekton = new OnlyThreadTekton();
+        if(key=="n"){
+            FungusThread thread2 = new FungusThread(5, false, thread);
+            species.growThread(oTekton, thread, thread2);
+        }
         
     }
 
     public void growThreadDefTekton() {
         System.out.println("Running test: growThreadDefTekton");
+        FungusThread thread2 = new FungusThread(10, false, thread);
+        species.growThread(tekton1, thread, thread2);
+        if(!tekton1.getThreads().isEmpty()){
+            System.out.println("Sikeres fonálnövesztés");
+        }
+        
     }
 
     public void insectMoveToNewTektonSuccess() {
         System.out.println("Running test: insectMoveToNewTektonSuccess");
+        tekton1.addThread(thread);
+        neighborTekton.addThread(thread);
+        FungusThread thread2 = new FungusThread(5, false, thread);
+        FungusThread thread3 = new FungusThread(5, false);
+        neighborTekton.addThread(thread3);
+        tekton1.addThread(thread2);
+        thread.setPrevThread(thread3);
+        insect.setThread(thread3);
+        insect.setRecentTekton(neighborTekton);
+        insect.move(thread);
+        if(insect.getRecent()==null){
+            System.out.println("A rovar bridgre lépett, nem tartózkodik tektonon");
+        }
+        insect.move(thread2);
+        if(insect.getRecent()==tekton1){
+            System.out.println("A rovar sikeresen új tektonra mozgott.");
+        }
     }
 
     public void sporulateSuccess() {
@@ -342,11 +371,9 @@ public class Tests {
             System.out.println("Nincs elég Spore a FungusBody növesztéshez!");
             return;
         }
-        //!Az Onlythreaden nem lehet sikeres a testnövesztés
         species.growBody(thread);
         temp.setBody(body);
-        System.out.println("FungusBody: OnlyThreadTekton hozzáadása sikeres!");
-        System.out.println("FungusBody növesztése sikeres!");
+        
     }
 
     public void insectCutThread() {
@@ -400,14 +427,11 @@ public class Tests {
         thread.addTekton(dt);
         dt.addThread(thread);
         System.out.println("FungusThread hozzáadva a DecomposingTektonhoz: " + dt.getThreads().size());
-        if (dt.getSpores().size() < 3) {
-            System.out.println("Nincs elég Spore a FungusBody növesztéshez!");
-            return;
+        if(thread.getIsDying()){
+            System.out.println("A fonál haldoklik.");
         }
-        species.growThread(body, thread);
-        dt.setBody(body);
-        System.out.println("FungusBody: DecomposingTekton hozzáadása sikeres!");
-        System.out.println("FungusBody növesztése sikeres!");
+        else
+            System.out.println("Nem sikerült a fonál haldoklását előidéznie a tektonnak.");
     }
 
     public void insectMoveSuccess() {
@@ -436,11 +460,12 @@ public class Tests {
         Tekton tekton2 = new Tekton(true, true);
         Tekton tekton3 = new Tekton(true, true);
         tekton1.addNeighbour(tekton2);
-        tekton1.addNeighbour(tekton3);
-        body.setTekton(tekton3);
-        body.produceSpore();
-        body.sporulate();
-        if(tekton1.getSpores().size() == 0) {
+        tekton2.addNeighbour(tekton3);
+        FungusBody body2 = new FungusBody(11, 5);
+        body2.setTekton(tekton3);
+        body2.produceSpore();
+        body2.sporulate();
+        if(tekton3.getSpores().size() == 0) {
             System.out.println("Nem sikerült a SporulateFurther!");
             return;
         }
@@ -448,11 +473,6 @@ public class Tests {
             System.out.println("Test: SporulateFurther sikeres!");
         }
         
-    }
-
-    public void insectMoveUnsuccess() {
-        System.out.println("Running test: insectMoveUnsuccess");
-
     }
 
     public static void main(String[] args) {

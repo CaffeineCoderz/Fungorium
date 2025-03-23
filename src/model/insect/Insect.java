@@ -117,10 +117,13 @@ public class Insect implements iControl{
         if(effect != InsectEffects.STUN){
            if(ft.isBridge()) {
                 recentTekton.removeInsect(this);
-                ft.getTekton().addInsect(this);
-                recentTekton = ft.getTekton();
+                recentTekton= null;
+                return;    
            }
-           thread = ft;
+           else
+                recentTekton = ft.getTekton();
+                ft.getTekton().addInsect(this);
+                thread = ft;
         }
     }
 
@@ -202,5 +205,11 @@ public class Insect implements iControl{
                 i.effect = InsectEffects.NORMAL;
             }
         }
+    }
+    public void setThread(FungusThread t){
+        thread= t;
+    }
+    public Tekton getRecent(){
+        return recentTekton;
     }
 }
