@@ -6,7 +6,9 @@ import fungus.FungusThread;
 import insect.Insect;
 import java.util.Scanner;
 import logic.GameLogic;
+import sporeTypes.DisableCutSpore;
 import sporeTypes.FastSpore;
+import sporeTypes.SlowSpore;
 import sporeTypes.Spore;
 import sporeTypes.StunSpore;
 import tektonTypes.DecomposingTekton;
@@ -269,10 +271,27 @@ public class Tests {
 
     public void disableCutSporeConsumed() {
         System.out.println("Running test: disableCutSporeConsumed");
+        Spore dcSpore = new DisableCutSpore();
+        insect.consumeSpore(dcSpore);
+        dcSpore.consume(insect);
+        if(!insect.hasCutAbility()){
+            System.out.println("Disable Cut Spóra elfogyasztva, hatott a rovarra");
+        }
+        else
+            System.out.println("Disable cut spóra hatása nem lépett érvénybe");
     }
 
     public void slowSporeConsumed() {
         System.out.println("Running test: slowSporeConsumed");
+        Spore sSpore = new SlowSpore();
+        insect.consumeSpore(sSpore);
+        sSpore.consume(insect);
+        //!Enum typeot itt hogyan kellene összehasonlítani?
+        if(/*insect.gEffect()==SLOW*/false){
+            System.out.println("Slow Spóra elfogyasztva, hatott a rovarra");
+        }
+        else
+            System.out.println("Slow spóra hatása nem lépett érvénybe");
     }
 
     public void insectCutThreadWhileNoCutAbility() {
