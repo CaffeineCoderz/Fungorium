@@ -5,7 +5,7 @@ import sporeTypes.Spore;
 import tektonTypes.Tekton;
 import utils.Logger;
 
-//! NEM TELJES IMPLEMENTÁCIÓ MÉG
+//! NEM TELJES IMPLEMENTACIO MEG
 public class FungusBody {
     private Integer sporeCount;
     private Integer sporulateLeft;

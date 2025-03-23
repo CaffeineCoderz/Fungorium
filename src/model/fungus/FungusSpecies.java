@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import tektonTypes.Tekton;
 
-//! NEM TELJES IMPLEMENTÁCIÓ MÉG
+//! NEM TELJES IMPLEMENTACIO MEG
 public class FungusSpecies implements iControl{
     private Integer score;
     private List<FungusBody> bodies;

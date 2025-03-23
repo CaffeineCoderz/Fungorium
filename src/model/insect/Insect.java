@@ -4,10 +4,7 @@ import fungus.FungusThread;
 import interfaces.iControl;
 import sporeTypes.Spore;
 import tektonTypes.Tekton;
-
-enum InsectEffects{
-    NORMAL, STUN, NO_CUT, FAST, SLOW
-}
+import insect.InsectEffects;
 
 public class Insect implements iControl{
     private Integer movingEffectTimer;
