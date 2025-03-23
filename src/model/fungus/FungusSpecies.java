@@ -10,9 +10,16 @@ public class FungusSpecies implements iControl{
     private List<FungusBody> bodies;
     private List<FungusThread> threads;
 
+    public FungusSpecies() {
+        this.score = 0;
+        this.bodies = new ArrayList<>();
+        this.threads = new ArrayList<>();
+    }
+
     public FungusSpecies(Integer score) {
         this.score = score;
         this.bodies = new ArrayList<>();
+        this.threads = new ArrayList<>();
     }
 
     /**
