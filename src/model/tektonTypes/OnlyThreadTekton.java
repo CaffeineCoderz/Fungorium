@@ -1,15 +1,33 @@
 package tektonTypes;
 
 import fungus.FungusBody;
+import utils.*;
 
 public class OnlyThreadTekton extends Tekton{
-
     public OnlyThreadTekton() {
         super(false, true);
+        log = Logger.getLogger("OnlyThreadTektonLogger");
     }
     
+    /**
+     * Does nothing, as OnlyThreadTekton should not add bodies.
+     * 
+     * @param fb the FungusBody to be set, which is ignored.
+     */
     @Override
-    public void addBody(FungusBody fb) {
+    public void setBody(FungusBody fb) {
+        log.askQ("Do nothing, as OnlyThreadTekton should not add bodies", false);
         // Do nothing, as OnlyThreadTekton should not add bodies
+    }
+    
+    /**
+     * Does nothing, as OnlyThreadTekton doesn't allow to grow body on it.
+     * 
+     * @param canGrowBody 
+     */
+    @Override
+    public void setGrowBody(Boolean canGrowBody){
+        log.askQ("Do nothing, as OnlyThreadTekton should not add bodies", false);
+        //Do nothing, as OnlyThreadTekton not allows bodies to grow on it.
     }
 }

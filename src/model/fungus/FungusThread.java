@@ -6,22 +6,43 @@ import tektonTypes.Tekton;
 
 //! NEM TELJES IMPLEMENTÁCIÓ MÉG
 public class FungusThread {
-    private int lifeSpan;
-    private boolean bridge;
-    private boolean isDying;
+    private Integer lifeSpan;
+    private Boolean bridge;
+    private Boolean isDying;
     private List<Tekton> tektons;
+    private FungusSpecies species;
 
-    public FungusThread(int lifeSpan, boolean bridge) {
+    public FungusThread(Integer lifeSpan, Boolean bridge) {
         this.lifeSpan = lifeSpan;
         this.bridge = bridge;
         this.isDying = false;
+        this.species = null;
         this.tektons = new ArrayList<>();
     }
 
-    public boolean isBridge() {
+    /**
+     * Checks if this FungusThread is a bridge.
+     * 
+     * @return true if this FungusThread is marked as a bridge, false otherwise.
+     */
+    public Boolean isBridge() {
         return bridge;
     }
 
+    /**
+     * Gets the FungusSpecies that this fungus thread is part of.
+     * @return the FungusSpecies that this fungus thread is part of.
+     */
+    public FungusSpecies getSpecies(){
+        return species;
+    }
+    
+    /**
+     * Decreases the life span of this fungus thread by one.
+     * 
+     * If the life span of this fungus thread reaches zero, this method sets the
+     * isDying flag of this fungus thread to true.
+     */
     public void decreaseLife() {
         lifeSpan--;
         if (lifeSpan <= 0) {
@@ -29,29 +50,73 @@ public class FungusThread {
         }
     }
 
+    /**
+     * Adds a Tekton to the list of Tektons associated with this FungusThread.
+     * 
+     * @param tekton the Tekton to add to the list of associated Tektons.
+     */
     public void addTekton(Tekton tekton) {
         tektons.add(tekton);
     }
 
-    public void setBridge(boolean bridge) {
+    /**
+     * Sets the bridge flag of this fungus thread to the given value.
+     * @param bridge true if this fungus thread should be marked as a bridge, false otherwise.
+     */
+    public void setBridge(Boolean bridge) {
         this.bridge = bridge;
     }
 
-    public boolean isDying() {
+    /**
+     * Sets the isDying flag of this fungus thread to the given value.
+     * 
+     * @param isDying true if this fungus thread should be marked as dying, false otherwise.
+     */
+    public void setIsDying(Boolean isDying) {
+        this.isDying = isDying;
+    }
+
+    /**
+     * Retrieves the value of the isDying flag of this fungus thread.
+     * 
+     * @return true if this fungus thread is marked as dying, false otherwise.
+     */
+    public Boolean getIsDying() {
         return isDying;
     }
 
+    /**
+     * Retrieves the current life span of this fungus thread.
+     * 
+     * @return the number of rounds this fungus thread will live.
+     */
+    public Integer getLifeSpan() {
+        return lifeSpan;
+    }
+
+    /**
+     * Retrieves the first Tekton associated with this fungus thread.
+     * 
+     * Note that this method does not check if the returned Tekton is the
+     * only one associated with this fungus thread. If this fungus thread
+     * is a bridge, this method will return one of the two associated Tektons.
+     * @return the first Tekton associated with this fungus thread.
+     */
     public Tekton getTekton() {
-        // ! implementáció
-        return null;
+        return tektons.get(0);
     }
 
-    public void growBody() {
-        // ! Implementáció
-    }
-
+    /**
+     * Destroys this FungusThread by removing it from all associated Tekton instances.
+     *
+     * This method iterates through the list of Tektons associated with this FungusThread,
+     * and calls the removeThread method on each, effectively dissociating this FungusThread
+     * from all Tektons it was previously linked to.
+     */
     public void destroy() {
-        // ! Implementáció 
+        for (Tekton tekton : tektons) {
+            tekton.removeThread(this);
+        }
     }
 
 }
