@@ -17,6 +17,8 @@ import tektonTypes.Tekton;
 public class Tests {
     
     private Tekton tekton1;
+    private Tekton tekton2;
+    private Tekton tekton3;
     private DecreasingTekton Dtekton;
     private Tekton neighborTekton;
     private Spore spore1;
@@ -277,7 +279,6 @@ public class Tests {
 
     public void insectCutThread() {
         System.out.println("Running test: insectCutThread");
-        Tekton tekton2 = new Tekton(true, true);
         tekton1.addInsect(insect);
         insect.setRecentTekton(tekton1);
         tekton1.addThread(thread);
@@ -298,7 +299,6 @@ public class Tests {
 
     public void insectMoveWhileStunned() {
         System.out.println("Running test: insectMoveWhileStunned");
-        Tekton tekton2 = new Tekton(true, true);
         tekton1.addInsect(insect);
         insect.setRecentTekton(tekton1);
         tekton1.addThread(thread);
@@ -364,8 +364,6 @@ public class Tests {
 
     public void sporulateFurther() {
         System.out.println("Running test: sporulateFurther");
-        Tekton tekton2 = new Tekton(true, true);
-        Tekton tekton3 = new Tekton(true, true);
         tekton1.addNeighbour(tekton2);
         tekton1.addNeighbour(tekton3);
         body.setTekton(tekton3);
