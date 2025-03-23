@@ -3,6 +3,8 @@ import java.util.ArrayList;
 import java.util.List;
 import sporeTypes.Spore;
 import tektonTypes.Tekton;
+import utils.Logger;
+
 //! NEM TELJES IMPLEMENTÁCIÓ MÉG
 public class FungusBody {
     private Integer sporeCount;
