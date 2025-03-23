@@ -1,6 +1,6 @@
 package tektonTypes;
 
-import utils.*;
+import utils.Logger;
 
 import fungus.FungusThread;
 

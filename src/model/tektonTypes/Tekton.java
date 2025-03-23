@@ -246,8 +246,6 @@ public class Tekton{
     public List<Tekton> getNeighbours() {
         return neighbours;
     }
-
-    // ! Not implemented yet
     
     /**
      * Breaks this Tekton into two smaller Tekton objects, removing all associations
