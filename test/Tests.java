@@ -214,9 +214,15 @@ public class Tests {
                 tekton1.addSpore(spore1);
                 tekton1.addSpore(spore2);
                 species.growBody(thread2);
+                if(tekton1.getBody()!=null){
+                    System.out.println("Sikeres testnövesztés");
+                }
             }
             else if(key2=='n'){
                 species.growBody(thread2);
+                if(tekton1.getBody()== null){
+                    System.out.println("Sikertelen testnövesztés");
+                }
             }
         }
 
@@ -237,6 +243,28 @@ public class Tests {
 
     public void sporulateSuccess() {
         System.out.println("Running test: sporulateSuccess");
+        FungusThread thread2 = new FungusThread(5,false);
+        tekton1.addThread(thread2);
+        
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Tud éppen spórát szórni a gombatest? (y/n)");
+        char key = scanner.next().charAt(0);
+        switch(key){
+            case 'y':
+            tekton1.setBody(body);
+            tekton1.getBody().sporulate();
+            if(!neighborTekton.getSpores().isEmpty()){
+                System.out.println("Sikeres spóraszórás");
+            }
+            break;
+            case 'n':
+                FungusBody body2 = new FungusBody(0,3);
+                tekton1.setBody(body2);
+                tekton1.getBody().sporulate();
+                if(neighborTekton.getSpores().isEmpty()){
+                    System.out.println("A spóraszórás sikertelen.");
+                }
+        } 
     }
 
     public void disableCutSporeConsumed() {
@@ -269,6 +297,7 @@ public class Tests {
             System.out.println("Nincs elég Spore a FungusBody növesztéshez!");
             return;
         }
+        //!Az Onlythreaden nem lehet sikeres a testnövesztés
         species.growBody(thread);
         temp.setBody(body);
         System.out.println("FungusBody: OnlyThreadTekton hozzáadása sikeres!");
