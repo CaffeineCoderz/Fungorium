@@ -13,6 +13,8 @@ public class FungusBody {
     private Tekton tekton;
     private FungusSpecies species;
 
+    private Logger log = Logger.getLogger("FungusBodyLogger");
+
     public FungusBody(Integer sporeCount, Integer sporulateLeft) {
         this.sporeCount = sporeCount;
         this.sporulateLeft = sporulateLeft;
@@ -85,16 +87,21 @@ public class FungusBody {
     public void sporulate() {
         // implementáció
         if(isThereEnough()){
+            log.askQ("Start sporulate", false);
             for(Tekton t : tekton.getNeighbours()){
+                log.askQ("Create new Spore object", false);
                 Spore tempSpore = new Spore();
+                log.stepIn("t.addSpore(tempSpore)");
                 t.addSpore(tempSpore);
+                log.stepOut("t.addSpore(tempSpore)", null);
+                log.stepIn("tempSpore.setTekton(t)");
                 tempSpore.setTekton(t);
+                log.stepOut("tempSpore.setTekton(t)", null);
                 sporeCount--;
             }
         sporulateLeft--;
         }
-        else
-            System.err.println("A gombatest még nem tud spórát szórni.");
+        else log.askQ("Fungusbody can't sporulate", false);
     }
 
     /**
@@ -129,14 +136,14 @@ public class FungusBody {
      * Checks if there are any available spores.
      * 
      * This method checks if the number of available spores is greater than
-     * zero. If there are available spores, the method returns true, otherwise
+     * 5. If there are available spores, the method returns true, otherwise
      * it returns false.
      * 
      * @return true if there are available spores, false otherwise.
      */
     public Boolean isThereEnough() {
         // implementáció
-        if(sporeCount > 0){
+        if(sporeCount > 5){
             return true;
         }
         return false;

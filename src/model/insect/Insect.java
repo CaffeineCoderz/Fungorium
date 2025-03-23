@@ -4,6 +4,7 @@ import fungus.FungusThread;
 import interfaces.iControl;
 import sporeTypes.Spore;
 import tektonTypes.Tekton;
+import utils.*;
 
 enum InsectEffects{
     NORMAL, STUN, NO_CUT, FAST, SLOW
@@ -19,6 +20,8 @@ public class Insect implements iControl{
     private Tekton recentTekton;
     private FungusThread thread;
 
+    private Logger log = Logger.getLogger("InsectLogger");
+
     public Insect() {
         this.movingEffectTimer = 0;
         this.abilityEffectTimer = 0;
@@ -29,20 +32,20 @@ public class Insect implements iControl{
         this.effect = InsectEffects.NORMAL;
     }
 
-    /*public void countdown(){                // ? Kell ide egyáltalán ?
-        // ToDo
-    }*/
+    
 
-    /**
-     * Sets the effect of the insect to STUN.
-     * This prevents the insect from performing actions like moving.
-     */
+    
 
     public InsectEffects gEffect(){
         return effect;
     }
+    /**
+     * Sets the effect of the insect to STUN.
+     * This prevents the insect from performing actions like moving.
+     */
     public void stun(){
         effect = InsectEffects.STUN;
+        movingEffectTimer = 3;
     }
 
     /**
@@ -54,8 +57,12 @@ public class Insect implements iControl{
         if(effect == InsectEffects.SLOW){
             effect = InsectEffects.NORMAL;
         }
-        else
+        else{
             effect = InsectEffects.FAST;
+            movingEffectTimer = 3;
+        }
+            
+
     }
 
     /**
@@ -67,8 +74,11 @@ public class Insect implements iControl{
         if(effect == InsectEffects.FAST){
             effect = InsectEffects.NORMAL;
         }
-        else
+        else{
             effect = InsectEffects.SLOW;
+            movingEffectTimer = 3;
+        }
+            
     }
 
     /**
@@ -77,6 +87,7 @@ public class Insect implements iControl{
      */
     public void disableCut(){
         effect = InsectEffects.NO_CUT;
+        abilityEffectTimer = 3;
     }
 
     /**
@@ -105,8 +116,12 @@ public class Insect implements iControl{
      */
     public void cut(FungusThread ft){
         //Legyen meg a képessége, hogy fonalat vágjon és Ne vágja maga alatt a fát.
+        
         if(canCut == true && effect != InsectEffects.STUN && thread != ft){
+            log.askQ("Insect can threads", false);
+            log.stepIn("ft.destroy()");
             ft.destroy();
+            log.stepOut("ft.destroy()", null);
         }
     }
 
@@ -118,10 +133,18 @@ public class Insect implements iControl{
      */
     public void move(FungusThread ft){
         if(effect != InsectEffects.STUN){
-           if(ft.isBridge()) {
+            log.askQ("Insect is not stunned", false);
+            if(ft.isBridge()) {
+                log.askQ("Thread is a bridge", false);
+                log.stepIn("recentTekton.removeInsect(this)");
                 recentTekton.removeInsect(this);
+                log.stepOut("recentTekton.removeInsect(this)", ft);
+                log.stepIn("ft.getTekton().addInsect(this)");
                 ft.getTekton().addInsect(this);
+                log.stepOut("ft.getTekton().addInsect(this)", ft);
+                log.stepIn("ft.getTekton()");
                 recentTekton = ft.getTekton();
+                log.stepOut("ft.getTekton()", ft.getTekton());
            }
            thread = ft;
         }
@@ -144,8 +167,12 @@ public class Insect implements iControl{
      * @param s the Spore object to be consumed by the insect.
      */
     public void consumeSpore(Spore s){
+        log.stepIn("addScore(s.getNutValue())");
         addScore(s.getNutValue());
+        log.stepOut("addScore(s.getNutValue())", null);
+        log.stepIn("s.consume(this)");
         s.consume(this);
+        log.stepOut("s.consume(this)", null);
     }
 
     // iControl interface
@@ -178,32 +205,21 @@ public class Insect implements iControl{
      */
     @Override
     public void timeElapsed(Integer Round){
-        // ToDo
-        for(Insect i: recentTekton.getInsects()){
-            if (true == onDecreasing){
-                i.decreaseScore(1);
-            }
-            if(i.effect == InsectEffects.FAST){
-                i.movingEffectTimer = 3;
-            }
-            if(i.effect == InsectEffects.SLOW){
-                i.movingEffectTimer = 3;
-            }
-            if(i.effect == InsectEffects.NO_CUT){
-                i.abilityEffectTimer = 3;
-            }
-            if(i.movingEffectTimer > 0){
-                i.movingEffectTimer--;
-            }
-            if(i.abilityEffectTimer > 0){
-                i.abilityEffectTimer--;
-            }
-            if(i.movingEffectTimer == 0){
-                i.effect = InsectEffects.NORMAL;
-            }
-            if(i.abilityEffectTimer == 0){
-                i.effect = InsectEffects.NORMAL;
-            }
+        log.askQ("", false);
+        if (onDecreasing){
+            log.stepIn("this.decreaseScore(1)");
+            this.decreaseScore(1);
+            log.stepOut("this.decreaseScore(1)", Round);
         }
+        if(movingEffectTimer > 0){
+            movingEffectTimer--;
+        }
+        if(abilityEffectTimer > 0){
+            abilityEffectTimer--;
+        }
+        if(movingEffectTimer == 0 && abilityEffectTimer == 0){
+            effect = InsectEffects.NORMAL;
+        }
+        
     }
 }
