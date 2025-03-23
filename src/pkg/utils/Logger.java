@@ -1,5 +1,4 @@
-package utils;
-
+package pkg.utils;
 import java.util.HashMap;
 import java.util.Scanner;
 

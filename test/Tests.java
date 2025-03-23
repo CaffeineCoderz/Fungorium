@@ -3,10 +3,14 @@ package test;
 import fungus.*;
 import insect.Insect;
 import java.util.Scanner;
-import logic.GameLogic;
-import sporeTypes.*;
-import tektonTypes.*;
-import utils.*;
+import pkg.logic.GameLogic;
+import sporeTypes.FastSpore;
+import sporeTypes.Spore;
+import sporeTypes.StunSpore;
+import tektonTypes.DecomposingTekton;
+import tektonTypes.DecreasingTekton;
+import tektonTypes.OnlyThreadTekton;
+import tektonTypes.Tekton;
 
 public class Tests {
     

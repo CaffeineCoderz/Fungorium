@@ -1,4 +1,4 @@
-package utils;
+package pkg.utils;
 
 public class RandomGenerator {
     public static Integer generateRandomNumber(Integer min, Integer max){
