@@ -2,12 +2,12 @@ package test;
 
 import fungus.*;
 import insect.Insect;
+import insect.InsectEffects;
 import java.util.Scanner;
 import logic.GameLogic;
 import sporeTypes.*;
 import tektonTypes.*;
 import utils.*;
-import insect.InsectEffects;
 
 public class Tests {
     
@@ -271,15 +271,15 @@ public class Tests {
 
     public void insectMoveToNewTektonSuccess() {
         System.out.println("Running test: insectMoveToNewTektonSuccess");
+        FungusThread thread0 = new FungusThread(5, false);
+        neighborTekton.addThread(thread0);
+        thread.setPrevThread(thread0);
         tekton1.addThread(thread);
         neighborTekton.addThread(thread);
-        FungusThread thread2 = new FungusThread(5, false, thread);
-        FungusThread thread3 = new FungusThread(5, false);
-        neighborTekton.addThread(thread3);
-        tekton1.addThread(thread2);
-        thread.setPrevThread(thread3);
-        insect.setThread(thread3);
+        insect.setThread(thread0);
         insect.setRecentTekton(neighborTekton);
+        FungusThread thread2 = new FungusThread(5, false, thread);
+        tekton1.addThread(thread2);
         insect.move(thread);
         if(insect.getRecent()==null){
             System.out.println("A rovar bridgre lépett, nem tartózkodik tektonon");
@@ -416,14 +416,16 @@ public class Tests {
     public void growThreadDecomposingTektor() {
         System.out.println("Running test: growThreadDecomposingTektor");
         DecomposingTekton dt = new DecomposingTekton();
-        Scanner scanner = new Scanner(System.in);
+        /*Scanner scanner = new Scanner(System.in);
         System.out.println("Add meg a hozzáadni kívánt Spore számát (legalább 3): ");
         int sporeCount = scanner.nextInt();
         for (int i = 0; i < sporeCount; i++) {
             Spore spore = new Spore();
             dt.addSpore(spore);
         }
-        System.out.println("Spore hozzáadva a DecomposingTekton: " + dt.getSpores().size());
+        System.out.println("Spore hozzáadva a DecomposingTekton: " + dt.getSpores().size());*/
+        FungusThread othread=new FungusThread(5, false);
+        species.growThread(dt,othread,thread);
         thread.addTekton(dt);
         dt.addThread(thread);
         System.out.println("FungusThread hozzáadva a DecomposingTektonhoz: " + dt.getThreads().size());
