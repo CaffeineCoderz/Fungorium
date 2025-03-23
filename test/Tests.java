@@ -7,6 +7,7 @@ import logic.GameLogic;
 import sporeTypes.*;
 import tektonTypes.*;
 import utils.*;
+
 public class Tests {
     
     private Logger log;
@@ -220,10 +221,16 @@ public class Tests {
 
                 log.stepIn("species.growBody(thread2)");
                 species.growBody(thread2);
-                log.stepOut("species.growBody(thread2)",null);
+                if(tekton1.getBody()!=null){
+                    System.out.println("Sikeres testnövesztés");
+                }
             }
-            else if(key2=="n"){
-                species.growBody(thread2); //? Bro Miért
+            else if(key2=='n'){
+                species.growBody(thread2);
+                if(tekton1.getBody()== null){
+                    System.out.println("Sikertelen testnövesztés");
+                }
+                log.stepOut("species.growBody(thread2)",null);
             }
         }
 
@@ -244,18 +251,66 @@ public class Tests {
 
     public void sporulateSuccess() {
         System.out.println("Running test: sporulateSuccess");
+        FungusThread thread2 = new FungusThread(5,false);
+        tekton1.addThread(thread2);
+        
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Tud éppen spórát szórni a gombatest? (y/n)");
+        char key = scanner.next().charAt(0);
+        switch(key){
+            case 'y':
+            tekton1.setBody(body);
+            tekton1.getBody().sporulate();
+            if(!neighborTekton.getSpores().isEmpty()){
+                System.out.println("Sikeres spóraszórás");
+            }
+            break;
+            case 'n':
+                FungusBody body2 = new FungusBody(0,3);
+                tekton1.setBody(body2);
+                tekton1.getBody().sporulate();
+                if(neighborTekton.getSpores().isEmpty()){
+                    System.out.println("A spóraszórás sikertelen.");
+                }
+        } 
     }
 
     public void disableCutSporeConsumed() {
         System.out.println("Running test: disableCutSporeConsumed");
+        Spore dcSpore = new DisableCutSpore();
+        insect.consumeSpore(dcSpore);
+        dcSpore.consume(insect);
+        if(!insect.hasCutAbility()){
+            System.out.println("Disable Cut Spóra elfogyasztva, hatott a rovarra");
+        }
+        else
+            System.out.println("Disable cut spóra hatása nem lépett érvénybe");
     }
 
     public void slowSporeConsumed() {
         System.out.println("Running test: slowSporeConsumed");
+        Spore sSpore = new SlowSpore();
+        insect.consumeSpore(sSpore);
+        sSpore.consume(insect);
+        //!Enum typeot itt hogyan kellene összehasonlítani?
+        if(/*insect.gEffect()==SLOW*/false){
+            System.out.println("Slow Spóra elfogyasztva, hatott a rovarra");
+        }
+        else
+            System.out.println("Slow spóra hatása nem lépett érvénybe");
     }
 
     public void insectCutThreadWhileNoCutAbility() {
         System.out.println("Running test: insectCutThreadWhileNoCutAbility");
+        insect.move(thread);
+        insect.disableCut();
+        FungusThread thread2 = new FungusThread(5,false);
+        tekton1.addThread(thread2);
+        insect.cut(thread2);
+        if(tekton1.getThreads().contains(thread2))
+            System.out.println("A fonál elvágása sikertelen a hatás miatt");
+        else
+            System.out.println("A hatás nem gátolta a fonálvágást");
     }
 
     public void growBodyOnlyThreadTekton() {
@@ -276,6 +331,7 @@ public class Tests {
             System.out.println("Nincs elég Spore a FungusBody növesztéshez!");
             return;
         }
+        //!Az Onlythreaden nem lehet sikeres a testnövesztés
         species.growBody(thread);
         temp.setBody(body);
         System.out.println("FungusBody: OnlyThreadTekton hozzáadása sikeres!");
@@ -362,11 +418,6 @@ public class Tests {
         insect.consumeSpore(ss);
         ss.consume(insect);
         System.out.println("Test: StunSporeConsumed sikeres!");
-    }
-
-    public void sporulateUnSuccess() {
-        System.out.println("Running test: sporulateUnSuccess");
-
     }
 
     public void sporulateFurther() {
