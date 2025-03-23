@@ -7,6 +7,7 @@ import logic.GameLogic;
 import sporeTypes.*;
 import tektonTypes.*;
 import utils.*;
+import insect.InsectEffects;
 
 public class Tests {
     
@@ -89,6 +90,24 @@ public class Tests {
         body = new FungusBody(10, 5); 
     }
 
+    /**
+     * Resets the test environment to ensure no leftover state.
+     */
+    public void reset() {
+        // Nullify or reinitialize shared objects
+        tekton1 = null;
+        Dtekton = null;
+        neighborTekton = null;
+        spore1 = null;
+        spore2 = null;
+        spore3 = null;
+        body = null;
+        thread = null;
+        species = null;
+        insect = null;
+        System.out.println("Test environment reset.");
+    }
+
     public static void getUserInput() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter the test case number: ");
@@ -116,6 +135,10 @@ public class Tests {
      */
 
     private void executeTestCase(int testCase) {
+        // Setup the test environment before running the test
+        setup();
+
+        // Execute the specific test case
         switch (testCase) {
             case 1:
                 growBodyDefTektonSuccess();
@@ -153,8 +176,6 @@ public class Tests {
             case 12:
                 insectMoveWhileStunned();
                 break;
-            //case 13:
-              //  break;
             case 15:
                 growThreadDecomposingTektor();
                 break;
@@ -164,17 +185,8 @@ public class Tests {
             case 17:
                 stunSporeConsumed();
                 break;
-            /*case 18:
-                sporulateUnSuccess();
-                break;*/
             case 19:
                 sporulateFurther();
-                break;
-            /*case 20:
-                insectMoveUnsuccess();
-                break;*/
-            case 50:
-                //exitTests();
                 break;
             default:
                 System.out.println("Invalid test case number.");
@@ -292,7 +304,7 @@ public class Tests {
         Spore sSpore = new SlowSpore();
         insect.consumeSpore(sSpore);
         sSpore.consume(insect);
-        if(/*insect.gEffect()==SLOW*/false){
+        if(insect.gEffect() == InsectEffects.SLOW){
             System.out.println("Slow Spóra elfogyasztva, hatott a rovarra");
         }
         else
