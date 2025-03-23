@@ -1,11 +1,14 @@
 package tektonTypes;
 
+import utils.*;
+
 import fungus.FungusThread;
 
 public class DecomposingTekton extends Tekton{
 
     public DecomposingTekton(){
         super(true, true);
+        log = Logger.getLogger("DecomposingTektonLogger");
     }
 
     /**
@@ -16,7 +19,10 @@ public class DecomposingTekton extends Tekton{
      */
     @Override
     public void addThread(FungusThread t){
+        log.stepIn("t.decreaseLife()");
         t.decreaseLife();
-        threads.add(t);
+        log.stepOut("t.decreaseLife()", null);
+        log.stepIn("threads.add(t)");
+        log.stepOut("threads.add(t)", threads.add(t));
     }
 }
