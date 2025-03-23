@@ -89,7 +89,7 @@ public class Tekton{
      * Removes the first Spore object from the list of associated spores.
      */
     public void removeSpore(){
-        spores.removeFirst();
+        spores.remove(0);
     }
 
     /**
@@ -259,6 +259,7 @@ public class Tekton{
     public void breakTekton() {
         log.stepIn("for cycle start");
         for (Insect insect : insects) {
+
             log.stepIn("insect.move(neighbours.get(0).getThreads().get(0))");
             insect.move(neighbours.get(0).getThreads().get(0));
             log.stepOut("insect.move(neighbours.get(0).getThreads().get(0))", null);
