@@ -414,11 +414,6 @@ public class Tests {
         System.out.println("Test: StunSporeConsumed sikeres!");
     }
 
-    public void sporulateUnSuccess() {
-        System.out.println("Running test: sporulateUnSuccess");
-
-    }
-
     public void sporulateFurther() {
         System.out.println("Running test: sporulateFurther");
         Tekton tekton2 = new Tekton(true, true);
