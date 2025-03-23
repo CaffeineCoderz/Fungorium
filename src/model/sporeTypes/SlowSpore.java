@@ -4,7 +4,8 @@ import insect.Insect;
 
 public class SlowSpore extends Spore{
     
-    public void consumeSpore(Insect insect){
+    @Override
+    public void consume(Insect insect){
         insect.slow();
         absorbed();
     }

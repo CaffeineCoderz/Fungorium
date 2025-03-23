@@ -4,8 +4,8 @@ import insect.Insect;
 
 public class DisableCutSpore extends Spore {
 
-    
-    public void consumeSpore(Insect insect){
+    @Override
+    public void consume(Insect insect){
         insect.disableCut();
         absorbed();
     }
