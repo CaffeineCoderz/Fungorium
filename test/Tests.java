@@ -91,7 +91,8 @@ public class Tests {
         // Add a neighbor Tekton
         neighborTekton = new Tekton(false, true);
         tekton1.addNeighbour(neighborTekton);
-        //System.out.println("Neighbor Tekton added: " + tekton1.getNeighbours().size());
+        neighborTekton.addNeighbour(tekton1);
+        System.out.println("Neighbor Tekton added: " + tekton1.getNeighbours().size());
 
         // Add a thread and body to the Tekton
         thread = new FungusThread(15, true);
@@ -314,6 +315,7 @@ public class Tests {
         insect.setRecentTekton(neighborTekton);
         FungusThread thread2 = new FungusThread(5, false, thread);
         tekton1.addThread(thread2);
+        thread2.addTekton(tekton1);
         insect.move(thread);
         /* if(insect.getRecent()==null){
             System.out.println("A rovar bridgre lépett, nem tartózkodik tektonon");
@@ -334,6 +336,7 @@ public class Tests {
         char key = scanner.next().charAt(0);
         switch(key){
             case 'y':
+            body.setTekton(tekton1);
             tekton1.setBody(body);
             tekton1.getBody().sporulate();
             /* if(!neighborTekton.getSpores().isEmpty()){
@@ -342,6 +345,7 @@ public class Tests {
             break;
             case 'n':
                 FungusBody body2 = new FungusBody(0,3);
+                body2.setTekton(tekton1);
                 tekton1.setBody(body2);
                 tekton1.getBody().sporulate();
                 /* if(neighborTekton.getSpores().isEmpty()){
