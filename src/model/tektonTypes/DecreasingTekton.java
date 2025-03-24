@@ -7,7 +7,7 @@ public class DecreasingTekton extends Tekton{
 
     public DecreasingTekton(){
         super(true, true);
-        Logger log = Logger.getLogger("DecreasingTektonLogger");
+        log = Logger.getLogger("DecreasingTektonLogger");
     }
 
     /**
@@ -21,7 +21,6 @@ public class DecreasingTekton extends Tekton{
      */
     @Override
     public void addInsect(Insect insect){
-        
         if (!insects.contains(insect)) {
             log.askQ("insects not contains insect", false);
             log.stepIn("insect.setDecrease(true)");

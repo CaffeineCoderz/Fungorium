@@ -1,24 +1,28 @@
 package tektonTypes;
+
 import fungus.FungusThread;
+import utils.Logger;
+
 public class OneThreadTekton extends Tekton {
     public OneThreadTekton() {
         super(true, true);
+        log = Logger.getLogger("OneThreadTektonLogger");
     }
+
     @Override
-    public void addThread(FungusThread f){
-        if(canGrowThread()||getThreads().contains(f.getPrev())){
+    public void addThread(FungusThread f) {
+        if (canGrowThread() || getThreads().contains(f.getPrev())) {
             log.askQ("tekton has no thread", false);
             log.stepIn("getThreads().add(f)");
             getThreads().add(f);
             log.stepOut("getThreads().add(f)", null);
-            if(canGrowThread()){
+            if (canGrowThread()) {
                 log.askQ("Can grow thread", false);
                 log.stepIn("setGrowThread(false)");
                 setGrowThread(false);
                 log.stepOut("setGrowThread(false)", null);
             }
-        } 
-        else
-            log.askQ("tekton already has a thread", false);    
+        } else
+            log.askQ("tekton already has a thread", false);
     }
 }
