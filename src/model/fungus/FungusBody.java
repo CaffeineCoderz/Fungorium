@@ -1,18 +1,17 @@
 package fungus;
+
 import java.util.ArrayList;
 import java.util.List;
 import sporeTypes.Spore;
 import tektonTypes.Tekton;
 import utils.Logger;
 
-//! NEM TELJES IMPLEMENTACIO MEG
 public class FungusBody {
     private Integer sporeCount;
     private Integer sporulateLeft;
     private List<FungusThread> threads;
     private Tekton tekton;
     private FungusSpecies species;
-
     private Logger log = Logger.getLogger("FungusBodyLogger");
 
     public FungusBody(Integer sporeCount, Integer sporulateLeft) {
@@ -29,14 +28,16 @@ public class FungusBody {
 
     /**
      * Gets the FungusSpecies that this fungus body is part of.
+     * 
      * @return the FungusSpecies that this fungus body is part of.
      */
-    public FungusSpecies getSpecies(){
+    public FungusSpecies getSpecies() {
         return species;
     }
 
     /**
      * Adds a fungus thread to this fungus body.
+     * 
      * @param thread the FungusThread to be added.
      */
     public void addThread(FungusThread thread) {
@@ -65,22 +66,25 @@ public class FungusBody {
     /**
      * Retrieves the Tekton object associated with this fungus body.
      * 
-     * @return a Tekton object representing the Tekton where this fungus body is located.
+     * @return a Tekton object representing the Tekton where this fungus body is
+     *         located.
      */
     public Tekton getTekton() {
         return tekton;
     }
+
     /**
      * Retrieves the list of fungus threads associated with this fungus body.
      * 
-     * @return a list of FungusThread objects representing the threads of this fungus body.
+     * @return a list of FungusThread objects representing the threads of this
+     *         fungus body.
      */
-    public List<FungusThread> getThreads(){
+    public List<FungusThread> getThreads() {
         return threads;
     }
 
     // ! Not implemented yet
-    
+
     /**
      * Spreads spores to the neighboring Tektons.
      * 
@@ -92,6 +96,7 @@ public class FungusBody {
         // implementáció
         if(isThereEnough()){
             if(!canSporeNeighbours()){
+
                 log.askQ("Body has enough spore to sporulate neighbours", false);
                 if(this.tekton == null){
                     log.askQ("Tekton is null", false);
@@ -110,7 +115,6 @@ public class FungusBody {
                     sporeCount--;
                 }
                 log.askQ("End Cycle", false);
-                
             }
             else
                 {
@@ -141,10 +145,10 @@ public class FungusBody {
                         log.askQ("End Cycle", false);
                     }
                     log.askQ("End Cycle", false);
-                }
-        sporulateLeft--;
-        }
-        else log.askQ("Fungusbody can't sporulate", false);
+            }
+            sporulateLeft--;
+        } else
+            log.askQ("Fungusbody can't sporulate", false);
     }
     /**
      * Checks if it can sporulate to neighbours's neighbours 
@@ -169,7 +173,7 @@ public class FungusBody {
      */
     public Boolean timeToDie() {
         // implementáció
-        if(sporulateLeft <= 0){
+        if (sporulateLeft <= 0) {
             return true;
         }
         return false;
@@ -198,21 +202,23 @@ public class FungusBody {
     public Boolean isThereEnough() {
         // implementáció
         if(sporeCount > 1){
+
             return true;
         }
         return false;
     }
-    
+
     /**
      * Returns the number of spores available in the fungus body.
      * 
-     * @return an Integer representing the number of spores available in the fungus body.
+     * @return an Integer representing the number of spores available in the fungus
+     *         body.
      */
-    public Integer getSporeCount(){
+    public Integer getSporeCount() {
         return sporeCount;
     }
+
     public void setSpecies(FungusSpecies species) {
         this.species = species;
     }
-    
 }
