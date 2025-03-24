@@ -58,9 +58,9 @@ public class Tests {
      * to the Tekton.
      */
     public void setup(){
-        log.askQ("Setup Base Map", false);
         GameLogic gameLogic = new GameLogic();
         log = Logger.getLogger("TestLogger");
+        log.askQ("Setup Base Map", false);
         //System.out.println("Fungorium szimuláció elindult!");
 
         // Initialize a Tekton object
@@ -238,7 +238,7 @@ public class Tests {
         tekton1.addThread(thread);
         log.stepOut("tekton1.addThread(thread)", null);
     
-       log.askQ("Create new FungusThread:  thread2", false);
+        log.askQ("Create new FungusThread:  thread2", false);
         FungusThread thread2 = new FungusThread(5,false);
         
         log.stepIn("thread.addTekton(tekton1)");
@@ -503,7 +503,6 @@ public class Tests {
         }
         thread.addTekton(temp);
         temp.addThread(thread);
-        //System.out.println("FungusThread hozzáadva az OnlyThreadTektonhoz: " + temp.getThreads().size());
         log.stepIn("species.growBody(thread);");
         species.growBody(thread);
         log.stepOut("species.growBody(thread);", null);
@@ -523,7 +522,6 @@ public class Tests {
         log.stepIn("insect.cut(thread);");
         insect.cut(thread);
         log.stepOut("insect.cut(thread);", false);
-        //System.out.println("Test: Insect szálvágása sikeres!");
     }
 
     public void speedSporeConsumed() {
@@ -531,12 +529,11 @@ public class Tests {
         FastSpore fs = new FastSpore(tekton1,10);
         log.stepIn("fs.consume(insect);");
         insect.consumeSpore(fs);
-        fs.consume(insect);
         log.stepOut("fs.consume(insect);", false);
         log.stepIn("insect.gEffect();");
         insect.gEffect();
         log.stepOut("insect.gEffect();", false);
-        //System.out.println("Test: SpeedSporeConsumed sikeres!");
+
     }
 
     public void insectMoveWhileStunned() {
@@ -552,31 +549,18 @@ public class Tests {
         log.stepIn("insect.consumeSpore(ss);");
         insect.consumeSpore(ss);
         log.stepOut("insect.consumeSpore(ss);", false);
-        log.stepIn("ss.consume(insect);");
-        ss.consume(insect);
-        log.stepOut("ss.consume(insect);", false);
         log.stepIn("insect.move(thread);");
         insect.move(thread);
         log.stepOut("insect.move(thread);", false);
-        //System.out.println("Test: InsectMoveWhileStunned sikeres!");
     }
 
     public void growThreadDecomposingTektor() {
         System.out.println("Running test: growThreadDecomposingTektor");
         DecomposingTekton dt = new DecomposingTekton();
-        /*Scanner scanner = new Scanner(System.in);
-        System.out.println("Add meg a hozzáadni kívánt Spore számát (legalább 3): ");
-        int sporeCount = scanner.nextInt();
-        for (int i = 0; i < sporeCount; i++) {
-            Spore spore = new Spore();
-            dt.addSpore(spore);
-        }
-        System.out.println("Spore hozzáadva a DecomposingTekton: " + dt.getSpores().size());*/
         FungusThread othread=new FungusThread(5, false);
         species.growThread(dt,othread,thread);
         thread.addTekton(dt);
         dt.addThread(thread);
-        /* System.out.println("FungusThread hozzáadva a DecomposingTektonhoz: " + dt.getThreads().size());
         if(thread.getIsDying()){
             System.out.println("A fonál haldoklik.");
         }
@@ -596,7 +580,6 @@ public class Tests {
         log.stepIn("insect.move(thread2);");
         insect.move(thread2);
         log.stepOut("insect.move(thread2);", true);
-        //System.out.println("Test: InsectMove sikeres!");
     }
 
     public void stunSporeConsumed() {
@@ -606,12 +589,10 @@ public class Tests {
         System.out.println("asd "+ss.getTekton());
         log.stepIn("ss.consume(insect);");
         insect.consumeSpore(ss);
-        ss.consume(insect);
         log.stepOut("ss.consume(insect);", false);
         log.stepIn("insect.gEffect();");
         insect.gEffect();
         log.stepOut("insect.gEffect();", false);
-        //System.out.println("Test: StunSporeConsumed sikeres!");
     }
 
     public void sporulateFurther() {
@@ -623,7 +604,9 @@ public class Tests {
         FungusBody body2 = new FungusBody(11, 5);
         body2.setTekton(tekton3);
         body2.produceSpore();
+        log.stepIn("body2.sporulate();");
         body2.sporulate();
+        log.stepOut("body2.sporulate();", null);
         /* if(tekton3.getSpores().size() == 0) {
             System.out.println("Nem sikerült a SporulateFurther!");
             return;
@@ -635,13 +618,13 @@ public class Tests {
     }
 
     public static void main(String[] args) {
-        
+        System.out.println("Starting all tests...");
         displayTests();
         getUserInput();
 
         Tests tests = new Tests();
 
-        System.out.println("Starting all tests...");
+
 
         System.out.println("All tests finished.");
     }
