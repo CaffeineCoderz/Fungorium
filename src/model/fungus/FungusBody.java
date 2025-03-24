@@ -140,8 +140,6 @@ public class FungusBody {
                         log.askQ("End Cycle", false);
                     }
                     log.askQ("End Cycle", false);
-                }
-                log.askQ("End Cycle", false);
             }
             sporulateLeft--;
         } else
