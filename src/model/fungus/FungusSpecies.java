@@ -172,7 +172,7 @@ public class FungusSpecies implements iControl{
         log.askQ("thread is not a bridge", false);
         Integer atleast = 2;
         boolean enoughSpore=thread.getTekton().isThereEnoughSpore(atleast);
-        if(!thread.getTekton().canGrowBody()){
+        if(thread.getTekton().getBody()!=null){
             log.askQ("Tekton already contains a body",false);
             return;
         }
