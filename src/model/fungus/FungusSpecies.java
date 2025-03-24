@@ -51,7 +51,8 @@ public class FungusSpecies implements iControl{
      * @param body the FungusBody instance to add.
      */
     public void addBody(FungusBody body) {
-        bodies.add(body);
+        log.stepIn("bodies.add(body)");
+        log.stepOut("bodies.add(body)", bodies.add(body));
     }
 
     /**
@@ -60,7 +61,8 @@ public class FungusSpecies implements iControl{
      * @param body the FungusBody instance to remove.
      */
     public void deleteBody(FungusBody body) {
-        bodies.remove(body);
+        log.stepIn("bodies.remove(body)");
+        log.stepOut("bodies.remove(body)", bodies.remove(body));
     }
 
     // ! Not implemented yet
@@ -72,7 +74,8 @@ public class FungusSpecies implements iControl{
      */
     public void addThread(FungusThread thread) {
         // implementáció
-        threads.add(thread);
+        log.stepIn("threads.add(thread)");
+        log.stepOut("threads.add(thread)", threads.add(thread));
     }
 
     /**
@@ -82,7 +85,8 @@ public class FungusSpecies implements iControl{
      */
     public void deleteThread(FungusThread thread) {
         // implementáció
-        threads.remove(thread);
+        log.stepIn("threads.remove(thread)");
+        log.stepOut("threads.remove(thread)", threads.remove(thread));
     }
 
     //szekvencia módosítás kellhet
@@ -95,11 +99,21 @@ public class FungusSpecies implements iControl{
      */
     public void growThread(Tekton targetTekton, FungusThread oThread, FungusThread nThread) {             // ? Kell ide valszeg FungusThread, FungusBody paraméter ?
         // implementáció
+        
         if(targetTekton.canGrowThread()){
+            log.askQ("Can grow thread on tekton", false);
+            log.stepIn("addThread(nThread)");
             addThread(nThread);
+            log.stepOut("addThread(nThread)", null);
+            log.stepIn("nThread.addTekton(targetTekton)");
             nThread.addTekton(targetTekton);
+            log.stepOut("nThread.addTekton(targetTekton)", null);
+            log.stepIn("targetTekton.addThread(nThread)");
             targetTekton.addThread(nThread);
+            log.stepOut("targetTekton.addThread(nThread)", null);
+            log.stepIn("oThread.setNextThread(nThread)");
             oThread.setNextThread(nThread);      
+            log.stepOut("oThread.setNextThread(nThread)", null);
         }
     }
     
@@ -118,13 +132,33 @@ public class FungusSpecies implements iControl{
      */
     public void growBridge(FungusBody body, FungusThread thread, Tekton tekton2) { // ? Kell ide valszeg FungusThread, FungusBody paraméter ?
         // implementáció
+        log.stepIn("addThread(thread)");
         addThread(thread);
+        log.stepOut("addThread(thread)", null);
+        
+        log.stepIn("thread.addTekton(body.getTekton())");
         thread.addTekton(body.getTekton());
+        log.stepOut("thread.addTekton(body.getTekton())", null);
+
+        log.stepIn("thread.addTekton(tekton2)");
         thread.addTekton(tekton2);
+        log.stepOut("thread.addTekton(tekton2)", null);
+        
+        log.stepIn("thread.setBridge(true)");
         thread.setBridge(true);
+        log.stepOut("thread.setBridge(true)", null);
+        
+        log.stepIn("body.getTekton().addThread(thread)");
         body.getTekton().addThread(thread);
+        log.stepOut("body.getTekton().addThread(thread)", null);
+        
+        log.stepIn("tekton2.addThread(thread)");
         tekton2.addThread(thread);
+        log.stepOut("tekton2.addThread(thread)", null);
+        
+        log.stepIn("body.addThread(thread)");
         body.addThread(thread);
+        log.stepOut("body.addThread(thread)", null);
     }
 
     /**
