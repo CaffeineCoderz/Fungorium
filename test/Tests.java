@@ -324,22 +324,22 @@ public class Tests {
 
         tekton1.addThread(thread2);
         String key = log.askQ("tud spórát szórni a gombatest? (y/n)", true);
-        if (key.equals("y")) {
+        if(key.equals("y")){
             body.setTekton(tekton1);
             tekton1.setBody(body);
             log.stepIn("body.sporulate()");
             body.sporulate();
             log.stepOut("body.sporulate()", null);
         }
-        if (key.equals("n")) {
-            FungusBody body2 = new FungusBody(0, 3);
-            body2.setTekton(tekton1);
-            tekton1.setBody(body2);
-            log.stepIn("body2.sporulate();");
-            body2.sporulate();
-            log.stepOut("body2.sporulate();", null);
-
-        }
+            if(key.equals("n")){
+                FungusBody body2 = new FungusBody(0,3);
+                body2.setTekton(tekton1);
+                tekton1.setBody(body2);
+                log.stepIn("body2.sporulate();");
+                body2.sporulate();
+                log.stepOut("body2.sporulate();", null);
+                
+        } 
     }
 
     public void disableCutSporeConsumed() {
@@ -488,8 +488,7 @@ public class Tests {
         log.stepOut("insect.consumeSpore(ss)", null);
         log.stepIn("insect.gEffect()");
         log.stepOut("insect.gEffect()", insect.gEffect());
-        log.stepOut("End of stunSporeConsumed", null);
-
+        log.stepOut("End of stunSporeConsumed",null);
     }
 
     public void sporulateFurther() {
