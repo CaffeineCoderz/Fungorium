@@ -271,8 +271,8 @@ public class Tests {
             else if(key2.equals("n")){
                 log.stepIn("species.growBody(thread2)");
                 tekton1.setBody(null);
-                tekton1.getSpores().removeFirst();
-                tekton1.getSpores().removeFirst();
+                tekton1.removeSpore();
+                tekton1.removeSpore();
                 species.growBody(thread2);
                 log.stepOut("species.growBody(thread2)",null);
             }
