@@ -332,8 +332,8 @@ public class Tests {
 
     public void sporulateSuccess() {
         log.stepIn("Running test: sporulateSuccess");
-        FungusThread thread2 = new FungusThread(5,false);
-
+        FungusThread thread2 = new FungusThread(null,false);
+        body.setSporeC(2);
         tekton1.addThread(thread2);
         String key = log.askQ("tud spórát szórni a gombatest? (y/n)", true);
         if(key.equals("y")){
@@ -382,16 +382,13 @@ public class Tests {
 
     public void insectCutThreadWhileNoCutAbility() {
         log.stepIn("Running test: insectCutThreadWhileNoCutAbility");
-        insect.setRecentTekton(tekton1);
-        insect.move(thread);
-       
         log.stepIn("insect.disableCut()");
-        insect.disableCut();
+        
         log.stepOut("insect.disableCut()", null);
         
         FungusThread thread2 = new FungusThread(5,false);
         tekton1.addThread(thread2);
-
+        insect.disableCut();
         log.stepIn("insect.cut(thread2)");
         insect.cut(thread2);
         log.stepOut("insect.cut(thread2)", null);
@@ -402,14 +399,15 @@ public class Tests {
     public void growBodyOnlyThreadTekton() {
         log.stepIn("Running test: growBodyOnlyThreadTekton");
         OnlyThreadTekton temp = new OnlyThreadTekton();
+        FungusThread othread=new FungusThread(null, false);
         for (int i = 0; i < 4; i++) {
             Spore spore = new Spore();
             temp.addSpore(spore);
         }
-        thread.addTekton(temp);
-        temp.addThread(thread);
+        othread.addTekton(temp);
+        temp.addThread(othread);
         log.stepIn("species.growBody(thread);");
-        species.growBody(thread);
+        species.growBody(othread);
         log.stepOut("species.growBody(thread);", null);
         log.stepOut("End of growBodyOnlyThreadTekton", null);
     }
@@ -479,6 +477,7 @@ public class Tests {
         log.stepIn("Running test: insectMoveSuccess");
         tekton1.addInsect(insect);
         FungusThread thread2 = new FungusThread(15, true);
+        thread2.addTekton(tekton1);
         thread.addTekton(tekton1);
         tekton1.addThread(thread2);
         insect.setRecentTekton(tekton1);
@@ -487,7 +486,7 @@ public class Tests {
         log.stepIn("insect.move(thread2);");
         insect.move(thread2);
         log.stepOut("insect.move(thread2);", null);
-        log.stepOut("Running test: insectMoveSuccess",null);
+        log.stepOut("End of insectMoveSuccess",null);
 
     }
 
@@ -509,7 +508,9 @@ public class Tests {
         Tekton tekton2 = new Tekton(true, true);
         Tekton tekton3 = new Tekton(true, true);
         tekton1.addNeighbour(tekton2);
+        tekton2.addNeighbour(tekton1);
         tekton2.addNeighbour(tekton3);
+        tekton3.addNeighbour(tekton2);
         FungusBody body2 = new FungusBody(11, 5);
         body2.setTekton(tekton3);
         body2.produceSpore();

@@ -196,7 +196,7 @@ public class FungusSpecies implements iControl{
             log.askQ("Start cycle", false);
             for (Integer i =  0; i < atleast; i++) {
                 log.stepIn("thread.getTekton().removeSpore()");
-                thread.getTekton().removeSpore();
+                thread.getTekton().getSpores().get(i).absorbed();
                 log.stepOut("thread.getTekton().removeSpore()", null);
             }
             log.askQ("End cycle", false);
@@ -313,7 +313,7 @@ public class FungusSpecies implements iControl{
      * @param fb the FungusBody instance to be destroyed.
      */
     public void destroyBody(FungusBody fb){
-        log.askQ("Start cycle", false);
+        log.askQ("Going through all threads of FungusBody", false);
         for (FungusThread ft : fb.getThreads()) {
             log.stepIn("destroyThread(ft);");
             destroyThread(ft);

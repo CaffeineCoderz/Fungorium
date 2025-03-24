@@ -117,12 +117,13 @@ public class Insect implements iControl{
     public void cut(FungusThread ft){
         //Legyen meg a képessége, hogy fonalat vágjon és Ne vágja maga alatt a fát.
         
-        if(canCut == true && effect != InsectEffects.STUN && thread != ft){
-            log.askQ("Insect can threads", false);
+        if(canCut == true && effect != InsectEffects.STUN && effect != InsectEffects.NO_CUT && thread != ft){
+            log.askQ("Insect can cut threads", false);
             log.stepIn("ft.destroy()");
             ft.destroy();
             log.stepOut("ft.destroy()", null);
-        }
+        }else             log.askQ("Insect can't cut threads", false);
+
     }
 
     /**
@@ -138,21 +139,23 @@ public class Insect implements iControl{
                 log.askQ("Thread is a bridge", false);
                 log.stepIn("recentTekton.removeInsect(this)");
                 recentTekton.removeInsect(this);
-                log.stepOut("recentTekton.removeInsect(this)", ft);
+                log.stepOut("recentTekton.removeInsect(this)", null);
+                log.stepIn("setRecentTekton(ft.getTekton())");
+                setRecentTekton(ft.getTekton());
+                log.stepOut("setRecentTekton(ft.getTekton())", ft.getTekton());
+                log.stepIn("setThread(ft)");
+                setThread(ft);
+                log.stepOut("setThread(ft)", null);
                 recentTekton= null;   
            }
            else {
-                              log.askQ("Thread is not a bridge", false);
-                 log.stepIn("ft.getTekton()");
-                recentTekton = ft.getTekton();
-                log.stepOut("ft.getTekton()", ft.getTekton());
-                
-                log.stepIn("ft.getTekton().addInsect(this)");
-                ft.getTekton().addInsect(this);
-                log.stepOut("ft.getTekton().addInsect(this)", ft);
-                thread = ft;
+                log.askQ("Thread is not a bridge", false);
+                log.stepIn("setThread(ft)");
+                setThread(ft);
+                log.stepOut("setThread(ft);", null);
            }
-          }
+
+          }else log.askQ("Insect is not stunned", false);
     }
 
     /**

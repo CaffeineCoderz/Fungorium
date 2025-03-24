@@ -23,6 +23,10 @@ public class FungusBody {
         this.species = null;
     }
 
+    public void setSporeC(Integer c){
+        sporeCount = c;
+    }
+
     /**
      * Gets the FungusSpecies that this fungus body is part of.
      * @return the FungusSpecies that this fungus body is part of.
@@ -87,7 +91,7 @@ public class FungusBody {
     public void sporulate() {
         // implementáció
         if(isThereEnough()){
-            if(sporeCount<10){
+            if(!canSporeNeighbours()){
                 log.askQ("Body has enough spore to sporulate neighbours", false);
                 if(this.tekton == null){
                     log.askQ("Tekton is null", false);
@@ -127,10 +131,10 @@ public class FungusBody {
                             log.askQ("Create Spore : tempspore2", false);
                             Spore tempSpore2 = new Spore();
                             log.stepIn("tt.addSpore(tempSpore2)");
-                            tt.addSpore(tempSpore);
+                            tt.addSpore(tempSpore2);
                             log.stepOut("tt.addSpore(tempSpore2)", null);
                             log.stepIn("tempSpore2.setTekton(tt)");
-                            tempSpore.setTekton(tt);
+                            tempSpore2.setTekton(tt);
                             log.stepOut("tempSpore2.setTekton(tt)", null);
                             sporeCount--;
                         }
@@ -141,6 +145,17 @@ public class FungusBody {
         sporulateLeft--;
         }
         else log.askQ("Fungusbody can't sporulate", false);
+    }
+    /**
+     * Checks if it can sporulate to neighbours's neighbours 
+     * @return Whether it can sporulate to further than it's neighbouring tekton
+     */
+    public Boolean canSporeNeighbours(){
+        int c =0;
+        for (Tekton t : tekton.getNeighbours()) {
+            c+= t.getNeighbours().size();
+        }
+        return sporeCount >= c;   
     }
 
     /**
@@ -182,7 +197,7 @@ public class FungusBody {
      */
     public Boolean isThereEnough() {
         // implementáció
-        if(sporeCount > 5){
+        if(sporeCount > 1){
             return true;
         }
         return false;
