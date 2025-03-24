@@ -14,7 +14,7 @@ public class DecomposingTekton extends Tekton{
     /**
      * Adds a FungusThread instance to the list of threads associated with this DecomposingTekton.
      * 
-     * When a FungusThread is added to this DecomposingTekton, it automatically sets a lifespan to thread, because this tekton consumes the threads that are on it.
+     * When a FungusThread is added to DecomposingTekton, it automatically sets a lifespan to thread, because this tekton consumes the threads that are on it.
      * @param t the FungusThread instance to add to the list of associated threads. 
      */
     @Override

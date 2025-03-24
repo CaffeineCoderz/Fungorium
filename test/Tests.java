@@ -203,6 +203,10 @@ public class Tests {
             default:
                 System.out.println("Invalid test case number.");
                 break;
+<<<<<<< HEAD
+=======
+            }
+>>>>>>> origin/Main
         }
     }
 
