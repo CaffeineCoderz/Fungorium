@@ -2,11 +2,15 @@ package sporeTypes;
 
 import insect.Insect;
 import utils.*;
+import tektonTypes.*;
 
 public class FastSpore extends Spore{
     
     public FastSpore(){
         log = Logger.getLogger("FastSporeLogger");
+    }
+    public FastSpore(Tekton t, int v){
+        super(t,v);
     }
     @Override
     /**
