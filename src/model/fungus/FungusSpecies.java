@@ -5,7 +5,6 @@ import java.util.List;
 import tektonTypes.Tekton;
 import utils.Logger;
 
-//! NEM TELJES IMPLEMENTACIO MEG
 public class FungusSpecies implements iControl{
     private Integer score;
     private List<FungusBody> bodies;
@@ -42,9 +41,6 @@ public class FungusSpecies implements iControl{
         return bodies;
     }
 
-    // ? Good implementation
-    // így kéne törölni és hozzáadni vagy máshogy?
-    
     /**
      * Adds a FungusBody instance to the list of bodies associated with this FungusSpecies.
      * 
@@ -65,15 +61,12 @@ public class FungusSpecies implements iControl{
         log.stepOut("bodies.remove(body)", bodies.remove(body));
     }
 
-    // ! Not implemented yet
-    
     /**
      * Adds a FungusThread instance to the list of threads associated with this FungusSpecies.
      * 
      * @param thread the FungusThread instance to add.
      */
     public void addThread(FungusThread thread) {
-        // implementáció
         log.stepIn("threads.add(thread)");
         log.stepOut("threads.add(thread)", threads.add(thread));
     }
@@ -84,7 +77,6 @@ public class FungusSpecies implements iControl{
      * @param thread the FungusThread instance to remove.
      */
     public void deleteThread(FungusThread thread) {
-        // implementáció
         log.stepIn("threads.remove(thread)");
         log.stepOut("threads.remove(thread)", threads.remove(thread));
     }
@@ -98,8 +90,6 @@ public class FungusSpecies implements iControl{
      * @param thread the FungusThread instance to add.
      */
     public void growThread(Tekton targetTekton, FungusThread oThread, FungusThread nThread) {             // ? Kell ide valszeg FungusThread, FungusBody paraméter ?
-        // implementáció
-        
         if(targetTekton.canGrowThread()){
             log.askQ("Can grow thread on tekton", false);
             log.stepIn("addThread(nThread)");
