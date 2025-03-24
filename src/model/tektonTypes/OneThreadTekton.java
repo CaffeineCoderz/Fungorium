@@ -12,7 +12,8 @@ public class OneThreadTekton extends Tekton {
                 setGrowThread(false);
             }
         } 
-        else    
+        else
+            log.askQ("tekton already has a thread", false);    
             return;
     }
 }

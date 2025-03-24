@@ -115,6 +115,9 @@ public class FungusSpecies implements iControl{
             oThread.setNextThread(nThread);      
             log.stepOut("oThread.setNextThread(nThread)", null);
         }
+        else{
+            log.askQ("tekton cant have new threads", false);
+        }
     }
     
     // szekvencia módosítás kellhet
@@ -203,6 +206,9 @@ public class FungusSpecies implements iControl{
             log.stepIn("fb.addThread(thread)");
             fb.addThread(thread);
             log.stepOut("fb.addThread(thread)", null);
+        }
+        else{
+            log.askQ("Nincs elegendo spóra", false);
         }
     }
 
