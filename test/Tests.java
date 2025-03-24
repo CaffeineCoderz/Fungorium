@@ -58,9 +58,9 @@ public class Tests {
      * to the Tekton.
      */
     public void setup(){
-        log.askQ("Setup Base Map", false);
         GameLogic gameLogic = new GameLogic();
         log = Logger.getLogger("TestLogger");
+        log.askQ("Setup Base Map", false);
         //System.out.println("Fungorium szimuláció elindult!");
 
         // Initialize a Tekton object
@@ -425,13 +425,15 @@ public class Tests {
     public void speedSporeConsumed() {
         log.stepIn("Running test: speedSporeConsumed");
         FastSpore fs = new FastSpore(tekton1,10);
-        log.stepIn("fs.consume(insect);");
+        log.stepIn("insect.consumeSpore(fs)");
         insect.consumeSpore(fs);
-        log.stepOut("fs.consume(insect);", null);
+
+        log.stepOut("insect.consumeSpore(fs)", null);
         
-        log.stepIn("insect.gEffect();");
-        log.stepOut("insect.gEffect();", insect.gEffect());
+        log.stepIn("insect.gEffect()");
+        log.stepOut("insect.gEffect()", insect.gEffect());
         log.stepOut("End of speedSporeConsumed", null);
+
     }
 
     public void insectMoveWhileStunned() {
@@ -452,6 +454,7 @@ public class Tests {
         insect.move(thread);
         log.stepOut("insect.move(thread);", null);
         log.stepOut("End of insectMoveWhileStunned", stunspore);
+
     }
 
     public void growThreadDecomposingTektor() {
@@ -477,6 +480,7 @@ public class Tests {
         insect.move(thread2);
         log.stepOut("insect.move(thread2);", null);
         log.stepOut("Running test: insectMoveSuccess",null);
+
     }
 
     public void stunSporeConsumed() {
@@ -489,10 +493,11 @@ public class Tests {
         log.stepIn("insect.gEffect()");
         log.stepOut("insect.gEffect()", insect.gEffect());
         log.stepOut("Running test: stunSporeConsumed",null);
+
     }
 
     public void sporulateFurther() {
-        System.out.println("Running test: sporulateFurther");
+        log.stepIn("Running test: sporulateFurther");
         Tekton tekton2 = new Tekton(true, true);
         Tekton tekton3 = new Tekton(true, true);
         tekton1.addNeighbour(tekton2);
@@ -500,19 +505,20 @@ public class Tests {
         FungusBody body2 = new FungusBody(11, 5);
         body2.setTekton(tekton3);
         body2.produceSpore();
+        log.stepIn("body2.sporulate();");
         body2.sporulate();
-        
-        
+        log.stepOut("body2.sporulate();", null);
+       log.stepOut("End of sporulateFurther",null);
     }
 
     public static void main(String[] args) {
-        
+        System.out.println("Starting all tests...");
         displayTests();
         getUserInput();
 
         Tests tests = new Tests();
 
-        System.out.println("Starting all tests...");
+
 
         System.out.println("All tests finished.");
     }
