@@ -89,13 +89,13 @@ public class FungusBody {
         if(isThereEnough()){
             if(sporeCount<10){
                 log.askQ("Body has enough spore to sporulate neighbours", false);
-                log.askQ("Start Cycle", false);
                 if(this.tekton == null){
                     log.askQ("Tekton is null", false);
                     return;
                 }
+                log.askQ("Going through all neighbouring tektons", false);
                 for(Tekton t : tekton.getNeighbours()){
-                    log.askQ("Create Spore : tempspore", false);
+                    log.askQ("Create Spore: tempspore", false);
                     Spore tempSpore = new Spore();
                     log.stepIn("t.addSpore(tempSpore)");
                     t.addSpore(tempSpore);
@@ -111,7 +111,7 @@ public class FungusBody {
             else
                 {
                     log.askQ("Body has enough spore to sporulate neighbours and neighbours's neighbours", false);
-                    log.askQ("Start Cycle", false);
+                    log.askQ("Going through all neighbouring tektons", false);
                     for(Tekton t : tekton.getNeighbours()){
                         log.askQ("Create Spore : tempspore", false);
                         Spore tempSpore = new Spore();
@@ -122,7 +122,7 @@ public class FungusBody {
                         tempSpore.setTekton(t);
                         log.stepOut("tempSpore.setTekton(t)", null);
                         sporeCount--;
-                        log.askQ("Start Cycle", false);
+                        log.askQ("Going through all neighbouring tektons", false);
                         for(Tekton tt: t.getNeighbours()){
                             log.askQ("Create Spore : tempspore2", false);
                             Spore tempSpore2 = new Spore();
@@ -132,6 +132,7 @@ public class FungusBody {
                             log.stepIn("tempSpore2.setTekton(tt)");
                             tempSpore.setTekton(tt);
                             log.stepOut("tempSpore2.setTekton(tt)", null);
+                            sporeCount--;
                         }
                         log.askQ("End Cycle", false);
                     }

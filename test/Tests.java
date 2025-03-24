@@ -331,7 +331,7 @@ public class Tests {
         tekton1.addThread(thread2);
         String key = log.askQ("tud spórát szórni a gombatest? (y/n)", true);
         if(key.equals("y")){
-            body.setTekton(tekton1);            
+            body.setTekton(tekton1);
             tekton1.setBody(body);
             log.stepIn("body.sporulate()");
             body.sporulate();
@@ -341,9 +341,9 @@ public class Tests {
                 FungusBody body2 = new FungusBody(0,3);
                 body2.setTekton(tekton1);
                 tekton1.setBody(body2);
-                log.stepIn("tekton1.getBody().sporulate();");
-                 tekton1.getBody().sporulate();
-                log.stepOut("tekton1.getBody().sporulate();", null);
+                log.stepIn("body2.sporulate();");
+                body2.sporulate();
+                log.stepOut("body2.sporulate();", null);
                 
         } 
     }
@@ -352,6 +352,8 @@ public class Tests {
         log.stepIn("Running test: disableCutSporeConsumed");
 
         Spore dcSpore = new DisableCutSpore();
+        dcSpore.setTekton(tekton1);
+        tekton1.addSpore(dcSpore);
         log.stepIn("insect.consumeSpore(dcSpore)");
         insect.consumeSpore(dcSpore);
         log.stepOut("insect.consumeSpore(dcSpore)", null);
@@ -492,7 +494,7 @@ public class Tests {
         log.stepOut("insect.consumeSpore(ss)", null);
         log.stepIn("insect.gEffect()");
         log.stepOut("insect.gEffect()", insect.gEffect());
-        log.stepOut("Running test: stunSporeConsumed",null);
+        log.stepOut("End of stunSporeConsumed",null);
 
     }
 
@@ -513,7 +515,6 @@ public class Tests {
 
     public static void main(String[] args) {
         System.out.println("Starting all tests...");
-        displayTests();
         getUserInput();
 
         Tests tests = new Tests();
