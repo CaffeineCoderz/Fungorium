@@ -196,6 +196,8 @@ public class FungusBody {
     public Integer getSporeCount(){
         return sporeCount;
     }
-
+    public void setSpecies(FungusSpecies species) {
+        this.species = species;
+    }
     
 }

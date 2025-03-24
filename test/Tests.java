@@ -48,6 +48,7 @@ public class Tests {
             "\t14. InsectMove Success\n" +
             "\t15. StunSporeConsumed\n" +
             "\t16. Sporulate Further\n" +
+            "\t17. Tekton break\n" +
             "\\-----------------------------------------------------------/\n"
         );
     }
@@ -69,7 +70,6 @@ public class Tests {
 
         // Initialize a DecreasingTekton object
         Dtekton = new DecreasingTekton();
-        //System.out.println("DecreasingTekton initialized: " + Dtekton);
 
         // Add some spores to the Tekton
         spore1 = new Spore();
@@ -78,12 +78,12 @@ public class Tests {
         tekton1.addSpore(spore1);
         tekton1.addSpore(spore2);
         tekton1.addSpore(spore3);
-        //System.out.println("Spores added to Tekton: " + tekton1.getSpores().size());
-
+        spore1.setTekton(tekton1);
+        spore2.setTekton(tekton1);
+        spore3.setTekton(tekton1);
         // Initialize the Insect object
         insect = new Insect();
         tekton1.addInsect(insect);
-        //System.out.println("Insect added to Tekton: " + tekton1.insectFree());
 
         // Add a neighbor Tekton
         neighborTekton = new Tekton(false, true);
@@ -96,10 +96,13 @@ public class Tests {
         body = new FungusBody(9, 5);
         tekton1.addThread(thread);
         tekton1.setBody(body);
+        body.setTekton(tekton1);
         //System.out.println("Thread and body added to Tekton.");
 
         // Initialize the FungusSpecies object
         species = new FungusSpecies();
+        thread.setSpecies(species);
+        body.setSpecies(species);
         //System.out.println("FungusSpecies initialized.");
     }
 
@@ -199,6 +202,9 @@ public class Tests {
                 break;
             case 16:
                 tests.sporulateFurther();
+                break;
+            case 17:
+                tests.tektonBreak();
                 break;
             default:
                 System.out.println("Invalid test case number.");
@@ -513,14 +519,23 @@ public class Tests {
        log.stepOut("End of sporulateFurther",null);
     }
 
+    public void tektonBreak(){
+        log.stepIn("Running test: tektonBreak");
+        FungusThread f2 = new FungusThread(null, false);
+        neighborTekton.addThread(f2);
+        f2.setSpecies(species);
+        f2.addTekton(neighborTekton);
+        log.askQ("Tekton has 1 neighbour, 3 spores, 1 thread, 1 body and 1 insect", false);
+        log.stepIn("tekton1.breakTekton()");
+        tekton1.breakTekton();
+        log.stepOut("tekton1.breakTekton()", null);
+        log.stepOut("End of tektonBreak",null);  
+    }
     public static void main(String[] args) {
         System.out.println("Starting all tests...");
         getUserInput();
 
         Tests tests = new Tests();
-
-
-
         System.out.println("All tests finished.");
     }
 }

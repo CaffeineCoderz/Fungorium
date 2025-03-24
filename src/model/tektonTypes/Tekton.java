@@ -277,16 +277,19 @@ public class Tekton{
         }
         log.stepOut("End Cycle",null);
         log.stepIn("Going through all spore in 'spores'");
-        for (Spore spore : spores) {
+        for (int i = spores.size()-1; i>=0;i--) {
+            Spore spore = spores.get(i);
             log.stepIn("spore.absorbed()");
             spore.absorbed();
-            log.stepOut("spore.absorbed()", spore);
+            log.stepOut("spore.absorbed()", null);
         }
         log.stepOut("End Cycle",null);
         log.stepIn("body.getSpecies().destroyBody(body)");
         body.getSpecies().destroyBody(body); 
         log.stepOut("body.getSpecies().destroyBody(body)", null);
+        log.askQ("Create Tekton: t1", false);
         Tekton t1 = new Tekton(this);
+        log.askQ("Create Tekton: t2", false);
         Tekton t2 = new Tekton(this);
 
         log.stepIn("Going through all neigbouring tekton");
