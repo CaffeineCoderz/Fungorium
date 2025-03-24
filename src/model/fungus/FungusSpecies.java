@@ -85,7 +85,7 @@ public class FungusSpecies implements iControl{
     
     /**
      * Adds a FungusThread instance to the list of threads associated with this FungusSpecies and to the given FungusBody, until the Tekton associated with the FungusBody cannot grow any more threads.
-     * 
+     * @param targetTekton the Tekton on wich the thread grows
      * @param body the FungusBody instance to which the FungusThread will be added.
      * @param thread the FungusThread instance to add.
      */
