@@ -143,8 +143,8 @@ public class Insect implements iControl{
                 recentTekton= null;   
            }
            else {
-                              log.askQ("Thread is not a bridge", false);
-                 log.stepIn("ft.getTekton()");
+                log.askQ("Thread is not a bridge", false);
+                log.stepIn("ft.getTekton()");
                 recentTekton = ft.getTekton();
                 log.stepOut("ft.getTekton()", ft.getTekton());
                 
