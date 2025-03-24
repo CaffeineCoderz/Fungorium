@@ -115,6 +115,9 @@ public class FungusSpecies implements iControl{
             oThread.setNextThread(nThread);      
             log.stepOut("oThread.setNextThread(nThread)", null);
         }
+        else{
+            log.askQ("tekton cant have new threads", false);
+        }
     }
     
     // szekvencia módosítás kellhet
@@ -179,8 +182,10 @@ public class FungusSpecies implements iControl{
         log.askQ("thread is not a bridge", false);
         Integer atleast = 2;
         boolean enoughSpore=thread.getTekton().isThereEnoughSpore(atleast);
-        if(!thread.getTekton().canGrowBody())
+        if(!thread.getTekton().canGrowBody()){
+            log.askQ("Tekton already contains a body",false);
             return;
+        }
         if (enoughSpore){
             log.askQ("There are enough spore on the tekton", false);
             log.askQ("Create new Body: fb", false);
@@ -201,6 +206,9 @@ public class FungusSpecies implements iControl{
             log.stepIn("fb.addThread(thread)");
             fb.addThread(thread);
             log.stepOut("fb.addThread(thread)", null);
+        }
+        else{
+            log.askQ("Nincs elegendo spóra", false);
         }
     }
 

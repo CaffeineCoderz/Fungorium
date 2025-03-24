@@ -137,10 +137,13 @@ public class Tekton{
      * @param nbody the FungusBody to set as the associated FungusBody.
      */
     public void setBody(FungusBody nbody) {
-        if(nbody == null)
+        if(nbody == null){
             body=null;
+            canGrowBody=true;
+        }
         else if(body == null){
             this.body = nbody;
+            canGrowBody=false;
         }
         else
             System.out.println("Mar van a tektonon gombatest");

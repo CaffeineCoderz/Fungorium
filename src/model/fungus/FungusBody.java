@@ -90,6 +90,10 @@ public class FungusBody {
             if(sporeCount<10){
                 log.askQ("Body has enough spore to sporulate neighbours", false);
                 log.askQ("Start Cycle", false);
+                if(this.tekton == null){
+                    log.askQ("Tekton is null", false);
+                    return;
+                }
                 for(Tekton t : tekton.getNeighbours()){
                     log.askQ("Create Spore : tempspore", false);
                     Spore tempSpore = new Spore();

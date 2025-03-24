@@ -2,6 +2,7 @@ package sporeTypes;
 
 import insect.Insect;
 import utils.Logger;
+import tektonTypes.*;
 
 public class StunSpore extends Spore{
     
@@ -9,6 +10,9 @@ public class StunSpore extends Spore{
     public StunSpore(){
         
         log = Logger.getLogger("StunSporeLogger");
+    }
+    public StunSpore(Tekton t, int nt){
+        super(t, nt);
     }
     /**
      * Consumes this spore and stuns the given insect.
@@ -28,4 +32,5 @@ public class StunSpore extends Spore{
         absorbed();
         log.stepOut("absorbed()", null);
     }
+
 }
