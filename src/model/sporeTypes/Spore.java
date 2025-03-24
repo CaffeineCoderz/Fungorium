@@ -46,6 +46,9 @@ public class Spore {
     public void setTekton(Tekton tekton) {
         myTekton = tekton;
     }
+    public Tekton getTekton(){
+        return myTekton;
+    }
 
     //Ez a Spore példány pusztulását segíti. Leginkább azért kell, mivel tekton törésnél és elfogyasztásnál is ugyanazok a folyamatok mennek végbe.
     /**
