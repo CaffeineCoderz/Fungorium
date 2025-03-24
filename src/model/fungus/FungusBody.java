@@ -203,4 +203,7 @@ public class FungusBody {
         return sporeCount;
     }
 
+    public void setSpecies(FungusSpecies species) {
+        this.species = species;
+    }
 }

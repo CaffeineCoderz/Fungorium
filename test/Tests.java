@@ -29,25 +29,28 @@ public class Tests {
      */
     public static void displayTests() {
         System.out.println(
-                "/-----------------------------------------------------------\\\n" +
-                        "Choose from the test cases:\n\n" +
-                        "\t1. GrowBody DefTekton_Success\n" +
-                        "\t2. GrowThread OneThreadTekton Success\n" +
-                        "\t3. GrowThread DefTekton\n" +
-                        "\t4. InsectMoveToNewTekton Success\n" +
-                        "\t5. Sporulate Success\n" +
-                        "\t6. DisableCutSporeConsumed\n" +
-                        "\t7. SlowSporeConsumed\n" +
-                        "\t8. InsectCutThreadWhileNoCutAbility\n" +
-                        "\t9. GrowBody Only Thread Tekton\n" +
-                        "\t10. InsectCutThread\n" +
-                        "\t11. SpeedSporeConsumed\n" +
-                        "\t12. InsectMoveWhileStunned\n" +
-                        "\t13. GrowThread Decomposing Tektor\n" +
-                        "\t14. InsectMove Success\n" +
-                        "\t15. StunSporeConsumed\n" +
-                        "\t16. Sporulate Further\n" +
-                        "\\-----------------------------------------------------------/\n");
+            "/-----------------------------------------------------------\\\n" +
+            "Choose from the test cases:\n\n" +
+            "\t1. GrowBody DefTekton_Success\n" +
+            "\t2. GrowThread OneThreadTekton Success\n" +
+            "\t3. GrowThread DefTekton\n" +
+            "\t4. InsectMoveToNewTekton Success\n" +
+            "\t5. Sporulate Success\n" +
+            "\t6. DisableCutSporeConsumed\n" +
+            "\t7. SlowSporeConsumed\n" +
+            "\t8. InsectCutThreadWhileNoCutAbility\n" +
+            "\t9. GrowBody Only Thread Tekton\n" +
+            "\t10. InsectCutThread\n" +
+            "\t11. SpeedSporeConsumed\n" +
+            "\t12. InsectMoveWhileStunned\n" +
+            "\t13. GrowThread Decomposing Tektor\n" +
+            "\t14. InsectMove Success\n" +
+            "\t15. StunSporeConsumed\n" +
+            "\t16. Sporulate Further\n" +
+            "\t17. Tekton break\n" +
+            "\\-----------------------------------------------------------/\n"
+        );
+
     }
 
     /**
@@ -68,7 +71,7 @@ public class Tests {
 
         // Initialize a DecreasingTekton object
         Dtekton = new DecreasingTekton();
-        // System.out.println("DecreasingTekton initialized: " + Dtekton);
+
 
         // Add some spores to the Tekton
         spore1 = new Spore();
@@ -77,12 +80,13 @@ public class Tests {
         tekton1.addSpore(spore1);
         tekton1.addSpore(spore2);
         tekton1.addSpore(spore3);
-        // System.out.println("Spores added to Tekton: " + tekton1.getSpores().size());
 
+        spore1.setTekton(tekton1);
+        spore2.setTekton(tekton1);
+        spore3.setTekton(tekton1);
         // Initialize the Insect object
         insect = new Insect();
         tekton1.addInsect(insect);
-        // System.out.println("Insect added to Tekton: " + tekton1.insectFree());
 
         // Add a neighbor Tekton
         neighborTekton = new Tekton(false, true);
@@ -95,11 +99,14 @@ public class Tests {
         body = new FungusBody(9, 5);
         tekton1.addThread(thread);
         tekton1.setBody(body);
-        // System.out.println("Thread and body added to Tekton.");
+        body.setTekton(tekton1);
+        //System.out.println("Thread and body added to Tekton.");
 
         // Initialize the FungusSpecies object
         species = new FungusSpecies();
-        // System.out.println("FungusSpecies initialized.");
+        thread.setSpecies(species);
+        body.setSpecies(species);
+        //System.out.println("FungusSpecies initialized.");
     }
 
     /**
@@ -139,70 +146,76 @@ public class Tests {
                     System.out.println("Invalid input. Please enter a valid test case number.");
                 }
             }
+        if (testCase == 50) {
+            System.out.println("Exiting test runner.");
+            break;
+        }
 
-            if (testCase == 50) {
-                System.out.println("Exiting test runner.");
+        System.out.println("Running test case: " + testCase);
+
+        tests.reset();
+        tests.setup();
+
+        switch (testCase) {
+            case 1:
+                tests.growBodyDefTektonSuccess();
+                break;
+            case 2:
+                tests.growThreadOneThreadTektonSuccess();
+                break;
+            case 3:
+                tests.growThreadDefTekton();
+                break;
+            case 4:
+                tests.insectMoveToNewTektonSuccess();
+                break;
+            case 5:
+                tests.sporulateSuccess();
+                break;
+            case 6:
+                tests.disableCutSporeConsumed();
+                break;
+            case 7:
+                tests.slowSporeConsumed();
+                break;
+            case 8:
+                tests.insectCutThreadWhileNoCutAbility();
+                break;
+            case 9:
+                tests.growBodyOnlyThreadTekton();
+                break;
+            case 10:
+                tests.insectCutThread();
+                break;
+            case 11:
+                tests.speedSporeConsumed();
+                break;
+            case 12:
+                tests.insectMoveWhileStunned();
+                break;
+            case 13:
+                tests.growThreadDecomposingTektor();
+                break;
+            case 14:
+                tests.insectMoveSuccess();
+                break;
+            case 15:
+                tests.stunSporeConsumed();
+                break;
+            case 16:
+                tests.sporulateFurther();
+                break;
+            case 17:
+                tests.tektonBreak();
+                break;
+            default:
+                System.out.println("Invalid test case number.");
                 break;
             }
 
-            System.out.println("Running test case: " + testCase);
+  
 
-            tests.reset();
-            tests.setup();
-
-            switch (testCase) {
-                case 1:
-                    tests.growBodyDefTektonSuccess();
-                    break;
-                case 2:
-                    tests.growThreadOneThreadTektonSuccess();
-                    break;
-                case 3:
-                    tests.growThreadDefTekton();
-                    break;
-                case 4:
-                    tests.insectMoveToNewTektonSuccess();
-                    break;
-                case 5:
-                    tests.sporulateSuccess();
-                    break;
-                case 6:
-                    tests.disableCutSporeConsumed();
-                    break;
-                case 7:
-                    tests.slowSporeConsumed();
-                    break;
-                case 8:
-                    tests.insectCutThreadWhileNoCutAbility();
-                    break;
-                case 9:
-                    tests.growBodyOnlyThreadTekton();
-                    break;
-                case 10:
-                    tests.insectCutThread();
-                    break;
-                case 11:
-                    tests.speedSporeConsumed();
-                    break;
-                case 12:
-                    tests.insectMoveWhileStunned();
-                    break;
-                case 13:
-                    tests.growThreadDecomposingTektor();
-                    break;
-                case 14:
-                    tests.insectMoveSuccess();
-                    break;
-                case 15:
-                    tests.stunSporeConsumed();
-                    break;
-                case 16:
-                    tests.sporulateFurther();
-                    break;
-                default:
-                    System.out.println("Invalid test case number.");
-                    break;
-            }
+   
         }
 
         scanner.close();
@@ -506,12 +519,23 @@ public class Tests {
         log.stepOut("End of sporulateFurther", null);
     }
 
+    public void tektonBreak(){
+        log.stepIn("Running test: tektonBreak");
+        FungusThread f2 = new FungusThread(null, false);
+        neighborTekton.addThread(f2);
+        f2.setSpecies(species);
+        f2.addTekton(neighborTekton);
+        log.askQ("Tekton has 1 neighbour, 3 spores, 1 thread, 1 body and 1 insect", false);
+        log.stepIn("tekton1.breakTekton()");
+        tekton1.breakTekton();
+        log.stepOut("tekton1.breakTekton()", null);
+        log.stepOut("End of tektonBreak",null);  
+    }
     public static void main(String[] args) {
         System.out.println("Starting all tests...");
         getUserInput();
 
         Tests tests = new Tests();
-
         System.out.println("All tests finished.");
     }
 }

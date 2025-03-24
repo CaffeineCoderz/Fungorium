@@ -170,4 +170,8 @@ public class FungusThread {
         }
     }
 
+    public void setSpecies(FungusSpecies species) {
+        this.species = species;
+    }
+
 }
