@@ -7,8 +7,10 @@ import insect.Insect;
 import sporeTypes.Spore;
 import java.util.ArrayList;
 import java.util.List;
-    // ! NEM TELJES IMPLEMENTÁCIÓ MÉG
+
 import utils.Logger;
+
+
 public class Tekton{
     private Boolean canGrowBody;
     private Boolean canGrowThread;
@@ -247,7 +249,6 @@ public class Tekton{
         return neighbours;
     }
 
-    // ! Not implemented yet
     
     /**
      * Breaks this Tekton into two smaller Tekton objects, removing all associations

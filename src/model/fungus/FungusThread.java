@@ -3,8 +3,9 @@ package fungus;
 import java.util.ArrayList;
 import java.util.List;
 import tektonTypes.Tekton;
+import utils.Logger;
 
-//! NEM TELJES IMPLEMENTÁCIÓ MÉG
+//! NEM TELJES IMPLEMENTACIO MEG
 public class FungusThread {
     private Integer lifeSpan;
     private Boolean bridge;
@@ -12,12 +13,57 @@ public class FungusThread {
     private List<Tekton> tektons;
     private FungusSpecies species;
 
+    private FungusThread prevThread;
+    private FungusThread nextThread;
+
+    private Logger log = Logger.getLogger("FungusThreadLogger");
+
     public FungusThread(Integer lifeSpan, Boolean bridge) {
         this.lifeSpan = lifeSpan;
         this.bridge = bridge;
         this.isDying = false;
         this.species = null;
         this.tektons = new ArrayList<>();
+        prevThread = null;
+        nextThread = null;
+    }
+
+    public FungusThread(Integer lifeSpan, Boolean bridge, FungusThread prev) {
+        this.lifeSpan = lifeSpan;
+        this.bridge = bridge;
+        this.isDying = false;
+        this.species = null;
+        this.tektons = new ArrayList<>();
+        prevThread = prev;
+        nextThread = null;
+    }
+    /**
+     * Sets the previous thread
+     * @param f the previous thread 
+     */
+    public void setPrevThread(FungusThread f){
+        prevThread = f;
+    }
+    /**
+     * Sets the next thread
+     * @param f the next thread
+     */
+    public void setNextThread(FungusThread f){
+        nextThread = f;
+    }
+    /**
+     * Returns the previous thread
+     * @return
+     */
+    public FungusThread getPrev(){
+        return prevThread;
+    }
+    /**
+     * Returns the next thread
+     * @return
+     */
+    public FungusThread getNext(){
+        return nextThread;
     }
 
     /**
@@ -44,6 +90,9 @@ public class FungusThread {
      * isDying flag of this fungus thread to true.
      */
     public void decreaseLife() {
+        if (lifeSpan == 0) {
+            return;
+        }
         lifeSpan--;
         if (lifeSpan <= 0) {
             isDying = true;
@@ -115,7 +164,9 @@ public class FungusThread {
      */
     public void destroy() {
         for (Tekton tekton : tektons) {
+            log.stepIn("tekton.removeThread(this)");
             tekton.removeThread(this);
+            log.stepOut("tekton.removeThread(this)", null);
         }
     }
 

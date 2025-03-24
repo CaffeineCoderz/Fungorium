@@ -7,7 +7,7 @@ public class DecreasingTekton extends Tekton{
 
     public DecreasingTekton(){
         super(true, true);
-        log = Logger.getLogger("DecreasingTektonLogger");
+        Logger log = Logger.getLogger("DecreasingTektonLogger");
     }
 
     /**
