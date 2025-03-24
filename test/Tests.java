@@ -375,6 +375,11 @@ public class Tests {
         Spore dcSpore = new DisableCutSpore();
         insect.consumeSpore(dcSpore);
         dcSpore.consume(insect);
+        log.stepIn("dcSpore.consume(insect);");
+        log.stepOut("dcSpore.consume(insect);", false);
+        log.stepIn("insect.hasCutAbility();");
+        insect.hasCutAbility();
+        log.stepOut("insect.hasCutAbility();", false);
         /* if(!insect.hasCutAbility()){
             System.out.println("Disable Cut Spóra elfogyasztva, hatott a rovarra");
         }
@@ -386,6 +391,12 @@ public class Tests {
         System.out.println("Running test: slowSporeConsumed");
         Spore sSpore = new SlowSpore(tekton1, 10);
         insect.consumeSpore(sSpore);
+        sSpore.consume(insect);
+        log.stepIn("sSpore.consume(insect);");
+        log.stepOut("sSpore.consume(insect);", false);
+        log.stepIn("insect.gEffect();");
+        insect.gEffect();
+        log.stepOut("insect.gEffect();", false);
         /* if(insect.gEffect() == InsectEffects.SLOW){
             System.out.println("Slow Spóra elfogyasztva, hatott a rovarra");
         }
@@ -397,10 +408,16 @@ public class Tests {
         System.out.println("Running test: insectCutThreadWhileNoCutAbility");
         insect.setRecentTekton(tekton1);
         insect.move(thread);
+        log.stepIn("insect.move(thread);");
+        log.stepOut("insect.move(thread);", false);
         insect.disableCut();
+        log.stepIn("insect.disableCut();");
+        log.stepOut("insect.disableCut();", false);
         FungusThread thread2 = new FungusThread(5,false);
         tekton1.addThread(thread2);
         insect.cut(thread2);
+        log.stepIn("insect.cut(thread2);");
+        log.stepOut("insect.cut(thread2);", false);
         /* if(tekton1.getThreads().contains(thread2))
             System.out.println("A fonál elvágása sikertelen a hatás miatt");
         else
@@ -420,6 +437,8 @@ public class Tests {
         //System.out.println("FungusThread hozzáadva az OnlyThreadTektonhoz: " + temp.getThreads().size());
         species.growBody(thread);
         temp.setBody(body);
+        log.stepIn("species.growBody(thread);");
+        log.stepOut("species.growBody(thread);", true);
         
     }
 
@@ -432,7 +451,9 @@ public class Tests {
         thread.addTekton(tekton1);
         tekton2.addThread(thread);
         thread.addTekton(tekton2);
+        log.stepIn("insect.cut(thread);");
         insect.cut(thread);
+        log.stepOut("insect.cut(thread);", false);
         //System.out.println("Test: Insect szálvágása sikeres!");
     }
 
@@ -440,6 +461,12 @@ public class Tests {
         System.out.println("Running test: speedSporeConsumed");
         FastSpore fs = new FastSpore(tekton1,10);
         insect.consumeSpore(fs);
+        fs.consume(insect);
+        log.stepIn("fs.consume(insect);");
+        log.stepOut("fs.consume(insect);", false);
+        log.stepIn("insect.gEffect();");
+        insect.gEffect();
+        log.stepOut("insect.gEffect();", false);
         //System.out.println("Test: SpeedSporeConsumed sikeres!");
     }
 
@@ -453,8 +480,15 @@ public class Tests {
         tekton2.addThread(thread);
         thread.addTekton(tekton2);
         StunSpore ss = new StunSpore(tekton1,10);
+        log.stepIn("insect.consumeSpore(ss);");
         insect.consumeSpore(ss);
+        log.stepOut("insect.consumeSpore(ss);", false);
+        log.stepIn("ss.consume(insect);");
+        ss.consume(insect);
+        log.stepOut("ss.consume(insect);", false);
+        log.stepIn("insect.move(thread);");
         insect.move(thread);
+        log.stepOut("insect.move(thread);", false);
         //System.out.println("Test: InsectMoveWhileStunned sikeres!");
     }
 
@@ -490,7 +524,9 @@ public class Tests {
         insect.setRecentTekton(tekton1);
         tekton1.addThread(thread);
         thread.addTekton(tekton1);
+        log.stepIn("insect.move(thread2);");
         insect.move(thread2);
+        log.stepOut("insect.move(thread2);", true);
         //System.out.println("Test: InsectMove sikeres!");
     }
 
@@ -500,6 +536,12 @@ public class Tests {
         tekton1.addSpore(ss);
         System.out.println("asd "+ss.getTekton());
         insect.consumeSpore(ss);
+        ss.consume(insect);
+        log.stepIn("ss.consume(insect);");
+        log.stepOut("ss.consume(insect);", false);
+        log.stepIn("insect.gEffect();");
+        insect.gEffect();
+        log.stepOut("insect.gEffect();", false);
         //System.out.println("Test: StunSporeConsumed sikeres!");
     }
 
