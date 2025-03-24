@@ -198,10 +198,11 @@ public class FungusSpecies implements iControl {
             thread.getTekton().setBody(fb);
             log.stepOut("thread.getTekton().setBody(fb)", null);
             log.askQ("Start cycle", false);
-            for (Integer i = 0; i < atleast; i++) {
-                log.stepIn("thread.getTekton().removeSpore()");
-                thread.getTekton().removeSpore();
-                log.stepOut("thread.getTekton().removeSpore()", null);
+            for (Integer i =  0; i < atleast; i++) {
+                log.stepIn("thread.getTekton().getSpores().get(i).absorbed();");
+                thread.getTekton().getSpores().get(i).absorbed();
+                log.stepOut("thread.getTekton().getSpores().get(i).absorbed();", null);
+
             }
             log.askQ("End cycle", false);
             log.stepIn("fb.setTekton(thread.getTekton())");
