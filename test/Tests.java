@@ -10,7 +10,7 @@ import tektonTypes.*;
 import utils.*;
 
 public class Tests {
-    
+
     private Logger log;
     private Tekton tekton1;
     private DecreasingTekton Dtekton;
@@ -126,7 +126,7 @@ public class Tests {
     public static void getUserInput() {
         Scanner scanner = new Scanner(System.in);
         Tests tests = new Tests();
-
+        
         while (true) {
             displayTests();
             System.out.println("Enter the test case number (or 50 to exit): ");
@@ -206,29 +206,29 @@ public class Tests {
 
         scanner.close();
     }
-    
-    
+
+
     /**
      * Executes a test case based on the provided test case number.
-     * 
+     *
      * Given a test case number, this method calls the corresponding test method.
      * The switch statement maps test case numbers to their respective methods,
      * allowing different tests to be run based on the input.
-     * 
-     * @param testCase the number representing the test case to execute. If the 
-     * number does not correspond to a valid test case, a message indicating 
+     *
+     * @param testCase the number representing the test case to execute. If the
+     * number does not correspond to a valid test case, a message indicating
      * an invalid test case number is printed.
      */
 
     private void executeTestCase(int testCase) {
-       
+
     }
-    
+
 
     public void growBodyDefTektonSuccess() {
-        
+
         log.stepIn("Running test: growBodyDefTektonSuccess");
-        
+
 
         log.stepIn("species.addThread(thread)");
         species.addThread(thread);
@@ -247,7 +247,7 @@ public class Tests {
         String key = log.askQ("Van-e mar test a tektonon? (y/n)", true);
         if(key.equals("y")){
             log.stepIn("species.growBody(thread2)");
-            species.growBody(thread2);    
+            species.growBody(thread2);
             log.stepOut("species.growBody(thread2)", null);
         }
         else if(key == "n"){
@@ -256,7 +256,7 @@ public class Tests {
                 log.stepIn("tekton1.addSpore(spore1)");
                 tekton1.addSpore(spore1);
                 log.stepOut("tekton1.addSpore(spore1)",null);
-                
+
                 log.stepIn("tekton1.addSpore(spore2)");
                 tekton1.addSpore(spore2);
                 log.stepOut("tekton1.addSpore(spore2)",null);
@@ -286,7 +286,7 @@ public class Tests {
             FungusThread thread2 = new FungusThread(5, false, thread);
             species.growThread(oTekton, thread, thread2);
         }
-        
+
     }
 
     public void growThreadDefTekton() {
@@ -296,7 +296,7 @@ public class Tests {
         if(!tekton1.getThreads().isEmpty()){
             System.out.println("Sikeres fonálnövesztés");
         }
-        
+
     }
 
     public void insectMoveToNewTektonSuccess() {
@@ -324,7 +324,7 @@ public class Tests {
         System.out.println("Running test: sporulateSuccess");
         FungusThread thread2 = new FungusThread(5,false);
         tekton1.addThread(thread2);
-        
+
         Scanner scanner = new Scanner(System.in);
         System.out.println("Tud éppen spórát szórni a gombatest? (y/n)");
         char key = scanner.next().charAt(0);
@@ -343,7 +343,7 @@ public class Tests {
                 if(neighborTekton.getSpores().isEmpty()){
                     System.out.println("A spóraszórás sikertelen.");
                 }
-        } 
+        }
     }
 
     public void disableCutSporeConsumed() {
@@ -403,7 +403,7 @@ public class Tests {
         }
         species.growBody(thread);
         temp.setBody(body);
-        
+
     }
 
     public void insectCutThread() {
@@ -504,12 +504,10 @@ public class Tests {
         else {
             System.out.println("Test: SporulateFurther sikeres!");
         }
-        
     }
 
     public static void main(String[] args) {
-        
-        displayTests();
+        // displayTests();
         getUserInput();
 
         Tests tests = new Tests();
