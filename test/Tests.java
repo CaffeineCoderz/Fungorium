@@ -124,88 +124,94 @@ public class Tests {
     }
 
     public static void getUserInput() {
-        Scanner scanner = new Scanner(System.in);
-        Tests tests = new Tests();
+    Scanner scanner = new Scanner(System.in);
+    Tests tests = new Tests();
 
+    while (true) {
+        displayTests();
+        System.out.println("Enter the test case number (or 50 to exit): ");
+
+        // Érvényes bemenetet kérünk
+        int testCase = -1; // Alapértelmezett érték
         while (true) {
-            displayTests();
-            System.out.println("Enter the test case number (or 50 to exit): ");
-
-            if (!scanner.hasNextInt()) {
+            String input = scanner.nextLine(); // Olvassuk be az egész sort
+            try {
+                testCase = Integer.parseInt(input); // Próbáljuk meg számmá konvertálni
+                break; // Ha sikeres, kilépünk a ciklusból
+            } catch (NumberFormatException e) {
                 System.out.println("Invalid input. Please enter a valid test case number.");
-                scanner.nextInt();
-                continue;
-            }
-
-            int testCase = scanner.nextInt();
-
-            if (testCase == 50) {
-                System.out.println("Exiting test runner.");
-                break;
-            }
-
-            System.out.println("Running test case: " + testCase);
-
-            tests.reset();
-            tests.setup();
-
-            switch (testCase) {
-                case 1:
-                    tests.growBodyDefTektonSuccess();
-                    break;
-                case 2:
-                    tests.growThreadOneThreadTektonSuccess();
-                    break;
-                case 3:
-                    tests.growThreadDefTekton();
-                    break;
-                case 4:
-                    tests.insectMoveToNewTektonSuccess();
-                    break;
-                case 5:
-                    tests.sporulateSuccess();
-                    break;
-                case 6:
-                    tests.disableCutSporeConsumed();
-                    break;
-                case 7:
-                    tests.slowSporeConsumed();
-                    break;
-                case 8:
-                    tests.insectCutThreadWhileNoCutAbility();
-                    break;
-                case 9:
-                    tests.growBodyOnlyThreadTekton();
-                    break;
-                case 10:
-                    tests.insectCutThread();
-                    break;
-                case 11:
-                    tests.speedSporeConsumed();
-                    break;
-                case 12:
-                    tests.insectMoveWhileStunned();
-                    break;
-                case 15:
-                    tests.growThreadDecomposingTektor();
-                    break;
-                case 16:
-                    tests.insectMoveSuccess();
-                    break;
-                case 17:
-                    tests.stunSporeConsumed();
-                    break;
-                case 19:
-                    tests.sporulateFurther();
-                    break;
-                default:
-                    System.out.println("Invalid test case number.");
-                    break;
             }
         }
 
-        scanner.close();
+        if (testCase == 50) {
+            System.out.println("Exiting test runner.");
+            break;
+        }
+
+        System.out.println("Running test case: " + testCase);
+
+        tests.reset();
+        tests.setup();
+
+        switch (testCase) {
+            case 1:
+                tests.growBodyDefTektonSuccess();
+                break;
+            case 2:
+                tests.growThreadOneThreadTektonSuccess();
+                break;
+            case 3:
+                tests.growThreadDefTekton();
+                break;
+            case 4:
+                tests.insectMoveToNewTektonSuccess();
+                break;
+            case 5:
+                tests.sporulateSuccess();
+                break;
+            case 6:
+                tests.disableCutSporeConsumed();
+                break;
+            case 7:
+                tests.slowSporeConsumed();
+                break;
+            case 8:
+                tests.insectCutThreadWhileNoCutAbility();
+                break;
+            case 9:
+                tests.growBodyOnlyThreadTekton();
+                break;
+            case 10:
+                tests.insectCutThread();
+                break;
+            case 11:
+                tests.speedSporeConsumed();
+                break;
+            case 12:
+                tests.insectMoveWhileStunned();
+                break;
+            case 15:
+                tests.growThreadDecomposingTektor();
+                break;
+            case 16:
+                tests.insectMoveSuccess();
+                break;
+            case 17:
+                tests.stunSporeConsumed();
+                break;
+            case 19:
+                tests.sporulateFurther();
+                break;
+            default:
+                System.out.println("Invalid test case number.");
+                break;
+        }
     }
+
+    scanner.close();
+}
+
+    
     
     
     /**
@@ -226,17 +232,15 @@ public class Tests {
     
 
     public void growBodyDefTektonSuccess() {
-        
         log.stepIn("Running test: growBodyDefTektonSuccess");
-        
-
+    
         log.stepIn("species.addThread(thread)");
         species.addThread(thread);
         log.stepOut("species.addThread(thread)", null);
         log.stepIn("tekton1.addThread(thread)");
         tekton1.addThread(thread);
         log.stepOut("tekton1.addThread(thread)", null);
-
+    
         log.stepIn("tekton1.addThread(thread)");
         FungusThread thread2 = new FungusThread(5,false);
         thread.addTekton(tekton1);
@@ -244,15 +248,16 @@ public class Tests {
         thread.addTekton(neighborTekton);
         thread2.addTekton(tekton1);
         tekton1.addThread(thread2);
+        
         String key = log.askQ("Van-e mar test a tektonon? (y/n)", true);
         if(key.equals("y")){
             log.stepIn("species.growBody(thread2)");
             species.growBody(thread2);    
             log.stepOut("species.growBody(thread2)", null);
         }
-        else if(key == "n"){
+        else if(key.equals("n")){
             String key2 = log.askQ("Van a tektonon elég spóra?(y/n)", true);
-            if(key2 == "y"){
+            if(key2.equals("y")){
                 log.stepIn("tekton1.addSpore(spore1)");
                 tekton1.addSpore(spore1);
                 log.stepOut("tekton1.addSpore(spore1)",null);
@@ -260,22 +265,17 @@ public class Tests {
                 log.stepIn("tekton1.addSpore(spore2)");
                 tekton1.addSpore(spore2);
                 log.stepOut("tekton1.addSpore(spore2)",null);
-
+    
                 log.stepIn("species.growBody(thread2)");
                 species.growBody(thread2);
-                /* if(tekton1.getBody()!=null){
-                    System.out.println("Sikeres testnövesztés");
-                } */
             }
-            else if(key2=="n"){
+            else if(key2.equals("n")){
+                log.stepIn("species.growBody(thread2)");
                 species.growBody(thread2);
-                /* if(tekton1.getBody()== null){
-                    System.out.println("Sikertelen testnövesztés");
-                } */
                 log.stepOut("species.growBody(thread2)",null);
             }
         }
-
+        log.stepOut("Running test: growBodyDefTektonSuccess", null);
     }
 
     public void growThreadOneThreadTektonSuccess() {
