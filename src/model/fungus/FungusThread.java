@@ -5,7 +5,6 @@ import java.util.List;
 import tektonTypes.Tekton;
 import utils.Logger;
 
-//! NEM TELJES IMPLEMENTACIO MEG
 public class FungusThread {
     private Integer lifeSpan;
     private Boolean bridge;
@@ -37,32 +36,40 @@ public class FungusThread {
         prevThread = prev;
         nextThread = null;
     }
+
     /**
      * Sets the previous thread
-     * @param f the previous thread 
+     * 
+     * @param f the previous thread
      */
-    public void setPrevThread(FungusThread f){
+    public void setPrevThread(FungusThread f) {
         prevThread = f;
     }
+
     /**
      * Sets the next thread
+     * 
      * @param f the next thread
      */
-    public void setNextThread(FungusThread f){
+    public void setNextThread(FungusThread f) {
         nextThread = f;
     }
+
     /**
      * Returns the previous thread
+     * 
      * @return
      */
-    public FungusThread getPrev(){
+    public FungusThread getPrev() {
         return prevThread;
     }
+
     /**
      * Returns the next thread
+     * 
      * @return
      */
-    public FungusThread getNext(){
+    public FungusThread getNext() {
         return nextThread;
     }
 
@@ -76,13 +83,14 @@ public class FungusThread {
     }
 
     /**
-     * Gets the FungusSpecies that this fungus thread is part of.
+     * Returns the FungusSpecies that this fungus thread is part of.
+     * 
      * @return the FungusSpecies that this fungus thread is part of.
      */
-    public FungusSpecies getSpecies(){
+    public FungusSpecies getSpecies() {
         return species;
     }
-    
+
     /**
      * Decreases the life span of this fungus thread by one.
      * 
@@ -110,7 +118,9 @@ public class FungusThread {
 
     /**
      * Sets the bridge flag of this fungus thread to the given value.
-     * @param bridge true if this fungus thread should be marked as a bridge, false otherwise.
+     * 
+     * @param bridge true if this fungus thread should be marked as a bridge, false
+     *               otherwise.
      */
     public void setBridge(Boolean bridge) {
         this.bridge = bridge;
@@ -119,14 +129,15 @@ public class FungusThread {
     /**
      * Sets the isDying flag of this fungus thread to the given value.
      * 
-     * @param isDying true if this fungus thread should be marked as dying, false otherwise.
+     * @param isDying true if this fungus thread should be marked as dying, false
+     *                otherwise.
      */
     public void setIsDying(Boolean isDying) {
         this.isDying = isDying;
     }
 
     /**
-     * Retrieves the value of the isDying flag of this fungus thread.
+     * Returns the value of the isDying flag of this fungus thread.
      * 
      * @return true if this fungus thread is marked as dying, false otherwise.
      */
@@ -135,7 +146,7 @@ public class FungusThread {
     }
 
     /**
-     * Retrieves the current life span of this fungus thread.
+     * Returns the current life span of this fungus thread.
      * 
      * @return the number of rounds this fungus thread will live.
      */
@@ -144,11 +155,12 @@ public class FungusThread {
     }
 
     /**
-     * Retrieves the first Tekton associated with this fungus thread.
+     * Returns the first Tekton associated with this fungus thread.
      * 
      * Note that this method does not check if the returned Tekton is the
      * only one associated with this fungus thread. If this fungus thread
      * is a bridge, this method will return one of the two associated Tektons.
+     * 
      * @return the first Tekton associated with this fungus thread.
      */
     public Tekton getTekton() {
@@ -156,10 +168,13 @@ public class FungusThread {
     }
 
     /**
-     * Destroys this FungusThread by removing it from all associated Tekton instances.
+     * Destroys this FungusThread by removing it from all associated Tekton
+     * instances.
      *
-     * This method iterates through the list of Tektons associated with this FungusThread,
-     * and calls the removeThread method on each, effectively dissociating this FungusThread
+     * This method iterates through the list of Tektons associated with this
+     * FungusThread,
+     * and calls the removeThread method on each, effectively dissociating this
+     * FungusThread
      * from all Tektons it was previously linked to.
      */
     public void destroy() {
@@ -170,8 +185,12 @@ public class FungusThread {
         }
     }
 
+    /**
+     * Sets the species of this fungusThread.
+     *
+     * @param species The FungusSpecies instance to associate with this fungusThread.
+     */
     public void setSpecies(FungusSpecies species) {
         this.species = species;
     }
-
 }
