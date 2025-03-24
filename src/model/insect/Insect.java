@@ -6,9 +6,9 @@ import sporeTypes.Spore;
 import tektonTypes.Tekton;
 import utils.*;
 
-enum InsectEffects{
-    NORMAL, STUN, NO_CUT, FAST, SLOW
-}
+
+import insect.InsectEffects;
+
 
 public class Insect implements iControl{
     private Integer movingEffectTimer;
@@ -139,15 +139,20 @@ public class Insect implements iControl{
                 log.stepIn("recentTekton.removeInsect(this)");
                 recentTekton.removeInsect(this);
                 log.stepOut("recentTekton.removeInsect(this)", ft);
+                recentTekton= null;   
+           }
+           else {
+                              log.askQ("Thread is not a bridge", false);
+                 log.stepIn("ft.getTekton()");
+                recentTekton = ft.getTekton();
+                log.stepOut("ft.getTekton()", ft.getTekton());
+                
                 log.stepIn("ft.getTekton().addInsect(this)");
                 ft.getTekton().addInsect(this);
                 log.stepOut("ft.getTekton().addInsect(this)", ft);
-                log.stepIn("ft.getTekton()");
-                recentTekton = ft.getTekton();
-                log.stepOut("ft.getTekton()", ft.getTekton());
+                thread = ft;
            }
-           thread = ft;
-        }
+          }
     }
 
     /**
@@ -205,7 +210,7 @@ public class Insect implements iControl{
      */
     @Override
     public void timeElapsed(Integer Round){
-        log.askQ("", false);
+        log.askQ("Decrease timers", false);
         if (onDecreasing){
             log.stepIn("this.decreaseScore(1)");
             this.decreaseScore(1);
@@ -221,5 +226,11 @@ public class Insect implements iControl{
             effect = InsectEffects.NORMAL;
         }
         
+    }
+    public void setThread(FungusThread t){
+        thread= t;
+    }
+    public Tekton getRecent(){
+        return recentTekton;
     }
 }

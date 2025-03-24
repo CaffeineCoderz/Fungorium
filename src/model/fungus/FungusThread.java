@@ -5,7 +5,7 @@ import java.util.List;
 import tektonTypes.Tekton;
 import utils.Logger;
 
-//! NEM TELJES IMPLEMENTÁCIÓ MÉG
+//! NEM TELJES IMPLEMENTACIO MEG
 public class FungusThread {
     private Integer lifeSpan;
     private Boolean bridge;

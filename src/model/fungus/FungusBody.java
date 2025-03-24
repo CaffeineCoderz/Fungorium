@@ -5,7 +5,7 @@ import sporeTypes.Spore;
 import tektonTypes.Tekton;
 import utils.Logger;
 
-//! NEM TELJES IMPLEMENTÁCIÓ MÉG
+//! NEM TELJES IMPLEMENTACIO MEG
 public class FungusBody {
     private Integer sporeCount;
     private Integer sporulateLeft;
@@ -87,18 +87,27 @@ public class FungusBody {
     public void sporulate() {
         // implementáció
         if(isThereEnough()){
-            log.askQ("Start sporulate", false);
-            for(Tekton t : tekton.getNeighbours()){
-                log.askQ("Create new Spore object", false);
-                Spore tempSpore = new Spore();
-                log.stepIn("t.addSpore(tempSpore)");
-                t.addSpore(tempSpore);
-                log.stepOut("t.addSpore(tempSpore)", null);
-                log.stepIn("tempSpore.setTekton(t)");
-                tempSpore.setTekton(t);
-                log.stepOut("tempSpore.setTekton(t)", null);
-                sporeCount--;
+            if(sporeCount<10){
+                for(Tekton t : tekton.getNeighbours()){
+                    Spore tempSpore = new Spore();
+                    t.addSpore(tempSpore);
+                    tempSpore.setTekton(t);
+                }
             }
+            else
+                {
+                    for(Tekton t : tekton.getNeighbours()){
+                        Spore tempSpore = new Spore();
+                        t.addSpore(tempSpore);
+                        tempSpore.setTekton(t);
+                        sporeCount--;
+                        for(Tekton tt: t.getNeighbours()){
+                            Spore tempSpore2 = new Spore();
+                            t.addSpore(tempSpore2);
+                            tempSpore2.setTekton(t);
+                        }
+                    }
+                }
         sporulateLeft--;
         }
         else log.askQ("Fungusbody can't sporulate", false);
