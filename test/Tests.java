@@ -64,15 +64,15 @@ public class Tests {
     public void setup(){
         GameLogic gameLogic = new GameLogic();
         log = Logger.getLogger("TestLogger");
-        System.out.println("Fungorium szimuláció elindult!");
+        //System.out.println("Fungorium szimuláció elindult!");
 
         // Initialize a Tekton object
         tekton1 = new Tekton(true, true);
-        System.out.println("Tekton initialized: " + tekton1);
+        //System.out.println("Tekton initialized: " + tekton1);
 
         // Initialize a DecreasingTekton object
         Dtekton = new DecreasingTekton();
-        System.out.println("DecreasingTekton initialized: " + Dtekton);
+        //System.out.println("DecreasingTekton initialized: " + Dtekton);
 
         // Add some spores to the Tekton
         spore1 = new Spore();
@@ -81,28 +81,28 @@ public class Tests {
         tekton1.addSpore(spore1);
         tekton1.addSpore(spore2);
         tekton1.addSpore(spore3);
-        System.out.println("Spores added to Tekton: " + tekton1.getSpores().size());
+        //System.out.println("Spores added to Tekton: " + tekton1.getSpores().size());
 
         // Initialize the Insect object
         insect = new Insect();
         tekton1.addInsect(insect);
-        System.out.println("Insect added to Tekton: " + tekton1.insectFree());
+        //System.out.println("Insect added to Tekton: " + tekton1.insectFree());
 
         // Add a neighbor Tekton
         neighborTekton = new Tekton(false, true);
         tekton1.addNeighbour(neighborTekton);
-        System.out.println("Neighbor Tekton added: " + tekton1.getNeighbours().size());
+        //System.out.println("Neighbor Tekton added: " + tekton1.getNeighbours().size());
 
         // Add a thread and body to the Tekton
         thread = new FungusThread(15, true);
         body = new FungusBody(9, 5);
         tekton1.addThread(thread);
         tekton1.setBody(body);
-        System.out.println("Thread and body added to Tekton.");
+        //System.out.println("Thread and body added to Tekton.");
 
         // Initialize the FungusSpecies object
         species = new FungusSpecies();
-        System.out.println("FungusSpecies initialized.");
+        //System.out.println("FungusSpecies initialized.");
     }
 
     /**
