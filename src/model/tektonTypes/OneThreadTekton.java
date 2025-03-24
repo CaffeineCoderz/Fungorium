@@ -1,27 +1,28 @@
 package tektonTypes;
+
 import fungus.FungusThread;
-import utils.*;
+import utils.Logger;
+
 public class OneThreadTekton extends Tekton {
     public OneThreadTekton() {
         super(true, true);
         log = Logger.getLogger("OneThreadTektonLogger");
     }
-    /**
-     * Adds a FungusThread instance to the list of threads associated with this OneThreadTekton.
-     * 
-     * If the list of associated threads is empty, the FungusThread is added to the list.
-     * Otherwise, the method simply returns without adding the FungusThread.
-     * @param f the FungusThread instance to be added.
-     */
+
     @Override
-    public void addThread(FungusThread f){
-        if(getThreads().isEmpty()){
-            log.askQ("There is no thread on tekton", false);
+    public void addThread(FungusThread f) {
+        if (canGrowThread() || getThreads().contains(f.getPrev())) {
+            log.askQ("tekton has no thread", false);
             log.stepIn("getThreads().add(f)");
-            log.stepOut("getThreads().add(f)", getThreads().add(f));
-        } else{
-            log.askQ("There is a thread on the tekton", false);
-            return;
-        }
+            getThreads().add(f);
+            log.stepOut("getThreads().add(f)", null);
+            if (canGrowThread()) {
+                log.askQ("Can grow thread", false);
+                log.stepIn("setGrowThread(false)");
+                setGrowThread(false);
+                log.stepOut("setGrowThread(false)", null);
+            }
+        } else
+            log.askQ("tekton already has a thread", false);
     }
 }
