@@ -4,7 +4,6 @@ import insect.Insect;
 import utils.*;
 
 public class DisableCutSpore extends Spore {
-    
     public DisableCutSpore(){
         log = Logger.getLogger("DisableCutSpore");
     }
