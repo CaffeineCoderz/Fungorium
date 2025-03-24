@@ -38,9 +38,11 @@ public class Logger {
         printIndentation();
         System.out.printf("<-- %s%n", functionName);
         if (pReturn != null) {
-            System.out.printf("Returned: %s%n (%s)", pReturn, pReturn.getClass().toString());
+            printIndentation();
+            System.out.printf("Returned: %s (%s)%n", pReturn, pReturn.getClass().toString());
         } else {
-            System.out.printf("No return value");
+            printIndentation();
+            System.out.printf("No return value %n");
         }
     }
 
