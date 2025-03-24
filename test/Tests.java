@@ -212,10 +212,6 @@ public class Tests {
                 System.out.println("Invalid test case number.");
                 break;
             }
-
-  
-
-   
         }
 
         scanner.close();

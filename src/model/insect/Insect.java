@@ -32,10 +32,11 @@ public class Insect implements iControl{
         this.effect = InsectEffects.NORMAL;
     }
 
-    
-
-    
-
+    /**
+     * Retrieves the current effect applied to the insect.
+     * 
+     * @return the current InsectEffects enum representing the effect.
+     */
     public InsectEffects gEffect(){
         return effect;
     }
@@ -227,9 +228,19 @@ public class Insect implements iControl{
         }
         
     }
+
+    /**
+     * Sets the FungusThread object that this insect is on.
+     * @param t the FungusThread object that this insect is on.
+     */
     public void setThread(FungusThread t){
         thread= t;
     }
+    /**
+     * Returns the Tekton object that the insect was on in the previous turn.
+     * This is useful for determining which Tekton the insect moved from.
+     * @return the Tekton object that the insect was on in the previous turn.
+     */
     public Tekton getRecent(){
         return recentTekton;
     }
