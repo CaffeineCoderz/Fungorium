@@ -46,6 +46,12 @@ public class Spore {
     public void setTekton(Tekton tekton) {
         myTekton = tekton;
     }
+    /**
+     * Retrieves the Tekton object associated with this Spore.
+     *
+     * @return the Tekton object where this Spore is located, or null if not set.
+     */
+
     public Tekton getTekton(){
         return myTekton;
     }
