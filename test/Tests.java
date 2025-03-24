@@ -222,7 +222,7 @@ public class Tests {
     }
 
     /**
-     * Executes a test case based on the provided test case number.
+     * Executes a test case based on the provided test case number
      * 
      * Given a test case number, this method calls the corresponding test method.
      * The switch statement maps test case numbers to their respective methods,
