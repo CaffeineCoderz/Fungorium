@@ -88,12 +88,6 @@ public class FungusSpecies implements iControl {
     }
 
     /**
-<<<<<<< HEAD
-     * Adds a FungusThread instance to the list of threads associated with this FungusSpecies and to the given FungusBody, until the Tekton associated with the FungusBody cannot grow any more threads.
-     * @param targetTekton the Tekton on wich the thread grows
-     * @param body the FungusBody instance to which the FungusThread will be added.
-     * @param thread the FungusThread instance to add.
-=======
      * Attempts to add a new FungusThread instance to the target Tekton if it can
      * grow additional threads.
      * This method ensures that the new thread is properly linked to the existing
@@ -104,7 +98,6 @@ public class FungusSpecies implements iControl {
      * @param oThread      The existing FungusThread that will be linked to the new
      *                     thread.
      * @param nThread      The new FungusThread instance to be added.
->>>>>>> origin/Main
      */
     public void growThread(Tekton targetTekton, FungusThread oThread, FungusThread nThread) {
         if (targetTekton.canGrowThread()) {
@@ -209,7 +202,6 @@ public class FungusSpecies implements iControl {
                 log.stepIn("thread.getTekton().getSpores().get(i).absorbed();");
                 thread.getTekton().getSpores().get(i).absorbed();
                 log.stepOut("thread.getTekton().getSpores().get(i).absorbed();", null);
-
             }
             log.askQ("End cycle", false);
             log.stepIn("fb.setTekton(thread.getTekton())");
@@ -325,8 +317,9 @@ public class FungusSpecies implements iControl {
      * 
      * @param fb the FungusBody instance to be destroyed.
      */
-    public void destroyBody(FungusBody fb) {
-        log.askQ("Start cycle", false);
+    public void destroyBody(FungusBody fb){
+        log.askQ("Going through all threads of FungusBody", false);
+
         for (FungusThread ft : fb.getThreads()) {
             log.stepIn("destroyThread(ft);");
             destroyThread(ft);
