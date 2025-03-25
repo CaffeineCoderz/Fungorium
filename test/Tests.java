@@ -34,20 +34,19 @@ public class Tests {
             "\t1. GrowBody DefTekton_Success\n" +
             "\t2. GrowThread OneThreadTekton Success\n" +
             "\t3. GrowThread DefTekton\n" +
-            "\t4. InsectMoveToNewTekton Success\n" +
-            "\t5. Sporulate Success\n" +
-            "\t6. DisableCutSporeConsumed\n" +
-            "\t7. SlowSporeConsumed\n" +
-            "\t8. InsectCutThreadWhileNoCutAbility\n" +
-            "\t9. GrowBody Only Thread Tekton\n" +
-            "\t10. InsectCutThread\n" +
-            "\t11. SpeedSporeConsumed\n" +
-            "\t12. InsectMoveWhileStunned\n" +
-            "\t13. GrowThread Decomposing Tektor\n" +
-            "\t14. InsectMove Success\n" +
-            "\t15. StunSporeConsumed\n" +
-            "\t16. Sporulate Further\n" +
-            "\t17. Tekton break\n" +
+            "\t4. Sporulate Success\n" +
+            "\t5. DisableCutSporeConsumed\n" +
+            "\t6. SlowSporeConsumed\n" +
+            "\t7. InsectCutThreadWhileNoCutAbility\n" +
+            "\t8. GrowBody Only Thread Tekton\n" +
+            "\t9. InsectCutThread\n" +
+            "\t10. SpeedSporeConsumed\n" +
+            "\t11. InsectMoveWhileStunned\n" +
+            "\t12. GrowThread Decomposing Tektor\n" +
+            "\t13. InsectMove Success\n" +
+            "\t14. StunSporeConsumed\n" +
+            "\t15. Sporulate Further\n" +
+            "\t16. Tekton break\n" +
             "\\-----------------------------------------------------------/\n"
         );
 
@@ -167,45 +166,42 @@ public class Tests {
                 tests.growThreadDefTekton();
                 break;
             case 4:
-                tests.insectMoveToNewTektonSuccess();
-                break;
-            case 5:
                 tests.sporulateSuccess();
                 break;
-            case 6:
+            case 5:
                 tests.disableCutSporeConsumed();
                 break;
-            case 7:
+            case 6:
                 tests.slowSporeConsumed();
                 break;
-            case 8:
+            case 7:
                 tests.insectCutThreadWhileNoCutAbility();
                 break;
-            case 9:
+            case 8:
                 tests.growBodyOnlyThreadTekton();
                 break;
-            case 10:
+            case 9:
                 tests.insectCutThread();
                 break;
-            case 11:
+            case 10:
                 tests.speedSporeConsumed();
                 break;
-            case 12:
+            case 11:
                 tests.insectMoveWhileStunned();
                 break;
-            case 13:
+            case 12:
                 tests.growThreadDecomposingTektor();
                 break;
-            case 14:
+            case 13:
                 tests.insectMoveSuccess();
                 break;
-            case 15:
+            case 14:
                 tests.stunSporeConsumed();
                 break;
-            case 16:
+            case 15:
                 tests.sporulateFurther();
                 break;
-            case 17:
+            case 16:
                 tests.tektonBreak();
                 break;
             default:
@@ -304,31 +300,6 @@ public class Tests {
         log.stepOut("species.growThread(tekton1, thread, thread2);", null);
 
         log.stepOut("End of growThreadDefTekton", null);
-    }
-
-    public void insectMoveToNewTektonSuccess() {
-        log.stepIn("Running test: insectMoveToNewTektonSuccess");
-        FungusThread thread0 = new FungusThread(5, false);
-        neighborTekton.addThread(thread0);
-
-        thread.setPrevThread(thread0);
-        tekton1.addThread(thread);
-        thread.addTekton(tekton1);
-        neighborTekton.addThread(thread);
-        insect.setThread(thread0);
-        insect.setRecentTekton(neighborTekton);
-        FungusThread thread2 = new FungusThread(5, false, thread);
-        tekton1.addThread(thread2);
-        thread2.addTekton(tekton1);
-        log.stepIn("insect.move(thread)");
-        insect.move(thread);
-        log.stepOut("insect.move(thread)", null);
-
-        log.stepIn("insect.move(thread2)");
-        insect.move(thread2);
-        log.stepOut("insect.move(thread2)", null);
-
-        log.stepOut("End of insectMoveToNewTektonSuccess", null);
     }
 
     public void sporulateSuccess() {
