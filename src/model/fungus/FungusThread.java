@@ -11,6 +11,7 @@ public class FungusThread {
     private Boolean isDying;
     private List<Tekton> tektons;
     private FungusSpecies species;
+    private FungusBody body;
 
     private FungusThread prevThread;
     private FungusThread nextThread;
@@ -35,6 +36,10 @@ public class FungusThread {
         this.tektons = new ArrayList<>();
         prevThread = prev;
         nextThread = null;
+        if(prev!=null)
+            body = prev.getBody();
+        else
+            body =null;
     }
 
     /**
@@ -64,6 +69,20 @@ public class FungusThread {
         return prevThread;
     }
 
+    /**
+     * Returns the body from which the thread grows originaly
+     * @return
+     */
+    public FungusBody getBody(){
+        return body;
+    }
+    /**
+     * Sets the body
+     * @param nBody
+     */
+    public void setBody(FungusBody nBody){
+        body = nBody;
+    }
     /**
      * Returns the next thread
      * 
