@@ -306,6 +306,8 @@ public class Insect{
     /**
      * The insect dies. It is called when the Tekton breaks and the insect is present on it. 
      */
+
+    // ! Ha mégis tároljuk majd a fonalakon a rovarokat akkor függvény kell jelenleg ennyi
     public void deadInsect(){
         mySpecies.removeInsect(this);
         thread = null;
