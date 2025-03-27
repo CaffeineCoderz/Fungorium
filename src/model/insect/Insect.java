@@ -249,7 +249,7 @@ public class Insect{
         if (onDecreasing) {
             log.stepIn("this.decreaseScore(1)");
             this.decreaseScore(1);
-            log.stepOut("this.decreaseScore(1)", Round);
+            log.stepOut("this.decreaseScore(1)", null);
         }
         if (movingEffectTimer > 0) {
             movingEffectTimer--;
