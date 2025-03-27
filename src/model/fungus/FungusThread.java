@@ -5,6 +5,9 @@ import java.util.List;
 import tektonTypes.Tekton;
 import utils.Logger;
 
+// ! - Az elrágott fonalak nem pusztulnak el azonnal, hanem csak egy kis idő elteltével (ez fonaltípustól függő idő). 
+// ! A fonalak képesek megenni a tektonjukon található bénult rovarokat. Ilyenkor a rovar elpusztul, a fonal pedig gombatestet növeszthet.
+
 public class FungusThread {
     private Integer lifeSpan;
     private Boolean bridge;
@@ -36,10 +39,10 @@ public class FungusThread {
         this.tektons = new ArrayList<>();
         prevThread = prev;
         nextThread = null;
-        if(prev!=null)
+        if (prev != null)
             body = prev.getBody();
         else
-            body =null;
+            body = null;
     }
 
     /**
@@ -71,18 +74,22 @@ public class FungusThread {
 
     /**
      * Returns the body from which the thread grows originaly
+     * 
      * @return
      */
-    public FungusBody getBody(){
+    public FungusBody getBody() {
         return body;
     }
+
     /**
      * Sets the body
+     * 
      * @param nBody
      */
-    public void setBody(FungusBody nBody){
+    public void setBody(FungusBody nBody) {
         body = nBody;
     }
+
     /**
      * Returns the next thread
      * 
@@ -207,7 +214,8 @@ public class FungusThread {
     /**
      * Sets the species of this fungusThread.
      *
-     * @param species The FungusSpecies instance to associate with this fungusThread.
+     * @param species The FungusSpecies instance to associate with this
+     *                fungusThread.
      */
     public void setSpecies(FungusSpecies species) {
         this.species = species;
