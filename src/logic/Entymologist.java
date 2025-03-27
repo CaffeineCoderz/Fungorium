@@ -1,17 +1,19 @@
 package logic;
 
+import fungus.FungusSpecies;
+import fungus.FungusThread;
 import insect.Insect;
 import insect.InsectSpecies;
 import sporeTypes.Spore;
 
 public class Entymologist {
-    InsectSpecies mySpecies;
+    private InsectSpecies mySpecies;
 
-    public void setSpecies(FungusSpecies species) {
+    public void setSpecies(InsectSpecies species) {
         mySpecies = species;
     }
 
-    public FungusSpecies getSpecies() {
+    public InsectSpecies getSpecies() {
         return mySpecies;
     }
 
@@ -21,11 +23,12 @@ public class Entymologist {
                 selectedInsect.move(selectedThread);
             }
         }
-
+    }
+    
     public void eat(Insect selectedInsect, Spore selectedSpore) {
         for(Insect insect : mySpecies.getInsects()) {
             if(insect == selectedInsect) {
-                selectedInsect.eat(selectedSpore);
+                selectedInsect.consumeSpore(selectedSpore);
             }
         }
     }

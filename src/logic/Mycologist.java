@@ -20,7 +20,7 @@ public class Mycologist {
     }
     
     public void grow(FungusThread selectedThread) {
-        mySpecies.growBody(thread);
+        mySpecies.growBody(selectedThread);
     }
 
     public void setThread(FungusThread selectedThread, FungusThread newThread) {

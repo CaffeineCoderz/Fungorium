@@ -5,7 +5,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -21,8 +20,9 @@ import utils.*;
 
 // ! Commands:
 //      create <objecttype> <name>
-//      delete<name>
-//      load<filename>
+//      delete <name>
+//      load <filename>
+//      grow <FungusThread name>
 //      exit
 //* Typne names:
 //? Default:
@@ -49,20 +49,23 @@ import utils.*;
 // Delete parancsok implementálása az osztályokban!!
 
 // TODO parancsok
+// Status: állapot lekérdezés
 // Set: kezelés osztályonként
-// Move: kezelés osztályonként
-// grow
-// cut
-// sporulate <FungusBody>
-// eat <Spore>
+// Move: <FungusThread> <Tekton(hová)>?????
+// Move: <Insect> <Tekton/Thread(hová)>?????
 // kill <Insect>
+// ? Needs Review
+// cut <FungusThread>
+// sporulate <FungusBody>
+// eat <Spore> <Insect>
+// !IN PROGRESS
+// grow <FungusThread name> 
 
 public class CommandProcessor {
     private Map<String, Object> createdObjects = new HashMap<>();
 
     /*
      * Parancsok folyamatos kérése
-     * 
      */
     public void start() {
         Scanner scanner = new Scanner(System.in);
@@ -84,7 +87,11 @@ public class CommandProcessor {
         System.out.println("Parancsok:");
         System.out.println("create <objecttype> <name> \t creates an object with the given name");
         System.out.println("delete <name> \t\t\t deletes the object with the given name");
-        System.out.println("load <filename> \t\t loads and processes the commands from the given file");
+        System.out.println("load <filename> \t\t loads the commands from the given file");
+        System.out.println("cut <FungusThread> <Insect> \t cuts a thread with the selected insect");
+        System.out.println("eat <Spore> <Insect> \t\t eats a spore with the selected insect");
+        System.out.println("grow <FungusThread> \t\t grows a thread");
+        System.out.println("sporulate <FungusBody> \t\t sporulates with the selected body");
         System.out.println("exit \t\t\t\t exits the program");
     }
 
@@ -105,6 +112,24 @@ public class CommandProcessor {
             processCreateCommand(parts);
         } else if ("delete".equals(command)) {
             processDeleteCommand(parts);
+        } else if ("set".equals(command)) {
+            // processSetCommand(parts);
+        } else if ("status".equals(command)) {
+            // processStatusCommand(parts);
+        } else if ("cut".equals(command)) {
+            // processStatusCommand(parts);
+        } else if ("sporulate".equals(command)) {
+            // processStatusCommand(parts);
+        } else if ("sporulate".equals(command)) {
+            // processSporulateCommand(parts);
+        } else if ("eat".equals(command)) {
+            // processEatCommand(parts);
+        } else if ("kill".equals(command)) {
+            // processKillCommand(parts);
+        } else if ("move".equals(command)) {
+            // processMoveCommand(parts);
+        } else if ("grow".equals(command)) {
+            processGrowCommand(parts);
         } else {
             System.out.println("Ismeretlen parancs: " + command);
         }
@@ -264,6 +289,163 @@ public class CommandProcessor {
 
         // Töröljük az objektumot a HashMap-ből
         createdObjects.remove(name);
+    }
+
+    /*
+     * Grow parancs formája: grow <FungusThread>
+     * Példa: grow th1
+     * 
+     * @param parts: parancs részei
+     */
+    public void processGrowCommand(String[] parts) {
+        if (parts.length < 2) {
+            System.out.println("Hibás grow parancs! Használat: grow <Tekton>");
+            return;
+        }
+
+        String name = parts[1];
+
+        if (!createdObjects.containsKey(name)) {
+            System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + name);
+            return;
+        }
+
+        Object obj = createdObjects.get(name);
+        if (obj instanceof FungusThread) {
+            FungusThread thread = (FungusThread) obj;
+            // ! még nincs kipróbálva de sztem így működik
+            thread.getSpecies().growBody(thread);
+            System.out.println("A tekton nőtt!");
+        } else {
+            System.out.println("Hiba: Nem lehet növeszteni ezt az objektumot: " + name);
+        }
+    }
+
+    public void processEatCommand(String[] parts) {
+        if (parts.length < 2) {
+            System.out.println("Hibás eat parancs! Használat: eat <Spore> <Insect>");
+            return;
+        }
+
+        String SporeName = parts[1];
+        String InsectName = parts[2];
+
+        if (!createdObjects.containsKey(SporeName)) {
+            System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + SporeName);
+            return;
+        }
+
+        if (!createdObjects.containsKey(InsectName)) {
+            System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + InsectName);
+            return;
+        }
+
+        Object objSpore = createdObjects.get(SporeName);
+        Object objInsect = createdObjects.get(InsectName);
+
+        if (objInsect instanceof Insect) {
+            Insect insect = (Insect) objInsect;
+            Spore spore = (Spore) objSpore;
+            insect.consumeSpore(spore);
+            System.out.println("Az Insect megette a Spore-t!");
+        } else {
+            System.out.println("Hiba: Ez az objektum nem ehető: " + objSpore);
+        }
+    }
+
+    /*
+     * Grow parancs formája: sporulate <FungusBody>
+     * Példa: sporulate b1
+     * 
+     * @param parts: parancs részei
+     */
+    public void processSporulateCommand(String[] parts) {
+        if (parts.length < 2) {
+            System.out.println("Hibás sporulate parancs! Használat: sporulate <FungusBody>");
+            return;
+        }
+
+        String name = parts[1];
+
+        if (!createdObjects.containsKey(name)) {
+            System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + name);
+            return;
+        }
+
+        Object obj = createdObjects.get(name);
+        if (obj instanceof FungusBody) {
+            FungusBody body = (FungusBody) obj;
+            body.sporulate();
+            System.out.println("A FungusBody sporulált!");
+        } else {
+            System.out.println("Hiba: Nem lehet sporulálni ezt az objektumot: " + name);
+        }
+    }
+
+    /*
+     * Grow parancs formája: cut <FungusThread> <Insect>
+     * Példa: cut th1 i1
+     * 
+     * @param parts: parancs részei
+     */
+    public void processCutCommand(String[] parts) {
+        if (parts.length < 2) {
+            System.out.println("Hibás cut parancs! Használat: cut  <FungusThread> <Insect>");
+            return;
+        }
+
+        String ThreadName = parts[1];
+        String InsectName = parts[2];
+
+        if (!createdObjects.containsKey(ThreadName)) {
+            System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + ThreadName);
+            return;
+        }
+
+        if (!createdObjects.containsKey(InsectName)) {
+            System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + InsectName);
+            return;
+        }
+
+        Object objThread = createdObjects.get(ThreadName);
+        Object objInsect = createdObjects.get(InsectName);
+        if (objThread instanceof FungusThread && objInsect instanceof Insect) {
+            FungusThread thread = (FungusThread) objThread;
+            Insect insect = (Insect) objInsect;
+            insect.cut(thread);
+            System.out.println("A FungusThread el lett vágva!");
+        } else {
+            System.out.println("Hiba: Nem lehet vágni ezt az objektumot: " + ThreadName);
+        }
+    }
+
+    /*
+     * Grow parancs formája: kill <Insect>
+     * Példa: kill i1
+     * 
+     * @param parts: parancs részei
+     */
+    public void processKillCommand(String[] parts) {
+        if (parts.length < 2) {
+            System.out.println("Hibás kill parancs! Használat: kill <Insect>");
+            return;
+        }
+
+        String name = parts[1];
+
+        if (!createdObjects.containsKey(name)) {
+            System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + name);
+            return;
+        }
+
+        Object obj = createdObjects.get(name);
+        if (obj instanceof Insect) {
+            Insect insect = (Insect) obj;
+            insect.deadInsect();
+            System.out.println("Az Insect meghalt!");
+        } else {
+            System.out.println("Hiba: Nem lehet megölni ezt az objektumot: " + name);
+        }
     }
 
     /*

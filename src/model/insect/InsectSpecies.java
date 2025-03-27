@@ -17,6 +17,10 @@ public class InsectSpecies implements iControl{
         myInsects.add(firstInsect);
     }
 
+    public List<Insect> getInsects() {
+        return myInsects;
+    }
+
     public void addInsect(Insect e) {
         myInsects.add(e);
     }
