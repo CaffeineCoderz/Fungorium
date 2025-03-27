@@ -1,6 +1,6 @@
 package sporeTypes;
 
-import model.insect.Insect;
+import insect.Insect;
 import sporeTypes.Spore;
 import utils.*;
 

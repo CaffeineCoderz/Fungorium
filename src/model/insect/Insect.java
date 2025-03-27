@@ -249,7 +249,7 @@ public class Insect{
         if (onDecreasing) {
             log.stepIn("this.decreaseScore(1)");
             this.decreaseScore(1);
-            log.stepOut("this.decreaseScore(1)", Round);
+            log.stepOut("this.decreaseScore(1)", null);
         }
         if (movingEffectTimer > 0) {
             movingEffectTimer--;
@@ -300,6 +300,14 @@ public class Insect{
         recentTekton.removeInsect(this);
         log.stepOut("recentTekton.removeInsect(this)", null);
         recentTekton = null;
+        thread = null;
+    }
+
+    /**
+     * The insect dies. It is called when the Tekton breaks and the insect is present on it. 
+     */
+    public void deadInsect(){
+        mySpecies.removeInsect(this);
         thread = null;
     }
 }
