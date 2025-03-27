@@ -2,6 +2,8 @@ package fungus;
 import interfaces.iControl;
 import java.util.ArrayList;
 import java.util.List;
+
+import tektonTypes.FeedThreadTekton;
 import tektonTypes.Tekton;
 import utils.Logger;
 
@@ -254,7 +256,11 @@ public class FungusSpecies implements iControl{
         log.askQ("End Cycle", false);
         log.askQ("Start Cycle", false);
         for (FungusThread thread : threads) {
+<<<<<<< Updated upstream
             if(thread.getLifeSpan() > 0){
+=======
+            if (thread.getLifeSpan() > 0 && !(thread.getTekton() instanceof FeedThreadTekton)) {
+>>>>>>> Stashed changes
                 log.askQ("Has remaining lifespan", false);
                 log.stepIn("thread.decreaseLife()");
                 thread.decreaseLife();
