@@ -1,7 +1,7 @@
 package sporeTypes;
 
 import insect.Insect;
-import model.tektonTypes.Tekton;
+import tektonTypes.Tekton;
 import utils.*;
 
 public class DisableCutSpore extends Spore {
