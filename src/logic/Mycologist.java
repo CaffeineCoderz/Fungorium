@@ -5,7 +5,8 @@ import fungus.FungusSpecies;
 import fungus.FungusThread;
 
 public class Mycologist {
-    FungusSpecies mySpecies;
+    private FungusSpecies mySpecies;
+
     public Mycologist(FungusSpecies species) {
         mySpecies = species;
     }
@@ -18,15 +19,16 @@ public class Mycologist {
         mySpecies = species;
     }
     
-    public void grow(FungusThread thread) {
+    public void grow(Tekton selectedTekton, FungusThread newThread) {
         mySpecies.growBody(thread);
+        // ! ide valahogy a selectedTekton-t is be kellene tenni
     }
 
-    public void setThread(Tekton tekton, FungusThread selectedThread, FungusThread newThread) {
-        mySpecies.growThread(tekton, selectedThread, newThread);
+    public void setThread(Tekton selectedTekton,, FungusThread selectedThread, FungusThread newThread) {
+        mySpecies.growThread(selectedTekton, selectedThread, newThread);
     }
 
-    public void killInsect(FungusThread thread) {
-        
+    public void kill(Insect selectedInsect, FungusThread selectedThread) {
+        // ! ide nincs jelenleg nálam függvény ami használható lett volna
     }
 }
