@@ -12,6 +12,7 @@ public class FastSpore extends Spore {
 
     public FastSpore(Tekton t, int v) {
         super(t, v);
+        log = Logger.getLogger("FastSporeLogger");
     }
 
     @Override

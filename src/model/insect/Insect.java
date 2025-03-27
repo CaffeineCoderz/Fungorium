@@ -7,19 +7,21 @@ import tektonTypes.Tekton;
 import utils.*;
 
 import insect.InsectEffects;
+import insect.InsectSpecies;
 
 // ! - Az elrágott fonalak nem pusztulnak el azonnal, hanem csak egy kis idő elteltével (ez fonaltípustól függő idő). 
 // ! A fonalak képesek megenni a tektonjukon található bénult rovarokat. Ilyenkor a rovar elpusztul, a fonal pedig gombatestet növeszthet.
 
-public class Insect implements iControl {
+public class Insect{
     private Integer movingEffectTimer;
     private Integer abilityEffectTimer;
     private Boolean canCut;
     private InsectEffects effect;
     private Boolean onDecreasing;
-    private Integer score;
+    
     private Tekton recentTekton;
     private FungusThread thread;
+    private InsectSpecies mySpecies;
 
     private Logger log = Logger.getLogger("InsectLogger");
 
@@ -28,9 +30,22 @@ public class Insect implements iControl {
         this.abilityEffectTimer = 0;
         this.canCut = true;
         this.onDecreasing = false;
-        this.score = 0;
         this.recentTekton = null;
         this.effect = InsectEffects.NORMAL;
+    }
+    public Insect(Insect i){
+        this.canCut = true;
+        this.onDecreasing = i.onDecreasing;
+        this.recentTekton = i.recentTekton;
+        this.thread = i.thread;
+        this.mySpecies = i.mySpecies;
+    }
+
+    public void setMySpecies(InsectSpecies my){
+        mySpecies = my;
+    }
+    public InsectSpecies getMySpecies(){
+        return mySpecies;
     }
 
     /**
@@ -207,9 +222,8 @@ public class Insect implements iControl {
      *
      * @param x the amount by which the score is to be increased.
      */
-    @Override
     public void addScore(Integer x) {
-        score += x;
+        mySpecies.addScore(x);
     }
 
     /**
@@ -217,9 +231,8 @@ public class Insect implements iControl {
      *
      * @param x the amount by which the score is to be decreased.
      */
-    @Override
     public void decreaseScore(Integer x) {
-        score -= x;
+        mySpecies.decreaseScore(x);
     }
 
     /**
@@ -230,8 +243,8 @@ public class Insect implements iControl {
      * 
      * @param Round the current round number.
      */
-    @Override
-    public void timeElapsed(Integer Round) {
+    
+    public void timeElapsed() {
         log.askQ("Decrease timers", false);
         if (onDecreasing) {
             log.stepIn("this.decreaseScore(1)");
@@ -267,5 +280,21 @@ public class Insect implements iControl {
      */
     public Tekton getRecent() {
         return recentTekton;
+    }
+
+    /**
+     * The insect duplicates itself. It is called whenever the Insect eats a MultiplyInsectSpore 
+     */
+    public void duplicate(){
+        Insect doppelGanger = new Insect(this);
+        mySpecies.addInsect(doppelGanger);
+    }
+
+    /**
+     * The insect dies. It is called when the Tekton breaks and the insect is present on it. 
+     */
+    public void deadInsect(){
+        mySpecies.removeInsect(this);
+        thread = null;
     }
 }
