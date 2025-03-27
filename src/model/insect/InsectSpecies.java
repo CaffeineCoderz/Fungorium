@@ -23,6 +23,14 @@ public class InsectSpecies implements iControl{
     public void removeInsect(Insect e) {
         myInsects.remove(e);
     }
+
+    public vodi moveInsect(Insect selectedInsect, FungusThread thread){
+        selectedInsect.move(thread);
+    }
+
+    public void eatSpore(Insect selectedInsect, Spore spore){
+        selectedInsect.eat(spore);
+    }
     /**
      * Adds the specified amount to the score.
      *
