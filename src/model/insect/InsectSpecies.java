@@ -29,7 +29,7 @@ public class InsectSpecies implements iControl{
      * @param x The amount to add to the score.
      */
     @Override
-    void addScore(Integer x){
+    public void addScore(Integer x){
         score += x;
     }
 
@@ -39,7 +39,7 @@ public class InsectSpecies implements iControl{
      * @param x The amount to subtract from the score.
      */
     @Override
-    void decreaseScore(Integer x){
+    public void decreaseScore(Integer x){
         score -= x;
     }
 
@@ -49,7 +49,7 @@ public class InsectSpecies implements iControl{
      * @param Round The round number that has elapsed.
      */
     @Override
-    void timeElapsed(){
+    public void timeElapsed(){
         for (Insect i : myInsects) {
             i.timeElapsed();
         }

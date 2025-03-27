@@ -22,6 +22,16 @@ public class Tekton{
 
     protected Logger log = Logger.getLogger("TektonLogger");
 
+    public Tekton(){
+        this.canGrowBody = true;
+        this.canGrowThread = true;
+        this.spores = new ArrayList<>();
+        this.insects = new ArrayList<>();
+        this.threads = new ArrayList<>();
+        this.body = null;
+        this.neighbours = new ArrayList<>();
+    }
+
     public Tekton(Boolean canGrowBody, Boolean canGrowThread) {
         this.canGrowBody = canGrowBody;
         this.canGrowThread = canGrowThread;
@@ -263,7 +273,6 @@ public class Tekton{
     public void breakTekton() {
         log.stepIn("Going through all insect in 'insects'");
         for (Insect insect : insects) {
-
             log.stepIn("insect.move(neighbours.get(0).getThreads().get(0))");
             insect.deadInsect();
             this.removeInsect(insect);
@@ -318,5 +327,9 @@ public class Tekton{
         log.stepOut("t2.addNeighbour(t1)", null);
     }
 
-    
+    // ! még nincs statikus diagramba beleírva!
+    public void deleteTekton(){
+        for (Tekton tekton : neighbours)
+            tekton.removeNeighbour(this);
+    }
 }
