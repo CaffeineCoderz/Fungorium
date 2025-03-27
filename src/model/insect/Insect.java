@@ -289,4 +289,11 @@ public class Insect{
         Insect doppelGanger = new Insect(this);
         mySpecies.addInsect(doppelGanger);
     }
+
+    /**
+     * The insect dies. It is called whenever the Tekton breaks and an Insect is recently on it. 
+     */
+    public void deadInsect(){
+        mySpecies.removeInsect(this);
+    }
 }

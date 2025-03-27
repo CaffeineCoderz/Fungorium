@@ -265,7 +265,8 @@ public class Tekton{
         for (Insect insect : insects) {
 
             log.stepIn("insect.move(neighbours.get(0).getThreads().get(0))");
-            insect.move(neighbours.get(0).getThreads().get(0));
+            insect.deadInsect();
+            this.removeInsect(insect);
             log.stepOut("insect.move(neighbours.get(0).getThreads().get(0))", null);
         }   
         log.stepOut("End Cycle",null);     
