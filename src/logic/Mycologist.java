@@ -5,8 +5,12 @@ import fungus.FungusSpecies;
 import fungus.FungusThread;
 
 public class Mycologist {
+<<<<<<< HEAD
     private FungusSpecies mySpecies;
 
+=======
+    FungusSpecies mySpecies;
+>>>>>>> 0dffc08 (Mycologist majdnem kész)
     public Mycologist(FungusSpecies species) {
         mySpecies = species;
     }
