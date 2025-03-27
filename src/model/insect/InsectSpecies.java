@@ -40,7 +40,7 @@ public class InsectSpecies implements iControl{
      */
     @Override
     void decreaseScore(Integer x){
-        score += x;
+        score -= x;
     }
 
     /**
