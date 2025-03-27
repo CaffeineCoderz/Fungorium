@@ -18,7 +18,7 @@ public class Insect{
     private Boolean canCut;
     private InsectEffects effect;
     private Boolean onDecreasing;
-    private Integer score; 
+    
     private Tekton recentTekton;
     private FungusThread thread;
     private InsectSpecies mySpecies;
@@ -30,18 +30,13 @@ public class Insect{
         this.abilityEffectTimer = 0;
         this.canCut = true;
         this.onDecreasing = false;
-        this.score = 0;
         this.recentTekton = null;
         this.effect = InsectEffects.NORMAL;
     }
     public Insect(Insect i){
-        this.movingEffectTimer = i.movingEffectTimer;
-        this.abilityEffectTimer = i.abilityEffectTimer;
-        this.canCut = i.canCut;
+        this.canCut = true;
         this.onDecreasing = i.onDecreasing;
-        this.score = 0;
         this.recentTekton = i.recentTekton;
-        this.effect = i.gEffect();
         this.thread = i.thread;
         this.mySpecies = i.mySpecies;
     }
