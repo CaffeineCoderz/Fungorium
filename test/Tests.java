@@ -505,7 +505,7 @@ public class Tests {
     }
     public static void main(String[] args) {
         System.out.println("Starting all tests...");
-        //getUserInput();
+        getUserInput();
 
         Tests tests = new Tests();
         System.out.println("All tests finished.");
