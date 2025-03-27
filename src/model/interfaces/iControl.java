@@ -20,5 +20,5 @@ public interface iControl {
      *
      * @param Round The round number that has elapsed.
      */
-    void timeElapsed(Integer Round);
+    void timeElapsed();
 }
