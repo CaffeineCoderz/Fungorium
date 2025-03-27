@@ -291,7 +291,7 @@ public class Insect{
     }
 
     /**
-     * The insect dies. It is called whenever the Tekton breaks and an Insect is recently on it. 
+     * The insect dies. It is called when the Tekton breaks and the insect is present on it. 
      */
     public void deadInsect(){
         mySpecies.removeInsect(this);
