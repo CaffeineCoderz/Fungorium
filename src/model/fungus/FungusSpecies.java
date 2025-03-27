@@ -244,11 +244,10 @@ public class FungusSpecies implements iControl {
      * Each FungusThread with a positive lifespan that is marked as dying has
      * its life decreased, and if its lifespan reaches zero, it is deleted.
      * 
-     * @param Round the current round
      */
 
     @Override
-    public void timeElapsed(Integer Round) {
+    public void timeElapsed() {
         log.askQ("Start Cycle", false);
         for (FungusBody body : bodies) {
             log.stepIn("body.produceSpore()");

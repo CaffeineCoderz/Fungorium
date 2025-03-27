@@ -13,6 +13,8 @@ public class StunSpore extends Spore{
     }
     public StunSpore(Tekton t, int nt){
         super(t, nt);
+        log = Logger.getLogger("StunSporeLogger");
+
     }
     /**
      * Consumes this spore and stuns the given insect.
