@@ -239,6 +239,7 @@ public class Tekton{
      * 
      * @return a list of Insect objects representing the insects associated with this Tekton.
      */
+    // ! még nincs statikus diagramba beleírva!
     public List<Insect> getInsects() {
         return insects;
     }
@@ -325,10 +326,6 @@ public class Tekton{
         log.stepIn("t2.addNeighbour(t1)");
         t2.addNeighbour(t1);
         log.stepOut("t2.addNeighbour(t1)", null);
-    }
-    // ! még nincs statikus diagramba beleírva!
-    public List<Insect> getInsects(){
-        return insects;
     }
     // ! még nincs statikus diagramba beleírva!
     public void deleteTekton(){
