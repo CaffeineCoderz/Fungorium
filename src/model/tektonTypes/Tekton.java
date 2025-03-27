@@ -317,5 +317,7 @@ public class Tekton{
         log.stepOut("t2.addNeighbour(t1)", null);
     }
 
-    
+    public List<Insect> getInsects(){
+        return insects;
+    }
 }
