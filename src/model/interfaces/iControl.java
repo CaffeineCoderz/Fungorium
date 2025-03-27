@@ -18,7 +18,6 @@ public interface iControl {
     /**
      * Handles the elapsed time for a given round.
      *
-     * @param Round The round number that has elapsed.
      */
-    void timeElapsed(Integer Round);
+    void timeElapsed();
 }

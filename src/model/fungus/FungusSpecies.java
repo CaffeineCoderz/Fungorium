@@ -3,6 +3,9 @@ package fungus;
 import interfaces.iControl;
 import java.util.ArrayList;
 import java.util.List;
+
+import fungus.FungusThread;
+import insect.*;
 import tektonTypes.Tekton;
 import utils.Logger;
 
@@ -244,11 +247,10 @@ public class FungusSpecies implements iControl {
      * Each FungusThread with a positive lifespan that is marked as dying has
      * its life decreased, and if its lifespan reaches zero, it is deleted.
      * 
-     * @param Round the current round
      */
 
     @Override
-    public void timeElapsed(Integer Round) {
+    public void timeElapsed() {
         log.askQ("Start Cycle", false);
         for (FungusBody body : bodies) {
             log.stepIn("body.produceSpore()");
@@ -329,5 +331,33 @@ public class FungusSpecies implements iControl {
         log.stepIn("fb.getTekton().setBody(null)");
         fb.getTekton().setBody(null);
         log.stepOut("fb.getTekton().setBody(null)", null);
+    }
+
+    public void eatInsect(FungusThread ft){
+        if (ft.isBridge()) {
+            log.askQ("Thread was a bridge", false);
+            return;
+        }
+        Boolean someoneDied = false;
+        log.askQ("Going through all insects that is on the Thread's tekton", false);
+        for (Insect insect : ft.getTekton().getInsects()) {
+            if (insect.gEffect() == InsectEffects.STUN) {
+                log.askQ("Insect is stunned", false);
+                log.stepIn("insect.die()");
+                insect.die();
+                log.stepOut("insect.die()", null);
+                someoneDied = true;
+            }
+        }
+        log.askQ("End of Cycle", false);
+        if (someoneDied) {
+            log.askQ("You can grow a body to the tekton", false);
+            if (log.askQ("Want to grow body?", true) == "y") {
+                log.stepIn("growBody(ft)");
+                growBody(ft);
+                log.stepOut("growBody(ft)", null);
+            }
+        }
+        
     }
 }
