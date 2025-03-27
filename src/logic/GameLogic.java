@@ -1,6 +1,11 @@
 package logic;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+
+import fungus.FungusSpecies;
+import insect.InsectSpecies;
 
 public class GameLogic {
     private List<Mycologist> mycologists;
@@ -31,28 +36,28 @@ public class GameLogic {
 
             switch (choice) {
                 case 1:
-                    addMycologist();
+                    //addMycologist();
                     break;
                 case 2:
-                    addFungusSpecies();
+                    // addFungusSpecies();
                     break;
                 case 3:
-                    removeMycologist();
+                    // removeMycologist();
                     break;
                 case 4:
-                    removeFungusSpecies();
+                    // removeFungusSpecies();
                     break;
                 case 5:
-                    addEntymologist();
+                    // addEntymologist();
                     break;
                 case 6:
-                    removeEntymologist();
+                    // removeEntymologist();
                     break;
                 case 7:
-                    addInsectSpecies();
+                    // addInsectSpecies();
                     break;
                 case 8:
-                    removeInsectSpecies();
+                    // removeInsectSpecies();
                     break;
                 case 9:
                     System.out.println("Goodbye!");
