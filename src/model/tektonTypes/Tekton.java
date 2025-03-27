@@ -326,7 +326,10 @@ public class Tekton{
         t2.addNeighbour(t1);
         log.stepOut("t2.addNeighbour(t1)", null);
     }
-
+    // ! még nincs statikus diagramba beleírva!
+    public List<Insect> getInsects(){
+        return insects;
+    }
     // ! még nincs statikus diagramba beleírva!
     public void deleteTekton(){
         for (Tekton tekton : neighbours)
