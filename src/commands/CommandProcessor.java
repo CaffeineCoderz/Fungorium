@@ -49,12 +49,14 @@ import utils.*;
 // Delete parancsok implementálása az osztályokban!!
 
 // TODO parancsok
-// Status: állapot lekérdezés
 // Set: kezelés osztályonként
 // Move: <FungusThread> <Tekton(hová)>?????
 // Move: <Insect> <Tekton/Thread(hová)>?????
 // kill <Insect>
 // ? Needs Review
+// helpObj: objektum típusok lekérdezése
+// load <filename>: fájl beolvasása
+// Status: állapot lekérdezés
 // cut <FungusThread>
 // sporulate <FungusBody>
 // eat <Spore> <Insect>
@@ -81,21 +83,6 @@ public class CommandProcessor {
     }
 
     /*
-     * A parancsok kiírására szolgáló függvény
-     */
-    public void help() {
-        System.out.println("Parancsok:");
-        System.out.println("create <objecttype> <name> \t creates an object with the given name");
-        System.out.println("delete <name> \t\t\t deletes the object with the given name");
-        System.out.println("load <filename> \t\t loads the commands from the given file");
-        System.out.println("cut <FungusThread> <Insect> \t cuts a thread with the selected insect");
-        System.out.println("eat <Spore> <Insect> \t\t eats a spore with the selected insect");
-        System.out.println("grow <FungusThread> \t\t grows a thread");
-        System.out.println("sporulate <FungusBody> \t\t sporulates with the selected body");
-        System.out.println("exit \t\t\t\t exits the program");
-    }
-
-    /*
      * A parancsok feldolgozása
      * 
      * @param input: a beolvasott parancs és részei
@@ -106,6 +93,8 @@ public class CommandProcessor {
         String command = parts[0];
         if ("help".equals(command)) {
             help();
+        } else if ("helpObj".equals(command)) {
+            helpObj();
         } else if ("load".equals(command)) {
             processConfigText(parts[1]);
         } else if ("create".equals(command)) {
@@ -115,17 +104,15 @@ public class CommandProcessor {
         } else if ("set".equals(command)) {
             // processSetCommand(parts);
         } else if ("status".equals(command)) {
-            // processStatusCommand(parts);
+            processStatusCommand(parts);
         } else if ("cut".equals(command)) {
-            // processStatusCommand(parts);
+            // processCutCommand(parts);
         } else if ("sporulate".equals(command)) {
-            // processStatusCommand(parts);
-        } else if ("sporulate".equals(command)) {
-            // processSporulateCommand(parts);
+            processSporulateCommand(parts);
         } else if ("eat".equals(command)) {
-            // processEatCommand(parts);
+            processEatCommand(parts);
         } else if ("kill".equals(command)) {
-            // processKillCommand(parts);
+            processKillCommand(parts);
         } else if ("move".equals(command)) {
             // processMoveCommand(parts);
         } else if ("grow".equals(command)) {
@@ -136,12 +123,56 @@ public class CommandProcessor {
     }
 
     /*
+     * A parancsok kiírására szolgáló függvény
+     */
+    public void help() {
+        System.out.println("/-----------------------------------------------------------\\");
+        System.out.println("Commands:");
+        System.out.println("help \t\t\t\t prints the commands");
+        System.out.println("helpObj \t\t\t prints all avaliable objectTypes");
+        System.out.println("status <name> \t\t\t prints an object's status");
+        System.out.println("create <objectType> <name> \t creates an object with the given name");
+        System.out.println("delete <name> \t\t\t deletes the object with the given name");
+        System.out.println("load <filename> \t\t loads the commands from the given file");
+        System.out.println("cut <FungusThread> <Insect> \t cuts a thread with the selected insect");
+        System.out.println("eat <Spore> <Insect> \t\t eats a spore with the selected insect");
+        System.out.println("grow <FungusThread> \t\t grows a thread");
+        System.out.println("sporulate <FungusBody> \t\t sporulates with the selected body");
+        System.out.println("exit \t\t\t\t exits the program");
+        System.out.println("\\-----------------------------------------------------------/\n");
+    }
+
+    /*
+     * Az objektum típusok kiírására szolgáló függvény
+     */
+    public void helpObj() {
+        System.out.println("/-----------------------------------------------------------\\");
+        System.out.println("All avaliable objectTypes:");
+        System.out.println("species \t\t\t creates a FungusSpecies");
+        System.out.println("thread \t\t\t\t creates a FungusThread");
+        System.out.println("body \t\t\t\t creates a FungusBody");
+        System.out.println("insect \t\t\t\t creates an Insect");
+        System.out.println("spore \t\t\t\t creates a Spore");
+        System.out.println("disablecutspore \t\t creates a DisableCutSpore");
+        System.out.println("fastspore \t\t\t creates a FastSpore");
+        System.out.println("multiplyinsectspore \t\t creates a MultiplyInsectSpore");
+        System.out.println("slowspore \t\t\t creates a SlowSpore");
+        System.out.println("stunspore \t\t\t creates a StunSpore");
+        System.out.println("tekton \t\t\t\t creates a Tekton");
+        System.out.println("decomptekton \t\t\t creates a DecomposingTekton");
+        System.out.println("decreasetekton \t\t\t creates a DecreasingTekton");
+        System.out.println("feedthreadtekton \t\t creates a FeedThreadTekton");
+        System.out.println("onethreadtekton \t\t creates a OneThreadTekton");
+        System.out.println("onlythreadtekton \t\t creates a OnlyThreadTekton");
+        System.out.println("\\-----------------------------------------------------------/\n");
+    }
+
+    /*
      * Create parancs formája: create <objecttype> <name>
      * Példa: create Insect i1
      * 
      * @param parts: parancs részei
      */
-
     private void processCreateCommand(String[] parts) {
         if (parts.length < 3) {
             System.out.println("Hibás create parancs! Használat: create <type> <name>");
@@ -292,6 +323,60 @@ public class CommandProcessor {
     }
 
     /*
+     * Create parancs formája: status <name>
+     * Példa: status i1
+     * 
+     * @param parts: parancs részei
+     */
+    public void processStatusCommand(String[] parts) {
+        if (parts.length < 2) {
+            System.out.println("Hibás status parancs! Használat: status <name>");
+            return;
+        }
+
+        String name = parts[1];
+
+        if (!createdObjects.containsKey(name)) {
+            System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + name);
+            return;
+        }
+
+        Object obj = createdObjects.get(name);
+        if (obj instanceof FungusThread) {
+            FungusThread thread = (FungusThread) obj;
+            System.out.println("FungusThread: " + "\n\tSpecies " + thread.getSpecies() + "\n\tBody: " + thread.getBody()
+                    + "\n\tTekton: " + thread.getTekton() + "\n\tIsBridge " + thread.isBridge() + "\n\t Lifespan: "
+                    + thread.getLifeSpan() + "\n\tIsDying: " + thread.getIsDying() + "\n\tNext: " + thread.getNext()
+                    + "\n\tPrev: " + thread.getPrev());
+        } else if (obj instanceof FungusBody) {
+            FungusBody body = (FungusBody) obj;
+            System.out.println("FungusBody: " + "\n\tSpecies: " + body.getSpecies() + "\n\t Tekton: " + body.getTekton()
+                    + "\n\t Threads: " + body.getThreads() + "\n\t Sporecount: " + body.getSporeCount());
+        } else if (obj instanceof FungusSpecies) {
+            FungusSpecies species = (FungusSpecies) obj;
+            System.out.println(
+                    "FungusSpecies: " + "\n\tScore: " + species.getScore() + "\n\tBodies: " + species.getBodies());
+        } else if (obj instanceof Insect) {
+            Insect insect = (Insect) obj;
+            System.out.println("Insect: " + "\n\tSpecies: " + insect.getMySpecies() + "\n\tTekton: "
+                    + insect.getRecent() + "\n\tEffect: " + insect.gEffect());
+        } else if (obj instanceof Spore || obj instanceof FastSpore || obj instanceof MultiplyInsectSpore
+                || obj instanceof SlowSpore || obj instanceof StunSpore || obj instanceof DisableCutSpore) {
+            Spore spore = (Spore) obj;
+            System.out.println(
+                    "Spore: " + "\n\tNutrition value: " + spore.getNutValue() + "\n\tTekton: " + spore.getTekton());
+        } else if (obj instanceof Tekton || obj instanceof DecomposingTekton || obj instanceof DecreasingTekton
+                || obj instanceof FeedThreadTekton || obj instanceof OneThreadTekton
+                || obj instanceof OnlyThreadTekton) {
+            Tekton tekton = (Tekton) obj;
+            System.out.println("Tekton: " + "\n\tCanGrowThread: " + tekton.canGrowThread() + "\n\tCanGrowBody: "
+                    + tekton.canGrowBody() + "\n\tGetBody: " + tekton.getBody() + "\n\tInsects: " + tekton.getInsects()
+                    + "\n\tNeighbours: " + tekton.getNeighbours() + "\n\tSpores: " + tekton.getSpores()
+                    + "\n\tThreads: " + tekton.getThreads());
+        }
+    }
+
+    /*
      * Grow parancs formája: grow <FungusThread>
      * Példa: grow th1
      * 
@@ -321,6 +406,12 @@ public class CommandProcessor {
         }
     }
 
+    /*
+     * Eat parancs formája: eat <Spore> <Insect>
+     * Példa: eat s1 i1
+     * 
+     * @param parts: parancs részei
+     */
     public void processEatCommand(String[] parts) {
         if (parts.length < 2) {
             System.out.println("Hibás eat parancs! Használat: eat <Spore> <Insect>");

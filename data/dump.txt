@@ -1,0 +1,6 @@
+
+// needs process set first!
+status sp1
+status th1
+status b1
+status s1
