@@ -295,5 +295,6 @@ public class Insect{
      */
     public void deadInsect(){
         mySpecies.removeInsect(this);
+        thread = null;
     }
 }
