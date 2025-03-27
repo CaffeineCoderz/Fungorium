@@ -28,16 +28,23 @@ public class Mycologist {
         mySpecies = species;
     }
     
-    public void grow(Tekton selectedTekton, FungusThread newThread) {
+    public void grow(FungusThread selectedThread) {
         mySpecies.growBody(thread);
-        // ! ide valahogy a selectedTekton-t is be kellene tenni
     }
 
-    public void setThread(Tekton selectedTekton,, FungusThread selectedThread, FungusThread newThread) {
-        mySpecies.growThread(selectedTekton, selectedThread, newThread);
+    public void setThread(FungusThread selectedThread, FungusThread newThread) {
+        mySpecies.growThread(selectedThread.getTekton(), selectedThread, newThread);
     }
 
-    public void kill(Insect selectedInsect, FungusThread selectedThread) {
-        // ! ide nincs jelenleg nálam függvény ami használható lett volna
+    public void kill(FungusThread selectedThread) {
+        mySpecies.eatInsect(selectedThread);
+    }
+
+    public void sporulate(FungusBody selectedBody) {
+        for(FungusBody body : mySpecies.getBodies()) {
+            if(body == selectedBody) {
+                selectedBody.sporulate();
+            }
+        }
     }
 }

@@ -15,11 +15,26 @@ public class Entymologist {
         return mySpecies;
     }
 
-    public void move(Insect selectedInsect, FungusThread thread) {
-        mySpecies.moveInsect(selectedInsect, thread);
+    public void move(Insect selectedInsect, FungusThread selectedThread) {
+        for(Insect insect : mySpecies.getInsects()) {
+            if (insect == selectedInsect) {
+                selectedInsect.move(selectedThread);
+            }
+        }
+
+    public void eat(Insect selectedInsect, Spore selectedSpore) {
+        for(Insect insect : mySpecies.getInsects()) {
+            if(insect == selectedInsect) {
+                selectedInsect.eat(selectedSpore);
+            }
+        }
     }
 
-    public void eat(Insect selectedInsect, Spore spore) {
-        mySpecies.eatSpore(selectedInsect, spore);
+    public void cut(Insect selectedInsect, FungusThread selectedThread) {
+        for(Insect insect : mySpecies.getInsects()) {
+            if(insect == selectedInsect) {
+                selectedInsect.cut(selectedThread);
+            }
+        }
     }
 }
