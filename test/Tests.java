@@ -532,7 +532,6 @@ public class Tests {
         tekton1.addThread(thread2);
         tekton1.addInsect(insect);
         if (log.askQ("A rovar le van bénulva? (y/n)", true).equals("y")) {
-            System.out.printf("null");
             insect.stun();
         }
         log.stepIn("fungusspecies.eatInsect(thread2)");
