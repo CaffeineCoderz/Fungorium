@@ -346,9 +346,9 @@ public class FungusSpecies implements iControl {
         for (Insect insect : ft.getTekton().getInsects()) {
             if (insect.gEffect() == InsectEffects.STUN) {
                 log.askQ("Insect is stunned", false);
-                log.stepIn("insect.die()");
-                insect.die();
-                log.stepOut("insect.die()", null);
+                log.stepIn("insect.deadInsect()");
+                insect.deadInsect();
+                log.stepOut("insect.deadInsect()", null);
                 someoneDied = true;
             }
         }
@@ -360,7 +360,7 @@ public class FungusSpecies implements iControl {
                 growBody(ft);
                 log.stepOut("growBody(ft)", null);
             }
-        }
+        }else log.askQ("There is no stunned insect on tekton", false);
         
     }
 }

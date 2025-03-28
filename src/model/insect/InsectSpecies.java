@@ -13,6 +13,7 @@ public class InsectSpecies implements iControl{
 
     public InsectSpecies(){
         myInsects = new ArrayList<>();
+        score = 0;
         Insect firstInsect = new Insect();
         myInsects.add(firstInsect);
     }
