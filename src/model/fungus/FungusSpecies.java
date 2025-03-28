@@ -4,8 +4,11 @@ import interfaces.iControl;
 import java.util.ArrayList;
 import java.util.List;
 
+import tektonTypes.FeedThreadTekton;
+
 import fungus.FungusThread;
 import insect.*;
+
 import tektonTypes.Tekton;
 import utils.Logger;
 
@@ -267,7 +270,7 @@ public class FungusSpecies implements iControl {
         log.askQ("End Cycle", false);
         log.askQ("Start Cycle", false);
         for (FungusThread thread : threads) {
-            if (thread.getLifeSpan() > 0) {
+            if (thread.getLifeSpan() > 0 && !(thread.getTekton() instanceof FeedThreadTekton)) {
                 log.askQ("Has remaining lifespan", false);
                 log.stepIn("thread.decreaseLife()");
                 thread.decreaseLife();
@@ -343,9 +346,9 @@ public class FungusSpecies implements iControl {
         for (Insect insect : ft.getTekton().getInsects()) {
             if (insect.gEffect() == InsectEffects.STUN) {
                 log.askQ("Insect is stunned", false);
-                log.stepIn("insect.die()");
-                insect.die();
-                log.stepOut("insect.die()", null);
+                log.stepIn("insect.deadInsect()");
+                insect.deadInsect();
+                log.stepOut("insect.deadInsect()", null);
                 someoneDied = true;
             }
         }
@@ -357,7 +360,7 @@ public class FungusSpecies implements iControl {
                 growBody(ft);
                 log.stepOut("growBody(ft)", null);
             }
-        }
+        }else log.askQ("There is no stunned insect on tekton", false);
         
     }
 }

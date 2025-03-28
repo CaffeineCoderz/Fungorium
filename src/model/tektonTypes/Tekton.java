@@ -272,11 +272,11 @@ public class Tekton{
      */
     public void breakTekton() {
         log.stepIn("Going through all insect in 'insects'");
-        for (Insect insect : insects) {
-            log.stepIn("insect.move(neighbours.get(0).getThreads().get(0))");
+        for (int i = insects.size()-1; i>=0;i--) {
+            Insect insect = insects.get(i);
+            log.stepIn("insect.deadInsect()");
             insect.deadInsect();
-            this.removeInsect(insect);
-            log.stepOut("insect.move(neighbours.get(0).getThreads().get(0))", null);
+            log.stepOut("insect.deadInsect()", null);
         }   
         log.stepOut("End Cycle",null);     
         log.stepIn("Going through all thread in 'threads'");
