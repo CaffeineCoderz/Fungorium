@@ -194,7 +194,6 @@ public class Tekton{
      */
     public void removeNeighbour(Tekton neighbour) {
         log.stepIn("neighbours.remove(neighbour)");
-        
         log.stepOut("neighbours.remove(neighbour)", neighbours.remove(neighbour));
     }
 

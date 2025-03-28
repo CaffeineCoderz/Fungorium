@@ -1,6 +1,4 @@
 
 // needs process set first!
-status sp1
 status th1
-status b1
-status s1
+// hiba de nem tudom miért

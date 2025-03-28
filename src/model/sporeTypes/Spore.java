@@ -75,4 +75,9 @@ public class Spore {
     public Integer getNutValue(){
         return nutritionValue;
     }
+
+    // ! nincs stat. diagramban
+    public void setNutValue(Integer nutval){
+        nutritionValue = nutval;
+    }
 }
