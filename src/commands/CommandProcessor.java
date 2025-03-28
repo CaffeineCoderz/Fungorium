@@ -7,14 +7,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Scanner;
 
 // Model
 import fungus.*;
 import insect.Insect;
 import insect.InsectEffects;
 import insect.InsectSpecies;
-
-import java.util.Scanner;
 import logic.GameLogic;
 import sporeTypes.*;
 import tektonTypes.*;
@@ -51,12 +50,12 @@ import utils.*;
 // Delete parancsok implementálása az osztályokban!!
 
 // TODO parancsok
-// Set: kezelés osztályonként
-// Move: <FungusThread> <Tekton(hová)>?????
-// Move: <Insect> <Tekton/Thread(hová)>?????
-// kill <Insect>
-// break <Tekton>
+// Move: <FungusThread> <Tekton(hová)>
 // ? Needs Review
+// break <Tekton>
+// Move: <Insect> <Thread>
+// kill <Insect>
+// Set: kezelés osztályonként
 // helpObj: objektum típusok lekérdezése
 // load <filename>: fájl beolvasása
 // status <name> állapot lekérdezés
@@ -109,7 +108,7 @@ public class CommandProcessor {
         } else if ("status".equals(command)) {
             processStatusCommand(parts);
         } else if ("cut".equals(command)) {
-            // processCutCommand(parts);
+            processCutCommand(parts);
         } else if ("sporulate".equals(command)) {
             processSporulateCommand(parts);
         } else if ("eat".equals(command)) {
@@ -117,7 +116,7 @@ public class CommandProcessor {
         } else if ("kill".equals(command)) {
             processKillCommand(parts);
         } else if ("move".equals(command)) {
-            // processMoveCommand(parts);
+            processMoveCommand(parts);
         } else if ("grow".equals(command)) {
             processGrowCommand(parts);
         } else {
@@ -141,6 +140,7 @@ public class CommandProcessor {
         System.out.println("eat <Spore> <Insect> \t\t eats a spore with the selected insect");
         System.out.println("grow <FungusThread> \t\t grows a thread");
         System.out.println("sporulate <FungusBody> \t\t sporulates with the selected body");
+        System.out.println("move <Insect> <Thread> \t\t moves an insect to the selected thread");
         System.out.println("exit \t\t\t\t exits the program");
         System.out.println("\\-----------------------------------------------------------/\n");
     }
@@ -621,6 +621,8 @@ public class CommandProcessor {
                 case "body":
                     thread.setBody((FungusBody) createdObjects.get(value));
                     break;
+                case "species":
+                    thread.setSpecies((FungusSpecies) createdObjects.get(value));
                 default:
                     System.out.println("Hiba: Nem létezik ilyen tulajdonság: " + property);
                     return;
@@ -655,6 +657,7 @@ public class CommandProcessor {
             System.out.println("Hiba: Nem lehet beállítani ezt az objektumot: " + objectName);
         }
 
+        // ! FungusSpecies
         if (obj instanceof FungusSpecies) {
             FungusSpecies species = (FungusSpecies) obj;
             switch (property) {
@@ -697,6 +700,7 @@ public class CommandProcessor {
             System.out.println("Hiba: Nem lehet beállítani ezt az objektumot: " + objectName);
         }
 
+        // ! Insect
         if (obj instanceof Insect) {
             Insect insect = (Insect) obj;
             switch (property) {
@@ -736,6 +740,7 @@ public class CommandProcessor {
             System.out.println("Hiba: Nem lehet beállítani ezt az objektumot: " + objectName);
         }
 
+        // ! Spore
         if (obj instanceof Spore || obj instanceof FastSpore || obj instanceof MultiplyInsectSpore
                 || obj instanceof SlowSpore || obj instanceof StunSpore || obj instanceof DisableCutSpore) {
             Spore spore = (Spore) obj;
@@ -758,6 +763,7 @@ public class CommandProcessor {
             System.out.println("Hiba: Nem lehet beállítani ezt az objektumot: " + objectName);
         }
 
+        // ! Tekton
         if (obj instanceof Tekton || obj instanceof DecomposingTekton || obj instanceof DecreasingTekton
                 || obj instanceof FeedThreadTekton || obj instanceof OneThreadTekton
                 || obj instanceof OnlyThreadTekton) {
@@ -823,6 +829,69 @@ public class CommandProcessor {
                     System.out.println("Hiba: Nem létezik ilyen tulajdonság: " + property);
                     return;
             }
+        }
+    }
+
+    /*
+     * Move parancs formája: Move:<Insect> <Thread>
+     * Példa: move i1 th1
+     * 
+     * @param parts: parancs részei
+     */
+    public void processMoveCommand(String[] parts) {
+        if (parts.length < 2) {
+            System.out.println("Hibás kill parancs! Használat: kill <Insect>");
+            return;
+        }
+
+        String name = parts[1];
+        String thread = parts[2];
+
+        if (!createdObjects.containsKey(name)) {
+            System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + name);
+            return;
+        }
+
+        Object obj = createdObjects.get(name);
+        Object threadObject = createdObjects.get(thread);
+        if (obj instanceof Insect) {
+            Insect insect = (Insect) obj;
+            FungusThread th = (FungusThread) threadObject;
+            insect.move(th);
+            System.out.println("Az Insect mozgott!");
+        } else {
+            System.out.println("Hiba: Nem lehet mozgatni ezt az objektumot: " + name);
+        }
+    }
+
+    /*
+     * Break parancs formája: break <Tekton>
+     * Példa: break t1
+     * 
+     * @param parts: parancs részei
+     */
+    public void processBreakCommand(String[] parts) {
+        if (parts.length < 2) {
+            System.out.println("Hibás kill parancs! Használat: kill <Insect>");
+            return;
+        }
+
+        String name = parts[1];
+
+        if (!createdObjects.containsKey(name)) {
+            System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + name);
+            return;
+        }
+
+        Object obj = createdObjects.get(name);
+        if (obj instanceof Tekton || obj instanceof DecomposingTekton || obj instanceof DecreasingTekton
+                || obj instanceof FeedThreadTekton || obj instanceof OneThreadTekton
+                || obj instanceof OnlyThreadTekton) {
+            Tekton tekton = (Tekton) obj;
+            tekton.breakTekton();
+            System.out.println("Az Tekton eltört!");
+        } else {
+            System.out.println("Hiba: Nem lehet eltörni ezt az objektumot: " + name);
         }
     }
 }
