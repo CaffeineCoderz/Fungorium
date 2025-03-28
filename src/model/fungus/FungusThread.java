@@ -21,6 +21,16 @@ public class FungusThread {
 
     private Logger log = Logger.getLogger("FungusThreadLogger");
 
+    public FungusThread() {
+        this.lifeSpan = 0;
+        this.bridge = false;
+        this.isDying = false;
+        this.species = null;
+        this.tektons = new ArrayList<>();
+        prevThread = null;
+        nextThread = null;
+    }
+
     public FungusThread(Integer lifeSpan, Boolean bridge) {
         this.lifeSpan = lifeSpan;
         this.bridge = bridge;
@@ -220,4 +230,6 @@ public class FungusThread {
     public void setSpecies(FungusSpecies species) {
         this.species = species;
     }
+
+    
 }

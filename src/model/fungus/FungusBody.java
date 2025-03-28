@@ -14,6 +14,14 @@ public class FungusBody {
     private FungusSpecies species;
     private Logger log = Logger.getLogger("FungusBodyLogger");
 
+    public FungusBody() {
+        this.sporeCount = 0;
+        this.sporulateLeft = 0;
+        this.threads = new ArrayList<>();
+        this.tekton = null;
+        this.species = null;
+    }
+
     public FungusBody(Integer sporeCount, Integer sporulateLeft) {
         this.sporeCount = sporeCount;
         this.sporulateLeft = sporulateLeft;
