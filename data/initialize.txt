@@ -11,3 +11,8 @@ create body b2
 create spore s1
 create spore s2
 create spore s3
+status t1
+status i1
+status sp1
+status b1
+status s1

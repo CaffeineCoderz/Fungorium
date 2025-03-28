@@ -1,0 +1,4 @@
+
+// needs process set first!
+status th1
+// hiba de nem tudom miért

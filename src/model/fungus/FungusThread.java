@@ -204,6 +204,15 @@ public class FungusThread {
     }
 
     /**
+     * Returns the list of Tektons associated with this fungus thread.
+     * 
+     * @return the list of Tektons associated with this fungus thread.
+     */
+    public List<Tekton> getTektons() {
+        return tektons;
+    }
+
+    /**
      * Destroys this FungusThread by removing it from all associated Tekton
      * instances.
      *
@@ -231,5 +240,8 @@ public class FungusThread {
         this.species = species;
     }
 
-    
+    // ! nincs statikus diagram
+    public void setLifeSpan(Integer lifeSpan) {
+        this.lifeSpan = lifeSpan;
+    }
 }
