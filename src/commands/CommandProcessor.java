@@ -141,6 +141,7 @@ public class CommandProcessor {
         System.out.println("grow <FungusThread> \t\t grows a thread");
         System.out.println("sporulate <FungusBody> \t\t sporulates with the selected body");
         System.out.println("move <Insect> <Thread> \t\t moves an insect to the selected thread");
+        System.out.println("break <Tekton> \t\t\t breaks a tekton");
         System.out.println("exit \t\t\t\t exits the program");
         System.out.println("\\-----------------------------------------------------------/\n");
     }
