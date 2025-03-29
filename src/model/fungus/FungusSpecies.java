@@ -108,15 +108,23 @@ public class FungusSpecies implements iControl {
             log.stepIn("addThread(nThread)");
             addThread(nThread);
             log.stepOut("addThread(nThread)", null);
+            
             log.stepIn("nThread.addTekton(targetTekton)");
             nThread.addTekton(targetTekton);
             log.stepOut("nThread.addTekton(targetTekton)", null);
+
             log.stepIn("targetTekton.addThread(nThread)");
             targetTekton.addThread(nThread);
             log.stepOut("targetTekton.addThread(nThread)", null);
+
             log.stepIn("oThread.setNextThread(nThread)");
             oThread.setNextThread(nThread);
             log.stepOut("oThread.setNextThread(nThread)", null);
+
+            // ! Be kell állítani hogy melyik testhez tartozik
+            log.stepIn("nThread.setBody(targetTekton.getBody())");
+            nThread.setBody(targetTekton.getBody());
+            log.stepOut("nThread.setBody(targetTekton.getBody())", null);
         } else {
             log.askQ("tekton cant have new threads", false);
         }
