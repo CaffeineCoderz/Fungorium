@@ -57,11 +57,24 @@ public class FeedThreadTekton extends Tekton {
 
     @Override
     public void removeThread(FungusThread thread){
-        if (thread.getIsDying()) {
+        /*if (thread.getIsDying()) {
+            log.askQ("Thread is dying", false);
+            log.stepIn("threads.remove(thread)");
             threads.remove(thread);
+            log.stepOut("threads.remove(thread)", null);
         }else if (thread.getLifeSpan() == 0) {
             // ? ennyi körig maradjon életben?
+            log.stepIn("thread.setLifeSpan(2)");
             thread.setLifeSpan(2);
+            log.stepOut("thread.setLifeSpan(2)", null);
         }
+        */
+        if (thread.getIsDying() == true) {
+            threads.remove(thread);
+        }else{
+            log.askQ("The tekton serves the thread with nutrition to stayalive\n", false);
+        }
+        
+
     }
 }

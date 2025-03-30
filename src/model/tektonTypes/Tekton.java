@@ -281,6 +281,9 @@ public class Tekton{
         log.stepOut("End Cycle",null);     
         log.stepIn("Going through all thread in 'threads'");
         for (FungusThread ft: threads) {
+            log.stepIn("ft.setIsDying(true)");
+            ft.setIsDying(true);
+            log.stepOut("ft.setIsDying(true)", null);
             log.stepIn("ft.getSpecies().destroyThread(ft)");
             ft.getSpecies().destroyThread(ft);
             log.stepOut("ft.getSpecies().destroyThread(ft)", null);

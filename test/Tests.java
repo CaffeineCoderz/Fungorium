@@ -1,9 +1,9 @@
 package test;
 
 import fungus.*;
+import insect.Entomologist;
 import insect.Insect;
 import insect.InsectEffects;
-import insect.InsectSpecies;
 
 import java.util.Scanner;
 import logic.GameLogic;
@@ -23,7 +23,7 @@ public class Tests {
     private FungusBody body;
     private FungusThread thread;
     private FungusSpecies fungusspecies;
-    private InsectSpecies insectSpecies;
+    private Entomologist entomologist;
     private Insect insect;
 
     /**
@@ -112,9 +112,9 @@ public class Tests {
         body.setSpecies(fungusspecies);
 
 
-        insectSpecies = new InsectSpecies();
-        insectSpecies.addInsect(insect);
-        insect.setMySpecies(insectSpecies);
+        entomologist = new Entomologist();
+        entomologist.addInsect(insect);
+        insect.setMyOwner(entomologist);
         //System.out.println("FungusSpecies initialized.");
     }
 

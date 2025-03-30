@@ -1,12 +1,12 @@
-package logic;
+package fungus;
 
-import fungus.FungusBody;
-import fungus.FungusSpecies;
-import fungus.FungusThread;
+import logic.Player;
+import tektonTypes.Tekton;
 
-public class Mycologist {
+public class Mycologist extends Player{
     private FungusSpecies mySpecies;
-    
+    private Integer score;
+
     public Mycologist(FungusSpecies species) {
         mySpecies = species;
     }
@@ -25,6 +25,9 @@ public class Mycologist {
 
     public void setThread(FungusThread selectedThread, FungusThread newThread) {
         mySpecies.growThread(selectedThread.getTekton(), selectedThread, newThread);
+    }
+    public void setBridge(FungusThread fromThread,Tekton toTekton){
+        mySpecies.growBridge(fromThread, toTekton);
     }
 
     public void kill(FungusThread selectedThread) {

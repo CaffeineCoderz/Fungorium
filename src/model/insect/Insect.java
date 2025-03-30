@@ -7,7 +7,6 @@ import tektonTypes.Tekton;
 import utils.*;
 
 import insect.InsectEffects;
-import insect.InsectSpecies;
 
 // ! - Az elrágott fonalak nem pusztulnak el azonnal, hanem csak egy kis idő elteltével (ez fonaltípustól függő idő). 
 // ! A fonalak képesek megenni a tektonjukon található bénult rovarokat. Ilyenkor a rovar elpusztul, a fonal pedig gombatestet növeszthet.
@@ -21,7 +20,7 @@ public class Insect{
     
     private Tekton recentTekton;
     private FungusThread thread;
-    private InsectSpecies mySpecies;
+    private Entomologist myOwner;
 
     private Logger log = Logger.getLogger("InsectLogger");
 
@@ -38,14 +37,14 @@ public class Insect{
         this.onDecreasing = i.onDecreasing;
         this.recentTekton = i.recentTekton;
         this.thread = i.thread;
-        this.mySpecies = i.mySpecies;
+        this.myOwner = i.myOwner;
     }
 
-    public void setMySpecies(InsectSpecies my){
-        mySpecies = my;
+    public void setMyOwner(Entomologist my){
+        myOwner = my;
     }
-    public InsectSpecies getMySpecies(){
-        return mySpecies;
+    public Entomologist getMyOwner(){
+        return myOwner;
     }
 
     /**
@@ -223,7 +222,7 @@ public class Insect{
      * @param x the amount by which the score is to be increased.
      */
     public void addScore(Integer x) {
-        mySpecies.addScore(x);
+        myOwner.addScore(x);
     }
 
     /**
@@ -232,7 +231,7 @@ public class Insect{
      * @param x the amount by which the score is to be decreased.
      */
     public void decreaseScore(Integer x) {
-        mySpecies.decreaseScore(x);
+        myOwner.decreaseScore(x);
     }
 
     /**
@@ -289,9 +288,9 @@ public class Insect{
         log.askQ("Duplicate", false);
         log.askQ("Create new Insect: doppelGanger", false);
         Insect doppelGanger = new Insect(this);
-        log.stepIn("mySpecies.addInsect(doppelGanger)");
-        mySpecies.addInsect(doppelGanger);
-        log.stepOut("mySpecies.addInsect(doppelGanger)", null);
+        log.stepIn("myOwner.addInsect(doppelGanger)");
+        myOwner.addInsect(doppelGanger);
+        log.stepOut("myOwner.addInsect(doppelGanger)", null);
     }
 
     /**
@@ -300,9 +299,9 @@ public class Insect{
 
     // ! Ha mégis tároljuk majd a fonalakon a rovarokat akkor függvény kell jelenleg ennyi
     public void deadInsect(){
-        log.stepIn("mySpecies.removeInsect(this)");
-        mySpecies.removeInsect(this);
-        log.stepOut("mySpecies.removeInsect(this)", null);
+        log.stepIn("myOwner.removeInsect(this)");
+        myOwner.removeInsect(this);
+        log.stepOut("myOwner.removeInsect(this)", null);
         log.stepIn("recentTekton.removeInsect(this)");
         recentTekton.removeInsect(this);
         log.stepOut("recentTekton.removeInsect(this)", null);
