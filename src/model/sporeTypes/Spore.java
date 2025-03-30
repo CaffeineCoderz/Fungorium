@@ -51,7 +51,6 @@ public class Spore {
      *
      * @return the Tekton object where this Spore is located, or null if not set.
      */
-
     public Tekton getTekton(){
         return myTekton;
     }

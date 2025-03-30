@@ -40,9 +40,19 @@ public class Insect{
         this.myOwner = i.myOwner;
     }
 
+    /**
+     * Sets the Entomologist associated with this Insect.
+     * 
+     * @param my the Entomologist to be associated with this Insect.
+     */
     public void setMyOwner(Entomologist my){
         myOwner = my;
     }
+    /**
+     * Retrieves the Entomologist associated with this Insect.
+     * 
+     * @return the Entomologist associated with this Insect.
+     */
     public Entomologist getMyOwner(){
         return myOwner;
     }
@@ -142,9 +152,20 @@ public class Insect{
 
         if (canCut == true && effect != InsectEffects.STUN && effect != InsectEffects.NO_CUT && thread != ft) {
             log.askQ("Insect can cut threads", false);
-            log.stepIn("ft.destroy()");
-            ft.destroy();
-            log.stepOut("ft.destroy()", null);
+                if (ft.isBridge()) {
+                    log.stepIn("ft.setIsDying(true)");
+                    ft.setIsDying(true);
+                    log.stepOut("ft.setIsDying(true)", null);
+                }else{
+                    // ! Még nem végleges
+                    log.stepIn("ft.setLifeSpan(2)");
+                    ft.setLifeSpan(2);
+                    log.stepOut("ft.setLifeSpan(2)", null);
+                }
+
+            log.stepIn("ft.getSpecies().destroyThread(ft)ft.destroy()");
+            ft.getSpecies().destroyThread(ft);
+            log.stepOut("ft.getSpecies().destroyThread(ft)", null);
         } else
             log.askQ("Insect can't cut threads", false);
 
@@ -247,7 +268,6 @@ public class Insect{
      * 
      * @param Round the current round number.
      */
-    
     public void timeElapsed() {
         log.askQ("Decrease timers", false);
         if (onDecreasing) {

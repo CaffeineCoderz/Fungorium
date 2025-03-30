@@ -30,6 +30,11 @@ public class FungusBody {
         this.species = null;
     }
 
+    /**
+     * Sets the spore count for this fungus body.
+     * 
+     * @param c the new value of spore count.
+     */
     public void setSporeC(Integer c){
         sporeCount = c;
     }
@@ -226,6 +231,12 @@ public class FungusBody {
         return sporeCount;
     }
 
+    /**
+     * Sets the species of this fungus body.
+     *
+     * @param species the FungusSpecies instance to associate with this
+     *                fungus body.
+     */
     public void setSpecies(FungusSpecies species) {
         this.species = species;
     }
