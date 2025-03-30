@@ -168,14 +168,17 @@ public class Insect{
                 recentTekton.removeInsect(this);
                 log.stepOut("recentTekton.removeInsect(this)", null);
 
-                log.stepIn("setRecentTekton(ft.getTekton())");
-                setRecentTekton(ft.getTekton(this));
-                log.stepOut("setRecentTekton(ft.getTekton())", null);
+                log.stepIn("ft.insectSetting(this)");
+                ft.insectSetting(this);
+                log.stepOut("ft.insectSetting(this)", null);
                 
                 log.stepIn("setThread(ft)");
                 setThread(ft);
                 log.stepOut("setThread(ft)", null);
-                recentTekton = null;
+
+                log.stepIn("recentTekton.addInsect(this)");
+                recentTekton.addInsect(this);
+                log.stepOut("recentTekton.addInsect(this)", null);
             } else {
                 log.askQ("Thread is not a bridge", false);
                 log.stepIn("setThread(ft)");

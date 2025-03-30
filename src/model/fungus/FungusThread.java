@@ -210,17 +210,27 @@ public class FungusThread {
      * @return the first Tekton associated with this fungus thread.
      */
     public Tekton getTekton(Insect i) {
-
-        if (!bridge) {
+        if(i == null || !bridge){
             return tektons.get(0);
-        }else if(i != null){
+        }else{
             if (i.getRecent() == tektons.get(0)) {
                 return tektons.get(1);
             }else{
                 return tektons.get(0);
             }
-        }else return tektons.get(0);
-        
+        }
+    }
+
+    public void insectSetting(Insect i){
+        if(i == null || !bridge){
+            i.setRecentTekton(tektons.get(0));
+        }else{
+            if (i.getRecent() == tektons.get(0)) {
+                i.setRecentTekton(tektons.get(1));
+            }else{
+                i.setRecentTekton(tektons.get(0));
+            }
+        }
     }
 
     /**
