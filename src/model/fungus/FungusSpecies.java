@@ -263,7 +263,6 @@ public class FungusSpecies implements iControl {
      * its life decreased, and if its lifespan reaches zero, it is deleted.
      * 
      */
-
     @Override
     public void timeElapsed() {
         log.askQ("Start Cycle", false);
@@ -348,6 +347,17 @@ public class FungusSpecies implements iControl {
         log.stepOut("fb.getTekton().setBody(null)", null);
     }
 
+    /**
+     * Consumes stunned insects on the given FungusThread's Tekton.
+     * 
+     * If the FungusThread is a bridge, the method returns immediately without
+     * doing anything. Otherwise, it iterates through all insects on the Tekton
+     * associated with the FungusThread. If any insect is stunned, the insect is
+     * killed. If at least one insect is killed, an opportunity to grow a body on
+     * the Tekton is provided. 
+     * 
+     * @param ft the FungusThread instance whose Tekton's insects are to be checked.
+     */
     public void eatInsect(FungusThread ft){
         if (ft.isBridge()) {
             log.askQ("Thread was a bridge", false);
