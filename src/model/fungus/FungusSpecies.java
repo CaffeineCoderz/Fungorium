@@ -13,6 +13,7 @@ public class FungusSpecies implements iControl {
     private Integer score;
     private List<FungusBody> bodies;
     private List<FungusThread> threads;
+    private Mycologist myOwner;
     private Logger log = Logger.getLogger("FungusSpeciesLogger");
 
     public FungusSpecies() {
@@ -132,49 +133,54 @@ public class FungusSpecies implements iControl {
     }
 
     /**
-     * Grows a bridge-like FungusThread between two Tektons and associates it with a
-     * FungusBody.
+     * Grows a bridge-like FungusThread between two Tektons.
      * 
-     * This method adds the given FungusThread to the list of threads associated
-     * with this FungusSpecies,
-     * and also associates the thread with two Tekton instances, marking it as a
+     * This method associates the thread with two Tekton instances, marking it as a
      * bridge.
-     * The thread is added to both the FungusBody's Tekton and the second Tekton.
+     * The thread is added to both the FungusThread's Tekton and the second Tekton.
      * 
-     * @param body    the FungusBody instance to which the FungusThread is to be
-     *                associated.
-     * @param thread  the FungusThread instance to be grown as a bridge.
-     * @param tekton2 the second Tekton instance to which the FungusThread will be
+     * @param fromThread  the FungusThread instance to bridge is growing from.
+     * @param toTekton the second Tekton instance to which the FungusThread will be
      *                associated.
      */
-    public void growBridge(FungusBody body, FungusThread thread, Tekton tekton2) {
-        log.stepIn("addThread(thread)");
-        addThread(thread);
-        log.stepOut("addThread(thread)", null);
+    public void growBridge(FungusThread fromThread,Tekton toTekton) {
+        log.askQ("Create new FungusThread: nThread", false);
+        FungusThread nThread = new FungusThread(null,true);
+        log.stepIn("nThread.setPrevThread(fromThread)");
+        nThread.setPrevThread(fromThread);
+        log.stepOut("nThread.setPrevThread(fromThread)", null);
+        
+        log.stepIn("fromThread.setNextThread(nThread)");
+        fromThread.setNextThread(nThread);
+        log.stepOut("fromThread.setNextThread(nThread)", null);
 
-        log.stepIn("thread.addTekton(body.getTekton())");
-        thread.addTekton(body.getTekton());
-        log.stepOut("thread.addTekton(body.getTekton())", null);
+        log.stepIn("addThread(nThread)");
+        addThread(nThread);
+        log.stepOut("addThread(nThread)", null);
+        
+        log.stepIn("nThread.addTekton(fromThread.getTekton())");
+        nThread.addTekton(fromThread.getTekton(null));
+        log.stepOut("nThread.addTekton(fromThread.getTekton())", null);
 
-        log.stepIn("thread.addTekton(tekton2)");
-        thread.addTekton(tekton2);
-        log.stepOut("thread.addTekton(tekton2)", null);
+        log.stepIn("nThread.addTekton(toTekton)");
+        nThread.addTekton(toTekton);
+        log.stepOut("nThread.addTekton(toTekton)", null);
 
-        log.stepIn("thread.setBridge(true)");
-        thread.setBridge(true);
-        log.stepOut("thread.setBridge(true)", null);
+        log.stepIn("fromThread.getTekton().addThread(nThread)");
+        fromThread.getTekton(null).addThread(nThread);
+        log.stepOut("fromThread.getTekton().addThread(nThread)", null);
 
-        log.stepIn("body.getTekton().addThread(thread)");
-        body.getTekton().addThread(thread);
-        log.stepOut("body.getTekton().addThread(thread)", null);
+        log.stepIn("toTekton.addThread(nThread)");
+        toTekton.addThread(nThread);
+        log.stepOut("toTekton.addThread(nThread)", null);
 
-        log.stepIn("tekton2.addThread(thread)");
-        tekton2.addThread(thread);
-        log.stepOut("tekton2.addThread(thread)", null);
+        log.stepIn("fromThread.getBody().addThread(nThread)");
+        fromThread.getBody().addThread(nThread);
+        log.stepOut("fromThread.getBody().addThread(nThread)", null);
 
-        log.stepIn("body.addThread(thread)");
-        body.addThread(thread);
-        log.stepOut("body.addThread(thread)", null);
+        log.stepIn("nThread.setBody(fromThread.getBody())");
+        nThread.setBody(fromThread.getBody());
+        log.stepOut("nThread.setBody(fromThread.getBody())", null);
     }
 
     /**
@@ -197,8 +203,8 @@ public class FungusSpecies implements iControl {
         }
         log.askQ("thread is not a bridge", false);
         Integer atleast = 2;
-        boolean enoughSpore = thread.getTekton().isThereEnoughSpore(atleast);
-        if (!thread.getTekton().canGrowBody()) {
+        boolean enoughSpore = thread.getTekton(null).isThereEnoughSpore(atleast);
+        if (!thread.getTekton(null).canGrowBody()) {
             log.askQ("Tekton already contains a body", false);
             return;
         }
@@ -207,17 +213,17 @@ public class FungusSpecies implements iControl {
             log.askQ("Create new Body: fb", false);
             FungusBody fb = new FungusBody(null, null);
             log.stepIn("thread.getTekton().setBody(fb)");
-            thread.getTekton().setBody(fb);
+            thread.getTekton(null).setBody(fb);
             log.stepOut("thread.getTekton().setBody(fb)", null);
             log.askQ("Start cycle", false);
             for (Integer i =  0; i < atleast; i++) {
                 log.stepIn("thread.getTekton().getSpores().get(i).absorbed();");
-                thread.getTekton().getSpores().get(i).absorbed();
+                thread.getTekton(null).getSpores().get(i).absorbed();
                 log.stepOut("thread.getTekton().getSpores().get(i).absorbed();", null);
             }
             log.askQ("End cycle", false);
             log.stepIn("fb.setTekton(thread.getTekton())");
-            fb.setTekton(thread.getTekton());
+            fb.setTekton(thread.getTekton(null));
             log.stepOut("fb.setTekton(thread.getTekton())", null);
             log.stepIn("fb.addThread(thread)");
             fb.addThread(thread);
@@ -349,7 +355,7 @@ public class FungusSpecies implements iControl {
         }
         Boolean someoneDied = false;
         log.askQ("Going through all insects that is on the Thread's tekton", false);
-        for (Insect insect : ft.getTekton().getInsects()) {
+        for (Insect insect : ft.getTekton(null).getInsects()) {
             if (insect.gEffect() == InsectEffects.STUN) {
                 log.askQ("Insect is stunned", false);
                 log.stepIn("insect.deadInsect()");

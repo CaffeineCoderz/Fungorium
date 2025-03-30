@@ -11,9 +11,9 @@ import java.util.Scanner;
 
 // Model
 import fungus.*;
+import insect.Entomologist;
 import insect.Insect;
 import insect.InsectEffects;
-import insect.InsectSpecies;
 import logic.GameLogic;
 import sporeTypes.*;
 import tektonTypes.*;
@@ -375,7 +375,7 @@ public class CommandProcessor {
         } else if (obj instanceof Insect) {
             Insect insect = (Insect) obj;
             System.out.println("Insect: "
-                    + "\n\tSpecies: " + insect.getMySpecies()
+                    + "\n\tOwner: " + insect.getMyOwner()
                     + "\n\tTekton: " + insect.getRecent()
                     + "\n\tEffect: " + insect.gEffect());
         } else if (obj instanceof Spore || obj instanceof FastSpore || obj instanceof MultiplyInsectSpore
@@ -706,7 +706,7 @@ public class CommandProcessor {
             Insect insect = (Insect) obj;
             switch (property) {
                 case "species":
-                    insect.setMySpecies((InsectSpecies) createdObjects.get(value));
+                    insect.setMyOwner((Entomologist) createdObjects.get(value));
                     break;
                 case "thread":
                     insect.setThread((FungusThread) createdObjects.get(value));

@@ -2,6 +2,8 @@ package fungus;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import insect.Insect;
 import tektonTypes.Tekton;
 import utils.Logger;
 
@@ -149,7 +151,15 @@ public class FungusThread {
      * @param tekton the Tekton to add to the list of associated Tektons.
      */
     public void addTekton(Tekton tekton) {
+        if (tektons.size() == 2) {
+            return;
+        }
         tektons.add(tekton);
+        if(tektons.size() == 2){
+            log.stepIn("setBridge(true)");
+            setBridge(true);
+            log.stepOut("setBridge(true)", null);
+        }
     }
 
     /**
@@ -199,8 +209,28 @@ public class FungusThread {
      * 
      * @return the first Tekton associated with this fungus thread.
      */
-    public Tekton getTekton() {
-        return tektons.get(0);
+    public Tekton getTekton(Insect i) {
+        if(i == null || !bridge){
+            return tektons.get(0);
+        }else{
+            if (i.getRecent() == tektons.get(0)) {
+                return tektons.get(1);
+            }else{
+                return tektons.get(0);
+            }
+        }
+    }
+
+    public void insectSetting(Insect i){
+        if(i == null || !bridge){
+            i.setRecentTekton(tektons.get(0));
+        }else{
+            if (i.getRecent() == tektons.get(0)) {
+                i.setRecentTekton(tektons.get(1));
+            }else{
+                i.setRecentTekton(tektons.get(0));
+            }
+        }
     }
 
     /**

@@ -1,9 +1,9 @@
 package test;
 
 import fungus.*;
+import insect.Entomologist;
 import insect.Insect;
 import insect.InsectEffects;
-import insect.InsectSpecies;
 
 import java.util.Scanner;
 import logic.GameLogic;
@@ -23,7 +23,7 @@ public class Tests {
     private FungusBody body;
     private FungusThread thread;
     private FungusSpecies fungusspecies;
-    private InsectSpecies insectSpecies;
+    private Entomologist entomologist;
     private Insect insect;
 
     /**
@@ -52,6 +52,7 @@ public class Tests {
             "\t16. Tekton break\n" +
             "\t17. Consume stunned insect\n" +
             "\t18. Consume MultiplyInsectSpore\n" +
+            "\t19. growBridgeSuccess\n" +
             "\\-----------------------------------------------------------/\n"
         );
 
@@ -112,9 +113,9 @@ public class Tests {
         body.setSpecies(fungusspecies);
 
 
-        insectSpecies = new InsectSpecies();
-        insectSpecies.addInsect(insect);
-        insect.setMySpecies(insectSpecies);
+        entomologist = new Entomologist();
+        entomologist.addInsect(insect);
+        insect.setMyOwner(entomologist);
         //System.out.println("FungusSpecies initialized.");
     }
 
@@ -220,6 +221,9 @@ public class Tests {
             case 18:
                 tests.duplicateInsect();
                 break;
+            case 19:
+                tests.growBridgeSucces();
+                break;    
             default:
                 System.out.println("Invalid test case number.");
                 break;
@@ -464,13 +468,15 @@ public class Tests {
     public void insectMoveSuccess() {
         log.stepIn("Running test: insectMoveSuccess");
         tekton1.addInsect(insect);
-        FungusThread thread2 = new FungusThread(15, true);
+        FungusThread thread2 = new FungusThread(null, true);
         thread2.addTekton(tekton1);
+        thread2.addTekton(neighborTekton);
         thread.addTekton(tekton1);
         tekton1.addThread(thread2);
-        insect.setRecentTekton(tekton1);
         tekton1.addThread(thread);
-        thread.addTekton(tekton1);
+        insect.setRecentTekton(tekton1);
+        
+        
         log.stepIn("insect.move(thread2);");
         insect.move(thread2);
         log.stepOut("insect.move(thread2);", null);
@@ -548,6 +554,17 @@ public class Tests {
         insect.consumeSpore(multinsectspore);
         log.stepOut("insect.consumeSpore(multinsectspore)", null);
         log.stepOut("End of duplicateInsect", null);
+    }
+
+    public void growBridgeSucces(){
+        thread.addTekton(tekton1);
+        thread.setBody(body);
+        log.stepIn("Running tests: growBridgeSucces()");
+        Tekton tekton2 = new Tekton();
+        log.stepIn("fungusspecies.growBridge(thread, tekton2)");
+        fungusspecies.growBridge(thread, tekton2);
+        log.stepOut("fungusspecies.growBridge(thread, tekton2)", tekton2);
+        log.stepOut("End of growBridgeSucces", null);
     }
 
     public static void main(String[] args) {

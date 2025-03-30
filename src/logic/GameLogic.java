@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.Scanner;
 
 import fungus.FungusSpecies;
-import insect.InsectSpecies;
+import fungus.Mycologist;
+import insect.Entomologist;
 
 public class GameLogic {
     private List<Mycologist> mycologists;
@@ -88,23 +89,4 @@ public class GameLogic {
         
     }
 
-    // rovarász hozzáadása, úgy hogy egy kiválasztott rovarfajtához hozzáadja a rovarászt
-    public void addEntymologist(Entymologist entymologist, InsectSpecies species) {
-        addInsectSpecies(species);
-    }
-
-    // rovarász eltávolítása, úgy hogy egy kiválasztott rovarfajtáról eltávolítja a rovarászt
-    public void removeEntymologist(Entymologist entymologist, InsectSpecies species) {
-        removeInsectSpecies(species);
-    }
-
-    // rovarfaj hozzáadása a játékhoz
-    public void addInsectSpecies(InsectSpecies species) {
-        
-    }
-
-    // rovarfaj eltávolítása a játékból
-    public void removeInsectSpecies(InsectSpecies species) {
-        
-    }
 }
