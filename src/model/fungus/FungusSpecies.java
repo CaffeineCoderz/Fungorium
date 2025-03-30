@@ -6,6 +6,7 @@ import java.util.List;
 
 import fungus.FungusThread;
 import insect.*;
+import tektonTypes.FeedThreadTekton;
 import tektonTypes.Tekton;
 import utils.Logger;
 
@@ -321,31 +322,44 @@ public class FungusSpecies implements iControl {
      * @param ft the FungusThread instance to be destroyed.
      */
     public void destroyThread(FungusThread ft) {
-        if (!ft.getIsDying() && ft.getLifeSpan() != null) {
+        if (ft.getIsDying() && ft.getLifeSpan() != null) {
             log.stepIn("thread.decreaseLife()");
                 ft.decreaseLife();
                 log.stepOut("thread.decreaseLife()", null);
             return;
         }
-        log.stepIn("deleteThread(ft)");
-        deleteThread(ft);
-        log.stepOut("deleteThread(ft)", null);
-        log.askQ("Start cyle", false);
-        boolean success;
-        for (FungusBody body : bodies) {
-            log.stepIn("body.removeThread(ft)");
-            success = body.removeThread(ft);
-            if (success) {
-                log.askQ("Break", false);
-                break;
+        if(ft.getLifeSpan()==0){
+            while(ft.getNext()!=null){
+                ft.getNext().setConnected(false);
+                List<Tekton> tektons = ft.getNext().getTektons();
+                for(int i=0; i<tektons.size(); i++){
+                    if(tektons.get(i).getClass()!=tektonTypes.FeedThreadTekton.class){
+                        ft.setIsDying(true);
+                    }
+                }
+                ft=ft.getNext();
             }
-            log.stepOut("body.removeThread(ft)", success);
-        }
-        log.askQ("End cycle", false);
+            log.stepIn("deleteThread(ft)");
+            deleteThread(ft);
+            log.stepOut("deleteThread(ft)", null);
+            log.askQ("Start cyle", false);
+            boolean success;
+            for (FungusBody body : bodies) {
+                log.stepIn("body.removeThread(ft)");
+                success = body.removeThread(ft);
+                if (success) {
+                    log.askQ("Break", false);
+                    break;
+                }
+                log.stepOut("body.removeThread(ft)", success);
+            }
+            log.askQ("End cycle", false);
 
-        log.stepIn("ft.destroy()");
-        ft.destroy();
-        log.stepOut("ft.destroy()", null);
+            log.stepIn("ft.destroy()");
+            ft.destroy();
+            log.stepOut("ft.destroy()", null);
+        }
+        
     }
 
     /**

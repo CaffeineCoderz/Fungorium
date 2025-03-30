@@ -318,10 +318,11 @@ public class Tests {
         log.stepIn("Running test: growThreadOneThreadTektonSuccess");
         String key = log.askQ("Van-e mar fonal a tektonon? (y/n)", true);
         OneThreadTekton oTekton = new OneThreadTekton();
+        System.out.println(oTekton.getClass());
         if (key.equals("n")) {
             FungusThread thread2 = new FungusThread(5, false, thread);
             log.stepIn("fungusspecies.growThread(oTekton, thread, thread2)");
-            fungusspecies.growThread(oTekton, thread, thread2);
+            fungusspecies.growThread(oTekton, thread);
             log.stepOut("fungusspecies.growThread(oTekton, thread, thread2)", null);
         }
         if (key.equals("y")) {
@@ -330,7 +331,7 @@ public class Tests {
             FungusThread thread3 = new FungusThread(5, false);
             FungusThread thread4 = new FungusThread(5, false, thread3);
             log.stepIn("fungusspecies.growThread(fungusspecies.growThread(oTekton, thread3, thread4))");
-            fungusspecies.growThread(oTekton, thread3, thread4);
+            fungusspecies.growThread(oTekton, thread3);
             log.stepOut("fungusspecies.growThread(fungusspecies.growThread(oTekton, thread3, thread4))", null);
         }
         log.stepOut("End of growThreadOneThreadTektonSuccess", null);
@@ -352,7 +353,7 @@ public class Tests {
         log.stepIn("Running test: growThreadDefTekton");
         FungusThread thread2 = new FungusThread(10, false, thread);
         log.stepIn("fungusspecies.growThread(tekton1, thread, thread2);");
-        fungusspecies.growThread(tekton1, thread, thread2);
+        fungusspecies.growThread(tekton1, thread);
         log.stepOut("fungusspecies.growThread(tekton1, thread, thread2);", null);
 
         log.stepOut("End of growThreadDefTekton", null);
@@ -564,7 +565,7 @@ public class Tests {
         DecomposingTekton dt = new DecomposingTekton();
         FungusThread othread = new FungusThread(5, false);
         log.stepIn("fungusspecies.growThread(dt,othread,thread)");
-        fungusspecies.growThread(dt, othread, thread);
+        fungusspecies.growThread(dt, othread);
         log.stepOut("fungusspecies.growThread(dt,othread,thread)", null);
         log.stepOut("End of growThreadDecomposingTekton", othread);
     }
