@@ -221,6 +221,15 @@ public class FungusThread {
         }
     }
 
+    /**
+     * Sets the Tekton object associated with the given Insect object to the
+     * "other" Tekton associated with this fungus thread, if this fungus thread
+     * is a bridge. If this fungus thread is not a bridge, it sets the Tekton
+     * object associated with the given Insect object to the only Tekton
+     * associated with this fungus thread.
+     * 
+     * @param i the Insect object to be updated.
+     */
     public void insectSetting(Insect i){
         if(i == null || !bridge){
             i.setRecentTekton(tektons.get(0));
