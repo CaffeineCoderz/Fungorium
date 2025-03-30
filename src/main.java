@@ -4,7 +4,7 @@ public class main {
     
     public static void main(String[] args) {
         CommandProcessor processor = new CommandProcessor();
-        processor.processConfigText("initialize");
+        processor.processConfigText("config");
         processor.start();
     }
 }

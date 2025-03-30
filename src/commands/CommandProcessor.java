@@ -20,11 +20,34 @@ import tektonTypes.*;
 import utils.*;
 
 // ! Commands:
-//      create <objecttype> <name>
-//      delete <name>
-//      load <filename>
-//      grow <FungusThread name>
+// ? System Commands:
+//      /load <filename>
+//      /break <Tekton>
+//      /kill <Insect>
+//      /set: kezelés osztályonként
+//      /create <objecttype> <name>
+//      /delete <name>
+//      /status <name> állapot lekérdezés
+//      /save játék állását menti fájlba
+//      /log a konzolon lévő kimeneteket menti fáklba
+//      /trigger események triggerelése nr: Következő kör np: Következő játékos
+//      /chance breaktekton && spora milyen fajta
+//
+// ? User Commands:
+//   *All player commands:
+//      helpObj: objektum típusok lekérdezése
 //      exit
+//   *Mycologist Commands:
+//   !   growBody <FungusThread> <Tekton> sima grow átalakult
+//    !  growThread <?>
+//      sporulate <FungusBody>
+//   *Entomologist Commands:
+//      move: <Insect> <Thread>
+//      cut <FungusThread>
+//      ! eat <Spore> <Insect> // mit választ ki spórát vagy tekton
+
+// ADD:konstrukotorok paraméterrel 
+
 //* Typne names:
 //? Default:
 //      body: fungus.Fungusbody
@@ -47,23 +70,12 @@ import utils.*;
 //      onlythreadtekton: tektonTypes.OnlyThreadTekton
 
 // TODO: 
-// Delete parancsok implementálása az osztályokban!!
+// Delete parancsok véglegesítése
 
 // TODO parancsok
-// Move: <FungusThread> <Tekton(hová)>
-// ? Needs Review
-// break <Tekton>
-// Move: <Insect> <Thread>
-// kill <Insect>
-// Set: kezelés osztályonként
-// helpObj: objektum típusok lekérdezése
-// load <filename>: fájl beolvasása
-// status <name> állapot lekérdezés
-// cut <FungusThread>
-// sporulate <FungusBody>
-// eat <Spore> <Insect>
-// !IN PROGRESS
-// grow <FungusThread name> 
+// Move: <FungusThread> <Tekton>
+// STATUS ALL -> kiírja az összes objektumot egy fájlba
+// ALL Objects 
 
 public class CommandProcessor {
     private Map<String, Object> createdObjects = new HashMap<>();
@@ -235,6 +247,12 @@ public class CommandProcessor {
             case "onlythreadtekton":
                 objectType = "OnlyThreadTekton";
                 break;
+            case "mycologist":
+                objectType = "Mycologist";
+                break;
+            case "entomologist":
+                objectType = "Entomologist";
+                break;
             default:
                 System.out.println("Hiba: Ismeretlen objektumtípus: " + objectType);
                 return;
@@ -276,7 +294,7 @@ public class CommandProcessor {
     }
 
     /*
-     * Create parancs formája: delete <name>
+     * delete parancs formája: delete <name>
      * Példa: delete i1
      * 
      * @param parts: parancs részei
@@ -295,34 +313,69 @@ public class CommandProcessor {
         }
 
         Object obj = createdObjects.get(name);
-        // * Debug: System.out.println("Objektum típusa: " + obj);
 
-        // ! Objektum típus ellenőrzés, és megfelelő függvény meghívása
-        // TODO: Delete függvények implementálása az osztályokban
-        if (obj instanceof Tekton) {
+        if (obj instanceof Tekton || obj instanceof DecomposingTekton || obj instanceof DecreasingTekton
+                || obj instanceof FeedThreadTekton || obj instanceof OneThreadTekton
+                || obj instanceof OnlyThreadTekton) {
             Tekton tekton = (Tekton) obj;
             tekton.deleteTekton();
             System.out.println("- Deleted Tekton | Name: " + name);
         } else if (obj instanceof Insect) {
             Insect insect = (Insect) obj;
+            if (insect.getMyOwner() == null || insect.getRecent() == null) {
+                System.out.println(
+                        "Hiba: Nem lehet törölni az Insect-et, mert nincs hozzárendelve Entomologist vagy Tekton!");
+                return;
+            }
+            insect.deadInsect();
             System.out.println("- Deleted Insect | Name: " + name);
-        } else if (obj instanceof Spore) {
+        } else if (obj instanceof Spore || obj instanceof FastSpore || obj instanceof MultiplyInsectSpore
+                || obj instanceof SlowSpore || obj instanceof StunSpore || obj instanceof DisableCutSpore) {
             Spore spore = (Spore) obj;
+            if (spore.getTekton() == null) {
+                System.out.println("Hiba: Nem lehet törölni a Spore-t, mert nincs hozzárendelve Tekton!");
+                return;
+            }
+            spore.absorbed();
             System.out.println("- Deleted Spore | Name: " + name);
         } else if (obj instanceof FungusThread) {
             FungusThread thread = (FungusThread) obj;
+            thread.setLifeSpan(0);
+            thread.destroy();
             System.out.println("- Deleted FungusThread | Name: " + name);
         } else if (obj instanceof FungusBody) {
             FungusBody body = (FungusBody) obj;
+            if (body.getSpecies() == null) {
+                System.out.println("Hiba: Nem lehet törölni a FungusBody-t, mert nincs hozzárendelve FungusSpecies!");
+                return;
+            }
+            body.getSpecies().deleteBody(body);
             System.out.println("- Deleted FungusBody | Name: " + name);
         } else if (obj instanceof FungusSpecies) {
             FungusSpecies species = (FungusSpecies) obj;
             System.out.println("- Deleted FungusSpecies | Name: " + name);
+        } else if (obj instanceof Entomologist) {
+            Entomologist player = (Entomologist) obj;
+            for (Insect insect : player.getInsects()) {
+                insect.deadInsect();
+                player.removeInsect(insect);
+            }
+            System.out.println("- Deleted Entomologist | Name: " + name);
+        } else if (obj instanceof Mycologist) {
+            Mycologist player = (Mycologist) obj;
+            for (FungusBody body : player.getSpecies().getBodies()) {
+                body.getSpecies().deleteBody(body);
+            }
+
+            for (FungusThread thread : player.getSpecies().getThreads()) {
+                thread.destroy();
+            }
+            player.setSpecies(null);
+            System.out.println("- Deleted Mycologist | Name: " + name);
         } else {
             System.out.println("Hiba: Ismeretlen típusú objektum: " + name);
         }
 
-        // Töröljük az objektumot a HashMap-ből
         createdObjects.remove(name);
     }
 
@@ -359,9 +412,6 @@ public class CommandProcessor {
                     + "\n\tPrev: " + thread.getPrev());
         } else if (obj instanceof FungusBody) {
             FungusBody body = (FungusBody) obj;
-            System.out.println(name);
-            System.out.println(obj);
-            System.out.println(body);
             System.out.println("FungusBody: "
                     + "\n\tSpecies: " + body.getSpecies()
                     + "\n\t Tekton: " + body.getTekton()
@@ -391,7 +441,7 @@ public class CommandProcessor {
             System.out.println("Tekton: "
                     + "\n\tCanGrowThread: " + tekton.canGrowThread()
                     + "\n\tCanGrowBody: " + tekton.canGrowBody()
-                    + "\n\tGetBody: " + tekton.getBody()
+                    + "\n\tBodies: " + tekton.getBody()
                     + "\n\tInsects: " + tekton.getInsects()
                     + "\n\tNeighbours: " + tekton.getNeighbours()
                     + "\n\tSpores: " + tekton.getSpores()
@@ -407,25 +457,53 @@ public class CommandProcessor {
      */
     public void processGrowCommand(String[] parts) {
         if (parts.length < 2) {
-            System.out.println("Hibás grow parancs! Használat: grow <Tekton>");
+            System.out.println("Hibás grow parancs! Használat: grow <FungusThread>");
             return;
         }
 
-        String name = parts[1];
+        String threadName = parts[1];
+        String tekton = parts[2];
 
-        if (!createdObjects.containsKey(name)) {
-            System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + name);
+        if (!createdObjects.containsKey(threadName)) {
+            System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + threadName);
             return;
         }
 
-        Object obj = createdObjects.get(name);
+        if (!createdObjects.containsKey(tekton)) {
+            System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + tekton);
+            return;
+        }
+
+        Object obj = createdObjects.get(threadName);
         if (obj instanceof FungusThread) {
             FungusThread thread = (FungusThread) obj;
-            // ! még nincs kipróbálva de sztem így működik
-            thread.getSpecies().growBody(thread);
-            System.out.println("A tekton nőtt!");
+            Tekton tektonObj = null;
+            if (createdObjects.get(tekton) instanceof Tekton) {
+                tektonObj = (Tekton) createdObjects.get(tekton);
+            } else if (createdObjects.get(tekton) instanceof DecomposingTekton) {
+                tektonObj = (DecomposingTekton) createdObjects.get(tekton);
+            } else if (createdObjects.get(tekton) instanceof DecreasingTekton) {
+                tektonObj = (DecreasingTekton) createdObjects.get(tekton);
+            } else if (createdObjects.get(tekton) instanceof FeedThreadTekton) {
+                tektonObj = (FeedThreadTekton) createdObjects.get(tekton);
+            } else if (createdObjects.get(tekton) instanceof OneThreadTekton) {
+                tektonObj = (OneThreadTekton) createdObjects.get(tekton);
+            } else if (createdObjects.get(tekton) instanceof OnlyThreadTekton) {
+                tektonObj = (OnlyThreadTekton) createdObjects.get(tekton);
+            } else {
+                System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + tekton);
+                return;
+            }
+            if (tektonObj.canGrowBody()) {
+                thread.getSpecies().growBody(thread);
+            } else {
+                System.out.println("Hiba: Nem lehet ide body-t növeszteni: " + tekton);
+                return;
+            }
+
+            System.out.println("Új body nőtt!");
         } else {
-            System.out.println("Hiba: Nem lehet növeszteni ezt az objektumot: " + name);
+            System.out.println("Hiba: Nem lehet növeszteni ezt az objektumot: " + threadName);
         }
     }
 
@@ -605,7 +683,8 @@ public class CommandProcessor {
         }
 
         Object obj = createdObjects.get(objectName);
-
+        // debug
+        // System.out.println("Objektum: " + obj.getClass().getName());
         // ! FungusThread
         if (obj instanceof FungusThread) {
             FungusThread thread = (FungusThread) obj;
@@ -616,7 +695,7 @@ public class CommandProcessor {
                 case "bridge":
                     thread.setBridge(Boolean.parseBoolean(value));
                     break;
-                case "isDying":
+                case "isdying":
                     thread.setIsDying(Boolean.parseBoolean(value));
                     break;
                 case "body":
@@ -624,23 +703,29 @@ public class CommandProcessor {
                     break;
                 case "species":
                     thread.setSpecies((FungusSpecies) createdObjects.get(value));
+                    break;
+                case "prev":
+                    thread.setPrevThread((FungusThread) createdObjects.get(value));
+                    break;
+                case "next":
+                    thread.setNextThread((FungusThread) createdObjects.get(value));
+                    break;
                 default:
                     System.out.println("Hiba: Nem létezik ilyen tulajdonság: " + property);
                     return;
             }
-            System.out.println("Sikeresen frissítve: " + objectName);
-        } else {
-            System.out.println("Hiba: Nem lehet beállítani ezt az objektumot: " + objectName);
+            System.out.println("Sikeresen frissítve: " + objectName + " | " + property + ": " + value);
+            return;
         }
 
         // ! FungusBody
-        if (obj instanceof FungusBody) {
+        else if (obj instanceof FungusBody) {
             FungusBody body = (FungusBody) obj;
             switch (property) {
                 case "species":
                     body.setSpecies((FungusSpecies) createdObjects.get(value));
                     break;
-                case "sporeCount":
+                case "sporecount":
                     body.setSporeC(Integer.parseInt(value));
                     break;
                 case "tekton":
@@ -653,13 +738,12 @@ public class CommandProcessor {
                     System.out.println("Hiba: Nem létezik ilyen tulajdonság: " + property);
                     return;
             }
-            System.out.println("Sikeresen frissítve: " + objectName);
-        } else {
-            System.out.println("Hiba: Nem lehet beállítani ezt az objektumot: " + objectName);
+            System.out.println("Sikeresen frissítve: " + objectName + " | " + property + ": " + value);
+            return;
         }
 
         // ! FungusSpecies
-        if (obj instanceof FungusSpecies) {
+        else if (obj instanceof FungusSpecies) {
             FungusSpecies species = (FungusSpecies) obj;
             switch (property) {
                 case "addbody":
@@ -674,7 +758,7 @@ public class CommandProcessor {
                     else
                         System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + value);
                     break;
-                case "addThread":
+                case "addthread":
                     if (createdObjects.get(value) instanceof FungusThread)
                         species.addThread((FungusThread) createdObjects.get(value));
                     else
@@ -696,13 +780,12 @@ public class CommandProcessor {
                     System.out.println("Hiba: Nem létezik ilyen tulajdonság: " + property);
                     return;
             }
-            System.out.println("Sikeresen frissítve: " + objectName);
-        } else {
-            System.out.println("Hiba: Nem lehet beállítani ezt az objektumot: " + objectName);
+            System.out.println("Sikeresen frissítve: " + objectName + " | " + property + ": " + value);
+            return;
         }
 
         // ! Insect
-        if (obj instanceof Insect) {
+        else if (obj instanceof Insect) {
             Insect insect = (Insect) obj;
             switch (property) {
                 case "species":
@@ -717,17 +800,17 @@ public class CommandProcessor {
                     else
                         System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + value);
                     break;
-                case "descrease":
+                case "decrease":
                     insect.setDecrease(Boolean.parseBoolean(value));
                     break;
                 case "effect":
-                    if (value == "stun")
+                    if (value.equals("stun"))
                         insect.stun();
-                    else if (value == "slow")
+                    else if (value.equals("slow"))
                         insect.slow();
-                    else if (value == "fast")
+                    else if (value.equals("fast"))
                         insect.fast();
-                    else if (value == "disablecut")
+                    else if (value.equals("disablecut"))
                         insect.disableCut();
                     else
                         System.out.println("Hiba: Nem létezik ilyen hatás: " + value);
@@ -736,13 +819,12 @@ public class CommandProcessor {
                     System.out.println("Hiba: Nem létezik ilyen tulajdonság: " + property);
                     return;
             }
-            System.out.println("Sikeresen frissítve: " + objectName);
-        } else {
-            System.out.println("Hiba: Nem lehet beállítani ezt az objektumot: " + objectName);
+            System.out.println("Sikeresen frissítve: " + objectName + " | " + property + ": " + value);
+            return;
         }
 
         // ! Spore
-        if (obj instanceof Spore || obj instanceof FastSpore || obj instanceof MultiplyInsectSpore
+        else if (obj instanceof Spore || obj instanceof FastSpore || obj instanceof MultiplyInsectSpore
                 || obj instanceof SlowSpore || obj instanceof StunSpore || obj instanceof DisableCutSpore) {
             Spore spore = (Spore) obj;
             switch (property) {
@@ -759,21 +841,20 @@ public class CommandProcessor {
                     System.out.println("Hiba: Nem létezik ilyen tulajdonság: " + property);
                     return;
             }
-            System.out.println("Sikeresen frissítve: " + objectName);
-        } else {
-            System.out.println("Hiba: Nem lehet beállítani ezt az objektumot: " + objectName);
+            System.out.println("Sikeresen frissítve: " + objectName + " | " + property + ": " + value);
+            return;
         }
 
         // ! Tekton
-        if (obj instanceof Tekton || obj instanceof DecomposingTekton || obj instanceof DecreasingTekton
+        else if (obj instanceof Tekton || obj instanceof DecomposingTekton || obj instanceof DecreasingTekton
                 || obj instanceof FeedThreadTekton || obj instanceof OneThreadTekton
                 || obj instanceof OnlyThreadTekton) {
             Tekton tekton = (Tekton) obj;
             switch (property) {
-                case "canGrowThread":
+                case "cangrowthread":
                     tekton.setGrowThread(Boolean.parseBoolean(value));
                     break;
-                case "canGrowBody":
+                case "cangrowbody":
                     tekton.setGrowBody(Boolean.parseBoolean(value));
                     break;
                 case "body":
@@ -790,25 +871,25 @@ public class CommandProcessor {
                     if (createdObjects.get(value) instanceof Tekton)
                         tekton.removeNeighbour((Tekton) createdObjects.get(value));
                     break;
-                case "addInsect":
+                case "addinsect":
                     if (createdObjects.get(value) instanceof Insect)
                         tekton.addInsect((Insect) createdObjects.get(value));
                     else
                         System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + value);
                     break;
-                case "deleteInsect":
+                case "deleteinsect":
                     if (createdObjects.get(value) instanceof Insect)
                         tekton.removeInsect((Insect) createdObjects.get(value));
                     else
                         System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + value);
                     break;
-                case "addSpore":
+                case "addspore":
                     if (createdObjects.get(value) instanceof Spore)
                         tekton.addSpore((Spore) createdObjects.get(value));
                     else
                         System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + value);
                     break;
-                case "deleteSpore":
+                case "deletespore":
                     if (createdObjects.get(value) instanceof Spore)
                         tekton.removeSpore((Spore) createdObjects.get(value));
                     else
@@ -830,6 +911,54 @@ public class CommandProcessor {
                     System.out.println("Hiba: Nem létezik ilyen tulajdonság: " + property);
                     return;
             }
+            System.out.println("Sikeresen frissítve: " + objectName + " | " + property + ": " + value);
+            return;
+        }
+
+        // ! Mycologist
+        else if (obj instanceof Mycologist) {
+            Mycologist player = (Mycologist) obj;
+            switch (property) {
+                case "species":
+                    if (createdObjects.get(value) instanceof FungusSpecies)
+                        player.setSpecies((FungusSpecies) createdObjects.get(value));
+                    else
+                        System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + value);
+                    break;
+                default:
+                    System.out.println("Hiba: Nem létezik ilyen tulajdonság: " + property);
+                    return;
+            }
+            System.out.println("Sikeresen frissítve: " + objectName + " | " + property + ": " + value);
+            return;
+        }
+
+        // ! Entomologist
+        else if (obj instanceof Entomologist) {
+            Entomologist player = (Entomologist) obj;
+            switch (property) {
+                case "addinsect":
+                    if (createdObjects.get(value) instanceof Insect)
+                        player.addInsect((Insect) createdObjects.get(value));
+                    else
+                        System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + value);
+                    break;
+                case "removeinsect":
+                    if (createdObjects.get(value) instanceof Insect)
+                        player.removeInsect((Insect) createdObjects.get(value));
+                    else
+                        System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + value);
+                    break;
+                default:
+                    System.out.println("Hiba: Nem létezik ilyen tulajdonság: " + property);
+                    return;
+            }
+            System.out.println("Sikeresen frissítve: " + objectName + " | " + property + ": " + value);
+            return;
+        }
+
+        else {
+            System.out.println("Hiba: Nem lehet beállítani ezt az objektumot: " + objectName);
         }
     }
 

@@ -3,9 +3,14 @@ package fungus;
 import logic.Player;
 import tektonTypes.Tekton;
 
-public class Mycologist extends Player{
+public class Mycologist extends Player {
     private FungusSpecies mySpecies;
     private Integer score;
+
+    public Mycologist() {
+        mySpecies = null;
+        score = 0;
+    }
 
     public Mycologist(FungusSpecies species) {
         mySpecies = species;
@@ -87,8 +92,8 @@ public class Mycologist extends Player{
      * @param selectedBody the FungusBody instance to sporulate.
      */
     public void sporulate(FungusBody selectedBody) {
-        for(FungusBody body : mySpecies.getBodies()) {
-            if(body == selectedBody) {
+        for (FungusBody body : mySpecies.getBodies()) {
+            if (body == selectedBody) {
                 selectedBody.sporulate();
             }
         }

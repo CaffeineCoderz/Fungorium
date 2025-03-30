@@ -47,6 +47,17 @@ public class FungusSpecies implements iControl {
         return bodies;
     }
 
+    // ! Nincs a statikus diagramon
+    /**
+     * Retrieves the list of FungusThread instances associated with this
+     * FungusSpecies.
+     * 
+     * @return a list of FungusThread objects.
+     */
+    public List<FungusThread> getThreads() {
+        return threads;
+    }
+
     /**
      * Adds a FungusBody instance to the list of bodies associated with this
      * FungusSpecies.
