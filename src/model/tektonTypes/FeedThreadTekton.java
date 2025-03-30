@@ -13,10 +13,11 @@ public class FeedThreadTekton extends Tekton {
     }
 
     //? ez itt amugy tok folosleges mert fungusspieciesben decreaseLifenal vizsgaljuk hogy ilyen tekton e
+    //! ténlyeg az ~ Diviki
     /**
      * Keeps alive threads that are not directly or indirectly connected to a FungusBody.
      */
-    public void maintainThreads() {
+    /*public void maintainThreads() {
         log.stepIn("maintainThreads()");
         for (FungusThread thread : threads) {
             if (!isThreadConnectedToBody(thread)) {
@@ -27,7 +28,7 @@ public class FeedThreadTekton extends Tekton {
             }
         }
         log.stepOut("maintainThreads()", null);
-    }
+    }*/
 
     /**
      * Checks if a thread is connected to a FungusBody.
@@ -45,11 +46,22 @@ public class FeedThreadTekton extends Tekton {
      * Keeps a thread alive.
      * @param thread The thread to keep alive.
      */
-    private void keepThreadAlive(FungusThread thread) {
+    //! nem állitjuk át setIsDying-ot, mivel az azt mutatja, hogy el kell halnia
+    /*private void keepThreadAlive(FungusThread thread) {
         log.stepIn("keepThreadAlive(thread: " + thread + ")");
         log.askQ("Keeping thread alive: " + thread, false);
         thread.setIsDying(false);
         //? ide ha ezt így karjuk akkol kell még
         log.stepOut("keepThreadAlive()", null);
+    }*/
+
+    @Override
+    public void removeThread(FungusThread thread){
+        if (thread.getIsDying()) {
+            threads.remove(thread);
+        }else if (thread.getLifeSpan() == 0) {
+            // ? ennyi körig maradjon életben?
+            thread.setLifeSpan(2);
+        }
     }
 }

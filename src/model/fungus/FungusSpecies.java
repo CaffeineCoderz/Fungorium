@@ -4,11 +4,8 @@ import interfaces.iControl;
 import java.util.ArrayList;
 import java.util.List;
 
-import tektonTypes.FeedThreadTekton;
-
 import fungus.FungusThread;
 import insect.*;
-
 import tektonTypes.Tekton;
 import utils.Logger;
 
@@ -106,20 +103,29 @@ public class FungusSpecies implements iControl {
      * @param nThread      The new FungusThread instance to be added.
      */
     public void growThread(Tekton targetTekton, FungusThread oThread, FungusThread nThread) {
+        
         if (targetTekton.canGrowThread()) {
             log.askQ("Can grow thread on tekton", false);
             log.stepIn("addThread(nThread)");
             addThread(nThread);
             log.stepOut("addThread(nThread)", null);
+
             log.stepIn("nThread.addTekton(targetTekton)");
             nThread.addTekton(targetTekton);
             log.stepOut("nThread.addTekton(targetTekton)", null);
+
             log.stepIn("targetTekton.addThread(nThread)");
             targetTekton.addThread(nThread);
             log.stepOut("targetTekton.addThread(nThread)", null);
+
             log.stepIn("oThread.setNextThread(nThread)");
             oThread.setNextThread(nThread);
             log.stepOut("oThread.setNextThread(nThread)", null);
+
+            // ! Be kell állítani hogy melyik testhez tartozik
+            log.stepIn("nThread.setBody(targetTekton.getBody())");
+            nThread.setBody(targetTekton.getBody());
+            log.stepOut("nThread.setBody(targetTekton.getBody())", null);
         } else {
             log.askQ("tekton cant have new threads", false);
         }
@@ -270,7 +276,7 @@ public class FungusSpecies implements iControl {
         log.askQ("End Cycle", false);
         log.askQ("Start Cycle", false);
         for (FungusThread thread : threads) {
-            if (thread.getLifeSpan() > 0 && !(thread.getTekton() instanceof FeedThreadTekton)) {
+            if (thread.getLifeSpan() > 0) {
                 log.askQ("Has remaining lifespan", false);
                 log.stepIn("thread.decreaseLife()");
                 thread.decreaseLife();
@@ -355,7 +361,7 @@ public class FungusSpecies implements iControl {
         log.askQ("End of Cycle", false);
         if (someoneDied) {
             log.askQ("You can grow a body to the tekton", false);
-            if (log.askQ("Want to grow body?", true) == "y") {
+            if (log.askQ("Want to grow body?", true).equals("y")) {
                 log.stepIn("growBody(ft)");
                 growBody(ft);
                 log.stepOut("growBody(ft)", null);
