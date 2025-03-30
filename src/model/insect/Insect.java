@@ -40,9 +40,19 @@ public class Insect{
         this.myOwner = i.myOwner;
     }
 
+    /**
+     * Sets the Entomologist associated with this Insect.
+     * 
+     * @param my the Entomologist to be associated with this Insect.
+     */
     public void setMyOwner(Entomologist my){
         myOwner = my;
     }
+    /**
+     * Retrieves the Entomologist associated with this Insect.
+     * 
+     * @return the Entomologist associated with this Insect.
+     */
     public Entomologist getMyOwner(){
         return myOwner;
     }
@@ -258,7 +268,6 @@ public class Insect{
      * 
      * @param Round the current round number.
      */
-    
     public void timeElapsed() {
         log.askQ("Decrease timers", false);
         if (onDecreasing) {

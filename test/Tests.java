@@ -253,6 +253,18 @@ public class Tests {
 
     }
 
+    /**
+     * Tests the successful growth of a FungusBody on a default Tekton.
+     * 
+     * This test adds threads to a Tekton and checks if a FungusBody can
+     * grow on it based on user input regarding the presence of an existing
+     * body and sufficient spores. If a body is already present, it attempts
+     * to grow a new body. If not, it further checks if there are enough
+     * spores to support body growth and attempts to grow a body accordingly.
+     * 
+     * The test logs each step of the process and captures the interaction
+     * with the user to simulate different scenarios.
+     */
     public void growBodyDefTektonSuccess() {
         log.stepIn("Running test: growBodyDefTektonSuccess");
 
@@ -290,14 +302,27 @@ public class Tests {
         log.stepOut("End of growBodyDefTektonSuccess", null);
     }
 
+    /**
+     * Tests the successful growth of a FungusThread on a OneThreadTekton.
+     * 
+     * This test adds a thread to a OneThreadTekton and checks if a new
+     * FungusThread can grow on it based on user input regarding the presence of
+     * an existing thread and sufficient spores. If a thread is already present,
+     * it further checks if there are enough spores to support thread growth and
+     * attempts to grow a thread accordingly.
+     * 
+     * The test logs each step of the process and captures the interaction with
+     * the user to simulate different scenarios.
+     */
     public void growThreadOneThreadTektonSuccess() {
         log.stepIn("Running test: growThreadOneThreadTektonSuccess");
         String key = log.askQ("Van-e mar fonal a tektonon? (y/n)", true);
         OneThreadTekton oTekton = new OneThreadTekton();
+        System.out.println(oTekton.getClass());
         if (key.equals("n")) {
             FungusThread thread2 = new FungusThread(5, false, thread);
             log.stepIn("fungusspecies.growThread(oTekton, thread, thread2)");
-            fungusspecies.growThread(oTekton, thread, thread2);
+            fungusspecies.growThread(oTekton, thread);
             log.stepOut("fungusspecies.growThread(oTekton, thread, thread2)", null);
         }
         if (key.equals("y")) {
@@ -306,22 +331,42 @@ public class Tests {
             FungusThread thread3 = new FungusThread(5, false);
             FungusThread thread4 = new FungusThread(5, false, thread3);
             log.stepIn("fungusspecies.growThread(fungusspecies.growThread(oTekton, thread3, thread4))");
-            fungusspecies.growThread(oTekton, thread3, thread4);
+            fungusspecies.growThread(oTekton, thread3);
             log.stepOut("fungusspecies.growThread(fungusspecies.growThread(oTekton, thread3, thread4))", null);
         }
         log.stepOut("End of growThreadOneThreadTektonSuccess", null);
     }
 
+    /**
+     * Tests the successful growth of a FungusThread on a default Tekton.
+     * 
+     * This test adds a thread to a default Tekton and checks if a new
+     * FungusThread can grow on it based on user input regarding the presence of
+     * an existing thread and sufficient spores. If a thread is already present,
+     * it further checks if there are enough spores to support thread growth and
+     * attempts to grow a thread accordingly.
+     * 
+     * The test logs each step of the process and captures the interaction with
+     * the user to simulate different scenarios.
+     */
     public void growThreadDefTekton() {
         log.stepIn("Running test: growThreadDefTekton");
         FungusThread thread2 = new FungusThread(10, false, thread);
         log.stepIn("fungusspecies.growThread(tekton1, thread, thread2);");
-        fungusspecies.growThread(tekton1, thread, thread2);
+        fungusspecies.growThread(tekton1, thread);
         log.stepOut("fungusspecies.growThread(tekton1, thread, thread2);", null);
 
         log.stepOut("End of growThreadDefTekton", null);
     }
 
+    /**
+     * Tests the successful spread of spores from a FungusBody.
+     * 
+     * This test simulates a scenario where a FungusBody has enough spores to
+     * spread to its neighboring Tektons. The test logs each step of the process
+     * and captures the interaction with the user to simulate different
+     * scenarios.
+     */
     public void sporulateSuccess() {
         log.stepIn("Running test: sporulateSuccess");
         FungusThread thread2 = new FungusThread(null,false);
@@ -346,6 +391,14 @@ public class Tests {
         } 
     }
 
+    /**
+     * Tests the consumption of a DisableCutSpore by an insect.
+     * 
+     * This test verifies that when an insect consumes a DisableCutSpore,
+     * its ability to cut threads is disabled. The test logs each step
+     * of the process and checks the insect's ability to cut threads
+     * after consumption.
+     */
     public void disableCutSporeConsumed() {
         log.stepIn("Running test: disableCutSporeConsumed");
 
@@ -361,6 +414,14 @@ public class Tests {
         log.stepOut("End of disableCutSporeConsumed", null);
     }
 
+    /**
+     * Tests the consumption of a SlowSpore by an insect.
+     * 
+     * This test verifies that when an insect consumes a SlowSpore,
+     * its speed effect is adjusted accordingly. The test logs each
+     * step of the process and checks the insect's effect after
+     * consumption to ensure it is slowed down.
+     */
     public void slowSporeConsumed() {
         log.stepIn("Running test: slowSporeConsumed");
         Spore sSpore = new SlowSpore(tekton1, 10);
@@ -372,6 +433,13 @@ public class Tests {
         log.stepOut("End of slowSporeConsumed", null);
     }
 
+    /**
+     * Tests the cutting of a FungusThread by an insect when it has no
+     * ability to cut. This test verifies that the insect's ability to cut
+     * threads is disabled and it cannot cut any threads. The test logs each
+     * step of the process and checks the insect's ability to cut threads
+     * after consumption to ensure it cannot cut any threads.
+     */
     public void insectCutThreadWhileNoCutAbility() {
         log.stepIn("Running test: insectCutThreadWhileNoCutAbility");
         log.stepIn("insect.disableCut()");
@@ -388,6 +456,13 @@ public class Tests {
         log.stepOut("End of insectCutThreadWhileNoCutAbility", null);
     }
 
+    /**
+     * Tests the successful growth of a FungusBody on an OnlyThreadTekton.
+     * 
+     * This test adds enough spores to an OnlyThreadTekton and then attempts to
+     * grow a FungusBody. The test logs each step of the process and checks the
+     * result of the growth operation.
+     */
     public void growBodyOnlyThreadTekton() {
         log.stepIn("Running test: growBodyOnlyThreadTekton");
         OnlyThreadTekton temp = new OnlyThreadTekton();
@@ -404,6 +479,13 @@ public class Tests {
         log.stepOut("End of growBodyOnlyThreadTekton", null);
     }
 
+    /**
+     * Tests the cutting of a FungusThread by an insect.
+     * 
+     * This test verifies that when an insect cuts a FungusThread, the
+     * FungusThread is destroyed. The test logs each step of the process and
+     * checks the result of the cut operation.
+     */
     public void insectCutThread() {
         log.stepIn("Running test: insectCutThread");
         Tekton tekton2 = new Tekton(true, true);
@@ -420,6 +502,13 @@ public class Tests {
         log.stepOut("End of insectCutThread", null);
     }
 
+    /**
+     * Tests the consumption of a FastSpore by an insect.
+     * 
+     * This test verifies that when an insect consumes a FastSpore, its speed
+     * effect is adjusted accordingly. The test logs each step of the process
+     * and checks the insect's effect after consumption to ensure it is sped up.
+     */
     public void speedSporeConsumed() {
         log.stepIn("Running test: speedSporeConsumed");
         FastSpore fs = new FastSpore(tekton1, 10);
@@ -434,6 +523,14 @@ public class Tests {
 
     }
 
+    /**
+     * Tests the movement of an insect while stunned.
+     * 
+     * This test verifies that when an insect consumes a StunSpore and becomes
+     * stunned, it cannot move to a different FungusThread. The test logs each
+     * step of the process, including the consumption of the StunSpore and the
+     * attempt to move, ensuring that the insect remains in its current position.
+     */
     public void insectMoveWhileStunned() {
         log.stepIn("Running test: insectMoveWhileStunned");
         Tekton tekton2 = new Tekton(true, true);
@@ -455,16 +552,32 @@ public class Tests {
 
     }
 
+    /**
+     * Tests the growth of a new FungusThread from a DecomposingTekton.
+     * 
+     * This test verifies that when a DecomposingTekton is given as the target
+     * Tekton in the growThread() method of FungusSpecies, the new FungusThread
+     * is added to the DecomposingTekton and the DecomposingTekton's
+     * canGrowThread flag is set to false.
+     */
     public void growThreadDecomposingTektor() {
         log.stepIn("Running test: growThreadDecomposingTekton");
         DecomposingTekton dt = new DecomposingTekton();
         FungusThread othread = new FungusThread(5, false);
         log.stepIn("fungusspecies.growThread(dt,othread,thread)");
-        fungusspecies.growThread(dt, othread, thread);
+        fungusspecies.growThread(dt, othread);
         log.stepOut("fungusspecies.growThread(dt,othread,thread)", null);
         log.stepOut("End of growThreadDecomposingTekton", othread);
     }
 
+    /**
+     * Tests the successful movement of an Insect from one Tekton to another
+     * through a FungusThread.
+     * 
+     * This test verifies that when an Insect is moved from one Tekton to
+     * another via a FungusThread, the Insect is properly removed from the
+     * first Tekton and added to the second Tekton.
+     */
     public void insectMoveSuccess() {
         log.stepIn("Running test: insectMoveSuccess");
         tekton1.addInsect(insect);
@@ -484,6 +597,13 @@ public class Tests {
 
     }
 
+    /**
+     * Tests the consumption of a StunSpore by an Insect.
+     * 
+     * This test verifies that when an Insect consumes a StunSpore, its effect
+     * is set to STUN, preventing it from performing actions, and triggers the
+     * absorption process of the spore.
+     */
     public void stunSporeConsumed() {
         log.stepIn("Running test: stunSporeConsumed");
         Spore ss = new Spore(tekton1, 10);
@@ -496,6 +616,13 @@ public class Tests {
         log.stepOut("End of stunSporeConsumed",null);
     }
 
+    /**
+     * Tests the sporulation of a FungusBody to its neighboring Tektons's neighboring Tektons.
+     * 
+     * This test verifies that when a FungusBody sporulates, it spreads spores to its neighboring
+     * Tektons, and if the neighboring Tektons have neighboring Tektons, it also spreads spores to
+     * those Tektons.
+     */
     public void sporulateFurther() {
         log.stepIn("Running test: sporulateFurther");
         Tekton tekton2 = new Tekton(true, true);
@@ -513,6 +640,13 @@ public class Tests {
         log.stepOut("End of sporulateFurther", null);
     }
 
+    /**
+     * Tests the breaking of a Tekton.
+     * 
+     * This test verifies that when a Tekton is broken, all of its neighbors are
+     * informed, all of its threads are destroyed, all of its bodies are destroyed,
+     * all of its spores are absorbed, and all of its insects are killed.
+     */
     public void tektonBreak(){
         log.stepIn("Running test: tektonBreak");
         FungusThread f2 = new FungusThread(null, false);
@@ -527,6 +661,13 @@ public class Tests {
         log.stepOut("End of tektonBreak",null);  
     }
 
+    /**
+     * Tests the consumption of an Insect by a FungusSpecies.
+     * 
+     * This test verifies that when an Insect is consumed by a FungusSpecies, the
+     * Insect is killed, and the associated FungusThread is given the opportunity
+     * to grow a new FungusBody on the Tekton associated with the FungusThread.
+     */
     public void consumeStunnedInsect(){
         log.stepIn("Running test: consumeStunnedInsect()");
         FungusThread thread2 = new FungusThread();
@@ -546,6 +687,13 @@ public class Tests {
         log.stepOut("End of consumeStunnedInsect", null);
     }
 
+    /**
+     * Tests the duplication of an Insect.
+     * 
+     * This test verifies that when an Insect consumes a MultiplyInsectSpore, the
+     * Insect is duplicated, and the duplicate is added to the same Tekton as
+     * the original Insect.
+     */
     public void duplicateInsect(){
         log.stepIn("Running test: duplicateInsect");
         MultiplyInsectSpore multinsectspore= new MultiplyInsectSpore();
@@ -556,6 +704,16 @@ public class Tests {
         log.stepOut("End of duplicateInsect", null);
     }
 
+    /**
+     * This test verifies that the associated FungusSpecies can grow a new
+     * FungusThread associated with the given FungusThread and Tekton.
+     * 
+     * This test adds a new Tekton to the associated FungusThread, and then
+     * orders the associated FungusSpecies to grow a new FungusThread associated
+     * with the given FungusThread and the new Tekton. The test then verifies
+     * that the new FungusThread is associated with both the given FungusThread
+     * and the new Tekton.
+     */
     public void growBridgeSucces(){
         thread.addTekton(tekton1);
         thread.setBody(body);
@@ -567,6 +725,15 @@ public class Tests {
         log.stepOut("End of growBridgeSucces", null);
     }
 
+    /**
+     * The main method of the Tests class.
+     * 
+     * This method is the entry point for the Tests class. It starts all tests by
+     * calling the getUserInput() method, and then creates a new instance of the
+     * Tests class and runs all tests.
+     * 
+     * @param args the command line arguments
+     */
     public static void main(String[] args) {
         System.out.println("Starting all tests...");
         getUserInput();

@@ -17,7 +17,7 @@ public class FungusThread {
     private List<Tekton> tektons;
     private FungusSpecies species;
     private FungusBody body;
-
+    private Boolean connected;
     private FungusThread prevThread;
     private FungusThread nextThread;
 
@@ -31,6 +31,7 @@ public class FungusThread {
         this.tektons = new ArrayList<>();
         prevThread = null;
         nextThread = null;
+        connected = true;
     }
 
     public FungusThread(Integer lifeSpan, Boolean bridge) {
@@ -41,6 +42,7 @@ public class FungusThread {
         this.tektons = new ArrayList<>();
         prevThread = null;
         nextThread = null;
+        connected=true;
     }
 
     public FungusThread(Integer lifeSpan, Boolean bridge, FungusThread prev) {
@@ -51,10 +53,15 @@ public class FungusThread {
         this.tektons = new ArrayList<>();
         prevThread = prev;
         nextThread = null;
+        connected=true;
         if (prev != null)
             body = prev.getBody();
         else
             body = null;
+    }
+
+    public void setConnected(Boolean bool){
+        this.connected=bool;
     }
 
     /**
@@ -136,12 +143,12 @@ public class FungusThread {
      * isDying flag of this fungus thread to true.
      */
     public void decreaseLife() {
-        if (lifeSpan == 0) {
+        if (!isDying) {
             return;
         }
         lifeSpan--;
         if (lifeSpan <= 0) {
-            isDying = true;
+            this.destroy();
         }
     }
 
@@ -221,6 +228,15 @@ public class FungusThread {
         }
     }
 
+    /**
+     * Sets the Tekton object associated with the given Insect object to the
+     * "other" Tekton associated with this fungus thread, if this fungus thread
+     * is a bridge. If this fungus thread is not a bridge, it sets the Tekton
+     * object associated with the given Insect object to the only Tekton
+     * associated with this fungus thread.
+     * 
+     * @param i the Insect object to be updated.
+     */
     public void insectSetting(Insect i){
         if(i == null || !bridge){
             i.setRecentTekton(tektons.get(0));

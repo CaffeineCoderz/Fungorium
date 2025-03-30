@@ -24,9 +24,19 @@ public class Entomologist extends Player implements iControl{
         score = 0;
         myInsects = new ArrayList<>();
     }
+    /**
+     * Adds the specified Insect to the list of insects managed by this Entomologist.
+     * 
+     * @param e the Insect to be added to the list of insects.
+     */
     public void addInsect(Insect e) {
         myInsects.add(e);
     }
+    /**
+     * Removes the specified Insect from the list of insects managed by this Entomologist.
+     *
+     * @param e the Insect to be removed from the list.
+     */
     public void removeInsect(Insect e) {
         myInsects.remove(e);
     }
@@ -62,6 +72,14 @@ public class Entomologist extends Player implements iControl{
         }
     }
 
+    /**
+     * Orders the specified Insect to move to the specified FungusThread.
+     * If the specified Insect is not in the list of insects managed by this
+     * Entomologist, nothing happens.
+     * 
+     * @param selectedInsect the Insect to move.
+     * @param selectedThread the FungusThread that the Insect should move to.
+     */
     public void move(Insect selectedInsect, FungusThread selectedThread) {
         for(Insect insect : myInsects) {
             if (insect == selectedInsect) {
@@ -70,6 +88,14 @@ public class Entomologist extends Player implements iControl{
         }
     }
     
+    /**
+     * Orders the specified Insect to eat the specified Spore.
+     * If the specified Insect is not in the list of insects managed by this
+     * Entomologist, nothing happens.
+     * 
+     * @param selectedInsect the Insect which should consume the Spore.
+     * @param selectedSpore the Spore to be consumed.
+     */
     public void eat(Insect selectedInsect, Spore selectedSpore) {
         for(Insect insect : myInsects) {
             if(insect == selectedInsect) {
@@ -78,6 +104,14 @@ public class Entomologist extends Player implements iControl{
         }
     }
 
+    /**
+     * Orders the specified Insect to cut the specified FungusThread.
+     * If the specified Insect is not in the list of insects managed by this
+     * Entomologist, nothing happens.
+     * 
+     * @param selectedInsect the Insect which should perform the cut.
+     * @param selectedThread the FungusThread which should be cut.
+     */
     public void cut(Insect selectedInsect, FungusThread selectedThread) {
         for(Insect insect : myInsects) {
             if(insect == selectedInsect) {
