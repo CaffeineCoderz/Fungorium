@@ -3,9 +3,14 @@ package fungus;
 import logic.Player;
 import tektonTypes.Tekton;
 
-public class Mycologist extends Player{
+public class Mycologist extends Player {
     private FungusSpecies mySpecies;
     private Integer score;
+
+    public Mycologist() {
+        mySpecies = null;
+        score = 0;
+    }
 
     public Mycologist(FungusSpecies species) {
         mySpecies = species;
@@ -18,7 +23,7 @@ public class Mycologist extends Player{
     public void setSpecies(FungusSpecies species) {
         mySpecies = species;
     }
-    
+
     public void grow(FungusThread selectedThread) {
         mySpecies.growBody(selectedThread);
     }
@@ -26,7 +31,8 @@ public class Mycologist extends Player{
     public void setThread(FungusThread selectedThread, FungusThread newThread) {
         mySpecies.growThread(selectedThread.getTekton(null), selectedThread, newThread);
     }
-    public void setBridge(FungusThread fromThread,Tekton toTekton){
+
+    public void setBridge(FungusThread fromThread, Tekton toTekton) {
         mySpecies.growBridge(fromThread, toTekton);
     }
 
@@ -35,8 +41,8 @@ public class Mycologist extends Player{
     }
 
     public void sporulate(FungusBody selectedBody) {
-        for(FungusBody body : mySpecies.getBodies()) {
-            if(body == selectedBody) {
+        for (FungusBody body : mySpecies.getBodies()) {
+            if (body == selectedBody) {
                 selectedBody.sporulate();
             }
         }

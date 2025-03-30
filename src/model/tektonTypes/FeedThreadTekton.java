@@ -7,6 +7,11 @@ public class FeedThreadTekton extends Tekton {
 
     private static Logger log;
 
+    public FeedThreadTekton() {
+        super(true, true);
+        log = Logger.getLogger("FeedThreadTektonLogger");
+    }
+
     public FeedThreadTekton(Boolean canGrowBody, Boolean canGrowThread) {
         super(canGrowBody, canGrowThread);
         log = Logger.getLogger("FeedThreadTektonLogger");
