@@ -155,17 +155,15 @@ public class Insect{
                 if (ft.isBridge()) {
                     log.stepIn("ft.setIsDying(true)");
                     ft.setIsDying(true);
+                    ft.setLifeSpan(2);
                     log.stepOut("ft.setIsDying(true)", null);
                 }else{
                     // ! Még nem végleges
                     log.stepIn("ft.setLifeSpan(2)");
-                    ft.setLifeSpan(2);
+                    ft.setIsDying(true);
+                    ft.setLifeSpan(4);
                     log.stepOut("ft.setLifeSpan(2)", null);
                 }
-
-            log.stepIn("ft.getSpecies().destroyThread(ft)ft.destroy()");
-            ft.getSpecies().destroyThread(ft);
-            log.stepOut("ft.getSpecies().destroyThread(ft)", null);
         } else
             log.askQ("Insect can't cut threads", false);
 
