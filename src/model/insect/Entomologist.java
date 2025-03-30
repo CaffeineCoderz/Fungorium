@@ -1,5 +1,6 @@
 package insect;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import fungus.FungusSpecies;
@@ -20,7 +21,8 @@ public class Entomologist extends Player implements iControl{
     }
     public Entomologist() {
         super();
-
+        score = 0;
+        myInsects = new ArrayList<>();
     }
     public void addInsect(Insect e) {
         myInsects.add(e);

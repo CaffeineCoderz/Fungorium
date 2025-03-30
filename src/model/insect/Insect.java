@@ -167,9 +167,11 @@ public class Insect{
                 log.stepIn("recentTekton.removeInsect(this)");
                 recentTekton.removeInsect(this);
                 log.stepOut("recentTekton.removeInsect(this)", null);
+
                 log.stepIn("setRecentTekton(ft.getTekton())");
-                setRecentTekton(ft.getTekton());
-                log.stepOut("setRecentTekton(ft.getTekton())", ft.getTekton());
+                setRecentTekton(ft.getTekton(this));
+                log.stepOut("setRecentTekton(ft.getTekton())", null);
+                
                 log.stepIn("setThread(ft)");
                 setThread(ft);
                 log.stepOut("setThread(ft)", null);
