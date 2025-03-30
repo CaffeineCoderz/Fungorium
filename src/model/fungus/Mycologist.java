@@ -52,7 +52,7 @@ public class Mycologist extends Player{
      *                  associated FungusSpecies.
      */
     public void setThread(FungusThread selectedThread, FungusThread newThread) {
-        mySpecies.growThread(selectedThread.getTekton(null), selectedThread, newThread);
+        mySpecies.growThread(selectedThread.getTekton(null), selectedThread);
     }
     
     /**
