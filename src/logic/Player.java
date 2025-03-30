@@ -6,6 +6,12 @@ public abstract class Player {
     protected Player(){
         
     }
+    
+    /**
+     * Retrieves the ID of the player.
+     * 
+     * @return the ID of the player.
+     */
     public Integer getId(){
         return id;
     }
