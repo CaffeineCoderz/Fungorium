@@ -274,4 +274,7 @@ public class FungusThread {
     public void setLifeSpan(Integer lifeSpan) {
         this.lifeSpan = lifeSpan;
     }
+    public void disconnected(){
+        
+    }
 }

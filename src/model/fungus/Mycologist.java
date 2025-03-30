@@ -23,8 +23,8 @@ public class Mycologist extends Player{
         mySpecies.growBody(selectedThread);
     }
 
-    public void setThread(FungusThread selectedThread, FungusThread newThread) {
-        mySpecies.growThread(selectedThread.getTekton(null), selectedThread, newThread);
+    public void setThread(FungusThread selectedThread) {
+        mySpecies.growThread(selectedThread.getTekton(null), selectedThread);
     }
     public void setBridge(FungusThread fromThread,Tekton toTekton){
         mySpecies.growBridge(fromThread, toTekton);

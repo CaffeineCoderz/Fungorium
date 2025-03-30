@@ -103,9 +103,10 @@ public class FungusSpecies implements iControl {
      *                     thread.
      * @param nThread      The new FungusThread instance to be added.
      */
-    public void growThread(Tekton targetTekton, FungusThread oThread, FungusThread nThread) {
-        
-        if (targetTekton.canGrowThread()) {
+    public void growThread(Tekton targetTekton, FungusThread oThread) {
+        log.askQ("Create new FungusThread: nThread", false);
+        FungusThread nThread = new FungusThread(null, false);
+        if (targetTekton.canGrowThread()){
             log.askQ("Can grow thread on tekton", false);
             log.stepIn("addThread(nThread)");
             addThread(nThread);
@@ -114,6 +115,13 @@ public class FungusSpecies implements iControl {
             log.stepIn("nThread.addTekton(targetTekton)");
             nThread.addTekton(targetTekton);
             log.stepOut("nThread.addTekton(targetTekton)", null);
+            log.stepIn("nThread.setPrevThread(oThread)");
+            nThread.setPrevThread(oThread);
+            log.stepOut("nThread.setPrevThread(oThread)", null);
+            // ! Be kell állítani hogy melyik testhez tartozik
+            log.stepIn("nThread.setBody(oThread.getBody())");
+            nThread.setBody(oThread.getBody());
+            log.stepOut("nThread.setBody(oThread.getBody())", null);
 
             log.stepIn("targetTekton.addThread(nThread)");
             targetTekton.addThread(nThread);
@@ -123,10 +131,10 @@ public class FungusSpecies implements iControl {
             oThread.setNextThread(nThread);
             log.stepOut("oThread.setNextThread(nThread)", null);
 
-            // ! Be kell állítani hogy melyik testhez tartozik
-            log.stepIn("nThread.setBody(targetTekton.getBody())");
-            nThread.setBody(targetTekton.getBody());
-            log.stepOut("nThread.setBody(targetTekton.getBody())", null);
+            log.stepIn("oThread.getBody().addThread(nThread)");
+            oThread.getBody().addThread(nThread);
+            log.stepOut("oThread.getBody().addThread(nThread)", null);
+            
         } else {
             log.askQ("tekton cant have new threads", false);
         }
@@ -181,6 +189,10 @@ public class FungusSpecies implements iControl {
         log.stepIn("nThread.setBody(fromThread.getBody())");
         nThread.setBody(fromThread.getBody());
         log.stepOut("nThread.setBody(fromThread.getBody())", null);
+
+        log.stepIn("oThread.getBody().addThread(nThread)");
+        fromThread.getBody().addThread(nThread);
+        log.stepOut("oThread.getBody().addThread(nThread)", null);
     }
 
     /**
@@ -282,18 +294,11 @@ public class FungusSpecies implements iControl {
         log.askQ("End Cycle", false);
         log.askQ("Start Cycle", false);
         for (FungusThread thread : threads) {
-            if (thread.getLifeSpan() > 0) {
-                log.askQ("Has remaining lifespan", false);
-                log.stepIn("thread.decreaseLife()");
-                thread.decreaseLife();
-                log.stepOut("thread.decreaseLife()", null);
-            }
-            if (thread.getIsDying()) {
-                log.askQ("Thread is dying", false);
-                log.stepIn("deleteThread(thread)");
-                deleteThread(thread);
-                log.stepOut("deleteThread(thread)", null);
-            }
+        
+            log.stepIn("destroyThread(thread)");
+            destroyThread(thread);
+            log.stepOut("destroyThread(thread)", null);
+        
         }
         log.askQ("End Cycle", false);
     }
@@ -306,6 +311,12 @@ public class FungusSpecies implements iControl {
      * @param ft the FungusThread instance to be destroyed.
      */
     public void destroyThread(FungusThread ft) {
+        if (!ft.getIsDying() && ft.getLifeSpan() != null) {
+            log.stepIn("thread.decreaseLife()");
+                ft.decreaseLife();
+                log.stepOut("thread.decreaseLife()", null);
+            return;
+        }
         log.stepIn("deleteThread(ft)");
         deleteThread(ft);
         log.stepOut("deleteThread(ft)", null);
@@ -321,6 +332,7 @@ public class FungusSpecies implements iControl {
             log.stepOut("body.removeThread(ft)", success);
         }
         log.askQ("End cycle", false);
+
         log.stepIn("ft.destroy()");
         ft.destroy();
         log.stepOut("ft.destroy()", null);
