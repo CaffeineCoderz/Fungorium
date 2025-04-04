@@ -5,16 +5,15 @@ import java.util.List;
 import java.util.Scanner;
 
 import fungus.FungusSpecies;
-import fungus.Mycologist;
 import insect.InsectSpecies;
 
 public class GameLogic {
-    private List<Mycologist> mycologists;
-    private List<FungusSpecies> species;
+    private List<FungusSpecies> mycologist;
+    private List<InsectSpecies> entomologists;
 
     public GameLogic() {
-        mycologists = new ArrayList<Mycologist>();
-        species = new ArrayList<FungusSpecies>();
+        mycologist = new ArrayList<FungusSpecies>();
+        entomologists = new ArrayList<InsectSpecies>();
     }
 
     /**
@@ -78,24 +77,39 @@ public class GameLogic {
         }
     }
 
-    // gombász hozzáadása, úgy hogy egy kiválasztott gombafajtához hozzáadja a gombászt 
-    public void addMycologist(Mycologist mycologist, FungusSpecies species) {
-        addFungusSpecies(species);
+    /**
+     * Adds a mycologist to the list of mycologists.
+     * 
+     * @param mycologist The mycologist to be added.
+     */
+    public void addMycologist(FungusSpecies mycologist) {
+        this.mycologist.add(mycologist);
     }
 
-    // gombafaj hozzáadása a játékhoz
-    public void addFungusSpecies(FungusSpecies species) {
-        
+    /**
+     * Removes a mycologist from the list of mycologists.
+     * 
+     * @param mycologist The mycologist to be removed.
+     */
+    public void removeMycologist(FungusSpecies mycologist) {
+        this.mycologist.remove(mycologist);
     }
 
-    // gombász eltávolítása, úgy hogy egy kiválasztott gombafajtáról eltávolítja a gombászt
-    public void removeMycologist(Mycologist mycologist, FungusSpecies species) {
-        removeFungusSpecies(species);
+    /**
+     * Adds an entomologist to the list of entomologists.
+     * 
+     * @param entomologist The entomologist to be added.
+     */
+    public void addEntomologist(InsectSpecies entomologist) {
+        this.entomologists.add(entomologist);
     }
 
-    // gombafaj eltávolítása a játékból
-    public void removeFungusSpecies(FungusSpecies species) {
-        
+    /**
+     * Removes an entomologist from the list of entomologists.
+     * 
+     * @param entomologist The entomologist to be removed.
+     */
+    public void removeEntomologist(InsectSpecies entomologist) {
+        this.entomologists.remove(entomologist);
     }
-
 }

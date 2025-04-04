@@ -378,16 +378,15 @@ public class CommandProcessor {
             }
             // Debug purposes
             // System.out.println("- Deleted Entomologist | Name: " + name);
-        } else if (obj instanceof Mycologist) {
-            Mycologist player = (Mycologist) obj;
-            for (FungusBody body : player.getSpecies().getBodies()) {
+        } else if (obj instanceof FungusSpecies) {
+            FungusSpecies player = (FungusSpecies) obj;
+            for (FungusBody body : player.getBodies()) {
                 body.getSpecies().deleteBody(body);
             }
 
-            for (FungusThread thread : player.getSpecies().getThreads()) {
+            for (FungusThread thread : player.getThreads()) {
                 thread.destroy();
             }
-            player.setSpecies(null);
             // Debug purposes
             // System.out.println("- Deleted Mycologist | Name: " + name);
         } else {
@@ -570,15 +569,6 @@ public class CommandProcessor {
                             + "\n\tNeighbours: " + tekton.getNeighbours()
                             + "\n\tSpores: " + sporeNames
                             + "\n\tThreads: " + threadNames);
-                } else if (obj instanceof Mycologist) {
-                    Mycologist mycologist = (Mycologist) obj;
-                    String speciesName = createdObjects.entrySet().stream()
-                            .filter(entry -> entry.getValue() == mycologist.getSpecies())
-                            .map(Map.Entry::getKey)
-                            .findFirst()
-                            .orElse("N/A");
-                    System.out.println("Mycologist: "
-                            + "\n\tSpecies: " + speciesName);
                 } else if (obj instanceof InsectSpecies) {
                     InsectSpecies entomologist = (InsectSpecies) obj;
                     String insectNames = entomologist.getInsects().stream()
@@ -938,7 +928,7 @@ public class CommandProcessor {
             Insect insect = (Insect) obj;
             switch (property) {
                 case "species":
-                    insect.setMyOwner((InsectSpecies) createdObjects.get(value));
+                    // ! insect.setMyOwner((InsectSpecies) createdObjects.get(value));
                     break;
                 case "thread":
                     insect.setThread((FungusThread) createdObjects.get(value));
@@ -1070,25 +1060,6 @@ public class CommandProcessor {
             return;
         }
 
-        // ! Mycologist
-        else if (obj instanceof Mycologist) {
-            Mycologist player = (Mycologist) obj;
-            switch (property) {
-                case "species":
-                    if (createdObjects.get(value) instanceof FungusSpecies)
-                        player.setSpecies((FungusSpecies) createdObjects.get(value));
-                    else
-                        System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + value);
-                    break;
-                default:
-                    System.out.println("Hiba: Nem létezik ilyen tulajdonság: " + property);
-                    return;
-            }
-            // Debug purposes
-            // System.out.println("Sikeresen frissítve: " + objectName + " | " + property +
-            // ": " + value);
-            return;
-        }
 
         // ! Entomologist
         else if (obj instanceof InsectSpecies) {

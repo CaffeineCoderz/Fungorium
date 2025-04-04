@@ -11,8 +11,10 @@ import logic.*;
 import utils.*;
 
 public class InsectSpecies extends Player implements iControl{
+    // Game Logic
+    Integer id;
     
-
+    // DATA
     private List<Insect> myInsects;
     private Integer score; 
     private Logger log = Logger.getLogger("EntomologistLogger");
@@ -24,6 +26,16 @@ public class InsectSpecies extends Player implements iControl{
         score = 0;
         myInsects = new ArrayList<>();
     }
+
+    /*
+     * 
+     * @return the ID of the player.
+     * 
+     */
+    public Integer getId(){
+        return id;
+    }
+
     /**
      * Adds the specified Insect to the list of insects managed by this Entomologist.
      * 
