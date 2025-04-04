@@ -96,20 +96,20 @@ public class GameLogic {
     }
 
     /**
-     * Adds an entomologist to the list of insectSpecies.
+     * Adds an insectSpecies to the list of insectSpecies.
      * 
-     * @param entomologist The entomologist to be added.
+     * @param insectSpecies The insectSpecies to be added.
      */
-    public void addInsectSpecies(InsectSpecies entomologist) {
-        this.insectSpecies.add(entomologist);
+    public void addInsectSpecies(InsectSpecies insectSpecies) {
+        this.insectSpecies.add(insectSpecies);
     }
 
     /**
-     * Removes an entomologist from the list of insectSpecies.
+     * Removes an insectSpecies from the list of insectSpecies.
      * 
-     * @param entomologist The entomologist to be removed.
+     * @param insectSpecies The insectSpecies to be removed.
      */
-    public void removeInsectSpecies(InsectSpecies entomologist) {
-        this.insectSpecies.remove(entomologist);
+    public void removeInsectSpecies(InsectSpecies insectSpecies) {
+        this.insectSpecies.remove(insectSpecies);
     }
 }
