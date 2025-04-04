@@ -10,7 +10,7 @@ import sporeTypes.Spore;
 import logic.*;
 import utils.*;
 
-public class InsectSpecies extends Player implements iControl{
+public class InsectSpecies implements iControl{
     // Game Logic
     Integer id;
     

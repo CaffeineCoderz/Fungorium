@@ -8,12 +8,12 @@ import fungus.FungusSpecies;
 import insect.InsectSpecies;
 
 public class GameLogic {
-    private List<FungusSpecies> mycologist;
-    private List<InsectSpecies> entomologists;
+    private List<FungusSpecies> fungusSpecies;
+    private List<InsectSpecies> insectSpecies;
 
     public GameLogic() {
-        mycologist = new ArrayList<FungusSpecies>();
-        entomologists = new ArrayList<InsectSpecies>();
+        fungusSpecies = new ArrayList<FungusSpecies>();
+        insectSpecies = new ArrayList<InsectSpecies>();
     }
 
     /**
@@ -21,7 +21,7 @@ public class GameLogic {
      * 
      * This method continuously displays a menu with options for the player to
      * interact with the game. The player can add or remove mycologists, fungus
-     * species, entomologists, and insect species. The player can also choose to
+     * species, insectSpecies, and insect species. The player can also choose to
      * exit the game. The method reads the user's input and calls the appropriate
      * methods to perform the selected actions.
      */
@@ -31,9 +31,9 @@ public class GameLogic {
 
         while (true) {
             System.out.println("What would you like to do?");
-            System.out.println("1. Add a mycologist");
+            System.out.println("1. Add a fungusSpecies");
             System.out.println("2. Add a fungus species");
-            System.out.println("3. Remove a mycologist");
+            System.out.println("3. Remove a fungusSpecies");
             System.out.println("4. Remove a fungus species");
             System.out.println("5. Add an entymologist");
             System.out.println("6. Remove an entymologist");
@@ -45,13 +45,13 @@ public class GameLogic {
 
             switch (choice) {
                 case 1:
-                    //addMycologist();
+                    //addFungusSpecies();
                     break;
                 case 2:
                     // addFungusSpecies();
                     break;
                 case 3:
-                    // removeMycologist();
+                    // removeFungusSpecies();
                     break;
                 case 4:
                     // removeFungusSpecies();
@@ -78,38 +78,38 @@ public class GameLogic {
     }
 
     /**
-     * Adds a mycologist to the list of mycologists.
+     * Adds a fungusSpecies to the list of mycologists.
      * 
-     * @param mycologist The mycologist to be added.
+     * @param fungusSpecies The fungusSpecies to be added.
      */
-    public void addMycologist(FungusSpecies mycologist) {
-        this.mycologist.add(mycologist);
+    public void addFungusSpecies(FungusSpecies fungusSpecies) {
+        this.fungusSpecies.add(fungusSpecies);
     }
 
     /**
-     * Removes a mycologist from the list of mycologists.
+     * Removes a fungusSpecies from the list of mycologists.
      * 
-     * @param mycologist The mycologist to be removed.
+     * @param fungusSpecies The fungusSpecies to be removed.
      */
-    public void removeMycologist(FungusSpecies mycologist) {
-        this.mycologist.remove(mycologist);
+    public void removeFungusSpecies(FungusSpecies fungusSpecies) {
+        this.fungusSpecies.remove(fungusSpecies);
     }
 
     /**
-     * Adds an entomologist to the list of entomologists.
+     * Adds an entomologist to the list of insectSpecies.
      * 
      * @param entomologist The entomologist to be added.
      */
-    public void addEntomologist(InsectSpecies entomologist) {
-        this.entomologists.add(entomologist);
+    public void addInsectSpecies(InsectSpecies entomologist) {
+        this.insectSpecies.add(entomologist);
     }
 
     /**
-     * Removes an entomologist from the list of entomologists.
+     * Removes an entomologist from the list of insectSpecies.
      * 
      * @param entomologist The entomologist to be removed.
      */
-    public void removeEntomologist(InsectSpecies entomologist) {
-        this.entomologists.remove(entomologist);
+    public void removeInsectSpecies(InsectSpecies entomologist) {
+        this.insectSpecies.remove(entomologist);
     }
 }
