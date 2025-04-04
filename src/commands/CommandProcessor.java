@@ -178,6 +178,7 @@ public class CommandProcessor {
         }
     }
 
+    // ! Entomologist és Mycologist parancsok
     private void initializeObjectTypeMap() {
         objectTypeMap.put("species", "FungusSpecies");
         objectTypeMap.put("body", "FungusBody");
