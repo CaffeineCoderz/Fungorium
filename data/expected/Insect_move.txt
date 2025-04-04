@@ -1,0 +1,5 @@
+Sikertelen rovarmozgás. A megadott fonál nem elérhető
+Insect: 
+Owner: N/A
+Tekton: t2
+Effect: N/A (Nem tudom ez e az alapállapot)

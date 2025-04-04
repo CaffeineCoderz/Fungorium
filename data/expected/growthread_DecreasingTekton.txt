@@ -1,0 +1,9 @@
+FungusThread: 
+Species: N/A
+Body: b1
+Tektons: t1 dt1
+IsBridge: true
+LifeSpan: 2
+IsDying: true
+tNext: N/A
+tPrev: th1

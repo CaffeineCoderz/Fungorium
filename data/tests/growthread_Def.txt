@@ -1,0 +1,9 @@
+create tekton t1
+create tekton t2
+set t1 addneighbour t2
+create body b1
+set b1 tekton t1
+growthread t1 b1 th1
+growthread t2 th1 th2
+status th1
+status th2

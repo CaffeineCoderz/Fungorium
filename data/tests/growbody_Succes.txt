@@ -1,0 +1,11 @@
+create tekton t1
+create spore s1
+set s1 tekton t1
+create spore s2
+set s2 tekton t1
+create spore s3
+set s3 tekton t1
+create thread th1
+set th1 tekton t1
+growbody th1
+status t1
