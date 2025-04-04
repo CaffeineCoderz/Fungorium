@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 import fungus.FungusSpecies;
 import fungus.Mycologist;
-import insect.Entomologist;
+import insect.InsectSpecies;
 
 public class GameLogic {
     private List<Mycologist> mycologists;

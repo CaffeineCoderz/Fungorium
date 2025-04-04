@@ -1,7 +1,7 @@
 package test;
 
 import fungus.*;
-import insect.Entomologist;
+import insect.InsectSpecies;
 import insect.Insect;
 import insect.InsectEffects;
 
@@ -23,7 +23,7 @@ public class Tests {
     private FungusBody body;
     private FungusThread thread;
     private FungusSpecies fungusspecies;
-    private Entomologist entomologist;
+    private InsectSpecies entomologist;
     private Insect insect;
 
     /**
@@ -113,7 +113,7 @@ public class Tests {
         body.setSpecies(fungusspecies);
 
 
-        entomologist = new Entomologist();
+        entomologist = new InsectSpecies();
         entomologist.addInsect(insect);
         insect.setMyOwner(entomologist);
         //System.out.println("FungusSpecies initialized.");

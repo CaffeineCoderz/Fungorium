@@ -20,7 +20,7 @@ public class Insect{
     
     private Tekton recentTekton;
     private FungusThread thread;
-    private Entomologist myOwner;
+    private InsectSpecies myOwner;
 
     private Logger log = Logger.getLogger("InsectLogger");
 
@@ -40,10 +40,10 @@ public class Insect{
         this.myOwner = i.myOwner;
     }
 
-    public void setMyOwner(Entomologist my){
+    public void setMyOwner(InsectSpecies my){
         myOwner = my;
     }
-    public Entomologist getMyOwner(){
+    public InsectSpecies getMyOwner(){
         return myOwner;
     }
 

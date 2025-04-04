@@ -10,7 +10,7 @@ import sporeTypes.Spore;
 import logic.*;
 import utils.*;
 
-public class Entomologist extends Player implements iControl{
+public class InsectSpecies extends Player implements iControl{
     
 
     private List<Insect> myInsects;
@@ -19,7 +19,7 @@ public class Entomologist extends Player implements iControl{
     public List<Insect> getInsects() {
         return myInsects;
     }
-    public Entomologist() {
+    public InsectSpecies() {
         super();
         score = 0;
         myInsects = new ArrayList<>();
