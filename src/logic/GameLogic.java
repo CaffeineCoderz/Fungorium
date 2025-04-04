@@ -5,16 +5,15 @@ import java.util.List;
 import java.util.Scanner;
 
 import fungus.FungusSpecies;
-import fungus.Mycologist;
-import insect.Entomologist;
+import insect.InsectSpecies;
 
 public class GameLogic {
-    private List<Mycologist> mycologists;
-    private List<FungusSpecies> species;
+    private List<FungusSpecies> fungusSpecies;
+    private List<InsectSpecies> insectSpecies;
 
     public GameLogic() {
-        mycologists = new ArrayList<Mycologist>();
-        species = new ArrayList<FungusSpecies>();
+        fungusSpecies = new ArrayList<FungusSpecies>();
+        insectSpecies = new ArrayList<InsectSpecies>();
     }
 
     /**
@@ -22,7 +21,7 @@ public class GameLogic {
      * 
      * This method continuously displays a menu with options for the player to
      * interact with the game. The player can add or remove mycologists, fungus
-     * species, entomologists, and insect species. The player can also choose to
+     * species, insectSpecies, and insect species. The player can also choose to
      * exit the game. The method reads the user's input and calls the appropriate
      * methods to perform the selected actions.
      */
@@ -32,9 +31,9 @@ public class GameLogic {
 
         while (true) {
             System.out.println("What would you like to do?");
-            System.out.println("1. Add a mycologist");
+            System.out.println("1. Add a fungusSpecies");
             System.out.println("2. Add a fungus species");
-            System.out.println("3. Remove a mycologist");
+            System.out.println("3. Remove a fungusSpecies");
             System.out.println("4. Remove a fungus species");
             System.out.println("5. Add an entymologist");
             System.out.println("6. Remove an entymologist");
@@ -46,13 +45,13 @@ public class GameLogic {
 
             switch (choice) {
                 case 1:
-                    //addMycologist();
+                    //addFungusSpecies();
                     break;
                 case 2:
                     // addFungusSpecies();
                     break;
                 case 3:
-                    // removeMycologist();
+                    // removeFungusSpecies();
                     break;
                 case 4:
                     // removeFungusSpecies();
@@ -78,24 +77,39 @@ public class GameLogic {
         }
     }
 
-    // gombász hozzáadása, úgy hogy egy kiválasztott gombafajtához hozzáadja a gombászt 
-    public void addMycologist(Mycologist mycologist, FungusSpecies species) {
-        addFungusSpecies(species);
+    /**
+     * Adds a fungusSpecies to the list of mycologists.
+     * 
+     * @param fungusSpecies The fungusSpecies to be added.
+     */
+    public void addFungusSpecies(FungusSpecies fungusSpecies) {
+        this.fungusSpecies.add(fungusSpecies);
     }
 
-    // gombafaj hozzáadása a játékhoz
-    public void addFungusSpecies(FungusSpecies species) {
-        
+    /**
+     * Removes a fungusSpecies from the list of mycologists.
+     * 
+     * @param fungusSpecies The fungusSpecies to be removed.
+     */
+    public void removeFungusSpecies(FungusSpecies fungusSpecies) {
+        this.fungusSpecies.remove(fungusSpecies);
     }
 
-    // gombász eltávolítása, úgy hogy egy kiválasztott gombafajtáról eltávolítja a gombászt
-    public void removeMycologist(Mycologist mycologist, FungusSpecies species) {
-        removeFungusSpecies(species);
+    /**
+     * Adds an insectSpecies to the list of insectSpecies.
+     * 
+     * @param insectSpecies The insectSpecies to be added.
+     */
+    public void addInsectSpecies(InsectSpecies insectSpecies) {
+        this.insectSpecies.add(insectSpecies);
     }
 
-    // gombafaj eltávolítása a játékból
-    public void removeFungusSpecies(FungusSpecies species) {
-        
+    /**
+     * Removes an insectSpecies from the list of insectSpecies.
+     * 
+     * @param insectSpecies The insectSpecies to be removed.
+     */
+    public void removeInsectSpecies(InsectSpecies insectSpecies) {
+        this.insectSpecies.remove(insectSpecies);
     }
-
 }

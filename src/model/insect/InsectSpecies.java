@@ -10,20 +10,32 @@ import sporeTypes.Spore;
 import logic.*;
 import utils.*;
 
-public class Entomologist extends Player implements iControl{
+public class InsectSpecies implements iControl{
+    // Game Logic
+    Integer id;
     
-
+    // DATA
     private List<Insect> myInsects;
     private Integer score; 
-    private Logger log = Logger.getLogger("EntomologistLogger");
+    private Logger log = Logger.getLogger("InsectSpeciesLogger");
     public List<Insect> getInsects() {
         return myInsects;
     }
-    public Entomologist() {
+    public InsectSpecies() {
         super();
         score = 0;
         myInsects = new ArrayList<>();
     }
+
+    /*
+     * 
+     * @return the ID of the player.
+     * 
+     */
+    public Integer getId(){
+        return id;
+    }
+
     /**
      * Adds the specified Insect to the list of insects managed by this Entomologist.
      * 

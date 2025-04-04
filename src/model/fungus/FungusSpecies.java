@@ -11,10 +11,14 @@ import tektonTypes.Tekton;
 import utils.Logger;
 
 public class FungusSpecies implements iControl {
+    // Game Logic
+    Integer id;
+
+    // Data
     private Integer score;
     private List<FungusBody> bodies;
     private List<FungusThread> threads;
-    private Mycologist myOwner;
+    // private Mycologist myOwner; // ! ezentúl a species az owner
     private Logger log = Logger.getLogger("FungusSpeciesLogger");
 
     public FungusSpecies() {
@@ -421,5 +425,20 @@ public class FungusSpecies implements iControl {
             }
         }else log.askQ("There is no stunned insect on tekton", false);
         
+    }
+
+    /**
+     * Sporulates to the given FungusBody.
+     * This will cause the FungusBody to release spores, and may allow the
+     * FungusSpecies to grow new FungusThread instances.
+     *
+     * @param selectedBody the FungusBody instance to sporulate.
+     */
+    public void sporulate(FungusBody selectedBody) {
+        for (FungusBody body : bodies) {
+            if (body == selectedBody) {
+                selectedBody.sporulate();
+            }
+        }
     }
 }
