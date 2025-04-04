@@ -142,9 +142,18 @@ public class Insect{
 
         if (canCut == true && effect != InsectEffects.STUN && effect != InsectEffects.NO_CUT && thread != ft) {
             log.askQ("Insect can cut threads", false);
-            log.stepIn("ft.destroy()");
-            ft.destroy();
-            log.stepOut("ft.destroy()", null);
+                if (ft.isBridge()) {
+                    log.stepIn("ft.setIsDying(true)");
+                    ft.setIsDying(true);
+                    ft.setLifeSpan(2);
+                    log.stepOut("ft.setIsDying(true)", null);
+                }else{
+                    // ! Még nem végleges
+                    log.stepIn("ft.setLifeSpan(2)");
+                    ft.setIsDying(true);
+                    ft.setLifeSpan(4);
+                    log.stepOut("ft.setLifeSpan(2)", null);
+                }
         } else
             log.askQ("Insect can't cut threads", false);
 
@@ -247,7 +256,6 @@ public class Insect{
      * 
      * @param Round the current round number.
      */
-    
     public void timeElapsed() {
         log.askQ("Decrease timers", false);
         if (onDecreasing) {

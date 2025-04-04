@@ -74,8 +74,11 @@ public class FeedThreadTekton extends Tekton {
             log.stepOut("thread.setLifeSpan(2)", null);
         }
         */
-        if (thread.getIsDying() == true) {
+        if (thread.getLifeSpan()==0) {
+            log.askQ("The thread is already dying", false);
+            log.stepIn("threads.remove(thread)");
             threads.remove(thread);
+            log.stepOut("threads.remove(thread)", null);
         }else{
             log.askQ("The tekton serves the thread with nutrition to stayalive\n", false);
         }

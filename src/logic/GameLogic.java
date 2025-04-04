@@ -17,6 +17,15 @@ public class GameLogic {
         species = new ArrayList<FungusSpecies>();
     }
 
+    /**
+     * Starts the game and provides a text-based interface for the player.
+     * 
+     * This method continuously displays a menu with options for the player to
+     * interact with the game. The player can add or remove mycologists, fungus
+     * species, entomologists, and insect species. The player can also choose to
+     * exit the game. The method reads the user's input and calls the appropriate
+     * methods to perform the selected actions.
+     */
     public void startGame() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Welcome to the game!");
