@@ -1,0 +1,4 @@
+Species: N/A
+Tekton: t1
+Threads: th1
+Sporecount: 0

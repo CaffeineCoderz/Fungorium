@@ -1,0 +1,5 @@
+create onlythreadtekton t1
+create thread th1
+set th1 tekton t1
+growbody th1
+status t1

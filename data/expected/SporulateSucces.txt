@@ -1,0 +1,16 @@
+Tekton: 
+CanGrowThread: true
+CanGrowBody: true
+Bodies: N/A
+Insects: N/A
+Neighbours: t1
+Spores: KI KELL TALÁLNI MI KERÜLJÖN IDE VAGY HOGY HOGYAN LEGYEN NEVÜK AMIKET TUDHATUNK IS
+Threads: N/A
+Tekton: 
+CanGrowThread: true
+CanGrowBody: true
+Bodies: N/A
+Insects: N/A
+Neighbours: t1
+Spores: KI KELL TALÁLNI MI KERÜLJÖN IDE VAGY HOGY HOGYAN LEGYEN NEVÜK AMIKET TUDHATUNK IS
+Threads: N/A
