@@ -6,8 +6,10 @@
 /create onlythreadtekton t6
 /create insect i1
 /create insect i2
-/create species sp1
-/create species sp2
+/create fungusspecies sp1
+/create fungusspecies sp2
+/create insectspecies sp3
+/create insectspecies sp4
 /create thread th1
 /create thread th2 
 /create body b1
@@ -18,7 +20,3 @@
 /create slowspore s4
 /create stunspore s5
 /create multiplyinsectspore s6
-/create mycologist player1
-/create mycologist player2
-/create entomologist player3
-/create entomologist player4
