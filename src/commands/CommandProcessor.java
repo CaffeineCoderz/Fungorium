@@ -435,8 +435,8 @@ public class CommandProcessor {
                             + "\n\tIsBridge: " + thread.isBridge()
                             + "\n\tLifespan: " + thread.getLifeSpan()
                             + "\n\tIsDying: " + thread.getIsDying()
-                            + "\n\tNext: " + prevName
-                            + "\n\tPrev: " + nextName);
+                            + "\n\tNext: " + nextName
+                            + "\n\tPrev: " + prevName);
                 } else if (obj instanceof FungusBody) {
                     FungusBody body = (FungusBody) obj;
                     String tektonName = createdObjects.entrySet().stream()
