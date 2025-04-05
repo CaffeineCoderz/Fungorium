@@ -18,7 +18,3 @@
 /status s4
 /status s5
 /status s6
-/status player1
-/status player2
-/status player3
-/status player4
