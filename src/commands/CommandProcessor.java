@@ -1044,7 +1044,7 @@ public class CommandProcessor {
                 case "addscore":
                     species.addScore(Integer.parseInt(value));
                     break;
-                case "descreasescore":
+                case "decreasescore":
                     species.decreaseScore(Integer.parseInt(value));
                     break;
                 default:
