@@ -57,6 +57,71 @@ public class Insect{
     }
 
     /**
+     * Retrieves the current FungusThread object that the insect is on.
+     * 
+     * @return the FungusThread object that the insect is on.
+     */
+    public FungusThread getThread() {
+        return thread;
+    }
+
+    /**
+     * Retrieves the current effect timer for the insect's movement.
+     * 
+     * @return the current moving effect timer value.
+     */
+    public Integer getMovingEffectTimer() {
+        return movingEffectTimer;
+    }
+
+    /**
+     * Retrieves the current effect timer for the insect's ability.
+     * 
+     * @return the current ability effect timer value.
+     */
+    public Integer getAbilityEffectTimer() {
+        return abilityEffectTimer;
+    }
+
+    /**
+     * Sets the effect of the insect to NORMAL.
+     * This method is used to reset the insect's effect to its default state.
+     */
+    public void normal() {
+        effect = InsectEffects.NORMAL;
+        movingEffectTimer = 0;
+        abilityEffectTimer = 0;
+    }
+
+    /**
+     * 
+     * Sets the ability of the insect to cut threads.
+     * 
+     * @param b true if the insect can cut threads, false otherwise.
+     */
+    public void setCanCut(Boolean b) {
+        canCut = b;
+    }
+
+    /**
+     * Sets the effect timer for the insect's movement.
+     * 
+     * @param i the value to set the moving effect timer to.
+     */
+    public void setMovingEffectTimer(Integer i) {
+        movingEffectTimer = i;
+    }
+
+    /**
+     * Sets the effect timer for the insect's ability.
+     * 
+     * @param i the value to set the ability effect timer to.
+     */
+    public void setAbilityEffectTimer(Integer i) {
+        abilityEffectTimer = i;
+    }
+
+    /**
      * Sets the effect of the insect to STUN.
      * This prevents the insect from performing actions like moving.
      */

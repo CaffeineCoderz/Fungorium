@@ -47,7 +47,8 @@ import utils.*;
 //      help: kiírja a user parancsokat
 //      exit
 //   *FungusSpecies Commands:
-//    ! growBody <FungusThread> <Tekton>
+//    ! growBody <FungusThread> <Tekton> 
+//    MEGJ: Itt kell egy fungusbody neveti is majd beadni különben nem tudja majd a user követni mi lett a body neve
 //    ! growThread <Tekton> <FungusBody> <newFungusThread>(not existing, give a name and will create a new one)
 //    ! growThread <Tekton> <existingFungusThread> <newFungusThread>(not existing, give a name and will create a new one)
 //      sporulate <FungusBody>
@@ -56,7 +57,7 @@ import utils.*;
 //      cut <FungusThread>
 //    ! eat <Spore> <Insect> 
 
-//* Typne names:
+//* Type names:
 //? Default:
 //      body: fungus.Fungusbody
 //      spore: sporeTypes.Spore
@@ -83,8 +84,6 @@ import utils.*;
 
 // TODO parancsok
 // Move: <FungusThread> <Tekton>
-// STATUS ALL -> kiírja az összes objektumot egy fájlba
-// ALL Objects 
 
 public class CommandProcessor {
     private Map<String, Object> createdObjects = new HashMap<>();
@@ -210,38 +209,39 @@ public class CommandProcessor {
     public void help() {
         System.out.println("User Commands:");
         System.out.println(" ");
-        System.out.println("help \t\t\t\t\t prints the commands");
-        System.out.println("cut <FungusThread> <Insect> \t\t cuts a thread with the selected insect");
-        System.out.println("eat <Spore> <Insect> \t\t\t eats a spore with the selected insect");
-        System.out.println("move <Insect> <Thread> \t\t\t moves an insect to the selected thread");
-        System.out.println("growBody <FungusThread> <Tekton> \t grows a body");
-        System.out.println("growThread <?> \t\t\t\t grows a thread");
-        System.out.println("sporulate <FungusBody> \t\t\t sporulates with the selected body");
-        System.out.println("exit \t\t\t\t\t exits the program");
+        System.out.println("help \t\t\t\t\t\t prints the commands");
+        System.out.println("cut <FungusThread> <Insect> \t\t\t cuts a thread with the selected insect");
+        System.out.println("eat <Spore> <Insect> \t\t\t\t eats a spore with the selected insect");
+        System.out.println("move <Insect> <Thread> \t\t\t\t moves an insect to the selected thread");
+        System.out.println("growBody <FungusThread> <Tekton> \t\t grows a body");
+        System.out.println("growThread <Tekton> <FungusBody> <newThread> \t grows a thread from the selected body");
+        System.out.println("growThread <Tekton> <Thread> <newThread> \t grows a thread from an existing thread");
+        System.out.println("sporulate <FungusBody> \t\t\t\t sporulates with the selected body");
+        System.out.println("exit \t\t\t\t\t\t exits the program");
     }
 
     /*
      * A Sys és user parancsok kiírására szolgáló függvény
      */
     public void helpSys() {
-        System.out.println("/-----------------------------------------------------------\\");
+        System.out.println("/-------------------------------------------------------------------------------------------\\");
         System.out.println("System Commands:");
         System.out.println(" ");
-        System.out.println("/helpsys \t\t\t\t prints all the system the commands");
-        System.out.println("/helpObj \t\t\t\t prints all avaliable objectTypes");
-        System.out.println("/status <name> \t\t\t\t prints an object's status");
-        System.out.println("/create <objectType> <name> \t\t creates an object with the given name");
-        System.out.println("/delete <name> \t\t\t\t deletes the object with the given name");
-        System.out.println("/load <filename> \t\t\t loads the commands from the given file");
-        System.out.println("/break <Tekton> \t\t\t breaks a tekton");
-        System.out.println("/kill <Insect> \t\t\t\t kills an insect");
-        System.out.println("/set <object> <property> <value> \t sets the property of the object to the given value");
-        System.out.println("/log <filename> \t\t\t saves the console output to a file");
-        System.out.println("/trig <event> \t\t\t\t triggers an event (next round, next player)");
-        System.out.println("/endgame \t\t\t\t ends the game and prints the winners");
+        System.out.println("/helpsys \t\t\t\t\t prints all the system the commands");
+        System.out.println("/helpObj \t\t\t\t\t prints all avaliable objectTypes");
+        System.out.println("/create <objectType> <name> \t\t\t creates an object with the given name");
+        System.out.println("/delete <name> \t\t\t\t\t deletes the object with the given name");
+        System.out.println("/status <name> \t\t\t\t\t prints an object's status");
+        System.out.println("/load <filename> \t\t\t\t loads the commands from the given file");
+        System.out.println("/break <Tekton> \t\t\t\t breaks a tekton");
+        System.out.println("/kill <Insect> \t\t\t\t\t kills an insect");
+        System.out.println("/set <object> <property> <value> \t\t sets the property of the object to the given value");
+        System.out.println("/log <filename> \t\t\t\t saves the console output to a file");
+        System.out.println("/trig <event> \t\t\t\t\t triggers an event (next round, next player)");
+        System.out.println("/endgame \t\t\t\t\t ends the game and prints the winners");
         System.out.println(" ");
         this.help();
-        System.out.println("\\-----------------------------------------------------------/\n");
+        System.out.println("\\-------------------------------------------------------------------------------------------/\n");
     }
 
     /*
@@ -287,8 +287,6 @@ public class CommandProcessor {
                 Class<?> clazz = Class.forName(pkg + "." + className);
                 Object instance = clazz.getDeclaredConstructor().newInstance();
                 createdObjects.put(name, instance);
-                // Debug:
-                // System.out.println("+ Created: " + className + " | Name: " + name);
                 created = true;
                 break;
             } catch (ClassNotFoundException e) {
@@ -325,8 +323,6 @@ public class CommandProcessor {
                 || obj instanceof OnlyThreadTekton) {
             Tekton tekton = (Tekton) obj;
             tekton.deleteTekton();
-            // Debug purposes
-            // System.out.println("- Deleted Tekton | Name: " + name);
         } else if (obj instanceof Insect) {
             Insect insect = (Insect) obj;
             if (insect.getMyOwner() == null || insect.getRecent() == null) {
@@ -335,8 +331,6 @@ public class CommandProcessor {
                 return;
             }
             insect.deadInsect();
-            // Debug purposes
-            // System.out.println("- Deleted Insect | Name: " + name);
         } else if (obj instanceof Spore || obj instanceof FastSpore || obj instanceof MultiplyInsectSpore
                 || obj instanceof SlowSpore || obj instanceof StunSpore || obj instanceof DisableCutSpore) {
             Spore spore = (Spore) obj;
@@ -350,8 +344,6 @@ public class CommandProcessor {
             FungusThread thread = (FungusThread) obj;
             thread.setLifeSpan(0);
             thread.destroy();
-            // Debug purposes
-            // System.out.println("- Deleted FungusThread | Name: " + name);
         } else if (obj instanceof FungusBody) {
             FungusBody body = (FungusBody) obj;
             if (body.getSpecies() == null) {
@@ -359,16 +351,12 @@ public class CommandProcessor {
                 return;
             }
             body.getSpecies().deleteBody(body);
-            // Debug purposes
-            // System.out.println("- Deleted FungusBody | Name: " + name);
         } else if (obj instanceof InsectSpecies) {
             InsectSpecies player = (InsectSpecies) obj;
             for (Insect insect : player.getInsects()) {
                 insect.deadInsect();
                 player.removeInsect(insect);
             }
-            // Debug purposes
-            // System.out.println("- Deleted Entomologist | Name: " + name);
         } else if (obj instanceof FungusSpecies) {
             FungusSpecies player = (FungusSpecies) obj;
             for (FungusBody body : player.getBodies()) {
@@ -378,8 +366,6 @@ public class CommandProcessor {
             for (FungusThread thread : player.getThreads()) {
                 thread.destroy();
             }
-            // Debug purposes
-            // System.out.println("- Deleted Mycologist | Name: " + name);
         } else {
             System.out.println("Hiba: Ismeretlen típusú objektum: " + name);
         }
@@ -388,220 +374,218 @@ public class CommandProcessor {
     }
 
     /*
-     * Create parancs formája: status <name>
-     * Példa: status i1
+     * A státusz kiírására szolgáló függvény
+     * 
+     * @param name: objektum neve
+     * 
+     * @param obj: objektum
+     */
+    private void printObjectStatus(String name, Object obj) {
+        System.out.println("Név: " + name);
+
+        if (obj instanceof FungusThread) {
+            FungusThread thread = (FungusThread) obj;
+            String bodyName = createdObjects.entrySet().stream()
+                    .filter(entry -> entry.getValue() == thread.getBody())
+                    .map(Map.Entry::getKey)
+                    .findFirst()
+                    .orElse("N/A");
+            String speciesName = createdObjects.entrySet().stream()
+                    .filter(entry -> entry.getValue() == thread.getSpecies())
+                    .map(Map.Entry::getKey)
+                    .findFirst()
+                    .orElse("N/A");
+            String tektonNames = thread.getTektons().stream()
+                    .map(tekton -> createdObjects.entrySet().stream()
+                            .filter(entry -> entry.getValue() == tekton)
+                            .map(Map.Entry::getKey)
+                            .findFirst()
+                            .orElse("N/A"))
+                    .toList()
+                    .toString();
+            String prevName = createdObjects.entrySet().stream()
+                    .filter(entry -> entry.getValue() == thread.getPrev())
+                    .map(Map.Entry::getKey)
+                    .findFirst()
+                    .orElse("N/A");
+            String nextName = createdObjects.entrySet().stream()
+                    .filter(entry -> entry.getValue() == thread.getNext())
+                    .map(Map.Entry::getKey)
+                    .findFirst()
+                    .orElse("N/A");
+            System.out.println("FungusThread: "
+                    + "\n\tSpecies: " + speciesName
+                    + "\n\tBody: " + bodyName
+                    + "\n\tTektons: " + tektonNames
+                    + "\n\tIsBridge: " + thread.isBridge()
+                    + "\n\tLifespan: " + thread.getLifeSpan()
+                    + "\n\tIsDying: " + thread.getIsDying()
+                    + "\n\tNext: " + nextName
+                    + "\n\tPrev: " + prevName);
+        } else if (obj instanceof FungusBody) {
+            FungusBody body = (FungusBody) obj;
+            String tektonName = createdObjects.entrySet().stream()
+                    .filter(entry -> entry.getValue() == body.getTekton())
+                    .map(Map.Entry::getKey)
+                    .findFirst()
+                    .orElse("N/A");
+            String speciesName = createdObjects.entrySet().stream()
+                    .filter(entry -> entry.getValue() == body.getSpecies())
+                    .map(Map.Entry::getKey)
+                    .findFirst()
+                    .orElse("N/A");
+            String threadNames = body.getThreads().stream()
+                    .map(thread -> createdObjects.entrySet().stream()
+                            .filter(entry -> entry.getValue() == thread)
+                            .map(Map.Entry::getKey)
+                            .findFirst()
+                            .orElse("N/A"))
+                    .toList()
+                    .toString();
+            System.out.println("FungusBody: "
+                    + "\n\tSpecies: " + speciesName
+                    + "\n\tTekton: " + tektonName
+                    + "\n\tThreads: " + threadNames
+                    + "\n\tSporecount: " + body.getSporeCount());
+        } else if (obj instanceof FungusSpecies) {
+            FungusSpecies species = (FungusSpecies) obj;
+            String bodyNames = species.getBodies().stream()
+                    .map(body -> createdObjects.entrySet().stream()
+                            .filter(entry -> entry.getValue() == body)
+                            .map(Map.Entry::getKey)
+                            .findFirst()
+                            .orElse("N/A"))
+                    .toList()
+                    .toString();
+            System.out.println("FungusSpecies: "
+                    + "\n\tScore: " + species.getScore()
+                    + "\n\tBodies: " + bodyNames);
+        } else if (obj instanceof InsectSpecies) {
+            InsectSpecies species = (InsectSpecies) obj;
+            String insectNames = species.getInsects().stream()
+                    .map(body -> createdObjects.entrySet().stream()
+                            .filter(entry -> entry.getValue() == body)
+                            .map(Map.Entry::getKey)
+                            .findFirst()
+                            .orElse("N/A"))
+                    .toList()
+                    .toString();
+            System.out.println("InsectSpecies: "
+                    + "\n\tScore: " + species.getScore()
+                    + "\n\tInsects: " + insectNames);
+        } else if (obj instanceof Insect) {
+            Insect insect = (Insect) obj;
+            String tektonName = createdObjects.entrySet().stream()
+                    .filter(entry -> entry.getValue() == insect.getRecent())
+                    .map(Map.Entry::getKey)
+                    .findFirst()
+                    .orElse("N/A");
+            String ownerName = createdObjects.entrySet().stream()
+                    .filter(entry -> entry.getValue() == insect.getMyOwner())
+                    .map(Map.Entry::getKey)
+                    .findFirst()
+                    .orElse("N/A");
+            System.out.println("Insect: "
+                    + "\n\tOwner: " + ownerName
+                    + "\n\tTekton: " + tektonName
+                    + "\n\tEffect: " + insect.gEffect());
+        } else if (obj instanceof Spore) {
+            Spore spore = (Spore) obj;
+            String sporeType = "Spore";
+
+            if (obj instanceof FastSpore) {
+                sporeType = "FastSpore";
+            } else if (obj instanceof MultiplyInsectSpore) {
+                sporeType = "MultiplyInsectSpore";
+            } else if (obj instanceof SlowSpore) {
+                sporeType = "SlowSpore";
+            } else if (obj instanceof StunSpore) {
+                sporeType = "StunSpore";
+            } else if (obj instanceof DisableCutSpore) {
+                sporeType = "DisableCutSpore";
+            }
+
+            String tektonName = createdObjects.entrySet().stream()
+                    .filter(entry -> entry.getValue() == spore.getTekton())
+                    .map(Map.Entry::getKey)
+                    .findFirst()
+                    .orElse("N/A");
+            System.out.println(sporeType + ": "
+                    + "\n\tNutrition value: " + spore.getNutValue()
+                    + "\n\tTekton: " + tektonName);
+        } else if (obj instanceof Tekton) {
+            Tekton tekton = (Tekton) obj;
+            String tektonType = "Tekton";
+
+            if (obj instanceof DecomposingTekton) {
+                tektonType = "DecomposingTekton";
+            } else if (obj instanceof DecreasingTekton) {
+                tektonType = "DecreasingTekton";
+            } else if (obj instanceof FeedThreadTekton) {
+                tektonType = "FeedThreadTekton";
+            } else if (obj instanceof OneThreadTekton) {
+                tektonType = "OneThreadTekton";
+            } else if (obj instanceof OnlyThreadTekton) {
+                tektonType = "OnlyThreadTekton";
+            }
+
+            String bodyName = createdObjects.entrySet().stream()
+                    .filter(entry -> entry.getValue() == tekton.getBody())
+                    .map(Map.Entry::getKey)
+                    .findFirst()
+                    .orElse("N/A");
+            String insectNames = tekton.getInsects().stream()
+                    .map(insect -> createdObjects.entrySet().stream()
+                            .filter(entry -> entry.getValue() == insect)
+                            .map(Map.Entry::getKey)
+                            .findFirst()
+                            .orElse("N/A"))
+                    .toList()
+                    .toString();
+            String sporeNames = tekton.getSpores().stream()
+                    .map(spore -> createdObjects.entrySet().stream()
+                            .filter(entry -> entry.getValue() == spore)
+                            .map(Map.Entry::getKey)
+                            .findFirst()
+                            .orElse("N/A"))
+                    .toList()
+                    .toString();
+            String threadNames = tekton.getThreads().stream()
+                    .map(thread -> createdObjects.entrySet().stream()
+                            .filter(entry -> entry.getValue() == thread)
+                            .map(Map.Entry::getKey)
+                            .findFirst()
+                            .orElse("N/A"))
+                    .toList()
+                    .toString();
+            System.out.println(tektonType + ": "
+                    + "\n\tCanGrowThread: " + tekton.canGrowThread()
+                    + "\n\tCanGrowBody: " + tekton.canGrowBody()
+                    + "\n\tBodies: " + bodyName
+                    + "\n\tInsects: " + insectNames
+                    + "\n\tNeighbours: " + tekton.getNeighbours()
+                    + "\n\tSpores: " + sporeNames
+                    + "\n\tThreads: " + threadNames);
+        } else {
+            System.out.println("Ismeretlen objektumtípus: " + obj.getClass().getName());
+        }
+        System.out.println();
+    }
+
+    /*
+     * Status parancs formája: status <name>
+     * Példa: /status i1 vagy /status
      * 
      * @param parts: parancs részei
      */
     public void processStatusCommand(String[] parts) {
         if (parts.length == 1) {
             // Ha nincs paraméter, írja ki az összes objektum státuszát
-            createdObjects.forEach((name, obj) -> {
-                System.out.println("Név: " + name);
-                if (obj instanceof FungusThread) {
-                    FungusThread thread = (FungusThread) obj;
-                    String bodyName = createdObjects.entrySet().stream()
-                            .filter(entry -> entry.getValue() == thread.getBody())
-                            .map(Map.Entry::getKey)
-                            .findFirst()
-                            .orElse("N/A");
-                    String speciesName = createdObjects.entrySet().stream()
-                            .filter(entry -> entry.getValue() == thread.getSpecies())
-                            .map(Map.Entry::getKey)
-                            .findFirst()
-                            .orElse("N/A");
-                    String tektonNames = thread.getTektons().stream()
-                            .map(tekton -> createdObjects.entrySet().stream()
-                                    .filter(entry -> entry.getValue() == tekton)
-                                    .map(Map.Entry::getKey)
-                                    .findFirst()
-                                    .orElse("N/A"))
-                            .toList()
-                            .toString();
-                    String prevName = createdObjects.entrySet().stream()
-                            .filter(entry -> entry.getValue() == thread.getPrev())
-                            .map(Map.Entry::getKey)
-                            .findFirst()
-                            .orElse("N/A");
-                    String nextName = createdObjects.entrySet().stream()
-                            .filter(entry -> entry.getValue() == thread.getNext())
-                            .map(Map.Entry::getKey)
-                            .findFirst()
-                            .orElse("N/A");
-                    System.out.println("FungusThread: "
-                            + "\n\tSpecies: " + speciesName
-                            + "\n\tBody: " + bodyName
-                            + "\n\tTektons: " + tektonNames
-                            + "\n\tIsBridge: " + thread.isBridge()
-                            + "\n\tLifespan: " + thread.getLifeSpan()
-                            + "\n\tIsDying: " + thread.getIsDying()
-                            + "\n\tNext: " + prevName
-                            + "\n\tPrev: " + nextName);
-                } else if (obj instanceof FungusBody) {
-                    FungusBody body = (FungusBody) obj;
-                    String tektonName = createdObjects.entrySet().stream()
-                            .filter(entry -> entry.getValue() == body.getTekton())
-                            .map(Map.Entry::getKey)
-                            .findFirst()
-                            .orElse("N/A");
-                    String speciesName = createdObjects.entrySet().stream()
-                            .filter(entry -> entry.getValue() == body.getSpecies())
-                            .map(Map.Entry::getKey)
-                            .findFirst()
-                            .orElse("N/A");
-                    String threadNames = body.getThreads().stream()
-                            .map(thread -> createdObjects.entrySet().stream()
-                                    .filter(entry -> entry.getValue() == thread)
-                                    .map(Map.Entry::getKey)
-                                    .findFirst()
-                                    .orElse("N/A"))
-                            .toList()
-                            .toString();
-                    System.out.println("FungusBody: "
-                            + "\n\tSpecies: " + speciesName
-                            + "\n\tTekton: " + tektonName
-                            + "\n\tThreads: " + threadNames
-                            + "\n\tSporecount: " + body.getSporeCount());
-                } else if (obj instanceof FungusSpecies) {
-                    FungusSpecies species = (FungusSpecies) obj;
-                    String bodyNames = species.getBodies().stream()
-                            .map(body -> createdObjects.entrySet().stream()
-                                    .filter(entry -> entry.getValue() == body)
-                                    .map(Map.Entry::getKey)
-                                    .findFirst()
-                                    .orElse("N/A"))
-                            .toList()
-                            .toString();
-                    System.out.println("FungusSpecies: "
-                            + "\n\tScore: " + species.getScore()
-                            + "\n\tBodies: " + bodyNames);
-                } else if (obj instanceof InsectSpecies) {
-                    InsectSpecies species = (InsectSpecies) obj;
-                    String insectNames = species.getInsects().stream()
-                            .map(body -> createdObjects.entrySet().stream()
-                                    .filter(entry -> entry.getValue() == body)
-                                    .map(Map.Entry::getKey)
-                                    .findFirst()
-                                    .orElse("N/A"))
-                            .toList()
-                            .toString();
-                    System.out.println("InsectSpecies: "
-                            + "\n\tScore: " + species.getScore()
-                            + "\n\tInsects: " + insectNames);
-                }else if (obj instanceof Insect) {
-                    Insect insect = (Insect) obj;
-                    String tektonName = createdObjects.entrySet().stream()
-                            .filter(entry -> entry.getValue() == insect.getRecent())
-                            .map(Map.Entry::getKey)
-                            .findFirst()
-                            .orElse("N/A");
-                    String ownerName = createdObjects.entrySet().stream()
-                            .filter(entry -> entry.getValue() == insect.getMyOwner())
-                            .map(Map.Entry::getKey)
-                            .findFirst()
-                            .orElse("N/A");
-                    System.out.println("Insect: "
-                            + "\n\tOwner: " + ownerName
-                            + "\n\tTekton: " + tektonName
-                            + "\n\tEffect: " + insect.gEffect());
-                } else if (obj instanceof Spore) {
-                    Spore spore = (Spore) obj;
-                    String sporeType = "Spore";
-
-                    // Típus ellenőrzés explicit módon
-                    if (obj instanceof FastSpore) {
-                        sporeType = "FastSpore";
-                    } else if (obj instanceof MultiplyInsectSpore) {
-                        sporeType = "MultiplyInsectSpore";
-                    } else if (obj instanceof SlowSpore) {
-                        sporeType = "SlowSpore";
-                    } else if (obj instanceof StunSpore) {
-                        sporeType = "StunSpore";
-                    } else if (obj instanceof DisableCutSpore) {
-                        sporeType = "DisableCutSpore";
-                    }
-
-                    String tektonName = createdObjects.entrySet().stream()
-                            .filter(entry -> entry.getValue() == spore.getTekton())
-                            .map(Map.Entry::getKey)
-                            .findFirst()
-                            .orElse("N/A");
-                    System.out.println(sporeType + ": "
-                            + "\n\tNutrition value: " + spore.getNutValue()
-                            + "\n\tTekton: " + tektonName);
-                } else if (obj instanceof Tekton) {
-                    Tekton tekton = (Tekton) obj;
-                    String tektonType = "Tekton"; // Alapértelmezett típus
-
-                    // Típus ellenőrzés explicit módon
-                    if (obj instanceof DecomposingTekton) {
-                        tektonType = "DecomposingTekton";
-                    } else if (obj instanceof DecreasingTekton) {
-                        tektonType = "DecreasingTekton";
-                    } else if (obj instanceof FeedThreadTekton) {
-                        tektonType = "FeedThreadTekton";
-                    } else if (obj instanceof OneThreadTekton) {
-                        tektonType = "OneThreadTekton";
-                    } else if (obj instanceof OnlyThreadTekton) {
-                        tektonType = "OnlyThreadTekton";
-                    }
-
-                    String bodyName = createdObjects.entrySet().stream()
-                            .filter(entry -> entry.getValue() == tekton.getBody())
-                            .map(Map.Entry::getKey)
-                            .findFirst()
-                            .orElse("N/A");
-                    String insectNames = tekton.getInsects().stream()
-                            .map(insect -> createdObjects.entrySet().stream()
-                                    .filter(entry -> entry.getValue() == insect)
-                                    .map(Map.Entry::getKey)
-                                    .findFirst()
-                                    .orElse("N/A"))
-                            .toList()
-                            .toString();
-                    String sporeNames = tekton.getSpores().stream()
-                            .map(spore -> createdObjects.entrySet().stream()
-                                    .filter(entry -> entry.getValue() == spore)
-                                    .map(Map.Entry::getKey)
-                                    .findFirst()
-                                    .orElse("N/A"))
-                            .toList()
-                            .toString();
-                    String threadNames = tekton.getThreads().stream()
-                            .map(thread -> createdObjects.entrySet().stream()
-                                    .filter(entry -> entry.getValue() == thread)
-                                    .map(Map.Entry::getKey)
-                                    .findFirst()
-                                    .orElse("N/A"))
-                            .toList()
-                            .toString();
-                    System.out.println(tektonType + ": "
-                            + "\n\tCanGrowThread: " + tekton.canGrowThread()
-                            + "\n\tCanGrowBody: " + tekton.canGrowBody()
-                            + "\n\tBodies: " + bodyName
-                            + "\n\tInsects: " + insectNames
-                            + "\n\tNeighbours: " + tekton.getNeighbours()
-                            + "\n\tSpores: " + sporeNames
-                            + "\n\tThreads: " + threadNames);
-                } else if (obj instanceof InsectSpecies) {
-                    InsectSpecies entomologist = (InsectSpecies) obj;
-                    String insectNames = entomologist.getInsects().stream()
-                            .map(insect -> createdObjects.entrySet().stream()
-                                    .filter(entry -> entry.getValue() == insect)
-                                    .map(Map.Entry::getKey)
-                                    .findFirst()
-                                    .orElse("N/A"))
-                            .toList()
-                            .toString();
-                    System.out.println("Entomologist: "
-                            + "\n\tInsects: " + insectNames);
-                } else {
-                    System.out.println("Ismeretlen objektumtípus: " + obj.getClass().getName());
-                }
-                System.out.println();
-            });
+            // Forma: /status
+            createdObjects.forEach(this::printObjectStatus);
         } else {
             // Ha van paraméter, az adott objektum státuszát írja ki
+            // Forma: /status <name>
             String name = parts[1];
 
             if (!createdObjects.containsKey(name)) {
@@ -610,12 +594,12 @@ public class CommandProcessor {
             }
 
             Object obj = createdObjects.get(name);
-            // Az egyedi objektumok státuszának kiírása ugyanúgy történik, mint fent.
+            printObjectStatus(name, obj);
         }
     }
 
     /*
-     * Grow parancs formája: grow <FungusThread>
+     * growbody parancs formája: growbody <FungusThread> <Tekton>
      * Példa: grow th1 t1
      * 
      * @param parts: parancs részei
@@ -623,7 +607,6 @@ public class CommandProcessor {
     public void processGrowBodyCommand(String[] parts) {
         String threadName = parts[1];
         String tekton = parts[2];
-        String newThreadName = parts[3];
 
         if (!createdObjects.containsKey(threadName)) {
             System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + threadName);
@@ -661,18 +644,18 @@ public class CommandProcessor {
                 System.out.println("Hiba: Nem lehet ide body-t növeszteni: " + tekton);
                 return;
             }
-
-            // Debug purposes
-            // System.out.println("Új body nőtt!");
         } else {
             System.out.println("Hiba: Nem lehet növeszteni ezt az objektumot: " + threadName);
         }
     }
 
     /*
-     * Grow parancs formája: grow <Tekton> <FungusBody> <newFungusThread>
+     * growthread parancs formája:
+     * grow <Tekton> <FungusBody> <newFungusThread>
      * Példa: grow t1 b1 th1
-     * Grow parancs formája: grow <Tekton> <existingFungusThread> <newFungusThread>
+     * 
+     * growthread parancs formája:
+     * grow <Tekton> <existingFungusThread> <newFungusThread>
      * Példa: grow t1 th1 th2
      * 
      * @param parts: parancs részei
@@ -733,7 +716,7 @@ public class CommandProcessor {
 
                 // Actual growThread
                 if (tekton.canGrowThread()) {
-                    // ! Az új thread be lesz adva a függvénybe 
+                    // ! Az új thread be lesz adva a függvénybe
                     // thread.getSpecies().growThread(tekton, thread, newThread);
                 } else {
                     System.out.println("Hiba: Nem lehet ide threadet növeszteni: " + tektonName);
@@ -1060,7 +1043,7 @@ public class CommandProcessor {
             Insect insect = (Insect) obj;
             switch (property) {
                 case "species":
-                    // ! insect.setMyOwner((InsectSpecies) createdObjects.get(value));
+                    insect.setMyOwner((InsectSpecies) createdObjects.get(value));
                     break;
                 case "thread":
                     insect.setThread((FungusThread) createdObjects.get(value));
@@ -1085,6 +1068,12 @@ public class CommandProcessor {
                         insect.disableCut();
                     else
                         System.out.println("Hiba: Nem létezik ilyen hatás: " + value);
+                    break;
+                case "movingtimer":
+                    insect.setMovingEffectTimer(Integer.parseInt(value));
+                    break;
+                case "abilitytimer":
+                    insect.setAbilityEffectTimer(Integer.parseInt(value));
                     break;
                 default:
                     System.out.println("Hiba: Nem létezik ilyen tulajdonság: " + property);
@@ -1294,8 +1283,6 @@ public class CommandProcessor {
                 writer.write(command);
                 writer.newLine();
             }
-            // Debug purposes
-            // System.out.println("A parancsok sikeresen kiírva a fájlba: " + fileName);
         } catch (IOException e) {
             System.out.println("Hiba a fájl írásakor: " + e.getMessage());
         }
@@ -1315,8 +1302,6 @@ public class CommandProcessor {
             FileOutputStream fos = new FileOutputStream(file);
             PrintStream ps = new PrintStream(fos);
             System.setOut(ps); // A System.out kimenet átirányítása a fájlba
-            // Debug purposes
-            // System.out.println("A konzol kimenet mostantól ide íródik: " + fileName);
         } catch (IOException e) {
             System.err.println("Hiba a kimenet fájlba irányításakor: " + e.getMessage());
         }
