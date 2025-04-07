@@ -5,6 +5,7 @@ on:
     branches:
       - Main
       - Release-branch
+      - Mador-Branch
 
 jobs:
   test-matrix:
