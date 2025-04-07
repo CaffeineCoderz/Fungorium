@@ -27,35 +27,34 @@ import utils.*;
 // ? System Commands:
 //      /helpSys: kiírja a user és sys parancsokat
 //      /helpObj: objektum típusok lekérdezése
-//      ! helpSet: objektum tulajdonságok lekérdezése
 //      /load <filename>
 //      /break <Tekton>
 //      /kill <Insect>
 //      /set: kezelés osztályonként
 //      /create <objecttype> <name>
-//      /delete <name>
+// TODO /delete <name>   -  befejezni a delete parancsot
 //      /status    az összes állapot lekérdezése
 //      /status <name> állapot lekérdezés
 //      /save játék állását menti fájlba
 //      /log a konzolon lévő kimeneteket menti fáklba
 //      /trig események triggerelése nr: Következő kör np: Következő játékos
 //      /chance breaktekton && spora milyen fajta
-// !    /endgame befejezi a játékot és kiírja a győzteseket
+// TODO    /endgame befejezi a játékot és kiírja a győzteseket   - ToDo: hiányzó GameLogic fv
 //
 // ? User Commands:
 //   *All player commands:
 //      help: kiírja a user parancsokat
 //      exit
 //   *FungusSpecies Commands:
-//    ! growBody <FungusThread> <Tekton> 
-//    MEGJ: Itt kell egy fungusbody neveti is majd beadni különben nem tudja majd a user követni mi lett a body neve
-//    ! growThread <Tekton> <FungusBody> <newFungusThread>(not existing, give a name and will create a new one)
-//    ! growThread <Tekton> <existingFungusThread> <newFungusThread>(not existing, give a name and will create a new one)
+//      growBody <FungusThread> <Tekton> 
+//    ?MEGJ: Itt kell egy fungusbody neveti is majd beadni különben nem tudja majd a user követni mi lett a body neve
+// TODO growThread <Tekton> <FungusBody> <newFungusThread>(not existing, give a name and will create a new one)                  - ToDo: hiányzó paraméter a fvben
+// TODO growThread <Tekton> <existingFungusThread> <newFungusThread>(not existing, give a name and will create a new one)        - ToDo: hiányzó paraméter a fvben
 //      sporulate <FungusBody>
 //   *InsectSpecies Commands:
 //      move: <Insect> <Thread>
 //      cut <FungusThread>
-//    ! eat <Spore> <Insect> 
+//      eat <Spore> <Insect> 
 
 //* Type names:
 //? Default:
@@ -78,12 +77,6 @@ import utils.*;
 //      feedthreadtekton: tektonTypes.FeedThreadTekton
 //      onethreadtekton: tektonTypes.OneThreadTekton
 //      onlythreadtekton: tektonTypes.OnlyThreadTekton
-
-// TODO: 
-// Delete parancsok véglegesítése
-
-// TODO parancsok
-// Move: <FungusThread> <Tekton>
 
 public class CommandProcessor {
     private Map<String, Object> createdObjects = new HashMap<>();
@@ -119,7 +112,7 @@ public class CommandProcessor {
         commands.put("/helpsys", parts -> helpSys());
         commandDescriptions.put("/helpsys", "/helpsys");
 
-        commands.put("/helpObj", parts -> helpObj());
+        commands.put("/helpobj", parts -> helpObj());
         commandDescriptions.put("/helpObj", "/helpObj");
 
         commands.put("/load", parts -> processConfigText(parts[1]));
@@ -224,11 +217,12 @@ public class CommandProcessor {
      * A Sys és user parancsok kiírására szolgáló függvény
      */
     public void helpSys() {
-        System.out.println("/-------------------------------------------------------------------------------------------\\");
+        System.out.println(
+                "/-------------------------------------------------------------------------------------------\\");
         System.out.println("System Commands:");
         System.out.println(" ");
         System.out.println("/helpsys \t\t\t\t\t prints all the system the commands");
-        System.out.println("/helpObj \t\t\t\t\t prints all available objectTypes");
+        System.out.println("/helpobj \t\t\t\t\t prints all available objectTypes");
         System.out.println("/create <objectType> <name> \t\t\t creates an object with the given name");
         System.out.println("/delete <name> \t\t\t\t\t deletes the object with the given name");
         System.out.println("/status <name> \t\t\t\t\t prints an object's status");
@@ -241,7 +235,8 @@ public class CommandProcessor {
         System.out.println("/endgame \t\t\t\t\t ends the game and prints the winners");
         System.out.println(" ");
         this.help();
-        System.out.println("\\-------------------------------------------------------------------------------------------/\n");
+        System.out.println(
+                "\\-------------------------------------------------------------------------------------------/\n");
     }
 
     /*
