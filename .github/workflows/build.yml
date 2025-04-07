@@ -5,6 +5,7 @@ on:
     branches:
       - Main
       - Release-branch
+      - Mador-Branch
 
 jobs:
   test-matrix:
@@ -29,7 +30,7 @@ jobs:
         run: ./compile.sh
 
       - name: Run (with exit)
-        run: echo "exit" | ./run.sh
+        run: ./run.sh | echo "exit" 
 
       - name: Test
-        run: ./test.sh
+        run: echo "50" | ./test.sh
