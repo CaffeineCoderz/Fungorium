@@ -7,4 +7,4 @@ mkdir -p out
 javac -d out test/Tests.java src/main.java src/utils/*.java src/model/fungus/*.java src/model/interfaces/*.java src/model/sporeTypes/*.java src/model/tektonTypes/*.java src/model/insect/*.java src/logic/*.java src/commands/*.java
 
 # Futtatás
-echo "50" | java -cp out test.Tests
+java -cp out test.Tests
