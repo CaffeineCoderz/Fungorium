@@ -1,2 +1,2 @@
 #!/bin/bash
-java -cp out main
+echo "exit" | java -cp out main
