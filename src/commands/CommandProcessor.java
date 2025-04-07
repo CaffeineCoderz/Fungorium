@@ -228,7 +228,7 @@ public class CommandProcessor {
         System.out.println("System Commands:");
         System.out.println(" ");
         System.out.println("/helpsys \t\t\t\t\t prints all the system the commands");
-        System.out.println("/helpObj \t\t\t\t\t prints all avaliable objectTypes");
+        System.out.println("/helpObj \t\t\t\t\t prints all available objectTypes");
         System.out.println("/create <objectType> <name> \t\t\t creates an object with the given name");
         System.out.println("/delete <name> \t\t\t\t\t deletes the object with the given name");
         System.out.println("/status <name> \t\t\t\t\t prints an object's status");
@@ -1038,7 +1038,6 @@ public class CommandProcessor {
         }
 
         // ! Insect
-        // !!! Timerek settere - movingtimer abilitytimer
         else if (obj instanceof Insect) {
             Insect insect = (Insect) obj;
             switch (property) {
