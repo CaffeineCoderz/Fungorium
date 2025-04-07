@@ -30,7 +30,7 @@ jobs:
         run: ./compile.sh
 
       - name: Run (with exit)
-        run: ./run.sh | echo "exit" 
+        run:  echo "exit" | ./run.sh
 
       - name: Test
         run: echo "50" | ./test.sh
