@@ -111,6 +111,7 @@ public class InsectSpecies implements iControl{
     public void move(Insect selectedInsect, FungusThread selectedThread) {
         for(Insect insect : myInsects) {
             if (insect == selectedInsect) {
+                
                 selectedInsect.move(selectedThread);
             }
         }

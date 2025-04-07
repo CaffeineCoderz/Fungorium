@@ -272,6 +272,9 @@ public class FungusSpecies implements iControl {
             log.stepIn("fb.addThread(thread)");
             fb.addThread(thread);
             log.stepOut("fb.addThread(thread)", null);
+
+            //! amelyik threadből növesszük a testet, annak a testje a növesztett test legyen 
+            thread.setBody(fb);
         } else {
             log.askQ("Nincs elegendo spóra", false);
         }

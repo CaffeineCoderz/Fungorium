@@ -236,6 +236,26 @@ public class Insect{
     public void move(FungusThread ft) {
         if (effect != InsectEffects.STUN) {
             log.askQ("Insect is not stunned", false);
+            
+            //? Itt lecsekkolja, hogy léphet-e a threadre
+            Integer checkedDistance;
+            switch (effect) {
+                case FAST:
+                    checkedDistance = 3;
+                    break;
+                case SLOW:
+                    checkedDistance = 1;
+                    break;
+                default:
+                    checkedDistance = 2;
+                    break;
+            }
+            if (!canReachThread(ft, checkedDistance)) {
+                log.askQ("Insect can not move there", false);
+                return;
+            }
+
+
             if (ft.isBridge()) {
                 log.askQ("Thread is a bridge", false);
                 log.stepIn("recentTekton.removeInsect(this)");
@@ -265,6 +285,58 @@ public class Insect{
             log.askQ("Insect is not stunned", false);
     }
 
+    //! Lehet kiszervezem a GameLogicba ezt
+    //! Amikor egy thread két threadet köt össze akkor probléma van a tovább haladás irányával
+    //! t1 -> newt <-t2 "Fák gyökerei sem nőnek össze. No para"
+    //! t1.next-je = newt   t2.next-je ugyanúgy newt
+    //! függvény híváskor ha barmelyik irányből megyünk végtelen ciklusba kerül
+    private Boolean canReachThread(FungusThread toThread, Integer distance){
+        FungusThread temp = thread.getPrev();
+        for (Integer i = 0; i < distance ; i++) {
+            if (temp == toThread) {
+                return true;   
+            }
+            //? a Body-hoz értünk meg kell nézni, hogy ér-e el másik threadet a bodyból
+            else if (temp == null) {
+                Integer remainingDistance = distance-i;
+                //0: nem csinál semmit,
+                //1: body-ból kinövő threadeket nézi, 2: 1-es és a threadek szomszédai 
+                //3: 2-es és a threadek szomszédai
+                if(canReachFromBody(toThread, temp, remainingDistance)) return true;
+                break;
+            }
+            temp = temp.getPrev();
+        }
+
+        temp = thread.getNext();
+        for (Integer i = 0; i < distance ; i++) {
+            if (temp == toThread) {
+                return true;   
+            }
+            if (temp.getNext() == null) {
+                break;
+            }
+            temp = temp.getNext();
+        }
+        return false;
+    }
+
+    private Boolean canReachFromBody(FungusThread toThread, FungusThread temp,Integer distance){
+        for (FungusThread bodyThreads :temp.getBody().getThreads()) {
+            if (bodyThreads == toThread) {
+                return true;
+            }else{
+                FungusThread bodyThreadtemp = bodyThreads.getNext();
+                for (int j = 0; j < distance; j++) {
+                    if(bodyThreadtemp == toThread){
+                        return true;
+                    }
+                    bodyThreadtemp = bodyThreadtemp.getNext();
+                }
+            }
+        }
+        return false;
+    }
     /**
      * Returns true if the insect has the ability to cut threads, false otherwise.
      * 
