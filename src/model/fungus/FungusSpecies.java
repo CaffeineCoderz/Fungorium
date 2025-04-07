@@ -135,9 +135,7 @@ public class FungusSpecies implements iControl {
      *                     thread.
      * @param nThread      The new FungusThread instance to be added.
      */
-    public void growThread(Tekton targetTekton, FungusThread oThread) {
-        log.askQ("Create new FungusThread: nThread", false);
-        FungusThread nThread = new FungusThread(null, false);
+    public void growThread(Tekton targetTekton, FungusThread oThread , FungusThread nThread) {
         if (targetTekton.canGrowThread()){
             log.askQ("Can grow thread on tekton", false);
             log.stepIn("addThread(nThread)");
@@ -171,7 +169,26 @@ public class FungusSpecies implements iControl {
             log.askQ("tekton cant have new threads", false);
         }
     }
+    public void growThread(Tekton targetTekton, FungusBody body , FungusThread nThread) {
+        if (targetTekton.canGrowThread()){
+            log.askQ("Can grow thread on tekton", false);
+            addThread(nThread);
 
+            nThread.addTekton(targetTekton);
+            nThread.setPrevThread(null);
+            nThread.setNextThread(null);
+            // ! Be kell állítani hogy melyik testhez tartozik
+            nThread.setBody(body);
+
+            targetTekton.addThread(nThread);
+
+
+            body.addThread(nThread);
+            
+        } else {
+            log.askQ("tekton cant have new threads", false);
+        }
+    }
     /**
      * Grows a bridge-like FungusThread between two Tektons.
      * 
