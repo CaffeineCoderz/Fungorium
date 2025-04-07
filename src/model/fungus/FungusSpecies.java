@@ -4,18 +4,21 @@ import interfaces.iControl;
 import java.util.ArrayList;
 import java.util.List;
 
-import tektonTypes.FeedThreadTekton;
-
 import fungus.FungusThread;
 import insect.*;
-
+import tektonTypes.FeedThreadTekton;
 import tektonTypes.Tekton;
 import utils.Logger;
 
 public class FungusSpecies implements iControl {
+    // Game Logic
+    Integer id;
+
+    // Data
     private Integer score;
     private List<FungusBody> bodies;
     private List<FungusThread> threads;
+    // private Mycologist myOwner; // ! ezentúl a species az owner
     private Logger log = Logger.getLogger("FungusSpeciesLogger");
 
     public FungusSpecies() {
@@ -28,6 +31,22 @@ public class FungusSpecies implements iControl {
         this.score = score;
         this.bodies = new ArrayList<>();
         this.threads = new ArrayList<>();
+    }
+
+    /*
+     * @return the ID of the player.
+     */
+    public Integer getId() {
+        return id;
+    }
+
+    /**
+     * Sets the ID of the player.
+     * 
+     * @param id the ID to set for the player.
+     */
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     /**
@@ -47,6 +66,17 @@ public class FungusSpecies implements iControl {
      */
     public List<FungusBody> getBodies() {
         return bodies;
+    }
+
+    // ! Nincs a statikus diagramon
+    /**
+     * Retrieves the list of FungusThread instances associated with this
+     * FungusSpecies.
+     * 
+     * @return a list of FungusThread objects.
+     */
+    public List<FungusThread> getThreads() {
+        return threads;
     }
 
     /**
@@ -105,70 +135,96 @@ public class FungusSpecies implements iControl {
      *                     thread.
      * @param nThread      The new FungusThread instance to be added.
      */
-    public void growThread(Tekton targetTekton, FungusThread oThread, FungusThread nThread) {
-        if (targetTekton.canGrowThread()) {
+    public void growThread(Tekton targetTekton, FungusThread oThread) {
+        log.askQ("Create new FungusThread: nThread", false);
+        FungusThread nThread = new FungusThread(null, false);
+        if (targetTekton.canGrowThread()){
             log.askQ("Can grow thread on tekton", false);
             log.stepIn("addThread(nThread)");
             addThread(nThread);
             log.stepOut("addThread(nThread)", null);
+
             log.stepIn("nThread.addTekton(targetTekton)");
             nThread.addTekton(targetTekton);
             log.stepOut("nThread.addTekton(targetTekton)", null);
+            log.stepIn("nThread.setPrevThread(oThread)");
+            nThread.setPrevThread(oThread);
+            log.stepOut("nThread.setPrevThread(oThread)", null);
+            // ! Be kell állítani hogy melyik testhez tartozik
+            log.stepIn("nThread.setBody(oThread.getBody())");
+            nThread.setBody(oThread.getBody());
+            log.stepOut("nThread.setBody(oThread.getBody())", null);
+
             log.stepIn("targetTekton.addThread(nThread)");
             targetTekton.addThread(nThread);
             log.stepOut("targetTekton.addThread(nThread)", null);
+
             log.stepIn("oThread.setNextThread(nThread)");
             oThread.setNextThread(nThread);
             log.stepOut("oThread.setNextThread(nThread)", null);
+
+            log.stepIn("oThread.getBody().addThread(nThread)");
+            oThread.getBody().addThread(nThread);
+            log.stepOut("oThread.getBody().addThread(nThread)", null);
+            
         } else {
             log.askQ("tekton cant have new threads", false);
         }
     }
 
     /**
-     * Grows a bridge-like FungusThread between two Tektons and associates it with a
-     * FungusBody.
+     * Grows a bridge-like FungusThread between two Tektons.
      * 
-     * This method adds the given FungusThread to the list of threads associated
-     * with this FungusSpecies,
-     * and also associates the thread with two Tekton instances, marking it as a
+     * This method associates the thread with two Tekton instances, marking it as a
      * bridge.
-     * The thread is added to both the FungusBody's Tekton and the second Tekton.
+     * The thread is added to both the FungusThread's Tekton and the second Tekton.
      * 
-     * @param body    the FungusBody instance to which the FungusThread is to be
-     *                associated.
-     * @param thread  the FungusThread instance to be grown as a bridge.
-     * @param tekton2 the second Tekton instance to which the FungusThread will be
+     * @param fromThread  the FungusThread instance to bridge is growing from.
+     * @param toTekton the second Tekton instance to which the FungusThread will be
      *                associated.
      */
-    public void growBridge(FungusBody body, FungusThread thread, Tekton tekton2) {
-        log.stepIn("addThread(thread)");
-        addThread(thread);
-        log.stepOut("addThread(thread)", null);
+    public void growBridge(FungusThread fromThread,Tekton toTekton) {
+        log.askQ("Create new FungusThread: nThread", false);
+        FungusThread nThread = new FungusThread(null,true);
+        log.stepIn("nThread.setPrevThread(fromThread)");
+        nThread.setPrevThread(fromThread);
+        log.stepOut("nThread.setPrevThread(fromThread)", null);
+        
+        log.stepIn("fromThread.setNextThread(nThread)");
+        fromThread.setNextThread(nThread);
+        log.stepOut("fromThread.setNextThread(nThread)", null);
 
-        log.stepIn("thread.addTekton(body.getTekton())");
-        thread.addTekton(body.getTekton());
-        log.stepOut("thread.addTekton(body.getTekton())", null);
+        log.stepIn("addThread(nThread)");
+        addThread(nThread);
+        log.stepOut("addThread(nThread)", null);
+        
+        log.stepIn("nThread.addTekton(fromThread.getTekton())");
+        nThread.addTekton(fromThread.getTekton(null));
+        log.stepOut("nThread.addTekton(fromThread.getTekton())", null);
 
-        log.stepIn("thread.addTekton(tekton2)");
-        thread.addTekton(tekton2);
-        log.stepOut("thread.addTekton(tekton2)", null);
+        log.stepIn("nThread.addTekton(toTekton)");
+        nThread.addTekton(toTekton);
+        log.stepOut("nThread.addTekton(toTekton)", null);
 
-        log.stepIn("thread.setBridge(true)");
-        thread.setBridge(true);
-        log.stepOut("thread.setBridge(true)", null);
+        log.stepIn("fromThread.getTekton().addThread(nThread)");
+        fromThread.getTekton(null).addThread(nThread);
+        log.stepOut("fromThread.getTekton().addThread(nThread)", null);
 
-        log.stepIn("body.getTekton().addThread(thread)");
-        body.getTekton().addThread(thread);
-        log.stepOut("body.getTekton().addThread(thread)", null);
+        log.stepIn("toTekton.addThread(nThread)");
+        toTekton.addThread(nThread);
+        log.stepOut("toTekton.addThread(nThread)", null);
 
-        log.stepIn("tekton2.addThread(thread)");
-        tekton2.addThread(thread);
-        log.stepOut("tekton2.addThread(thread)", null);
+        log.stepIn("fromThread.getBody().addThread(nThread)");
+        fromThread.getBody().addThread(nThread);
+        log.stepOut("fromThread.getBody().addThread(nThread)", null);
 
-        log.stepIn("body.addThread(thread)");
-        body.addThread(thread);
-        log.stepOut("body.addThread(thread)", null);
+        log.stepIn("nThread.setBody(fromThread.getBody())");
+        nThread.setBody(fromThread.getBody());
+        log.stepOut("nThread.setBody(fromThread.getBody())", null);
+
+        log.stepIn("oThread.getBody().addThread(nThread)");
+        fromThread.getBody().addThread(nThread);
+        log.stepOut("oThread.getBody().addThread(nThread)", null);
     }
 
     /**
@@ -191,8 +247,8 @@ public class FungusSpecies implements iControl {
         }
         log.askQ("thread is not a bridge", false);
         Integer atleast = 2;
-        boolean enoughSpore = thread.getTekton().isThereEnoughSpore(atleast);
-        if (!thread.getTekton().canGrowBody()) {
+        boolean enoughSpore = thread.getTekton(null).isThereEnoughSpore(atleast);
+        if (!thread.getTekton(null).canGrowBody()) {
             log.askQ("Tekton already contains a body", false);
             return;
         }
@@ -201,17 +257,17 @@ public class FungusSpecies implements iControl {
             log.askQ("Create new Body: fb", false);
             FungusBody fb = new FungusBody(null, null);
             log.stepIn("thread.getTekton().setBody(fb)");
-            thread.getTekton().setBody(fb);
+            thread.getTekton(null).setBody(fb);
             log.stepOut("thread.getTekton().setBody(fb)", null);
             log.askQ("Start cycle", false);
             for (Integer i =  0; i < atleast; i++) {
                 log.stepIn("thread.getTekton().getSpores().get(i).absorbed();");
-                thread.getTekton().getSpores().get(i).absorbed();
+                thread.getTekton(null).getSpores().get(i).absorbed();
                 log.stepOut("thread.getTekton().getSpores().get(i).absorbed();", null);
             }
             log.askQ("End cycle", false);
             log.stepIn("fb.setTekton(thread.getTekton())");
-            fb.setTekton(thread.getTekton());
+            fb.setTekton(thread.getTekton(null));
             log.stepOut("fb.setTekton(thread.getTekton())", null);
             log.stepIn("fb.addThread(thread)");
             fb.addThread(thread);
@@ -251,7 +307,6 @@ public class FungusSpecies implements iControl {
      * its life decreased, and if its lifespan reaches zero, it is deleted.
      * 
      */
-
     @Override
     public void timeElapsed() {
         log.askQ("Start Cycle", false);
@@ -270,18 +325,11 @@ public class FungusSpecies implements iControl {
         log.askQ("End Cycle", false);
         log.askQ("Start Cycle", false);
         for (FungusThread thread : threads) {
-            if (thread.getLifeSpan() > 0 && !(thread.getTekton() instanceof FeedThreadTekton)) {
-                log.askQ("Has remaining lifespan", false);
-                log.stepIn("thread.decreaseLife()");
-                thread.decreaseLife();
-                log.stepOut("thread.decreaseLife()", null);
-            }
-            if (thread.getIsDying()) {
-                log.askQ("Thread is dying", false);
-                log.stepIn("deleteThread(thread)");
-                deleteThread(thread);
-                log.stepOut("deleteThread(thread)", null);
-            }
+        
+            log.stepIn("destroyThread(thread)");
+            destroyThread(thread);
+            log.stepOut("destroyThread(thread)", null);
+        
         }
         log.askQ("End Cycle", false);
     }
@@ -294,24 +342,44 @@ public class FungusSpecies implements iControl {
      * @param ft the FungusThread instance to be destroyed.
      */
     public void destroyThread(FungusThread ft) {
-        log.stepIn("deleteThread(ft)");
-        deleteThread(ft);
-        log.stepOut("deleteThread(ft)", null);
-        log.askQ("Start cyle", false);
-        boolean success;
-        for (FungusBody body : bodies) {
-            log.stepIn("body.removeThread(ft)");
-            success = body.removeThread(ft);
-            if (success) {
-                log.askQ("Break", false);
-                break;
-            }
-            log.stepOut("body.removeThread(ft)", success);
+        if (ft.getIsDying() && ft.getLifeSpan() != null) {
+            log.stepIn("thread.decreaseLife()");
+                ft.decreaseLife();
+                log.stepOut("thread.decreaseLife()", null);
+            return;
         }
-        log.askQ("End cycle", false);
-        log.stepIn("ft.destroy()");
-        ft.destroy();
-        log.stepOut("ft.destroy()", null);
+        if(ft.getLifeSpan()==0){
+            while(ft.getNext()!=null){
+                ft.getNext().setConnected(false);
+                List<Tekton> tektons = ft.getNext().getTektons();
+                for(int i=0; i<tektons.size(); i++){
+                    if(tektons.get(i).getClass()!=tektonTypes.FeedThreadTekton.class){
+                        ft.setIsDying(true);
+                    }
+                }
+                ft=ft.getNext();
+            }
+            log.stepIn("deleteThread(ft)");
+            deleteThread(ft);
+            log.stepOut("deleteThread(ft)", null);
+            log.askQ("Start cyle", false);
+            boolean success;
+            for (FungusBody body : bodies) {
+                log.stepIn("body.removeThread(ft)");
+                success = body.removeThread(ft);
+                if (success) {
+                    log.askQ("Break", false);
+                    break;
+                }
+                log.stepOut("body.removeThread(ft)", success);
+            }
+            log.askQ("End cycle", false);
+
+            log.stepIn("ft.destroy()");
+            ft.destroy();
+            log.stepOut("ft.destroy()", null);
+        }
+        
     }
 
     /**
@@ -336,6 +404,17 @@ public class FungusSpecies implements iControl {
         log.stepOut("fb.getTekton().setBody(null)", null);
     }
 
+    /**
+     * Consumes stunned insects on the given FungusThread's Tekton.
+     * 
+     * If the FungusThread is a bridge, the method returns immediately without
+     * doing anything. Otherwise, it iterates through all insects on the Tekton
+     * associated with the FungusThread. If any insect is stunned, the insect is
+     * killed. If at least one insect is killed, an opportunity to grow a body on
+     * the Tekton is provided. 
+     * 
+     * @param ft the FungusThread instance whose Tekton's insects are to be checked.
+     */
     public void eatInsect(FungusThread ft){
         if (ft.isBridge()) {
             log.askQ("Thread was a bridge", false);
@@ -343,7 +422,7 @@ public class FungusSpecies implements iControl {
         }
         Boolean someoneDied = false;
         log.askQ("Going through all insects that is on the Thread's tekton", false);
-        for (Insect insect : ft.getTekton().getInsects()) {
+        for (Insect insect : ft.getTekton(null).getInsects()) {
             if (insect.gEffect() == InsectEffects.STUN) {
                 log.askQ("Insect is stunned", false);
                 log.stepIn("insect.deadInsect()");
@@ -355,12 +434,27 @@ public class FungusSpecies implements iControl {
         log.askQ("End of Cycle", false);
         if (someoneDied) {
             log.askQ("You can grow a body to the tekton", false);
-            if (log.askQ("Want to grow body?", true) == "y") {
+            if (log.askQ("Want to grow body?", true).equals("y")) {
                 log.stepIn("growBody(ft)");
                 growBody(ft);
                 log.stepOut("growBody(ft)", null);
             }
         }else log.askQ("There is no stunned insect on tekton", false);
         
+    }
+
+    /**
+     * Sporulates to the given FungusBody.
+     * This will cause the FungusBody to release spores, and may allow the
+     * FungusSpecies to grow new FungusThread instances.
+     *
+     * @param selectedBody the FungusBody instance to sporulate.
+     */
+    public void sporulate(FungusBody selectedBody) {
+        for (FungusBody body : bodies) {
+            if (body == selectedBody) {
+                selectedBody.sporulate();
+            }
+        }
     }
 }

@@ -2,6 +2,8 @@ package fungus;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import insect.Insect;
 import tektonTypes.Tekton;
 import utils.Logger;
 
@@ -15,7 +17,7 @@ public class FungusThread {
     private List<Tekton> tektons;
     private FungusSpecies species;
     private FungusBody body;
-
+    private Boolean connected;
     private FungusThread prevThread;
     private FungusThread nextThread;
 
@@ -29,6 +31,7 @@ public class FungusThread {
         this.tektons = new ArrayList<>();
         prevThread = null;
         nextThread = null;
+        connected = true;
     }
 
     public FungusThread(Integer lifeSpan, Boolean bridge) {
@@ -39,6 +42,7 @@ public class FungusThread {
         this.tektons = new ArrayList<>();
         prevThread = null;
         nextThread = null;
+        connected=true;
     }
 
     public FungusThread(Integer lifeSpan, Boolean bridge, FungusThread prev) {
@@ -49,10 +53,15 @@ public class FungusThread {
         this.tektons = new ArrayList<>();
         prevThread = prev;
         nextThread = null;
+        connected=true;
         if (prev != null)
             body = prev.getBody();
         else
             body = null;
+    }
+
+    public void setConnected(Boolean bool){
+        this.connected=bool;
     }
 
     /**
@@ -134,12 +143,12 @@ public class FungusThread {
      * isDying flag of this fungus thread to true.
      */
     public void decreaseLife() {
-        if (lifeSpan == 0) {
+        if (!isDying) {
             return;
         }
         lifeSpan--;
         if (lifeSpan <= 0) {
-            isDying = true;
+            this.destroy();
         }
     }
 
@@ -149,7 +158,15 @@ public class FungusThread {
      * @param tekton the Tekton to add to the list of associated Tektons.
      */
     public void addTekton(Tekton tekton) {
+        if (tektons.size() == 2) {
+            return;
+        }
         tektons.add(tekton);
+        if(tektons.size() == 2){
+            log.stepIn("setBridge(true)");
+            setBridge(true);
+            log.stepOut("setBridge(true)", null);
+        }
     }
 
     /**
@@ -199,8 +216,37 @@ public class FungusThread {
      * 
      * @return the first Tekton associated with this fungus thread.
      */
-    public Tekton getTekton() {
-        return tektons.get(0);
+    public Tekton getTekton(Insect i) {
+        if(i == null || !bridge){
+            return tektons.get(0);
+        }else{
+            if (i.getRecent() == tektons.get(0)) {
+                return tektons.get(1);
+            }else{
+                return tektons.get(0);
+            }
+        }
+    }
+
+    /**
+     * Sets the Tekton object associated with the given Insect object to the
+     * "other" Tekton associated with this fungus thread, if this fungus thread
+     * is a bridge. If this fungus thread is not a bridge, it sets the Tekton
+     * object associated with the given Insect object to the only Tekton
+     * associated with this fungus thread.
+     * 
+     * @param i the Insect object to be updated.
+     */
+    public void insectSetting(Insect i){
+        if(i == null || !bridge){
+            i.setRecentTekton(tektons.get(0));
+        }else{
+            if (i.getRecent() == tektons.get(0)) {
+                i.setRecentTekton(tektons.get(1));
+            }else{
+                i.setRecentTekton(tektons.get(0));
+            }
+        }
     }
 
     /**
@@ -243,5 +289,8 @@ public class FungusThread {
     // ! nincs statikus diagram
     public void setLifeSpan(Integer lifeSpan) {
         this.lifeSpan = lifeSpan;
+    }
+    public void disconnected(){
+        
     }
 }

@@ -1,2 +1,3 @@
-load createConfig
-load deleteConfig
+/load createConfig
+/load setConfig
+/load statusAll

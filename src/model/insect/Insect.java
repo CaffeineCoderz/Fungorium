@@ -7,7 +7,6 @@ import tektonTypes.Tekton;
 import utils.*;
 
 import insect.InsectEffects;
-import insect.InsectSpecies;
 
 // ! - Az elrágott fonalak nem pusztulnak el azonnal, hanem csak egy kis idő elteltével (ez fonaltípustól függő idő). 
 // ! A fonalak képesek megenni a tektonjukon található bénult rovarokat. Ilyenkor a rovar elpusztul, a fonal pedig gombatestet növeszthet.
@@ -21,7 +20,7 @@ public class Insect{
     
     private Tekton recentTekton;
     private FungusThread thread;
-    private InsectSpecies mySpecies;
+    private InsectSpecies myOwner;
 
     private Logger log = Logger.getLogger("InsectLogger");
 
@@ -38,14 +37,14 @@ public class Insect{
         this.onDecreasing = i.onDecreasing;
         this.recentTekton = i.recentTekton;
         this.thread = i.thread;
-        this.mySpecies = i.mySpecies;
+        this.myOwner = i.myOwner;
     }
 
-    public void setMySpecies(InsectSpecies my){
-        mySpecies = my;
+    public void setMyOwner(InsectSpecies my){
+        myOwner = my;
     }
-    public InsectSpecies getMySpecies(){
-        return mySpecies;
+    public InsectSpecies getMyOwner(){
+        return myOwner;
     }
 
     /**
@@ -55,6 +54,71 @@ public class Insect{
      */
     public InsectEffects gEffect() {
         return effect;
+    }
+
+    /**
+     * Retrieves the current FungusThread object that the insect is on.
+     * 
+     * @return the FungusThread object that the insect is on.
+     */
+    public FungusThread getThread() {
+        return thread;
+    }
+
+    /**
+     * Retrieves the current effect timer for the insect's movement.
+     * 
+     * @return the current moving effect timer value.
+     */
+    public Integer getMovingEffectTimer() {
+        return movingEffectTimer;
+    }
+
+    /**
+     * Retrieves the current effect timer for the insect's ability.
+     * 
+     * @return the current ability effect timer value.
+     */
+    public Integer getAbilityEffectTimer() {
+        return abilityEffectTimer;
+    }
+
+    /**
+     * Sets the effect of the insect to NORMAL.
+     * This method is used to reset the insect's effect to its default state.
+     */
+    public void normal() {
+        effect = InsectEffects.NORMAL;
+        movingEffectTimer = 0;
+        abilityEffectTimer = 0;
+    }
+
+    /**
+     * 
+     * Sets the ability of the insect to cut threads.
+     * 
+     * @param b true if the insect can cut threads, false otherwise.
+     */
+    public void setCanCut(Boolean b) {
+        canCut = b;
+    }
+
+    /**
+     * Sets the effect timer for the insect's movement.
+     * 
+     * @param i the value to set the moving effect timer to.
+     */
+    public void setMovingEffectTimer(Integer i) {
+        movingEffectTimer = i;
+    }
+
+    /**
+     * Sets the effect timer for the insect's ability.
+     * 
+     * @param i the value to set the ability effect timer to.
+     */
+    public void setAbilityEffectTimer(Integer i) {
+        abilityEffectTimer = i;
     }
 
     /**
@@ -143,9 +207,18 @@ public class Insect{
 
         if (canCut == true && effect != InsectEffects.STUN && effect != InsectEffects.NO_CUT && thread != ft) {
             log.askQ("Insect can cut threads", false);
-            log.stepIn("ft.destroy()");
-            ft.destroy();
-            log.stepOut("ft.destroy()", null);
+                if (ft.isBridge()) {
+                    log.stepIn("ft.setIsDying(true)");
+                    ft.setIsDying(true);
+                    ft.setLifeSpan(2);
+                    log.stepOut("ft.setIsDying(true)", null);
+                }else{
+                    // ! Még nem végleges
+                    log.stepIn("ft.setLifeSpan(2)");
+                    ft.setIsDying(true);
+                    ft.setLifeSpan(4);
+                    log.stepOut("ft.setLifeSpan(2)", null);
+                }
         } else
             log.askQ("Insect can't cut threads", false);
 
@@ -168,13 +241,18 @@ public class Insect{
                 log.stepIn("recentTekton.removeInsect(this)");
                 recentTekton.removeInsect(this);
                 log.stepOut("recentTekton.removeInsect(this)", null);
-                log.stepIn("setRecentTekton(ft.getTekton())");
-                setRecentTekton(ft.getTekton());
-                log.stepOut("setRecentTekton(ft.getTekton())", ft.getTekton());
+
+                log.stepIn("ft.insectSetting(this)");
+                ft.insectSetting(this);
+                log.stepOut("ft.insectSetting(this)", null);
+                
                 log.stepIn("setThread(ft)");
                 setThread(ft);
                 log.stepOut("setThread(ft)", null);
-                recentTekton = null;
+
+                log.stepIn("recentTekton.addInsect(this)");
+                recentTekton.addInsect(this);
+                log.stepOut("recentTekton.addInsect(this)", null);
             } else {
                 log.askQ("Thread is not a bridge", false);
                 log.stepIn("setThread(ft)");
@@ -223,7 +301,7 @@ public class Insect{
      * @param x the amount by which the score is to be increased.
      */
     public void addScore(Integer x) {
-        mySpecies.addScore(x);
+        myOwner.addScore(x);
     }
 
     /**
@@ -232,7 +310,7 @@ public class Insect{
      * @param x the amount by which the score is to be decreased.
      */
     public void decreaseScore(Integer x) {
-        mySpecies.decreaseScore(x);
+        myOwner.decreaseScore(x);
     }
 
     /**
@@ -243,7 +321,6 @@ public class Insect{
      * 
      * @param Round the current round number.
      */
-    
     public void timeElapsed() {
         log.askQ("Decrease timers", false);
         if (onDecreasing) {
@@ -289,9 +366,9 @@ public class Insect{
         log.askQ("Duplicate", false);
         log.askQ("Create new Insect: doppelGanger", false);
         Insect doppelGanger = new Insect(this);
-        log.stepIn("mySpecies.addInsect(doppelGanger)");
-        mySpecies.addInsect(doppelGanger);
-        log.stepOut("mySpecies.addInsect(doppelGanger)", null);
+        log.stepIn("myOwner.addInsect(doppelGanger)");
+        myOwner.addInsect(doppelGanger);
+        log.stepOut("myOwner.addInsect(doppelGanger)", null);
     }
 
     /**
@@ -300,9 +377,9 @@ public class Insect{
 
     // ! Ha mégis tároljuk majd a fonalakon a rovarokat akkor függvény kell jelenleg ennyi
     public void deadInsect(){
-        log.stepIn("mySpecies.removeInsect(this)");
-        mySpecies.removeInsect(this);
-        log.stepOut("mySpecies.removeInsect(this)", null);
+        log.stepIn("myOwner.removeInsect(this)");
+        myOwner.removeInsect(this);
+        log.stepOut("myOwner.removeInsect(this)", null);
         log.stepIn("recentTekton.removeInsect(this)");
         recentTekton.removeInsect(this);
         log.stepOut("recentTekton.removeInsect(this)", null);
