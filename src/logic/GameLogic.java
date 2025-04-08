@@ -23,7 +23,7 @@ public class GameLogic {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Welcome to the game!");
         Integer input = 0;
-        while (input > 4) {        
+        while (input < 4) {        
             System.out.println("How many players are there? (Atleast 4 player needed):");
             input = scanner.nextInt();
         }
