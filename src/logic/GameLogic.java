@@ -31,7 +31,7 @@ public class GameLogic {
         int MycoCount = 0;
         int EntoCount =0;
         for(Integer i=0; i < input; i++){
-            System.out.println("Player "+ i+1 +"\nChoose between Entomologists[1] and Mycologist[2]: (1/2)");
+            System.out.println("Player " + (i + 1) + "\nChoose between Entomologists[1] and Mycologist[2]: (1/2)");
             Integer key = scanner.nextInt();
             if (key == 1) {
                 if (EntoCount > Math.round(input/2)) {
