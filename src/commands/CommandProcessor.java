@@ -156,6 +156,13 @@ public class CommandProcessor {
     }
 
     /*
+     * Vissaadja a létrehozott objektumokat
+     */
+    public HashMap<String, Object> getCreatedObjects() {
+        return (HashMap<String, Object>) createdObjects;
+    }
+
+    /*
      * A parancsok feldolgozása
      */
     public void process(String input) {
@@ -470,8 +477,8 @@ public class CommandProcessor {
                     + "\n\tInsects: " + insectNames);
         } else if (obj instanceof Insect) {
             Insect insect = (Insect) obj;
-            String tektonName = createdObjects.entrySet().stream()
-                    .filter(entry -> entry.getValue() == insect.getRecent())
+            String threadName = createdObjects.entrySet().stream()
+                    .filter(entry -> entry.getValue() == insect.getThread())
                     .map(Map.Entry::getKey)
                     .findFirst()
                     .orElse("N/A");
@@ -482,7 +489,7 @@ public class CommandProcessor {
                     .orElse("N/A");
             System.out.println("Insect: "
                     + "\n\tOwner: " + ownerName
-                    + "\n\tTekton: " + tektonName
+                    + "\n\tThread: " + threadName
                     + "\n\tEffect: " + insect.gEffect());
         } else if (obj instanceof Spore) {
             Spore spore = (Spore) obj;

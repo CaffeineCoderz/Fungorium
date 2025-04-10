@@ -1,115 +1,180 @@
 package logic;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
+import commands.CommandProcessor;
 import fungus.FungusSpecies;
 import insect.InsectSpecies;
+import tektonTypes.Tekton;
 
 public class GameLogic {
-    private List<FungusSpecies> fungusSpecies;
-    private List<InsectSpecies> insectSpecies;
+    private Map<String, Object> players = new HashMap<>(); // Egyetlen HashMap az összes fajhoz
+    private int fungusPlayers = 2; // Minimum fungus játékos
+    private int insectPlayers = 2; // Minimum insect játékos
+    private int gameTime = 10; // A játék időtartama
+    private int round = 0; // Az eltelt idő
+    // Map
+    private Map<String, Tekton> tektons = new HashMap<>();
+
+    private CommandProcessor commandProcessor;
 
     public GameLogic() {
-        fungusSpecies = new ArrayList<FungusSpecies>();
-        insectSpecies = new ArrayList<InsectSpecies>();
+        // Initialize the command processor
+        this.commandProcessor = new CommandProcessor();
     }
 
     /**
-     * Starts the game and provides a text-based interface for the player.
+     * Sets the command processor for the game logic.
      * 
-     * This method continuously displays a menu with options for the player to
-     * interact with the game. The player can add or remove mycologists, fungus
-     * species, insectSpecies, and insect species. The player can also choose to
-     * exit the game. The method reads the user's input and calls the appropriate
-     * methods to perform the selected actions.
+     * @param commandProcessor The command processor to be set.
      */
-    public void startGame() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Welcome to the game!");
+    public void setCommandProcessor(CommandProcessor commandProcessor) {
+        this.commandProcessor = commandProcessor;
+    }
 
-        while (true) {
-            System.out.println("What would you like to do?");
-            System.out.println("1. Add a fungusSpecies");
-            System.out.println("2. Add a fungus species");
-            System.out.println("3. Remove a fungusSpecies");
-            System.out.println("4. Remove a fungus species");
-            System.out.println("5. Add an entymologist");
-            System.out.println("6. Remove an entymologist");
-            System.out.println("7. Add an insect species");
-            System.out.println("8. Remove an insect species");
-            System.out.println("9. Exit");
+    /**
+     * Gets the game time.
+     * 
+     * @return The current game time.
+     */
+    public int getGameTime() {
+        return gameTime;
+    }
 
-            int choice = scanner.nextInt();
+    /**
+     * Sets the game time.
+     * 
+     * @param gameTime The game time to be set.
+     */
+    public void setGameTime(int gameTime) {
+        this.gameTime = gameTime;
+    }
 
-            switch (choice) {
-                case 1:
-                    //addFungusSpecies();
-                    break;
-                case 2:
-                    // addFungusSpecies();
-                    break;
-                case 3:
-                    // removeFungusSpecies();
-                    break;
-                case 4:
-                    // removeFungusSpecies();
-                    break;
-                case 5:
-                    // addEntymologist();
-                    break;
-                case 6:
-                    // removeEntymologist();
-                    break;
-                case 7:
-                    // addInsectSpecies();
-                    break;
-                case 8:
-                    // removeInsectSpecies();
-                    break;
-                case 9:
-                    System.out.println("Goodbye!");
-                    return;
-                default:
-                    System.out.println("Invalid choice. Please try again.");
-            }
+    /**
+     * Adds a species (Fungus or Insect) to the map.
+     * 
+     * @param id      The ID (name) of the species.
+     * @param species The species object to be added.
+     */
+    public void addSpecies(String id, Object species) {
+        if (species instanceof FungusSpecies || species instanceof InsectSpecies) {
+            players.put(id, species);
+        } else {
+            throw new IllegalArgumentException("Invalid species type.");
         }
     }
 
     /**
-     * Adds a fungusSpecies to the list of mycologists.
+     * Removes a species from the map.
      * 
-     * @param fungusSpecies The fungusSpecies to be added.
+     * @param id The ID (name) of the species to be removed.
      */
-    public void addFungusSpecies(FungusSpecies fungusSpecies) {
-        this.fungusSpecies.add(fungusSpecies);
+    public void removeSpecies(String id) {
+        players.remove(id);
     }
 
     /**
-     * Removes a fungusSpecies from the list of mycologists.
+     * Gets a species by its ID.
      * 
-     * @param fungusSpecies The fungusSpecies to be removed.
+     * @param id The ID (name) of the species.
+     * @return The species object, or null if not found.
      */
-    public void removeFungusSpecies(FungusSpecies fungusSpecies) {
-        this.fungusSpecies.remove(fungusSpecies);
+    public Object getSpecies(String id) {
+        return players.get(id);
     }
 
     /**
-     * Adds an insectSpecies to the list of insectSpecies.
-     * 
-     * @param insectSpecies The insectSpecies to be added.
+     * Starts the game and handles player type selection.
      */
-    public void addInsectSpecies(InsectSpecies insectSpecies) {
-        this.insectSpecies.add(insectSpecies);
+    public void startGame() {
+        Scanner scanner = new Scanner(System.in);
+
+        while (fungusPlayers > 0 || insectPlayers > 0) {
+            System.out.println("Which type of player would you like to be? Fungus - Insect (F/I)");
+            String choice = scanner.nextLine().trim().toUpperCase();
+
+            if (choice.equals("F") && fungusPlayers > 0) {
+                fungusPlayers--;
+                System.out.println("You chose Fungus. Remaining Fungus slots: " + fungusPlayers);
+            } else if (choice.equals("I") && insectPlayers > 0) {
+                insectPlayers--;
+                System.out.println("You chose Insect. Remaining Insect slots: " + insectPlayers);
+            } else if (fungusPlayers == 0 && insectPlayers == 0) {
+                System.out.println("All player slots are filled. You can choose any type.");
+            } else {
+                System.out.println("Invalid choice or no slots available for the selected type.");
+            }
+        }
+
+        System.out.println("All players are ready. Starting the game...");
+        commandProcessor.start();
+        scanner.close();
     }
 
     /**
-     * Removes an insectSpecies from the list of insectSpecies.
+     * Ends the game and determines the winners.
      * 
-     * @param insectSpecies The insectSpecies to be removed.
+     * @param createdObjects The map of created objects (species).
      */
-    public void removeInsectSpecies(InsectSpecies insectSpecies) {
-        this.insectSpecies.remove(insectSpecies);
+    public static void endgame(Map<String, Object> createdObjects) {
+        int maxFungusScore = -1;
+        int maxInsectScore = -1;
+        String fungusWinner = "N/A";
+        String insectWinner = "N/A";
+
+        // Győztesek meghatározása
+        for (Map.Entry<String, Object> entry : createdObjects.entrySet()) {
+            Object obj = entry.getValue();
+            if (obj instanceof FungusSpecies) {
+                FungusSpecies species = (FungusSpecies) obj;
+                if (species.getScore() > maxFungusScore) {
+                    maxFungusScore = species.getScore();
+                    fungusWinner = entry.getKey();
+                }
+            } else if (obj instanceof InsectSpecies) {
+                InsectSpecies species = (InsectSpecies) obj;
+                if (species.getScore() > maxInsectScore) {
+                    maxInsectScore = species.getScore();
+                    insectWinner = entry.getKey();
+                }
+            }
+        }
+
+        // Eredmények kiírása
+        System.out.println("Játék vége!");
+        System.out.println("Fungus győztes: " + fungusWinner + " pontszám: " + maxFungusScore);
+        System.out.println("Insect győztes: " + insectWinner + " pontszám: " + maxInsectScore);
+    }
+
+    /*
+     * This method is called every end of a round to update the game state.
+     */
+    public void TimeElapsed() {
+        for (Object playerObj : players.values()) {
+            if (playerObj instanceof FungusSpecies) {
+                FungusSpecies player = (FungusSpecies) playerObj;
+                // ! player.takeTurn(); // Check issue #159
+            } else if (playerObj instanceof InsectSpecies) {
+                InsectSpecies player = (InsectSpecies) playerObj;
+                // ! player.takeTurn(); // Check issue #159
+            } else {
+                System.out.println("Invalid player type.");
+            }
+        }
+
+        // The Map should be rendered here
+        for (Tekton tekton : tektons.values()) {
+            // tekton.updateState();
+        }
+
+        round++;
+        System.out.println("Round: " + round);
+
+        gameTime--;
+        if (gameTime <= 0) {
+            this.endgame(commandProcessor.getCreatedObjects());
+        }
     }
 }
