@@ -702,7 +702,7 @@ public class CommandProcessor {
                 // Actual growThread
                 if (tekton.canGrowThread()) {
                     // ! Az új thread be lesz adva a függvénybe
-                    // body.getSpecies().growThread(tekton, body, newThread);
+                    body.getSpecies().growThread(tekton, body, newThread);
                 } else {
                     System.out.println("Hiba: Nem lehet ide threadet növeszteni: " + tektonName);
                     return;
@@ -719,7 +719,7 @@ public class CommandProcessor {
                 // Actual growThread
                 if (tekton.canGrowThread()) {
                     // ! Az új thread be lesz adva a függvénybe
-                    // thread.getSpecies().growThread(tekton, thread, newThread);
+                     thread.getSpecies().growThread(tekton, thread, newThread);
                 } else {
                     System.out.println("Hiba: Nem lehet ide threadet növeszteni: " + tektonName);
                     return;
