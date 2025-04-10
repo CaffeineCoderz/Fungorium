@@ -6,6 +6,11 @@ on:
       - Main
       - Release-branch
       - Mador-Branch
+      - Daivakai
+      - Daivakai-branch
+      - Csökönyi-branch
+      - Csomos
+      - HerrSchnitzer-patch-1
 
 jobs:
   test-matrix:
