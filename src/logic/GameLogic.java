@@ -35,6 +35,15 @@ public class GameLogic {
     }
 
     /**
+     * Gets the command processor.
+     * 
+     * @return The command processor.
+     */
+    public CommandProcessor getCommandProcessor() {
+        return commandProcessor;
+    }
+
+    /**
      * Gets the game time.
      * 
      * @return The current game time.
@@ -91,26 +100,122 @@ public class GameLogic {
     public void startGame() {
         Scanner scanner = new Scanner(System.in);
 
-        while (fungusPlayers > 0 || insectPlayers > 0) {
-            System.out.println("Which type of player would you like to be? Fungus - Insect (F/I)");
+        while (true) {
+            if (fungusPlayers == 0 && insectPlayers == 0){
+                System.out.println("Which type of player would you like to be? Fungus - Insect (F/I) OR type 'exit' to start the game.");
+            } else{
+                System.out.println("Which type of player would you like to be? Fungus - Insect (F/I)");
+            }
             String choice = scanner.nextLine().trim().toUpperCase();
 
+            if (choice.equals("EXIT")) {
+                System.out.println("All players are ready. Starting the game...");
+                commandProcessor.start();
+                scanner.close();
+                return;
+            }
+
+            // Chose any type after minimum players reached
+            else if (fungusPlayers == 0 && insectPlayers == 0) {
+                System.out.println("Enter the name for your Player:");
+                String name = scanner.nextLine().trim();
+                switch (choice) {
+                    case "F":
+                        if (!players.containsKey(name)) {
+                            handleSpeciesCreation("Fungus", name);
+                            System.out.println("You chose Fungus with name: " + name);
+                        } else {
+                            System.out
+                                    .println("A player with this name already exists. Please choose a different name.");
+                        }
+                        break;
+                    case "I":
+                        if (!players.containsKey(name)) {
+                            handleSpeciesCreation("Insect", name);
+                            System.out.println("You chose Insect with name: " + name);
+                        } else {
+                            System.out
+                                    .println("A player with this name already exists. Please choose a different name.");
+                        }
+                        break;
+                    case "exit":
+                        if (fungusPlayers == 0 && insectPlayers == 0) {
+                            System.out.println("All players are ready. Starting the game...");
+                            scanner.close();
+                            commandProcessor.start();
+                            return;
+                        } else {
+                            System.out.println("You cannot exit the game now. Please choose a type.");
+                        }
+                        break;
+                    default:
+                        System.out.println("Invalid choice. Please choose F or I.");
+                }
+            }
+
+            // Minimum players not reached yet
             if (choice.equals("F") && fungusPlayers > 0) {
-                fungusPlayers--;
-                System.out.println("You chose Fungus. Remaining Fungus slots: " + fungusPlayers);
+                System.out.println("Enter the name for your Fungus:");
+                String name = scanner.nextLine().trim();
+                if (!players.containsKey(name)) {
+                    --fungusPlayers;
+                    if (fungusPlayers == 0) {
+                        System.out.println("Minimum number of fungus players reached.");
+                    } else {
+                        System.out.println("You chose Fungus. You need at least " + fungusPlayers
+                                + " more Fungus player to start the game.");
+                    }
+                    handleSpeciesCreation("Fungus", name);
+                } else {
+                    System.out.println("A player with this name already exists. Please choose a different name.");
+                }
             } else if (choice.equals("I") && insectPlayers > 0) {
-                insectPlayers--;
-                System.out.println("You chose Insect. Remaining Insect slots: " + insectPlayers);
-            } else if (fungusPlayers == 0 && insectPlayers == 0) {
-                System.out.println("All player slots are filled. You can choose any type.");
-            } else {
-                System.out.println("Invalid choice or no slots available for the selected type.");
+                System.out.println("Enter the name for your Insect:");
+                String name = scanner.nextLine().trim();
+                if (!players.containsKey(name)) {
+                    --insectPlayers;
+                    if (insectPlayers == 0) {
+                        System.out.println("Minimum number of insect players reached.");
+                    } else {
+                        System.out.println("You chose Insect. You need at least " + insectPlayers
+                                + " more Insect player to start the game.");
+                    }
+                    handleSpeciesCreation("Insect", name);
+                } else {
+                    System.out.println("A player with this name already exists. Please choose a different name.");
+                }
             }
         }
+    }
 
-        System.out.println("All players are ready. Starting the game...");
-        commandProcessor.start();
-        scanner.close();
+    private void handleSpeciesCreation(String type, String name) {
+        try {
+            if (type.equals("Fungus")) {
+                String create = "/create fungusspecies " + name;
+                commandProcessor.process(create);
+                commandProcessor.process("/set " + name + " addscore 10");
+                FungusSpecies newFungusSpecies = (FungusSpecies) commandProcessor.getCreatedObjects().get(name);
+                if (newFungusSpecies != null) {
+                    addSpecies(name, newFungusSpecies);
+                } else {
+                    System.out.println("Failed to create FungusSpecies with name: " + name);
+                }
+            } else if (type.equals("Insect")) {
+                String create = "/create insectspecies " + name;
+                commandProcessor.process(create);
+                commandProcessor.process("/set " + name + " addscore 12");
+                InsectSpecies insect = (InsectSpecies) commandProcessor.getCreatedObjects().get(name);
+                if (insect != null) {
+                    addSpecies(name, insect);
+                } else {
+                    System.out.println("Failed to create InsectSpecies with name: " + name);
+                }
+            } else {
+                System.out.println("Invalid species type.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error creating " + type + ": " + e.getMessage());
+        }
     }
 
     /**
@@ -118,7 +223,7 @@ public class GameLogic {
      * 
      * @param createdObjects The map of created objects (species).
      */
-    public static void endgame(Map<String, Object> createdObjects) {
+    public static void endGame(Map<String, Object> createdObjects) {
         int maxFungusScore = -1;
         int maxInsectScore = -1;
         String fungusWinner = "N/A";
@@ -151,30 +256,30 @@ public class GameLogic {
     /*
      * This method is called every end of a round to update the game state.
      */
-    public void TimeElapsed() {
+    public void takeTurn() {
         for (Object playerObj : players.values()) {
             if (playerObj instanceof FungusSpecies) {
                 FungusSpecies player = (FungusSpecies) playerObj;
-                // ! player.takeTurn(); // Check issue #159
+                player.timeElapsed();// Check issue #159
             } else if (playerObj instanceof InsectSpecies) {
                 InsectSpecies player = (InsectSpecies) playerObj;
-                // ! player.takeTurn(); // Check issue #159
+                player.timeElapsed(); // Check issue #159
             } else {
                 System.out.println("Invalid player type.");
             }
         }
 
-        // The Map should be rendered here
+        // The Map should be rendered or rerendered here
         for (Tekton tekton : tektons.values()) {
             // tekton.updateState();
         }
 
         round++;
-        System.out.println("Round: " + round);
+        System.out.println("---------> Round: " + round + " <---------");
 
         gameTime--;
         if (gameTime <= 0) {
-            this.endgame(commandProcessor.getCreatedObjects());
+            GameLogic.endGame(getCommandProcessor().getCreatedObjects());
         }
     }
 }

@@ -265,7 +265,7 @@ public class CommandProcessor {
      * @param parts: parancs részei
      */
 
-    private void processCreateCommand(String[] parts) {
+    public void processCreateCommand(String[] parts) {
         String objectType = parts[1].toLowerCase();
         String name = parts[2];
 
@@ -310,7 +310,7 @@ public class CommandProcessor {
      * 
      * @param parts: parancs részei
      */
-    private void processDeleteCommand(String[] parts) {
+    public void processDeleteCommand(String[] parts) {
         String name = parts[1];
 
         if (!createdObjects.containsKey(name)) {
@@ -382,7 +382,7 @@ public class CommandProcessor {
      * 
      * @param obj: objektum
      */
-    private void printObjectStatus(String name, Object obj) {
+    public void printObjectStatus(String name, Object obj) {
         System.out.println("Név: " + name);
 
         if (obj instanceof FungusThread) {
