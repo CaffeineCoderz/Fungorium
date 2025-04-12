@@ -22,11 +22,6 @@ public class main {
         System.out.println("Welcome to the game!");
         gameLogic.startGame();
 
-        // Simulate game rounds
-        while (gameLogic.getGameTime() > 0) {
-            gameLogic.takeTurn();
-        }
-
         // End of the game
         System.out.println("Game over!");
     }

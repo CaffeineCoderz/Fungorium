@@ -258,13 +258,17 @@ public class CommandProcessor {
         System.out.println("\\-----------------------------------------------------------/\n");
     }
 
+
+    public void processNextCommand(String[] parts){
+        
+    }
+
     /*
      * Create parancs formája: create <objecttype> <name>
      * Példa: create Insect i1
      * 
      * @param parts: parancs részei
      */
-
     public void processCreateCommand(String[] parts) {
         String objectType = parts[1].toLowerCase();
         String name = parts[2];

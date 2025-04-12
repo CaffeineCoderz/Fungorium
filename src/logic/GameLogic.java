@@ -15,6 +15,7 @@ public class GameLogic {
     private int insectPlayers = 2; // Minimum insect játékos
     private int gameTime = 10; // A játék időtartama
     private int round = 0; // Az eltelt idő
+
     // Map
     private Map<String, Tekton> tektons = new HashMap<>();
 
@@ -95,23 +96,39 @@ public class GameLogic {
     }
 
     /**
-     * Starts the game and handles player type selection.
+     * Starts the game, handles player type selection,
+     * then takes turns until the game time runs out.
      */
     public void startGame() {
         Scanner scanner = new Scanner(System.in);
+        // First, we need to select the players
+        selectPlayers(scanner);
 
+        // Second, take turns
+        while (gameTime > 0) {
+            takeTurn(scanner);
+        }
+    }
+
+    /**
+     * Selects the players and their types (Fungus or Insect).
+     * 
+     * @param scanner The scanner to read user input.
+     */
+    private void selectPlayers(Scanner scanner) {
         while (true) {
-            if (fungusPlayers == 0 && insectPlayers == 0){
-                System.out.println("Which type of player would you like to be? Fungus - Insect (F/I) OR type 'exit' to start the game.");
-            } else{
+            if (fungusPlayers == 0 && insectPlayers == 0) {
+                System.out.println(
+                        "Which type of player would you like to be? Fungus - Insect (F/I) OR type 'exit' to start the game.");
+            } else {
                 System.out.println("Which type of player would you like to be? Fungus - Insect (F/I)");
             }
             String choice = scanner.nextLine().trim().toUpperCase();
 
             if (choice.equals("EXIT")) {
                 System.out.println("All players are ready. Starting the game...");
-                commandProcessor.start();
-                scanner.close();
+                //commandProcessor.start();
+                //scanner.close();
                 return;
             }
 
@@ -188,6 +205,12 @@ public class GameLogic {
         }
     }
 
+    /**
+     * Handles the creation of species based on the type and name provided.
+     * 
+     * @param type The type of species to create (Fungus or Insect).
+     * @param name The name of the species to create.
+     */
     private void handleSpeciesCreation(String type, String name) {
         try {
             if (type.equals("Fungus")) {
@@ -216,6 +239,47 @@ public class GameLogic {
         } catch (Exception e) {
             System.out.println("Error creating " + type + ": " + e.getMessage());
         }
+    }
+
+    /**
+     * Takes a turn for each player in the game.
+     * 
+     * @param scanner The scanner to read user input.
+     */
+    public void takeTurn(Scanner scanner) {
+        while (gameTime > 0) {
+            System.out.println("---------> Round: " + (round + 1) + " <---------");
+
+            for (String playerName : players.keySet()) {
+                System.out.println("It's " + playerName + "'s turn. Enter a command:");
+                while (true) {
+                    String command = scanner.nextLine().trim().toLowerCase();
+                    if (command.equalsIgnoreCase("next")) {
+                        break; // Move to the next player
+                    }
+                    commandProcessor.process(command);
+                }
+            }
+
+            // Update game state after all players have taken their turns
+            for (Object playerObj : players.values()) {
+                if (playerObj instanceof FungusSpecies) {
+                    ((FungusSpecies) playerObj).timeElapsed();
+                } else if (playerObj instanceof InsectSpecies) {
+                    ((InsectSpecies) playerObj).timeElapsed();
+                }
+            }
+
+            round++;
+            gameTime--;
+
+            if (gameTime <= 0) {
+                GameLogic.endGame(commandProcessor.getCreatedObjects());
+                break;
+            }
+        }
+
+        System.out.println("Game over!");
     }
 
     /**
@@ -253,33 +317,4 @@ public class GameLogic {
         System.out.println("Insect győztes: " + insectWinner + " pontszám: " + maxInsectScore);
     }
 
-    /*
-     * This method is called every end of a round to update the game state.
-     */
-    public void takeTurn() {
-        for (Object playerObj : players.values()) {
-            if (playerObj instanceof FungusSpecies) {
-                FungusSpecies player = (FungusSpecies) playerObj;
-                player.timeElapsed();// Check issue #159
-            } else if (playerObj instanceof InsectSpecies) {
-                InsectSpecies player = (InsectSpecies) playerObj;
-                player.timeElapsed(); // Check issue #159
-            } else {
-                System.out.println("Invalid player type.");
-            }
-        }
-
-        // The Map should be rendered or rerendered here
-        for (Tekton tekton : tektons.values()) {
-            // tekton.updateState();
-        }
-
-        round++;
-        System.out.println("---------> Round: " + round + " <---------");
-
-        gameTime--;
-        if (gameTime <= 0) {
-            GameLogic.endGame(getCommandProcessor().getCreatedObjects());
-        }
-    }
 }
