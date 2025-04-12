@@ -253,6 +253,7 @@ public class GameLogic {
             for (String playerName : players.keySet()) {
                 System.out.println("It's " + playerName + "'s turn. Enter a command:");
                 while (true) {
+                    System.out.print("> ");
                     String command = scanner.nextLine().trim().toLowerCase();
                     if (command.equalsIgnoreCase("next")) {
                         break; // Move to the next player
