@@ -7,4 +7,4 @@ Effect: slow
 is1:
 InsectSpecies:
 Score: 2
-Insects: i1
+Insects: [i1]

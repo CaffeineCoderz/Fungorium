@@ -4,6 +4,7 @@
 /set ss1 tekton t1
 /set ss1 nutrition 2
 /create tekton t2
+/set t1 addneighbour t2
 /create thread th1
 /set th1 tekton t1
 /create thread th2

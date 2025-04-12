@@ -16,6 +16,8 @@
 /set th2 next th3
 /set th3 addtekton t2
 /create tekton t3
+/set t1 addneighbour t2
+/set t2 addneighbour t3
 /create thread th4
 /set th4 prev th3
 /set th3 next th4

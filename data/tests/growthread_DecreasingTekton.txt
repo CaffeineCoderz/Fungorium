@@ -1,11 +1,11 @@
-create tekton t1
-create decreasingtekton dt1
-set t1 addneighbour dt1
-create thread th1
-set th1 tekton t1
-create body b1
-set b1 tekton t1
-set th1 body b1
-set b1 thread th1
+/create tekton t1
+/create decreasingtekton dt1
+/set t1 addneighbour dt1
+/create thread th1
+/set th1 tekton t1
+/create body b1
+/set b1 tekton t1
+/set th1 body b1
+/set b1 thread th1
 growthread dt1 th1 th2
 status th2

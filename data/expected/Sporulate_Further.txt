@@ -23,9 +23,5 @@ CanGrowBody: true
 Bodies: N/A
 Insects: N/A
 Neighbours: t1
-<<<<<<< HEAD
-Spores: Same mint feljebb
-=======
 Spores: N/A
->>>>>>> b9c5398afb43cf6c515b20d30d98b683f45de0d7
 Threads: N/A
