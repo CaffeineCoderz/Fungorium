@@ -1,3 +1,4 @@
+t2: 
 Tekton: 
 CanGrowThread: true
 CanGrowBody: true
@@ -6,6 +7,7 @@ Insects: N/A
 Neighbours: t1
 Spores: KI KELL TALÁLNI MI KERÜLJÖN IDE VAGY HOGY HOGYAN LEGYEN NEVÜK AMIKET TUDHATUNK IS
 Threads: N/A
+t3: 
 Tekton: 
 CanGrowThread: true
 CanGrowBody: true
@@ -14,11 +16,12 @@ Insects: N/A
 Neighbours: t1
 Spores: KI KELL TALÁLNI MI KERÜLJÖN IDE VAGY HOGY HOGYAN LEGYEN NEVÜK AMIKET TUDHATUNK IS
 Threads: N/A
+t4: 
 Tekton: 
 CanGrowThread: true
 CanGrowBody: true
 Bodies: N/A
 Insects: N/A
 Neighbours: t1
-Spores: N/A
+Spores: Same mint feljebb
 Threads: N/A

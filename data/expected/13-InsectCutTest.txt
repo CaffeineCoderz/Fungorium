@@ -1,0 +1,12 @@
+th2: 
+FungusThread: 
+Species: N/A
+Body: b1
+Tektons: [t1, t2]
+IsBridge: true
+LifeSpan: 2
+IsDying: true
+Next: th3
+Prev: t1
+Hiba: Nem létezik ilyen nevű objektum: th2
+Sikertelen fonálvagas

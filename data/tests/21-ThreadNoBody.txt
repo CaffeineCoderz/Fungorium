@@ -2,8 +2,14 @@
 /create tekton t2
 /set t1 addneighbour t2
 /create body b1
-/set b1 tekton t1
+set b1 tekton t1
 growthread t1 b1 th1
 growthread t2 th1 th2
-status th1
+growthread t2 th2 th3
+/set th1 lifespan 0
+/set th1 isdying true
+/trigger th1
+status th2
+/trigger th2
+/trigger th2
 status th2

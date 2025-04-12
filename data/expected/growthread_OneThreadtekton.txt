@@ -1,9 +1,10 @@
 Sikertelen fonálnövesztés. A tektonra már nem nőhet fonál.
+th3: 
 FungusThread: 
 Species: N/A
 Body: N/A
-Tektons: t1 ot1
+Tektons: [t1, ot1]
 IsBridge: true
 LifeSpan: 2
-tNext: N/A
-tPrev: th1
+Next: N/A
+Prev: th1

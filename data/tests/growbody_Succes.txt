@@ -1,11 +1,15 @@
-create tekton t1
-create spore s1
-set s1 tekton t1
-create spore s2
-set s2 tekton t1
-create spore s3
-set s3 tekton t1
-create thread th1
-set th1 tekton t1
+/create tekton t1
+/create spore s1
+/set s1 tekton t1
+/create spore s2
+/set s2 tekton t1
+/create spore s3
+/set s3 tekton t1
+/create thread th1
+/set th1 tekton t1
+/set t1 addthread th1
+/create fungusspecies fs1
+/set fs1 addthread th1
 growbody th1
 status t1
+status fs1

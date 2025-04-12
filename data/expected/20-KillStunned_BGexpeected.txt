@@ -1,0 +1,13 @@
+t1: 
+Tekton: 
+CanGrowThread: true
+CanGrowBody: false
+Bodies: b1
+Insects: N/A
+Neighbours: N/A
+Spores: N/A
+Threads: [th1]
+fs1:
+FungsuSpecies:
+Score: 1
+Bodies: [b1]

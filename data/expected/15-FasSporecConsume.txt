@@ -1,0 +1,9 @@
+i1: 
+Insect: 
+Owner: N/A
+Tekton: t3
+Effect: fast
+is1:
+Insectspecies:
+Score: 2
+Insects: [i1]

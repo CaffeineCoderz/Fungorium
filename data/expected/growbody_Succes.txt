@@ -1,4 +1,7 @@
-Species: N/A
-Tekton: t1
-Threads: th1
-Sporecount: 0
+t1: 
+Tekton:
+CanGrowThread: true
+Bodies: b1
+Neighbours: N/A
+Spores: N/A
+Threads: [th1]

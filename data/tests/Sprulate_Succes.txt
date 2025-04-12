@@ -1,11 +1,11 @@
-create tekton t1
-create tekton t2
-create tekton t3
-set t1 addneighbour t2
-set t1 addneighbour t3
-create body b1
-set b1 tekton t1
-set b1 sporecount 4
+/create tekton t1
+/create tekton t2
+/create tekton t3
+/set t1 addneighbour t2
+/set t1 addneighbour t3
+/create body b1
+/set b1 tekton t1
+/set b1 sporecount 4
 sporulate b1
 status t2
 status t3

@@ -1,16 +1,18 @@
+th1: 
 FungusThread: 
 Species: N/A
 Body: b1
 Tektons: t1
 IsBridge: false
 LifeSpan: 4
-tNext: th2
-tPrev: N/A
+Next: th2
+Prev: N/A
+th2: 
 FungusThread: 
 Species: N/A
 Body: b1
-Tektons: t1 t2
+Tektons: [t1, t2]
 IsBridge: true
 LifeSpan: 2
-tNext: N/A
-tPrev: th1
+Next: N/A
+Prev: th1

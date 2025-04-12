@@ -1,0 +1,10 @@
+/create tekton t1
+/create thread th1
+/set thread tekton t1
+/create body b1
+/set b1 tekton t1
+/create insect i1
+/set i1 thread th1
+/set i1 effect stun
+/kill i1
+status i1

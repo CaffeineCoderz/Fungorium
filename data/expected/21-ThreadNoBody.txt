@@ -1,0 +1,11 @@
+th2: 
+FungusThread: 
+Species: N/A
+Body: N/A
+Tektons: [t1, t2]
+IsBridge: true
+LifeSpan: 2
+Next: th3
+Prev: N/A
+th2:
+Hiba: Nem létezik ilyen nevű objektum: th2

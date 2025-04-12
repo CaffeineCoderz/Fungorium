@@ -1,0 +1,10 @@
+is1:
+InsectSpecies: 
+Score: 2
+Insects: [i1]
+i1: 
+Insect: 
+Owner: N/A
+Tekton: t1
+Effect: disablecut
+Sikertelen fonálvágás

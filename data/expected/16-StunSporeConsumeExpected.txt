@@ -1,0 +1,10 @@
+A rovar bénítva van. /(vagy nem írunk ki semmit)
+i1: 
+Insect: 
+Owner: N/A
+Tekton: t1
+Effect: stun
+is1:
+InsectSpecies:
+Score: 2
+Insects: [i1]

@@ -1,6 +1,6 @@
-create tekton t1
-create body b1
-set b1 tekton t1
-create thread th1
-set th1 tekton t1
+/create tekton t1
+/create body b1
+/set b1 tekton t1
+/create thread th1
+/set th1 tekton t1
 growbody th1
