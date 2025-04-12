@@ -127,8 +127,8 @@ public class GameLogic {
 
             if (choice.equals("EXIT")) {
                 System.out.println("All players are ready. Starting the game...");
-                //commandProcessor.start();
-                //scanner.close();
+                // commandProcessor.start();
+                // scanner.close();
                 return;
             }
 
@@ -216,7 +216,8 @@ public class GameLogic {
             if (type.equals("Fungus")) {
                 String create = "/create fungusspecies " + name;
                 commandProcessor.process(create);
-                commandProcessor.process("/set " + name + " addscore 10");
+                // Debug purposes for endgame
+                // commandProcessor.process("/set " + name + " addscore 10");
                 FungusSpecies newFungusSpecies = (FungusSpecies) commandProcessor.getCreatedObjects().get(name);
                 if (newFungusSpecies != null) {
                     addSpecies(name, newFungusSpecies);
@@ -226,7 +227,8 @@ public class GameLogic {
             } else if (type.equals("Insect")) {
                 String create = "/create insectspecies " + name;
                 commandProcessor.process(create);
-                commandProcessor.process("/set " + name + " addscore 12");
+                // Debug purposes for endgame
+                // commandProcessor.process("/set " + name + " addscore 12");
                 InsectSpecies insect = (InsectSpecies) commandProcessor.getCreatedObjects().get(name);
                 if (insect != null) {
                     addSpecies(name, insect);
@@ -250,6 +252,7 @@ public class GameLogic {
         while (gameTime > 0) {
             System.out.println("---------> Round: " + (round + 1) + " <---------");
 
+            // Iterate through each player and prompt for commands
             for (String playerName : players.keySet()) {
                 System.out.println("It's " + playerName + "'s turn. Enter a command:");
                 while (true) {
