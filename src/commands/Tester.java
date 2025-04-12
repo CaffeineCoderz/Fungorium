@@ -40,10 +40,14 @@ public class Tester {
                 continue;
             }
 
+            File logFile = new File("data/logs/" + testName + "_comparison.log");
+            logFile.getParentFile().mkdirs(); // Létrehozza a mappát, ha nem létezik
+
             try {
                 Process process = new ProcessBuilder("cmd.exe", "/c", "fc", expectedFile.getAbsolutePath(),
                         outputFile.getAbsolutePath())
                         .redirectErrorStream(true)
+                        .redirectOutput(logFile) // A kimenetet a log fájlba irányítja
                         .start();
 
                 int exitCode = process.waitFor();
@@ -52,7 +56,15 @@ public class Tester {
                             "+Sikeres lefutás " + testName + ": A kapott és az elvárt fájl tartalma megegyezik.");
                 } else {
                     System.out.println("-Sikertelen lefutás " + testName
-                            + ": A kapott és az elvárt fájl tartalma nem egyezik meg.");
+                            + ": A kapott és az elvárt fájl tartalma nem egyezik meg. Részletek a log fájlban: "
+                            + logFile.getAbsolutePath());
+                    // Log fájl tartalmának kiírása
+                    try {
+                        java.nio.file.Files.lines(logFile.toPath(), java.nio.charset.Charset.forName("Windows-1252"))
+                                .forEach(System.out::println);
+                    } catch (IOException e) {
+                        System.out.println("Hiba történt a log fájl olvasása közben: " + e.getMessage());
+                    }
                 }
             } catch (IOException | InterruptedException e) {
                 System.out
