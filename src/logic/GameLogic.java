@@ -320,5 +320,4 @@ public class GameLogic {
         System.out.println("Fungus győztes: " + fungusWinner + " pontszám: " + maxFungusScore);
         System.out.println("Insect győztes: " + insectWinner + " pontszám: " + maxInsectScore);
     }
-
 }

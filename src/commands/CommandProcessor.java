@@ -39,7 +39,6 @@ import utils.*;
 //      /log a konzolon lévő kimeneteket menti fáklba
 //      /trig események triggerelése nr: Következő kör np: Következő játékos
 //      /chance breaktekton && spora milyen fajta
-// TODO    /endgame befejezi a játékot és kiírja a győzteseket   - ToDo: hiányzó GameLogic fv
 //
 // ? User Commands:
 //   *All player commands:
@@ -49,8 +48,10 @@ import utils.*;
 //      growBody <FungusThread> <Tekton> 
 //    ?MEGJ: Itt kell egy fungusbody neveti is majd beadni különben nem tudja majd a user követni mi lett a body neve
 // TODO growThread <Tekton> <FungusBody> <newFungusThread>(not existing, give a name and will create a new one)                  - ToDo: hiányzó paraméter a fvben
+//     growThread <Tekton> <FungusBody> kéne maradjon
 // TODO growThread <Tekton> <existingFungusThread> <newFungusThread>(not existing, give a name and will create a new one)        - ToDo: hiányzó paraméter a fvben
 //      sporulate <FungusBody>
+//      eatinsect <Insect> <Thread> 
 //   *InsectSpecies Commands:
 //      move: <Insect> <Thread>
 //      cut <FungusThread>
@@ -84,22 +85,7 @@ public class CommandProcessor {
     private Map<String, String> commandDescriptions = new HashMap<>();
     private Map<String, String> objectTypeMap = new HashMap<>();
 
-    /*
-     * Parancsok folyamatos kérése
-     */
-    public void start() {
-        Scanner scanner = new Scanner(System.in);
-        while (true) {
-            System.out.print("> ");
-            String input = scanner.nextLine();
-            if ("exit".equals(input)) {
-                break;
-            }
-            process(input);
-        }
-        scanner.close();
-    }
-
+    // ! -------------------------- INIT -----------------------------
     /*
      * Parancsok regisztrálása
      */
@@ -153,13 +139,48 @@ public class CommandProcessor {
 
         commands.put("growthread", this::processGrowThreadCommand);
         commandDescriptions.put("growthread", "grow <Tekton> <FungusBody>/<existingFungusThread> <newFungusThread>");
+
+        commands.put("eatinsect", this::processEatInsectCommand);
+        commandDescriptions.put("eatinsect", "eatinsect <Insect> <Thread>");
     }
 
+    // ! InsectSpecies és FungusSpecies parancsok
+    private void initializeObjectTypeMap() {
+        objectTypeMap.put("fungusspecies", "FungusSpecies");
+        objectTypeMap.put("insectspecies", "InsectSpecies");
+        objectTypeMap.put("body", "FungusBody");
+        objectTypeMap.put("spore", "Spore");
+        objectTypeMap.put("tekton", "Tekton");
+        objectTypeMap.put("insect", "Insect");
+        objectTypeMap.put("thread", "FungusThread");
+        objectTypeMap.put("disablecutspore", "DisableCutSpore");
+        objectTypeMap.put("fastspore", "FastSpore");
+        objectTypeMap.put("multiplyinsectspore", "MultiplyInsectSpore");
+        objectTypeMap.put("slowspore", "SlowSpore");
+        objectTypeMap.put("stunspore", "StunSpore");
+        objectTypeMap.put("decomptekton", "DecomposingTekton");
+        objectTypeMap.put("decreasetekton", "DecreasingTekton");
+        objectTypeMap.put("feedthreadtekton", "FeedThreadTekton");
+        objectTypeMap.put("onethreadtekton", "OneThreadTekton");
+        objectTypeMap.put("onlythreadtekton", "OnlyThreadTekton");
+    }
+
+    // ! -------------------------- COMMNAD HANDLING -----------------------------
+
     /*
-     * Vissaadja a létrehozott objektumokat
+     * Parancsok folyamatos kérése
      */
-    public HashMap<String, Object> getCreatedObjects() {
-        return (HashMap<String, Object>) createdObjects;
+    public void start() {
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            System.out.print("> ");
+            String input = scanner.nextLine();
+            if ("exit".equals(input)) {
+                break;
+            }
+            process(input);
+        }
+        scanner.close();
     }
 
     /*
@@ -182,27 +203,7 @@ public class CommandProcessor {
         }
     }
 
-    // ! Entomologist és Mycologist parancsok
-    private void initializeObjectTypeMap() {
-        objectTypeMap.put("fungusspecies", "FungusSpecies");
-        objectTypeMap.put("insectspecies", "InsectSpecies");
-        objectTypeMap.put("body", "FungusBody");
-        objectTypeMap.put("spore", "Spore");
-        objectTypeMap.put("tekton", "Tekton");
-        objectTypeMap.put("insect", "Insect");
-        objectTypeMap.put("thread", "FungusThread");
-        objectTypeMap.put("disablecutspore", "DisableCutSpore");
-        objectTypeMap.put("fastspore", "FastSpore");
-        objectTypeMap.put("multiplyinsectspore", "MultiplyInsectSpore");
-        objectTypeMap.put("slowspore", "SlowSpore");
-        objectTypeMap.put("stunspore", "StunSpore");
-        objectTypeMap.put("decomptekton", "DecomposingTekton");
-        objectTypeMap.put("decreasetekton", "DecreasingTekton");
-        objectTypeMap.put("feedthreadtekton", "FeedThreadTekton");
-        objectTypeMap.put("onethreadtekton", "OneThreadTekton");
-        objectTypeMap.put("onlythreadtekton", "OnlyThreadTekton");
-    }
-
+    // ! ------------------------------ HELP -----------------------------
     /*
      * A user parancsok kiírására szolgáló függvény
      */
@@ -258,14 +259,63 @@ public class CommandProcessor {
         System.out.println("\\-----------------------------------------------------------/\n");
     }
 
-
-    public void processNextCommand(String[] parts){
-        
+    // ! ------------------------------ UTILS -----------------------------
+    /*
+     * Vissaadja a létrehozott objektumokat
+     */
+    public HashMap<String, Object> getCreatedObjects() {
+        return (HashMap<String, Object>) createdObjects;
     }
 
+    /**
+     * Finds the key associated with the given object in the createdObjects map.
+     *
+     * @param target The object to search for.
+     * @return The key associated with the object, or null if not found.
+     */
+    public <T> String findByObject(T target) {
+        for (Map.Entry<String, Object> entry : createdObjects.entrySet()) {
+            if (entry.getValue().equals(target)) {
+                return entry.getKey();
+            }
+        }
+        return null; // Return null if the object is not found
+    }
+
+    /**
+     * Counts the number of objects of a specific type in the createdObjects map.
+     *
+     * @param <T>  The type of objects to count.
+     * @param type The class of the type to count.
+     * @return The number of objects of the specified type.
+     */
+    public <T> int countObjectsOfType(Class<T> type) {
+        return (int) createdObjects.values().stream()
+                .filter(type::isInstance)
+                .count();
+    }
+
+    /**
+     * Generates a unique name for a FungusBody by recursively checking if the name
+     * exists in the createdObjects map.
+     *
+     * @param baseName The base name to start with (e.g., "b").
+     * @param count    The current count to append to the base name.
+     * @return A unique name that does not exist in the createdObjects map.
+     */
+    private String generateUniqueName(String baseName, int count) {
+        String name = baseName + count;
+        if (createdObjects.containsKey(name)) {
+            return generateUniqueName(baseName, count + 1); // Rekurzív hívás, ha a név már létezik
+        }
+        return name; // Visszatér a nem létező névvel
+    }
+
+    // ! ------------------------------ COMMANDS -----------------------------
+
     /*
-     * Create parancs formája: create <objecttype> <name>
-     * Példa: create Insect i1
+     * Create parancs formája: /create <objecttype> <name>
+     * Példa: /create Insect i1
      * 
      * @param parts: parancs részei
      */
@@ -309,8 +359,8 @@ public class CommandProcessor {
     }
 
     /*
-     * delete parancs formája: delete <name>
-     * Példa: delete i1
+     * delete parancs formája: /delete <name>
+     * Példa: /delete i1
      * 
      * @param parts: parancs részei
      */
@@ -579,7 +629,7 @@ public class CommandProcessor {
     }
 
     /*
-     * Status parancs formája: status <name>
+     * Status parancs formája: /status <name>
      * Példa: /status i1 vagy /status
      * 
      * @param parts: parancs részei
@@ -606,7 +656,7 @@ public class CommandProcessor {
 
     /*
      * growbody parancs formája: growbody <FungusThread> <Tekton>
-     * Példa: grow th1 t1
+     * Példa: growbody th1 t1
      * 
      * @param parts: parancs részei
      */
@@ -657,12 +707,12 @@ public class CommandProcessor {
 
     /*
      * growthread parancs formája:
-     * grow <Tekton> <FungusBody> <newFungusThread>
-     * Példa: grow t1 b1 th1
+     * growthread <Tekton> <FungusBody> <newFungusThread>
+     * Példa: growthread t1 b1 th1
      * 
      * growthread parancs formája:
-     * grow <Tekton> <existingFungusThread> <newFungusThread>
-     * Példa: grow t1 th1 th2
+     * growthread <Tekton> <existingFungusThread> <newFungusThread>
+     * Példa: growthread t1 th1 th2
      * 
      * @param parts: parancs részei
      */
@@ -723,7 +773,7 @@ public class CommandProcessor {
                 // Actual growThread
                 if (tekton.canGrowThread()) {
                     // ! Az új thread be lesz adva a függvénybe
-                     thread.getSpecies().growThread(tekton, thread, newThread);
+                    thread.getSpecies().growThread(tekton, thread, newThread);
                 } else {
                     System.out.println("Hiba: Nem lehet ide threadet növeszteni: " + tektonName);
                     return;
@@ -828,7 +878,7 @@ public class CommandProcessor {
 
     /*
      * Grow parancs formája: kill <Insect>
-     * Példa: kill i1
+     * Példa: /kill i1
      * 
      * @param parts: parancs részei
      */
@@ -853,7 +903,7 @@ public class CommandProcessor {
 
     /*
      * Load parancs formája: load <fileName>
-     * Példa: load config
+     * Példa: /load config
      * 
      * @param fileName A beolvasandó fájl neve (kiterjesztés nélkül).
      * A fájlnak a "data" mappában kell lennie.
@@ -876,7 +926,7 @@ public class CommandProcessor {
 
     /*
      * Set parancs formája: set <object> <property> <value>
-     * Példa: set th1 lifespan 10
+     * Példa: /set th1 lifespan 10
      */
     public void processSetCommand(String[] parts) {
         String objectName = parts[1];
@@ -1247,7 +1297,7 @@ public class CommandProcessor {
 
     /*
      * Break parancs formája: break <Tekton>
-     * Példa: break t1
+     * Példa: /break t1
      * 
      * @param parts: parancs részei
      */
@@ -1272,13 +1322,51 @@ public class CommandProcessor {
         }
     }
 
-    public void processEndGameCommand() {
-        // ! Function not written yet
-        // GameLogic.endgame(createdObjects);
-        System.out.println("A függvény még nem készült el.");
-        System.exit(0);
+    /*
+     * EatInsect parancs formája: eatinsect <Insect> <Thread>
+     * Példa: eatinsect i1 th1
+     */
+    public void processEatInsectCommand(String[] parts) {
+        String insectName = parts[1];
+        String threadName = parts[2];
+
+        if (!createdObjects.containsKey(insectName)) {
+            System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + insectName);
+            return;
+        }
+
+        if (!createdObjects.containsKey(threadName)) {
+            System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + threadName);
+            return;
+        }
+
+        Object objInsect = createdObjects.get(insectName);
+        Object objThread = createdObjects.get(threadName);
+
+        if (objInsect instanceof Insect && objThread instanceof FungusThread) {
+            Insect insect = (Insect) objInsect;
+            FungusThread thread = (FungusThread) objThread;
+            insect.deadInsect();
+            if (thread.getTekton().canGrowBody() && thread.getTekton() != null) {
+                FungusBody b = new FungusBody();
+                thread.getSpecies().addBody(b);
+                thread.getTekton().setBody(b);
+                String baseName = "b";
+                int fungusBodyCount = countObjectsOfType(FungusBody.class);
+                String bodyname = generateUniqueName(baseName, fungusBodyCount);
+                getCreatedObjects().put(bodyname, b);
+            } else {
+                System.out.println("Hiba: Nem lehet ide body-t növeszteni.");
+                return;
+            }
+            thread.getSpecies().addBody(null);
+        } else {
+            System.out.println(
+                    "Hiba: Valamlyik objektum típusa nem helyes a parancshoz: " + insectName + " " + threadName);
+        }
     }
 
+    // ! --------------- Tesztes részhez tartozik -------------------------
     /*
      * Parancsok kiírása egy fájlba
      */
