@@ -6,13 +6,18 @@ on:
       - Main
       - Release-branch
       - Mador-Branch
+      - Daivakai
+      - Daivakai-branch
+      - Csökönyi-branch
+      - Csomos
+      - HerrSchnitzer-patch-1
 
 jobs:
   test-matrix:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java-version: [8, 11, 17]
+        java-version: [17, 20]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
