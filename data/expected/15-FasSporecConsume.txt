@@ -4,6 +4,6 @@ Owner: N/A
 Tekton: t3
 Effect: fast
 is1:
-Insectspecies:
+InsectSpecies:
 Score: 2
 Insects: [i1]
