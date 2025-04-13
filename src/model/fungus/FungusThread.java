@@ -228,6 +228,16 @@ public class FungusThread {
         }
     }
 
+    public Tekton getTekton() {
+        if (tektons.size() == 0) {
+            return null;
+        } else if (tektons.size() == 1) {
+            return tektons.get(0);
+        } else {
+            return tektons.get(0);
+        }
+    }
+
     /**
      * Sets the Tekton object associated with the given Insect object to the
      * "other" Tekton associated with this fungus thread, if this fungus thread
