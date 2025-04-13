@@ -5,7 +5,7 @@ CanGrowBody: true
 Bodies: N/A
 Insects: N/A
 Neighbours: t1
-Spores: KI KELL TALÁLNI MI KERÜLJÖN IDE VAGY HOGY HOGYAN LEGYEN NEVÜK AMIKET TUDHATUNK IS
+Spores: [spore1]
 Threads: N/A
 t3: 
 Tekton: 
@@ -14,5 +14,5 @@ CanGrowBody: true
 Bodies: N/A
 Insects: N/A
 Neighbours: t1
-Spores: KI KELL TALÁLNI MI KERÜLJÖN IDE VAGY HOGY HOGYAN LEGYEN NEVÜK AMIKET TUDHATUNK IS
+Spores: [spore2]
 Threads: N/A
