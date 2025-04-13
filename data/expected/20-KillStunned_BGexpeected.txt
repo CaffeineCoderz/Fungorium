@@ -8,6 +8,6 @@ Neighbours: N/A
 Spores: N/A
 Threads: [th1]
 fs1:
-FungsuSpecies:
+FungusSpecies:
 Score: 1
 Bodies: [b1]
