@@ -5,5 +5,5 @@ CanGrowThread: true
 Bodies: N/A
 Insects: N/A
 Neighbours: N/A
-Spres: N/A
+Spores: N/A
 Threads: th1
