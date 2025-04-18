@@ -119,13 +119,13 @@ public class GameLogic {
         while (true) {
             if (fungusPlayers == 0 && insectPlayers == 0) {
                 System.out.println(
-                        "Which type of player would you like to be? Fungus - Insect (F/I) OR type 'exit' to start the game.");
+                        "Which type of player would you like to be? Fungus - Insect (F/I) OR type 'start' to start the game.");
             } else {
                 System.out.println("Which type of player would you like to be? Fungus - Insect (F/I)");
             }
             String choice = scanner.nextLine().trim().toUpperCase();
 
-            if (choice.equals("EXIT")) {
+            if (choice.equals("START")) {
                 System.out.println("All players are ready. Starting the game...");
                 // commandProcessor.start();
                 // scanner.close();
