@@ -86,11 +86,12 @@ public class CommandProcessor {
     private Map<String, String> commandDescriptions = new HashMap<>();
     private Map<String, String> objectTypeMap = new HashMap<>();
 
-
     private Set<String> fungusCommands = Set.of("growBody", "growThread", "sporulate", "eatinsect");
     private Set<String> insectCommands = Set.of("move", "cut", "eat");
     private Set<String> commonCommands = Set.of("help", "exit");
-    private Set<String> systemCommands = Set.of("/helpSys", "/helpObj", "/load", "/break", "/kill", "/set", "/delete", "/status", "/save", "/log", "/trig");
+    private Set<String> systemCommands = Set.of("/helpSys", "/helpobj", "/load", "/break", "/kill", "/set", "/delete",
+            "/status", "/save", "/log", "/trig");
+
     // ! -------------------------- INIT -----------------------------
     /*
      * Parancsok regisztrálása

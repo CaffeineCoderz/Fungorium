@@ -34,7 +34,6 @@ public class main {
                     gameLogic.setGameTime(15);
                     System.out.println("Welcome to the game!");
                     gameLogic.startGame();
-                    System.out.println("Game over!");
                     break;
                 case 4:
                     System.out.println("Exiting the program. Goodbye!");
