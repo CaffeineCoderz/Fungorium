@@ -27,23 +27,7 @@ public class InsectSpecies implements iControl{
         myInsects = new ArrayList<>();
     }
 
-    /*
-     * @return the ID of the player.
-     */
-    public Integer getId(){
-        return id;
-    }
-
-    /**
-     * Sets the ID of the player.
-     * 
-     * @param id the ID to set for the player.
-     */
-    public void setId(Integer id){
-        this.id = id;
-    }
-
-    /**
+     /**
      * Retrieves the current score of this FungusSpecies.
      * 
      * @return the current score of this FungusSpecies.

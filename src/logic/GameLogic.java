@@ -155,7 +155,7 @@ public class GameLogic {
                                     .println("A player with this name already exists. Please choose a different name.");
                         }
                         break;
-                    case "exit":
+                    case "START":
                         if (fungusPlayers == 0 && insectPlayers == 0) {
                             System.out.println("All players are ready. Starting the game...");
                             scanner.close();
@@ -251,9 +251,9 @@ public class GameLogic {
     public void takeTurn(Scanner scanner) {
         while (gameTime > 0) {
             System.out.println("---------> Round: " + (round + 1) + " <---------");
-
             // Iterate through each player and prompt for commands
             for (String playerName : players.keySet()) {
+                Object player = players.get(playerName);
                 System.out.println("It's " + playerName + "'s turn. Enter a command:");
                 while (true) {
                     System.out.print("> ");
@@ -261,7 +261,7 @@ public class GameLogic {
                     if (command.equalsIgnoreCase("next")) {
                         break; // Move to the next player
                     }
-                    commandProcessor.process(command);
+                    commandProcessor.process(command, player);
                 }
             }
 
@@ -282,8 +282,6 @@ public class GameLogic {
                 break;
             }
         }
-
-        System.out.println("Game over!");
     }
 
     /**

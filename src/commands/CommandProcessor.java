@@ -11,6 +11,7 @@ import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.function.Consumer;
 
 // Model
@@ -85,6 +86,11 @@ public class CommandProcessor {
     private Map<String, String> commandDescriptions = new HashMap<>();
     private Map<String, String> objectTypeMap = new HashMap<>();
 
+
+    private Set<String> fungusCommands = Set.of("growBody", "growThread", "sporulate", "eatinsect");
+    private Set<String> insectCommands = Set.of("move", "cut", "eat");
+    private Set<String> commonCommands = Set.of("help", "exit");
+    private Set<String> systemCommands = Set.of("/helpSys", "/helpObj", "/load", "/break", "/kill", "/set", "/delete", "/status", "/save", "/log", "/trig");
     // ! -------------------------- INIT -----------------------------
     /*
      * Parancsok regisztrálása
@@ -190,6 +196,39 @@ public class CommandProcessor {
         String[] parts = input.split(" ");
         String command = parts[0];
 
+        Consumer<String[]> action = commands.get(command);
+        if (action != null) {
+            try {
+                action.accept(parts);
+            } catch (ArrayIndexOutOfBoundsException e) {
+                System.out.println("Hibás parancs! Túl kevés paraméter.");
+                System.out.println("Helyes használat: " + commandDescriptions.get(command));
+            }
+        } else {
+            System.out.println("Ismeretlen parancs: " + command);
+        }
+    }
+
+    public void process(String input, Object player) {
+        String[] parts = input.split(" ");
+        String command = parts[0];
+
+        if (player instanceof FungusSpecies && !fungusCommands.contains(command) && !commonCommands.contains(command)) {
+            System.out.println("Hiba: FungusSpecies nem használhatja ezt a parancsot: " + command);
+            return;
+        }
+
+        if (player instanceof InsectSpecies && !insectCommands.contains(command) && !commonCommands.contains(command)) {
+            System.out.println("Hiba: InsectSpecies nem használhatja ezt a parancsot: " + command);
+            return;
+        }
+
+        if (systemCommands.contains(command)) {
+            System.out.println("Hiba: A rendszerparancsok nem használhatók játékosok által: " + command);
+            return;
+        }
+
+        // Ha a parancs érvényes, hajtsd végre
         Consumer<String[]> action = commands.get(command);
         if (action != null) {
             try {
