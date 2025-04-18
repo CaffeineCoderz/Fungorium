@@ -304,12 +304,6 @@ public class GameLogic {
                 }
             }
 
-            // if (skipRound) {
-            // round++;
-            // gameTime--;
-            // continue; // Ugrunk a következő körre
-            // }
-
             // Update game state after all players have taken their turns
             for (Object playerObj : players.values()) {
                 if (playerObj instanceof FungusSpecies) {

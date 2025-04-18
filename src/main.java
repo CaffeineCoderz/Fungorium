@@ -10,6 +10,7 @@ public class main {
         int choice = 0;
 
         Tester tester = new Tester();
+        GameLogic gameLogic = new GameLogic();
 
         while (choice != 5) {
             System.out.println("<=========================================>");
@@ -39,8 +40,13 @@ public class main {
                     tester.checkTestResults(caseChoice);
                     break;
                 case 4:
-                    GameLogic gameLogic = new GameLogic();
-                    gameLogic.setGameTime(15);
+                    System.out.println("How many rounds should the game have?");
+                    int rounds = scanner.nextInt();
+                    if(rounds < 1) {
+                        System.out.println("Invalid number of rounds. Please enter a positive integer.");
+                        break;
+                    }
+                    gameLogic.setGameTime(rounds);
                     System.out.println("Welcome to the game!");
                     gameLogic.startGame();
                     break;

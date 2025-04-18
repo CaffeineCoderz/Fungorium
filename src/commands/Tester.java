@@ -85,7 +85,7 @@ public class Tester {
      * A tesztelés eredményét a konzolra írja ki.
      */
     public void checkTestResults(int testCase) {
-        String testCaseName = testCases.get(testCase);
+        String testCaseName = testCases.get(testCase - 1);
         File expectedFile = new File("data/expected/Test" + testCase + ".txt");
         File outputFile = new File("data/output/Test" + testCase + ".txt");
 
