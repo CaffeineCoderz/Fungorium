@@ -263,6 +263,8 @@ public class GameLogic {
 
     /**
      * Takes a turn for each player in the game.
+     * Scans for user input and processes commands.
+     * Skips rounds if necessary.
      * 
      * @param scanner The scanner to read user input.
      */

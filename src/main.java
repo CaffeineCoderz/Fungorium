@@ -9,14 +9,18 @@ public class main {
         Scanner scanner = new Scanner(System.in);
         int choice = 0;
 
-        while (choice != 4) {
+        Tester tester = new Tester();
+
+        while (choice != 5) {
+            System.out.println("<=========================================>");
             System.out.println("Choose an option:");
             System.out.println("1. Process configuration and start CommandProcessor");
-            System.out.println("2. Run Tester to check test results");
-            System.out.println("3. Start the game");
-            System.out.println("4. Exit");
-
-            System.out.print("Enter your choice: ");
+            System.out.println("2. Check all test results");
+            System.out.println("3. Check specific test case result");
+            System.out.println("4. Start the game");
+            System.out.println("5. Exit");
+            System.out.println("<=========================================>");
+            System.out.println("Please enter your choice (1-5): ");
             choice = scanner.nextInt();
 
             switch (choice) {
@@ -26,16 +30,21 @@ public class main {
                     processor.start();
                     break;
                 case 2:
-                    Tester tester = new Tester();
                     tester.checkTestResults();
                     break;
                 case 3:
+                    tester.printTestCases();
+                    System.out.println("Which test case would you like to run? ");
+                    int caseChoice = scanner.nextInt();
+                    tester.checkTestResults(caseChoice);
+                    break;
+                case 4:
                     GameLogic gameLogic = new GameLogic();
                     gameLogic.setGameTime(15);
                     System.out.println("Welcome to the game!");
                     gameLogic.startGame();
                     break;
-                case 4:
+                case 5:
                     System.out.println("Exiting the program. Goodbye!");
                     break;
                 default:
