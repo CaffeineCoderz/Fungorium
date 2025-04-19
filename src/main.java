@@ -10,7 +10,7 @@ public class main {
         // processor.start();
 
         Tester tester = new Tester();
-        tester.checkTestResults();
+        tester.checkAllTestResults();
 
         // Create an instance of GameLogic
         GameLogic gameLogic = new GameLogic();
