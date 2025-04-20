@@ -281,28 +281,23 @@ public class CommandProcessor {
         String[] parts = input.split(" ");
         String command = parts[0];
 
-        if (player instanceof FungusSpecies && !fungusCommands.contains(command) && !commonCommands.contains(command)
-                && !systemCommands.contains(command)) {
+        if (player instanceof FungusSpecies && !fungusCommands.contains(command) && !commonCommands.contains(command) && !systemCommands.contains(command)) {
             System.out.println("Hiba: FungusSpecies nem használhatja ezt a parancsot: " + command);
             return;
         }
 
-        if (player instanceof InsectSpecies && !insectCommands.contains(command) && !commonCommands.contains(command)
-                && !systemCommands.contains(command)) {
+        if (player instanceof InsectSpecies && !insectCommands.contains(command) && !commonCommands.contains(command) && !systemCommands.contains(command)) {
             System.out.println("Hiba: InsectSpecies nem használhatja ezt a parancsot: " + command);
             return;
         }
 
-        // * Kommentezz ki a következő sort, ha nem akarod, hogy a játékosok
-        // használhassák a rendszerparancsokat
-        /*
-         * if (systemCommands.contains(command)) {
-         * System.out.
-         * println("Hiba: A rendszerparancsok nem használhatók játékosok által: " +
-         * command);
-         * return;
-         * }
-         */
+        // * Kommentezz ki a következő sort, ha nem akarod, hogy a játékosok használhassák a rendszerparancsokat
+        /* 
+        if (systemCommands.contains(command)) {
+            System.out.println("Hiba: A rendszerparancsok nem használhatók játékosok által: " + command);
+            return;
+        }
+        */
 
         // Ha a parancs érvényes, hajtsd végre
         Consumer<String[]> action = commands.get(command);
@@ -768,6 +763,7 @@ public class CommandProcessor {
             printObjectStatus(name, obj);
         }
     }
+
 
     /*
      * growbody parancs formája: growbody <FungusThread> <Tekton>

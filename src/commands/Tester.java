@@ -37,6 +37,7 @@ public class Tester {
         }
     }
 
+
     /*
      * A checkTestResults() metódus végrehajtja a teszteket, összehasonlítva az
      * elvárt és a
@@ -193,23 +194,22 @@ public class Tester {
         // Ellenőrizzük az elvárt és a kimeneti fájlokat
         File expectedFile = new File("data/expected/" + testFile.getName());
         File outputFile = new File("data/output/" + testName + "_output.txt"); // Kimeneti fájl neve módosítva
-    
+
         if (!expectedFile.exists()) {
             System.out.println("Hiba: Az elvárt fájl nem található: " + expectedFile.getName());
             return;
         }
-    
+
         if (!outputFile.exists()) {
             System.out.println("Hiba: A kimeneti fájl nem található: " + outputFile.getName());
             return;
         }
-    
+
         try {
             Process process = new ProcessBuilder("cmd.exe", "/c", "fc", expectedFile.getAbsolutePath(),
                     outputFile.getAbsolutePath())
                     .redirectErrorStream(true)
                     .start();
-    
             int exitCode = process.waitFor();
             if (exitCode == 0) {
                 System.out.println("+Sikeres lefutás: " + testName + ": A kapott és az elvárt fájl tartalma megegyezik.");
