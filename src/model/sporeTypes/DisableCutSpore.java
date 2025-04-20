@@ -6,11 +6,9 @@ import utils.*;
 
 public class DisableCutSpore extends Spore {
     public DisableCutSpore(){
-        log = Logger.getLogger("DisableCutSporeLogger");
     }
     public DisableCutSpore(Tekton t, int nt){
         super(t, nt);
-        log = Logger.getLogger("DisableCutSporeLogger");
 
     }
     /**
@@ -20,11 +18,7 @@ public class DisableCutSpore extends Spore {
      */
     @Override
     public void consume(Insect insect){
-        log.stepIn("insect.disableCut()");
         insect.disableCut();
-        log.stepOut("insect.disableCut()", null);
-        log.stepIn("absorbed()");
         absorbed();
-        log.stepOut("absorbed()", null);
     }
 }
