@@ -9,4 +9,4 @@
 /set th2 tekton t2
 growthread ot1 th1 th3
 growthread ot1 th2 th4
-status th3
+/status th3

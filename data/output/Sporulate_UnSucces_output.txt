@@ -1,0 +1,7 @@
+--> neighbours.add(neighbour)
+<-- neighbours.add(neighbour)
+Returned: true (class java.lang.Boolean)
+--> neighbours.add(neighbour)
+<-- neighbours.add(neighbour)
+Returned: true (class java.lang.Boolean)
+Fungusbody can't sporulate

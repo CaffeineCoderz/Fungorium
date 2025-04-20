@@ -1,0 +1,17 @@
+Hiba: Nem létezik ilyen tulajdonság: tekton
+--> setBridge(true)
+<-- setBridge(true)
+No return value 
+Hiba: Ez az objektum nem ehető: insect.Insect@531d72ca
+Név: is1
+InsectSpecies: 
+	Score: 0
+	Insects: [i1]
+
+Név: i1
+Insect: 
+	Owner: is1
+	Thread: th1
+	Effect: NORMAL
+
+Hiba: Nem lehet vágni ezt az objektumot: i1

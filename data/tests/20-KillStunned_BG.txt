@@ -8,5 +8,5 @@
 /set i1 thread th1
 /set i1 effect stun
 eatinsect th1 i1
-status t1
-status fs1
+/status t1
+/status fs1

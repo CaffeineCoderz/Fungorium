@@ -9,4 +9,4 @@ growthread ft1 th2 th3
 /set th2 lifespan 0
 /set th2 isdying true
 /trigger th2
-status th3
+/status th3

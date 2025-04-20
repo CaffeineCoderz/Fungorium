@@ -1,0 +1,9 @@
+Hiba: Ismeretlen objektumtípus: feedingtekton
+Hibás parancs! Túl kevés paraméter.
+Helyes használat: grow <Tekton> <FungusBody>/<existingFungusThread> <newFungusThread>
+Hiba: Nem létezik ilyen nevű objektum: ft1
+Hiba: Nem létezik ilyen nevű objektum: ft1
+Hiba: Nem létezik ilyen nevű objektum: th2
+Hiba: Nem létezik ilyen nevű objektum: th2
+Ismeretlen parancs: /trigger
+Hiba: Nem létezik ilyen nevű objektum: th3

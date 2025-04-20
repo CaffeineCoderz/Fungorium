@@ -1,0 +1,13 @@
+Hiba: Nem létezik ilyen tulajdonság: tekton
+Hibás parancs! Túl kevés paraméter.
+Helyes használat: grow <FungusThread> <Tekton>
+Név: t1
+OnlyThreadTekton: 
+	CanGrowThread: true
+	CanGrowBody: false
+	Bodies: N/A
+	Insects: []
+	Neighbours: []
+	Spores: []
+	Threads: []
+

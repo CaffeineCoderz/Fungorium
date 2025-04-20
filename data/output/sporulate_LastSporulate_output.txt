@@ -1,0 +1,26 @@
+--> neighbours.add(neighbour)
+<-- neighbours.add(neighbour)
+Returned: true (class java.lang.Boolean)
+Hiba: Nem létezik ilyen tulajdonság: sporulateleft
+Body has enough spore to sporulate neighbours and neighbours's neighbours
+Going through all neighbouring tektons
+Create Spore : tempspore
+--> t.addSpore(tempSpore)
+<-- t.addSpore(tempSpore)
+No return value 
+--> tempSpore.setTekton(t)
+<-- tempSpore.setTekton(t)
+No return value 
+Going through all neighbouring tektons
+End Cycle
+End Cycle
+Név: t1
+Tekton: 
+	CanGrowThread: true
+	CanGrowBody: true
+	Bodies: N/A
+	Insects: []
+	Neighbours: [tektonTypes.Tekton@6d21714c]
+	Spores: []
+	Threads: []
+

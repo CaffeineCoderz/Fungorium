@@ -1,0 +1,13 @@
+--> neighbours.add(neighbour)
+<-- neighbours.add(neighbour)
+Returned: true (class java.lang.Boolean)
+--> neighbours.add(neighbour)
+<-- neighbours.add(neighbour)
+Returned: true (class java.lang.Boolean)
+Hiba: Nem létezik ilyen tulajdonság: tekton
+Hiba: Nem létezik ilyen tulajdonság: tekton
+Hibás parancs! Túl kevés paraméter.
+Helyes használat: grow <Tekton> <FungusBody>/<existingFungusThread> <newFungusThread>
+Hibás parancs! Túl kevés paraméter.
+Helyes használat: grow <Tekton> <FungusBody>/<existingFungusThread> <newFungusThread>
+Hiba: Nem létezik ilyen nevű objektum: th3

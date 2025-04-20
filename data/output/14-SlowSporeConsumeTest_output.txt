@@ -1,0 +1,25 @@
+--> neighbours.add(neighbour)
+<-- neighbours.add(neighbour)
+Returned: true (class java.lang.Boolean)
+Hiba: Nem létezik ilyen tulajdonság: tekton
+--> setBridge(true)
+<-- setBridge(true)
+No return value 
+Hiba: Nem létezik ilyen tulajdonság: addisnsect
+Hiba: Ez az objektum nem ehető: insect.Insect@728938a9
+Insect is not stunned
+Thread is not a bridge
+--> setThread(ft)
+<-- setThread(ft);
+No return value 
+Név: i1
+Insect: 
+	Owner: is1
+	Thread: th3
+	Effect: NORMAL
+
+Név: is1
+InsectSpecies: 
+	Score: 0
+	Insects: []
+

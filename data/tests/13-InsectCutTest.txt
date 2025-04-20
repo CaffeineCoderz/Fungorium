@@ -8,8 +8,8 @@ growthread t2 th2 th3
 /create insect i1
 /set i1 thread th3
 cut i1 th2
-status th2
+/status th2
 /trigger th2
 /trigger th2
-status th2
+/status th2
 cut i1 th1

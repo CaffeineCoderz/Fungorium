@@ -1,0 +1,8 @@
+Hiba: Nem létezik ilyen nevű objektum: thread
+Hiba: Valamlyik objektum típusa nem helyes a parancshoz: th1 i1
+Név: i1
+Insect: 
+	Owner: N/A
+	Thread: th1
+	Effect: STUN
+

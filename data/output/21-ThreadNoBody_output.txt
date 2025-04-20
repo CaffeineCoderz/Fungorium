@@ -1,0 +1,15 @@
+--> neighbours.add(neighbour)
+<-- neighbours.add(neighbour)
+Returned: true (class java.lang.Boolean)
+Ismeretlen parancs: set
+Hibás parancs! Túl kevés paraméter.
+Helyes használat: grow <Tekton> <FungusBody>/<existingFungusThread> <newFungusThread>
+Hiba: Nem létezik ilyen nevű objektum: th1
+Hiba: Nem létezik ilyen nevű objektum: th2
+Hiba: Nem létezik ilyen nevű objektum: th1
+Hiba: Nem létezik ilyen nevű objektum: th1
+Ismeretlen parancs: /trigger
+Hiba: Nem létezik ilyen nevű objektum: th2
+Ismeretlen parancs: /trigger
+Ismeretlen parancs: /trigger
+Hiba: Nem létezik ilyen nevű objektum: th2

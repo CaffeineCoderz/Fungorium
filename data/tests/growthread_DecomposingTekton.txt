@@ -8,4 +8,4 @@
 /set th1 body b1
 /set b1 thread th1
 growthread dt1 th1 th2
-status th2
+/status th2

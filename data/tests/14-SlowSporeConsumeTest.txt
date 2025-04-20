@@ -22,5 +22,5 @@
 /set i1 species is1
 eat i1 ss1
 move i1 th3
-status i1
-status is1
+/status i1
+/status is1

@@ -1,0 +1,5 @@
+Hiba: Ismeretlen objektumtípus: entimologist
+Hiba: Nem létezik ilyen nevű objektum: e1
+Hiba: Nem létezik ilyen tulajdonság: tekton
+Hiba: Ez az objektum nem ehető: insect.Insect@45ff54e6
+Hiba: Nem létezik ilyen nevű objektum: e1

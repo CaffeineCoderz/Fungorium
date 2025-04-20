@@ -1,0 +1,21 @@
+Hiba: Nem létezik ilyen tulajdonság: tekton
+--> threads.add(thread)
+<-- threads.add(thread)
+Returned: true (class java.lang.Boolean)
+Hibás parancs! Túl kevés paraméter.
+Helyes használat: grow <FungusThread> <Tekton>
+Név: t1
+Tekton: 
+	CanGrowThread: true
+	CanGrowBody: true
+	Bodies: N/A
+	Insects: []
+	Neighbours: []
+	Spores: []
+	Threads: [th1]
+
+Név: fs1
+FungusSpecies: 
+	Score: 0
+	Bodies: []
+

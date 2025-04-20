@@ -1,0 +1,5 @@
+Hiba: Ismeretlen objektumtípus: decomposingtekton
+Hiba: Nem létezik ilyen tulajdonság: tekton
+Hiba: Nem létezik ilyen tulajdonság: thread
+Hiba: Nem létezik ilyen nevű objektum: dt1
+Hiba: Nem létezik ilyen nevű objektum: th2

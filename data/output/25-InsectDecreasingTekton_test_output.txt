@@ -1,0 +1,9 @@
+Hiba: Ismeretlen objektumtípus: decreasingtekton
+Hiba: Nem létezik ilyen tulajdonság: tekton
+Hiba: Nem létezik ilyen tulajdonság: score
+Ismeretlen parancs: /trigger
+Név: is1
+InsectSpecies: 
+	Score: 0
+	Insects: [i1]
+
