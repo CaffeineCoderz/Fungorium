@@ -11,6 +11,7 @@ import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.function.Consumer;
 
 // Model
@@ -85,12 +86,79 @@ public class CommandProcessor {
     private Map<String, String> commandDescriptions = new HashMap<>();
     private Map<String, String> objectTypeMap = new HashMap<>();
 
+    private Set<String> fungusCommands = Set.of("growBody", "growThread", "sporulate", "eatinsect");
+    private Set<String> insectCommands = Set.of("move", "cut", "eat");
+    private Set<String> commonCommands = Set.of("help", "exit");
+    private Set<String> systemCommands = Set.of("/helpsys", "/helpobj", "/load", "/break", "/kill", "/set", "/delete",
+            "/status", "/save", "/log", "/trig");
+
+    private GameLogic gameLogic;
+
     // ! -------------------------- INIT -----------------------------
     /*
      * Parancsok regisztrálása
      */
     public CommandProcessor() {
         initializeObjectTypeMap();
+
+        commands.put("help", parts -> help());
+        commandDescriptions.put("help", "help");
+
+        commands.put("/helpsys", parts -> helpSys());
+        commandDescriptions.put("/helpsys", "/helpsys");
+
+        commands.put("/helpobj", parts -> helpObj());
+        commandDescriptions.put("/helpobj", "/helpobj");
+
+        commands.put("/load", parts -> processConfigText(parts[1]));
+        commandDescriptions.put("/load", "/load <filename>");
+
+        commands.put("/create", this::processCreateCommand);
+        commandDescriptions.put("/create", "/create <objecttype> <name>");
+
+        commands.put("/delete", this::processDeleteCommand);
+        commandDescriptions.put("/delete", "/delete <name>");
+
+        commands.put("/set", this::processSetCommand);
+        commandDescriptions.put("/set", "/set <object> <property> <value>");
+
+        commands.put("/status", this::processStatusCommand);
+        commandDescriptions.put("/status", "/status <name>");
+
+        commands.put("/break", this::processBreakCommand);
+        commandDescriptions.put("/break", "/break <Tekton>");
+
+        commandDescriptions.put("/trig", "/trig <event>");
+
+        commands.put("cut", this::processCutCommand);
+        commandDescriptions.put("cut", "cut <FungusThread> <Insect>");
+
+        commands.put("sporulate", this::processSporulateCommand);
+        commandDescriptions.put("sporulate", "sporulate <FungusBody>");
+
+        commands.put("eat", this::processEatCommand);
+        commandDescriptions.put("eat", "eat <Spore> <Insect>");
+
+        commands.put("kill", this::processKillCommand);
+        commandDescriptions.put("kill", "kill <Insect>");
+
+        commands.put("move", this::processMoveCommand);
+        commandDescriptions.put("move", "move <Insect> <Thread>");
+
+        commands.put("growbody", this::processGrowBodyCommand);
+        commandDescriptions.put("growbody", "grow <FungusThread> <Tekton>");
+
+        commands.put("growthread", this::processGrowThreadCommand);
+        commandDescriptions.put("growthread", "grow <Tekton> <FungusBody>/<existingFungusThread> <newFungusThread>");
+
+        commands.put("eatinsect", this::processEatInsectCommand);
+        commandDescriptions.put("eatinsect", "eatinsect <Insect> <Thread>");
+    }
+
+    public CommandProcessor(GameLogic gameLogic) {
+        initializeObjectTypeMap();
+
+        this.gameLogic = gameLogic;
 
         commands.put("help", parts -> help());
         commandDescriptions.put("help", "help");
@@ -118,6 +186,8 @@ public class CommandProcessor {
 
         commands.put("/break", this::processBreakCommand);
         commandDescriptions.put("/break", "/break <Tekton>");
+
+        commandDescriptions.put("/trig", "/trig <event>");
 
         commands.put("cut", this::processCutCommand);
         commandDescriptions.put("cut", "cut <FungusThread> <Insect>");
@@ -190,6 +260,42 @@ public class CommandProcessor {
         String[] parts = input.split(" ");
         String command = parts[0];
 
+        Consumer<String[]> action = commands.get(command);
+        if (action != null) {
+            try {
+                action.accept(parts);
+            } catch (ArrayIndexOutOfBoundsException e) {
+                System.out.println("Hibás parancs! Túl kevés paraméter.");
+                System.out.println("Helyes használat: " + commandDescriptions.get(command));
+            }
+        } else {
+            System.out.println("Ismeretlen parancs: " + command);
+        }
+    }
+
+    public void process(String input, Object player) {
+        String[] parts = input.split(" ");
+        String command = parts[0];
+
+        if (player instanceof FungusSpecies && !fungusCommands.contains(command) && !commonCommands.contains(command) && !systemCommands.contains(command)) {
+            System.out.println("Hiba: FungusSpecies nem használhatja ezt a parancsot: " + command);
+            return;
+        }
+
+        if (player instanceof InsectSpecies && !insectCommands.contains(command) && !commonCommands.contains(command) && !systemCommands.contains(command)) {
+            System.out.println("Hiba: InsectSpecies nem használhatja ezt a parancsot: " + command);
+            return;
+        }
+
+        // * Kommentezz ki a következő sort, ha nem akarod, hogy a játékosok használhassák a rendszerparancsokat
+        /* 
+        if (systemCommands.contains(command)) {
+            System.out.println("Hiba: A rendszerparancsok nem használhatók játékosok által: " + command);
+            return;
+        }
+        */
+
+        // Ha a parancs érvényes, hajtsd végre
         Consumer<String[]> action = commands.get(command);
         if (action != null) {
             try {
@@ -653,6 +759,7 @@ public class CommandProcessor {
             printObjectStatus(name, obj);
         }
     }
+
 
     /*
      * growbody parancs formája: growbody <FungusThread> <Tekton>
