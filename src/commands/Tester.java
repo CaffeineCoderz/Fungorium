@@ -31,7 +31,7 @@ public class Tester {
         // Minden tesztfájlra meghívjuk a cmdproc.runTest() metódust
         for (File testFile : testFiles) {
             String testName = testFile.getName().replace(".txt", ""); // Kiterjesztés eltávolítása
-            System.out.println("Futtatás alatt: " + testName);
+            //System.out.println("Futtatás alatt: " + testName);
             cmdproc.clearCreatedObjects();
             cmdproc.runTest(testName);
         }
@@ -188,7 +188,7 @@ public class Tester {
         String testName = testFile.getName().replace(".txt", ""); // Kiterjesztés eltávolítása
 
         // Lefuttatjuk a tesztet
-        System.out.println("Futtatás alatt: " + testName);
+        //System.out.println("Futtatás alatt: " + testName);
         CommandProcessor cmdproc = gameLogic.getCommandProcessor();
         cmdproc.clearCreatedObjects();
         cmdproc.runTest(testName);
