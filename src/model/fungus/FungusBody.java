@@ -109,8 +109,8 @@ public class FungusBody {
         if(isThereEnough()){
             if(!canSporeNeighbours()){
                 if(this.tekton == null) {
-                    System.err.println("Tekton is null.")
-                    break;
+                    System.err.println("Tekton is null.");
+                    return;
                 }
                 for(Tekton t : tekton.getNeighbours()){
                     Spore tempSpore = new Spore();
@@ -138,7 +138,7 @@ public class FungusBody {
             }
             sporulateLeft--;
         } else
-            System.err.println("Fungusbody can't sporulate");
+            System.out.println("Fungusbody can't sporulate");
     }
     /**
      * Checks if it can sporulate to neighbours's neighbours 
@@ -191,11 +191,7 @@ public class FungusBody {
      */
     public Boolean isThereEnough() {
         // implementáció
-        if(sporeCount > 1){
-
-            return true;
-        }
-        return false;
+        return sporeCount > 1;
     }
 
     /**

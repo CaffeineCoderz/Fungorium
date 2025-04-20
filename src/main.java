@@ -53,6 +53,9 @@ public class main {
                 case 5:
                     System.out.println("Exiting the program. Goodbye!");
                     break;
+                case 6:
+                    tester.clearOutputFiles();
+                    break;
                 default:
                     System.out.println("Invalid choice. Please try again.");
             }

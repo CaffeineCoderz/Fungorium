@@ -50,8 +50,8 @@ public class Tester {
      * fájloknak ugyanazzal a névvel kell rendelkezniük.
      */
     public void checkTestResults(GameLogic gameLogic) {
-        File outputDir = new File("data/output");
-        File expectedDir = new File("data/expected");
+        File outputDir = new File("data/output/");
+        File expectedDir = new File("data/expected/");
 
         // Ellenőrizzük, hogy a kimeneti mappa létezik-e, ha igen, töröljük a fájlokat
         if (outputDir.exists()) {
@@ -81,7 +81,7 @@ public class Tester {
 
         for (File expectedFile : expectedFiles) {
             String testName = expectedFile.getName();
-            File outputFile = new File(outputDir, testName);
+            File outputFile = new File(outputDir, testName.replace(".txt", "_output.txt"));
 
             if (!outputFile.exists()) {
                 System.out.println("-Sikertelen lefutás " + testName + ": A kimeneti fájl nem található.");
@@ -165,54 +165,57 @@ public class Tester {
      * A tesztelés eredményét a konzolra írja ki.
      */
     public void checkTestResults(GameLogic gameLogic, int testCase) {
+        this.clearOutputFiles(); // Töröljük a kimeneti fájlokat
+
         File testDirectory = new File("data/tests/");
         File[] testFiles = testDirectory.listFiles((dir, name) -> name.endsWith(".txt"));
-    
+
         // Ellenőrizzük, hogy a mappa létezik-e és tartalmaz-e tesztfájlokat
         if (testFiles == null || testFiles.length == 0) {
             System.out.println("Hiba: Nincsenek tesztfájlok a data/tests/ mappában.");
             return;
         }
-    
+
         // Ellenőrizzük, hogy a testCase index érvényes-e
         if (testCase < 1 || testCase > testFiles.length) {
             System.out.println("Hiba: Érvénytelen teszteset index: " + testCase);
             return;
         }
-    
+
         // Megkeressük a megfelelő tesztfájlt
         File testFile = testFiles[testCase - 1];
         String testName = testFile.getName().replace(".txt", ""); // Kiterjesztés eltávolítása
-    
+
         // Lefuttatjuk a tesztet
         System.out.println("Futtatás alatt: " + testName);
         CommandProcessor cmdproc = gameLogic.getCommandProcessor();
         cmdproc.clearCreatedObjects();
         cmdproc.runTest(testName);
-    
+
         // Ellenőrizzük az elvárt és a kimeneti fájlokat
         File expectedFile = new File("data/expected/" + testFile.getName());
         File outputFile = new File("data/output/" + testName + "_output.txt"); // Kimeneti fájl neve módosítva
-    
+
         if (!expectedFile.exists()) {
             System.out.println("Hiba: Az elvárt fájl nem található: " + expectedFile.getName());
             return;
         }
-    
+
         if (!outputFile.exists()) {
             System.out.println("Hiba: A kimeneti fájl nem található: " + outputFile.getName());
             return;
         }
-    
+
         try {
             Process process = new ProcessBuilder("cmd.exe", "/c", "fc", expectedFile.getAbsolutePath(),
                     outputFile.getAbsolutePath())
                     .redirectErrorStream(true)
                     .start();
-    
+
             int exitCode = process.waitFor();
             if (exitCode == 0) {
-                System.out.println("+Sikeres lefutás: " + testName + ": A kapott és az elvárt fájl tartalma megegyezik.");
+                System.out
+                        .println("+Sikeres lefutás: " + testName + ": A kapott és az elvárt fájl tartalma megegyezik.");
             } else {
                 System.out.println("-Sikertelen lefutás: " + testName
                         + ": A kapott és az elvárt fájl tartalma nem egyezik meg.");
