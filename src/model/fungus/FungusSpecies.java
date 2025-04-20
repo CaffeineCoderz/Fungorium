@@ -19,8 +19,6 @@ public class FungusSpecies implements iControl {
     private List<FungusBody> bodies;
     private List<FungusThread> threads;
     // private Mycologist myOwner; // ! ezentúl a species az owner
-    private Logger log = Logger.getLogger("FungusSpeciesLogger");
-
     public FungusSpecies() {
         this.score = 0;
         this.bodies = new ArrayList<>();
@@ -147,7 +145,7 @@ public class FungusSpecies implements iControl {
             oThread.getBody().addThread(nThread);
             
         } else {
-            log.askQ("Tekton cant have new threads", false);
+            System.err.println("Tekton cant have new threads");
         }
     }
     public void growThread(Tekton targetTekton, FungusBody body , FungusThread nThread) {
@@ -166,7 +164,7 @@ public class FungusSpecies implements iControl {
             body.addThread(nThread);
             
         } else {
-            log.askQ("Tekton cant have new threads", false);
+           System.err.println("Tekton cant have new threads");
         }
     }
     /**
@@ -218,13 +216,13 @@ public class FungusSpecies implements iControl {
      */
     public void growBody(FungusThread thread) {
         if (thread.isBridge()) {
-            log.askQ("Thread is a bridge. You can't grow a body from a bridge!", false);
+            System.err.println("Thread is a bridge. You can't grow a body from a bridge!");
             return;
         }
         Integer atleast = 2;
         boolean enoughSpore = thread.getTekton(null).isThereEnoughSpore(atleast);
         if (!thread.getTekton(null).canGrowBody()) {
-            log.askQ("Tekton already contains a body", false);
+            System.err.println("Tekton already contains a body");
             return;
         }
         if (enoughSpore) {
@@ -239,7 +237,7 @@ public class FungusSpecies implements iControl {
             //! amelyik threadből növesszük a testet, annak a testje a növesztett test legyen 
             thread.setBody(fb);
         } else {
-            log.askQ("Nincs elegendo spóra", false);
+            System.err.println("Nincs elegendo spóra");
         }
     }
 
@@ -333,8 +331,6 @@ public class FungusSpecies implements iControl {
      * @param fb the FungusBody instance to be destroyed.
      */
     public void destroyBody(FungusBody fb){
-        log.askQ("Going through all threads of FungusBody", false);
-
         for (FungusThread ft : fb.getThreads()) {
             destroyThread(ft);
         }
@@ -354,7 +350,7 @@ public class FungusSpecies implements iControl {
      */
     public void eatInsect(FungusThread ft){
         if (ft.isBridge()) {
-            log.askQ("Thread was a bridge", false);
+            System.err.println("Thread was a bridge!");
             return;
         }
         Boolean someoneDied = false;
@@ -365,10 +361,8 @@ public class FungusSpecies implements iControl {
             }
         }
         if (someoneDied) {
-            if (log.askQ("Want to grow body?", true).equals("y")) {
                 growBody(ft);
-            }
-        }else log.askQ("There is no stunned insect on tekton", false);
+        }else System.err.println("There is no stunned insect on tekton");
         
     }
 

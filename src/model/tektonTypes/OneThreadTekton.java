@@ -6,7 +6,6 @@ import utils.Logger;
 public class OneThreadTekton extends Tekton {
     public OneThreadTekton() {
         super(true, true);
-        log = Logger.getLogger("OneThreadTektonLogger");
     }
 
     /**
@@ -23,6 +22,6 @@ public class OneThreadTekton extends Tekton {
                 setGrowThread(false);
             }
         } else
-            log.askQ("OneThreadTekton already has a thread on it.", false);
+            System.err.println("OneThreadTekton already has a thread on it.");
     }
 }

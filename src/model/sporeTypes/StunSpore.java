@@ -7,13 +7,9 @@ import tektonTypes.*;
 public class StunSpore extends Spore{
     
     
-    public StunSpore(){
-        
-        log = Logger.getLogger("StunSporeLogger");
-    }
+    public StunSpore(){    }
     public StunSpore(Tekton t, int nt){
         super(t, nt);
-        log = Logger.getLogger("StunSporeLogger");
 
     }
     /**

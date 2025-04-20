@@ -12,7 +12,6 @@ public class FungusBody {
     private List<FungusThread> threads;
     private Tekton tekton;
     private FungusSpecies species;
-    private Logger log = Logger.getLogger("FungusBodyLogger");
 
     public FungusBody() {
         this.sporeCount = 0;
@@ -109,10 +108,6 @@ public class FungusBody {
         // implementáció
         if(isThereEnough()){
             if(!canSporeNeighbours()){
-                if(this.tekton == null){
-                    log.askQ("Tekton is null", false);
-                    return;
-                }
                 for(Tekton t : tekton.getNeighbours()){
                     Spore tempSpore = new Spore();
                     t.addSpore(tempSpore);
@@ -139,7 +134,7 @@ public class FungusBody {
             }
             sporulateLeft--;
         } else
-            log.askQ("Fungusbody can't sporulate", false);
+            System.err.println("Fungusbody can't sporulate");
     }
     /**
      * Checks if it can sporulate to neighbours's neighbours 

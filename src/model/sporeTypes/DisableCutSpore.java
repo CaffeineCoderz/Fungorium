@@ -6,11 +6,9 @@ import utils.*;
 
 public class DisableCutSpore extends Spore {
     public DisableCutSpore(){
-        log = Logger.getLogger("DisableCutSporeLogger");
     }
     public DisableCutSpore(Tekton t, int nt){
         super(t, nt);
-        log = Logger.getLogger("DisableCutSporeLogger");
 
     }
     /**

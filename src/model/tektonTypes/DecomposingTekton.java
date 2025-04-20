@@ -8,7 +8,6 @@ public class DecomposingTekton extends Tekton{
 
     public DecomposingTekton(){
         super(true, true);
-        log = Logger.getLogger("DecomposingTektonLogger");
     }
 
     /**

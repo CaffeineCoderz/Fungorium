@@ -9,12 +9,10 @@ public class FeedThreadTekton extends Tekton {
 
     public FeedThreadTekton() {
         super(true, true);
-        log = Logger.getLogger("FeedThreadTektonLogger");
     }
 
     public FeedThreadTekton(Boolean canGrowBody, Boolean canGrowThread) {
         super(canGrowBody, canGrowThread);
-        log = Logger.getLogger("FeedThreadTektonLogger");
     }
 
     /**
@@ -23,9 +21,7 @@ public class FeedThreadTekton extends Tekton {
      * @return true if the thread is connected to a FungusBody, false otherwise.
      */
     private boolean isThreadConnectedToBody(FungusThread thread) {
-        log.stepIn("isThreadConnectedToBody(thread: " + thread + ")");
         boolean connected = body != null && body.getThreads().contains(thread);
-        log.stepOut("isThreadConnectedToBody()", connected);
         return connected;
     }
 

@@ -10,8 +10,6 @@ import utils.*;
 public class Spore {
     private Integer nutritionValue;
     private Tekton myTekton;
-    protected Logger log = Logger.getLogger("Spore");
-
     /**
      * Default Constructor
      */

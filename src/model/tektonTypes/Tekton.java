@@ -21,8 +21,6 @@ public class Tekton {
     protected FungusBody body;
     private List<Tekton> neighbours;
 
-    protected Logger log = Logger.getLogger("TektonLogger");
-
     public Tekton() {
         this.canGrowBody = true;
         this.canGrowThread = true;
@@ -167,8 +165,7 @@ public class Tekton {
             this.body = nbody;
             canGrowBody = false;
         } else
-            log.askQ("Tekton already has a FungusBody on it", false);
-
+            System.err.println("Tekton already has a FungusBody on it");
     }
 
     /**

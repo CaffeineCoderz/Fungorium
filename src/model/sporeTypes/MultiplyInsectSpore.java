@@ -10,7 +10,6 @@ public class MultiplyInsectSpore extends Spore{
     // rovarásza megegyezik az eredeti rovar rovarászával.
     
     public MultiplyInsectSpore(){
-        log = Logger.getLogger("MultiplyInsectSporeLogger");
     }
     /**
      * Consumes this spore and the given insect duplicates.

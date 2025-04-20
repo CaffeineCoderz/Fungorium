@@ -6,7 +6,6 @@ import utils.*;
 public class OnlyThreadTekton extends Tekton{
     public OnlyThreadTekton() {
         super(false, true);
-        log = Logger.getLogger("OnlyThreadTektonLogger");
     }
     
     /**

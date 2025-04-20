@@ -21,8 +21,6 @@ public class FungusThread {
     private FungusThread prevThread;
     private FungusThread nextThread;
 
-    private Logger log = Logger.getLogger("FungusThreadLogger");
-
     public FungusThread() {
         this.lifeSpan = 0;
         this.bridge = false;

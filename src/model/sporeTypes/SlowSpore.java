@@ -7,11 +7,9 @@ import tektonTypes.*;
 public class SlowSpore extends Spore{
     
     public SlowSpore(){
-        log = Logger.getLogger("SlowSporeLogger");
     }
     public SlowSpore(Tekton t, int v){
         super(t,v);
-        log = Logger.getLogger("SlowSporeLogger");
     }
     /**
      * Consumes this spore and slows the given insect.

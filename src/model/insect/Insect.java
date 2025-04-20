@@ -21,9 +21,6 @@ public class Insect{
     private Tekton recentTekton;
     private FungusThread thread;
     private InsectSpecies myOwner;
-
-    private Logger log = Logger.getLogger("InsectLogger");
-
     public Insect() {
         this.movingEffectTimer = 0;
         this.abilityEffectTimer = 0;
@@ -206,7 +203,6 @@ public class Insect{
         // Legyen meg a képessége, hogy fonalat vágjon és Ne vágja maga alatt a fát.
 
         if (canCut == true && effect != InsectEffects.STUN && effect != InsectEffects.NO_CUT && thread != ft) {
-            log.askQ("Insect can cut threads", false);
                 if (ft.isBridge()) {
                     ft.setIsDying(true);
                     ft.setLifeSpan(2);
@@ -216,7 +212,7 @@ public class Insect{
                     ft.setLifeSpan(4);
                 }
         } else
-            log.askQ("Insect can't cut threads", false);
+            System.err.println("Insect can't cut threads");
 
     }
 
@@ -244,7 +240,7 @@ public class Insect{
             }
 
         } else
-            log.askQ("Insect cannot move because it is stunned!", false);
+           System.err.println("Insect cannot move because it is stunned!");
     }
 
     /**

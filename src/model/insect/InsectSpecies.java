@@ -17,7 +17,6 @@ public class InsectSpecies implements iControl{
     // DATA
     private List<Insect> myInsects;
     private Integer score; 
-    private Logger log = Logger.getLogger("InsectSpeciesLogger");
     public List<Insect> getInsects() {
         return myInsects;
     }

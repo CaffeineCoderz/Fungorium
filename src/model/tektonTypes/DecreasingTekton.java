@@ -7,7 +7,6 @@ public class DecreasingTekton extends Tekton{
 
     public DecreasingTekton(){
         super(true, true);
-        log = Logger.getLogger("DecreasingTektonLogger");
     }
 
     /**
@@ -24,7 +23,7 @@ public class DecreasingTekton extends Tekton{
         if (!insects.contains(insect)) {
             insect.setDecrease(true);
             insects.add(insect);
-        }else log.askQ("Insect is already on the tekton!", false);
+        }else System.err.println("Insect is already on the tekton!");
     }  
     /**
      * Removes an insect from the DecreasingTekton.
@@ -38,7 +37,7 @@ public class DecreasingTekton extends Tekton{
     @Override
     public void removeInsect(Insect insect){
         if (!insects.contains(insect) || insects.isEmpty()) {
-            log.askQ("There are no insects on the Tekton or it not contains the insect", false);
+            System.err.println("There are no insects on the Tekton or it does not contain the insect");
             return;
         }
         insect.setDecrease(false);
