@@ -16,7 +16,6 @@ public class OnlyThreadTekton extends Tekton{
      */
     @Override
     public void setBody(FungusBody fb) {
-        log.askQ("Do nothing, as OnlyThreadTekton should not add bodies", false);
         // Do nothing, as OnlyThreadTekton should not add bodies
     }
     
@@ -27,7 +26,6 @@ public class OnlyThreadTekton extends Tekton{
      */
     @Override
     public void setGrowBody(Boolean canGrowBody){
-        log.askQ("Do nothing, as OnlyThreadTekton should not add bodies", false);
         //Do nothing, as OnlyThreadTekton not allows bodies to grow on it.
     }
 }

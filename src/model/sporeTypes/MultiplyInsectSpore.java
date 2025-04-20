@@ -18,11 +18,7 @@ public class MultiplyInsectSpore extends Spore{
      */
     @Override
     public void consume(Insect insect){
-        log.stepIn("insect.duplicate()");
         insect.duplicate();
-        log.stepOut("insect.duplicate()", insect);
-        log.stepIn("absorbed()");
         absorbed();
-        log.stepOut("absorbed()", insect);
     }
 }

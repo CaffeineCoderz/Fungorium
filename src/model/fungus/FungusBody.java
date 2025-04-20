@@ -109,55 +109,33 @@ public class FungusBody {
         // implementáció
         if(isThereEnough()){
             if(!canSporeNeighbours()){
-
-                log.askQ("Body has enough spore to sporulate neighbours", false);
                 if(this.tekton == null){
                     log.askQ("Tekton is null", false);
                     return;
                 }
-                log.askQ("Going through all neighbouring tektons", false);
                 for(Tekton t : tekton.getNeighbours()){
-                    log.askQ("Create Spore: tempspore", false);
                     Spore tempSpore = new Spore();
-                    log.stepIn("t.addSpore(tempSpore)");
                     t.addSpore(tempSpore);
-                    log.stepOut("t.addSpore(tempSpore)", null);
-                    log.stepIn("tempSpore.setTekton(t)");
                     tempSpore.setTekton(t);
-                    log.stepOut("tempSpore.setTekton(t)", null);
                     sporeCount--;
                 }
-                log.askQ("End Cycle", false);
+                
             }
             else
                 {
-                    log.askQ("Body has enough spore to sporulate neighbours and neighbours's neighbours", false);
-                    log.askQ("Going through all neighbouring tektons", false);
                     for(Tekton t : tekton.getNeighbours()){
-                        log.askQ("Create Spore : tempspore", false);
                         Spore tempSpore = new Spore();
-                        log.stepIn("t.addSpore(tempSpore)");
                         t.addSpore(tempSpore);
-                        log.stepOut("t.addSpore(tempSpore)", null);
-                        log.stepIn("tempSpore.setTekton(t)");
                         tempSpore.setTekton(t);
-                        log.stepOut("tempSpore.setTekton(t)", null);
                         sporeCount--;
-                        log.askQ("Going through all neighbouring tektons", false);
                         for(Tekton tt: t.getNeighbours()){
-                            log.askQ("Create Spore : tempspore2", false);
                             Spore tempSpore2 = new Spore();
-                            log.stepIn("tt.addSpore(tempSpore2)");
                             tt.addSpore(tempSpore2);
-                            log.stepOut("tt.addSpore(tempSpore2)", null);
-                            log.stepIn("tempSpore2.setTekton(tt)");
                             tempSpore2.setTekton(tt);
-                            log.stepOut("tempSpore2.setTekton(tt)", null);
                             sporeCount--;
                         }
-                        log.askQ("End Cycle", false);
+                        
                     }
-                    log.askQ("End Cycle", false);
             }
             sporulateLeft--;
         } else

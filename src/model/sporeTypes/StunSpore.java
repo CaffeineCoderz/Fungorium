@@ -27,12 +27,8 @@ public class StunSpore extends Spore{
      */
     @Override
     public void consume(Insect insect){
-        log.stepIn("insect.stun()");
         insect.stun();
-        log.stepOut("insect.stun()", null);
-        log.stepIn("absorbed()");
         absorbed();
-        log.stepOut("absorbed()", null);
     }
 
 }

@@ -34,9 +34,7 @@ public class Spore {
      * @param insect The insect, who consumes the spore
      */
     public void consume(Insect insect){ // ? Itt történjen a pont kiosztás?
-        log.stepIn("absorbed();");
         absorbed();
-        log.stepOut("absorbed();", null);
     }
 
     /**
@@ -61,9 +59,7 @@ public class Spore {
      * Removes itself from the tekton it is staying on. 
      */
     public void absorbed() {
-        log.stepIn("myTekton.removeSpore(this)");
         myTekton.removeSpore(this);
-        log.stepOut("myTekton.removeSpore(this)", null);
         myTekton = null;
     }
     /**

@@ -163,9 +163,7 @@ public class FungusThread {
         }
         tektons.add(tekton);
         if(tektons.size() == 2){
-            log.stepIn("setBridge(true)");
             setBridge(true);
-            log.stepOut("setBridge(true)", null);
         }
     }
 
@@ -280,9 +278,7 @@ public class FungusThread {
      */
     public void destroy() {
         for (Tekton tekton : tektons) {
-            log.stepIn("tekton.removeThread(this)");
             tekton.removeThread(this);
-            log.stepOut("tekton.removeThread(this)", null);
         }
     }
 

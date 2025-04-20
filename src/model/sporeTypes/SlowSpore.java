@@ -19,11 +19,7 @@ public class SlowSpore extends Spore{
      */
     @Override
     public void consume(Insect insect){
-        log.stepIn("insect.slow()");
         insect.slow();
-        log.stepOut("insect.slow()", insect);
-        log.stepIn("absorbed()");
         absorbed();
-        log.stepOut("absorbed()", insect);
     }
 }

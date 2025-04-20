@@ -25,11 +25,7 @@ public class FastSpore extends Spore {
      * @param insect the insect which consumes this spore.
      */
     public void consume(Insect insect) {
-        log.stepIn("insect.fast()");
         insect.fast();
-        log.stepOut("insect.fast()", null);
-        log.stepIn("absorbed()");
         absorbed();
-        log.stepOut("absorbed()", null);
     }
 }
