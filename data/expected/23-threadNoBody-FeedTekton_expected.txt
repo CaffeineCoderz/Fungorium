@@ -1,0 +1,9 @@
+th3:
+FungusThread:
+Species: N/A
+Body: N/A
+Tektons: [ft1]
+IsBridge: false
+IsDying: false
+Next: false
+Prev: false

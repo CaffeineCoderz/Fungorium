@@ -1,0 +1,10 @@
+Sikertelen elmozgás
+i1:
+Insect:
+Owner: is1
+Thread: th1
+Effect: slow
+is1:
+InsectSpecies:
+Score: 2
+Insects: [i1]
