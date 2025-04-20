@@ -37,6 +37,7 @@ public class Tester {
         }
     }
 
+
     /*
      * A checkTestResults() metódus végrehajtja a teszteket, összehasonlítva az
      * elvárt és a
@@ -211,7 +212,6 @@ public class Tester {
                     outputFile.getAbsolutePath())
                     .redirectErrorStream(true)
                     .start();
-
             int exitCode = process.waitFor();
             if (exitCode == 0) {
                 System.out
