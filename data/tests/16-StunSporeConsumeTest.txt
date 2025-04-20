@@ -1,0 +1,26 @@
+/create tekton t1
+/create insectspecies is1
+/create stunspore ss1
+/set ss1 tekton t1
+/set ss1 nutrition 2
+/create tekton t2
+/set t1 addneighbour t2
+/create thread th1
+/set th1 tekton t1
+/create thread th2
+/set th2 prev th1
+/set th1 next th2
+/set th2 addtekton t1
+/set th2 addtekton t2
+/create thread th3
+/set th3 prev th3
+/set th2 next th3
+/set th3 addtekton t2
+/create insect i1
+/set i1 thread th1
+/set i1 species is1
+/set is1 addinsect i1
+eat i1 ss1
+move i1 th3
+status i1
+status is2

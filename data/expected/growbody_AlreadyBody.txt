@@ -1,0 +1,1 @@
+Sikertelen testnövesztés. A tektonon már van gombatest
