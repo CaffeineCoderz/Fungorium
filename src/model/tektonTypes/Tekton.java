@@ -21,8 +21,6 @@ public class Tekton {
     protected FungusBody body;
     private List<Tekton> neighbours;
 
-    protected Logger log = Logger.getLogger("TektonLogger");
-
     public Tekton() {
         this.canGrowBody = true;
         this.canGrowThread = true;
@@ -167,8 +165,7 @@ public class Tekton {
             this.body = nbody;
             canGrowBody = false;
         } else
-            log.askQ("Tekton already has a FungusBody on it", false);
-
+            System.err.println("Tekton already has a FungusBody on it");
     }
 
     /**
@@ -205,8 +202,7 @@ public class Tekton {
      * @param neighbour the Tekton object to remove from the list of neighbors.
      */
     public void removeNeighbour(Tekton neighbour) {
-        log.stepIn("neighbours.remove(neighbour)");
-        log.stepOut("neighbours.remove(neighbour)", neighbours.remove(neighbour));
+        neighbours.remove(neighbour);
     }
 
     /**
@@ -215,9 +211,7 @@ public class Tekton {
      * @param neighbour the Tekton object to add to the list of neighbors.
      */
     public void addNeighbour(Tekton neighbour) {
-        log.stepIn("neighbours.add(neighbour)");
-
-        log.stepOut("neighbours.add(neighbour)", neighbours.add(neighbour));
+        neighbours.add(neighbour);
 
     }
 
@@ -283,63 +277,31 @@ public class Tekton {
      * neighbors.
      */
     public void breakTekton() {
-        log.stepIn("Going through all insect in 'insects'");
         for (int i = insects.size() - 1; i >= 0; i--) {
             Insect insect = insects.get(i);
-            log.stepIn("insect.deadInsect()");
             insect.deadInsect();
-            log.stepOut("insect.deadInsect()", null);
         }
-        log.stepOut("End Cycle", null);
-        log.stepIn("Going through all thread in 'threads'");
         for (FungusThread ft : threads) {
-            log.stepIn("ft.setIsDying(true)");
             ft.setIsDying(true);
-            log.stepOut("ft.setIsDying(true)", null);
-            log.stepIn("ft.getSpecies().destroyThread(ft)");
             ft.getSpecies().destroyThread(ft);
-            log.stepOut("ft.getSpecies().destroyThread(ft)", null);
         }
-        log.stepOut("End Cycle", null);
-        log.stepIn("Going through all spore in 'spores'");
         for (int i = spores.size() - 1; i >= 0; i--) {
             Spore spore = spores.get(i);
-            log.stepIn("spore.absorbed()");
             spore.absorbed();
-            log.stepOut("spore.absorbed()", null);
         }
-        log.stepOut("End Cycle", null);
-        log.stepIn("body.getSpecies().destroyBody(body)");
         body.getSpecies().destroyBody(body);
-        log.stepOut("body.getSpecies().destroyBody(body)", null);
-        log.askQ("Create Tekton: t1", false);
         Tekton t1 = new Tekton(this);
-        log.askQ("Create Tekton: t2", false);
         Tekton t2 = new Tekton(this);
 
-        log.stepIn("Going through all neigbouring tekton");
         for (Tekton tekton : neighbours) {
-            log.stepIn("tekton.removeNeighbour(this)");
             tekton.removeNeighbour(this);
-            log.stepOut("tekton.removeNeighbour(this)", null);
 
-            log.stepIn("tekton.addNeighbour(t1)");
             tekton.addNeighbour(t1);
-            log.stepOut("tekton.addNeighbour(t1)", null);
-
-            log.stepIn("tekton.addNeighbour(t2)");
             tekton.addNeighbour(t2);
-            log.stepOut("tekton.addNeighbour(t2)", null);
         }
-        log.stepOut("End Cycle", null);
-
-        log.stepIn("t1.addNeighbour(t2)");
         t1.addNeighbour(t2);
-        log.stepOut("t1.addNeighbour(t2)", null);
 
-        log.stepIn("t2.addNeighbour(t1)");
         t2.addNeighbour(t1);
-        log.stepOut("t2.addNeighbour(t1)", null);
     }
     
     // ! még nincs statikus diagramba beleírva!
