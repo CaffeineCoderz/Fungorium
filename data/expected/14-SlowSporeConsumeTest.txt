@@ -1,8 +1,8 @@
 Sikertelen elmozgás
 i1:
-Insect: 
+Insect:
 Owner: is1
-Tekton: t1
+Thread: th1
 Effect: slow
 is1:
 InsectSpecies:

@@ -1,8 +1,8 @@
-A rovar bénítva van. /(vagy nem írunk ki semmit)
-i1: 
-Insect: 
+A rovar bénítva van.
+i1:
+Insect:
 Owner: N/A
-Tekton: t1
+Thread: th1
 Effect: stun
 is1:
 InsectSpecies:

@@ -1,5 +1,5 @@
 /create tekton t1
-/create decreasingtekton dt1
+/create decomposingtekton dt1
 /set t1 addneighbour dt1
 /create thread th1
 /set th1 tekton t1

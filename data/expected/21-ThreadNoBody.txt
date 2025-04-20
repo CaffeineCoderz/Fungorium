@@ -1,5 +1,5 @@
-th2: 
-FungusThread: 
+th2:
+FungusThread:
 Species: N/A
 Body: N/A
 Tektons: [t1, t2]

@@ -1,7 +1,7 @@
-i1: 
-Insect: 
+i1:
+Insect:
 Owner: N/A
-Tekton: t3
+Thread: th4
 Effect: fast
 is1:
 InsectSpecies:

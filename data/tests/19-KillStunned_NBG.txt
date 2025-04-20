@@ -6,5 +6,5 @@
 /create insect i1
 /set i1 thread th1
 /set i1 effect stun
-/kill i1
+eatinsect th1 i1
 status i1

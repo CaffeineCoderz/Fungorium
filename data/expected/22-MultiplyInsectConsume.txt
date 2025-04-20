@@ -1,4 +1,4 @@
-is1: 
-InsectSpecies: 
+is1:
+InsectSpecies:
 Score: 1
 Insects: [i1, i2]

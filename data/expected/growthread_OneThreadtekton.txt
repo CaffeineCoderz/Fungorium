@@ -1,6 +1,6 @@
 Sikertelen fonálnövesztés. A tektonra már nem nőhet fonál.
-th3: 
-FungusThread: 
+th3:
+FungusThread:
 Species: N/A
 Body: N/A
 Tektons: [t1, ot1]

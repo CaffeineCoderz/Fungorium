@@ -1,5 +1,5 @@
-t6: 
-Tekton: 
+t6:
+Tekton:
 CangrowThread: true
 Bodies: N/A
 Insects: N/A
@@ -7,7 +7,7 @@ Neighbours: [t1,t2,t3]
 Spores: N/A
 Threads: N/A
 t7:
-Tekton: 
+Tekton:
 CangrowThread: true
 Bodies: N/A
 Insects: N/A
