@@ -21,9 +21,11 @@ public class GameLogic {
 
     private CommandProcessor commandProcessor;
 
+    private Scanner scanner;
+
     public GameLogic() {
         // Initialize the command processor
-        this.commandProcessor = new CommandProcessor();
+        this.commandProcessor = new CommandProcessor(this);
     }
 
     /**
@@ -95,12 +97,16 @@ public class GameLogic {
         return players.get(id);
     }
 
+    public Scanner getScanner() {
+        return scanner;
+    }
+
     /**
      * Starts the game, handles player type selection,
      * then takes turns until the game time runs out.
      */
     public void startGame() {
-        Scanner scanner = new Scanner(System.in);
+        this.scanner = new Scanner(System.in);
         // First, we need to select the players
         selectPlayers(scanner);
 
@@ -285,12 +291,12 @@ public class GameLogic {
                     String command = scanner.nextLine().trim().toLowerCase();
 
                     // Check for skip commands
-                    if (command.equals("skipround")) {
+                    if (command.equals("/trig skipround")) {
                         System.out.println("Skipping the current round...");
                         skipRound = true; // Beállítjuk, hogy az egész kört át kell ugrani
                         break; // Kilépünk az aktuális játékos köréből
                     }
-                    if (command.equals("skipallrounds")) {
+                    if (command.equals("/trig skipallrounds")) {
                         System.out.println("Skipping all remaining rounds...");
                         gameTime = 0; // End the game immediately
                         GameLogic.endGame(commandProcessor.getCreatedObjects());
@@ -357,6 +363,5 @@ public class GameLogic {
         System.out.println("Fungus győztes: " + fungusWinner + " pontszám: " + maxFungusScore);
         System.out.println("Insect győztes: " + insectWinner + " pontszám: " + maxInsectScore);
         System.out.println("<------------------------------------------------->");
-
     }
 }
