@@ -108,6 +108,10 @@ public class FungusBody {
         // implementáció
         if(isThereEnough()){
             if(!canSporeNeighbours()){
+                if(this.tekton == null) {
+                    System.err.println("Tekton is null.")
+                    break;
+                }
                 for(Tekton t : tekton.getNeighbours()){
                     Spore tempSpore = new Spore();
                     t.addSpore(tempSpore);
