@@ -110,7 +110,7 @@ public class FungusBody {
             if(!canSporeNeighbours()){
                 if(this.tekton == null) {
                     System.err.println("Tekton is null.")
-                    break;
+                    return;
                 }
                 for(Tekton t : tekton.getNeighbours()){
                     Spore tempSpore = new Spore();
