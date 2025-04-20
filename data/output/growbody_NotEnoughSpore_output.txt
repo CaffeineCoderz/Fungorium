@@ -1,3 +1,0 @@
-Hiba: Nem létezik ilyen tulajdonság: tekton
-Hibás parancs! Túl kevés paraméter.
-Helyes használat: grow <FungusThread> <Tekton>
