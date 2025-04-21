@@ -25,9 +25,10 @@
 /set th4 addtekton t3
 /create insect i1
 /set i1 thread th1
-/set i1 species fs1
+/set i1 species is1
 /set is1 addinsect i1
+/set i1 tekton t1
 eat i1 fs1
 move i1 th4
-status i1
-status is1
+/status i1
+/status is1

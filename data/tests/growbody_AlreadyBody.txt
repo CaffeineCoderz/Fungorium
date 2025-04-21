@@ -1,6 +1,13 @@
+/create fungusspecies sp1
 /create tekton t1
 /create body b1
+/create fastspore fs1
+/create fastspore fs2
+/set fs1 tekton t1
+/set fs2 tekton t1
 /set b1 tekton t1
 /create thread th1
-/set th1 tekton t1
-growbody th1
+/set th1 species sp1
+/set t1 addthread th1
+/set th1 addtekton t1
+growbody th1 t1

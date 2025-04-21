@@ -6,4 +6,4 @@
 /set b1 sporecount 3
 /set b1 sporulateleft 1
 sporulate b1
-status t1
+/status t1

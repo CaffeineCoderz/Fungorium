@@ -1,3 +1,4 @@
+/create fungusspecies f1
 /create tekton t1
 /create tekton t2
 /create tekton t3
@@ -8,6 +9,7 @@
 /set t5 addneighbour t3
 /set t5 addneighbour t4
 /create body b1
+/set b1 species f1
 /set b1 tekton t5
 /set t5 body b1
 /create thread th1
@@ -16,5 +18,5 @@
 /create insect i1
 /set i1 thread th1
 /break t5
-status t6
-status t7
+/status t6
+/status t7

@@ -20,6 +20,6 @@
 /set is1 addinsect i1
 /set i1 species is1
 eat i1 ds1
-status is1
-status i1
+/status is1
+/status i1
 cut i1 th2

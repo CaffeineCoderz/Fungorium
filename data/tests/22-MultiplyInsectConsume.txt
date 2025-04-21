@@ -8,4 +8,4 @@
 /set ms1 tekton t1
 /set ms1 nutrition 1
 eat i1 ms1
-status e1
+/status e1

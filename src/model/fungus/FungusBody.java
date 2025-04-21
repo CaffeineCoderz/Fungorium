@@ -141,7 +141,7 @@ public class FungusBody {
             }
             sporulateLeft--;
         } else
-            System.err.println("Fungusbody can't sporulate");
+            System.out.println("Fungusbody can't sporulate");
         return createdSpores;     
     }
 
@@ -196,11 +196,7 @@ public class FungusBody {
      */
     public Boolean isThereEnough() {
         // implementáció
-        if(sporeCount > 1){
-
-            return true;
-        }
-        return false;
+        return sporeCount > 1;
     }
 
     /**
