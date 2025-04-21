@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import sporeTypes.Spore;
 import tektonTypes.Tekton;
-import utils.Logger;
+import utils.*;
 
 public class FungusBody {
     private Integer sporeCount;
@@ -104,42 +104,47 @@ public class FungusBody {
      * spreads a spore to each of the neighboring Tektons. The number of spores
      * available and the number of sporulations left are decremented.
      */
-    public void sporulate() {
-        // implementáció
+    public List<Spore> sporulate() {
+        List<Spore> createdSpores = new ArrayList<>();
         if(isThereEnough()){
             if(!canSporeNeighbours()){
                 if(this.tekton == null) {
-                    System.err.println("Tekton is null.")
-                    return;
+                    System.err.println("Tekton is null.");
+                    return createdSpores;
                 }
                 for(Tekton t : tekton.getNeighbours()){
+                    //!Spore tempSpore = RandomGenerator.generateRandomSpore();
                     Spore tempSpore = new Spore();
                     t.addSpore(tempSpore);
                     tempSpore.setTekton(t);
                     sporeCount--;
+                    createdSpores.add(tempSpore);
                 }
-                
             }
-            else
-                {
-                    for(Tekton t : tekton.getNeighbours()){
-                        Spore tempSpore = new Spore();
-                        t.addSpore(tempSpore);
-                        tempSpore.setTekton(t);
+            else{
+                for(Tekton t : tekton.getNeighbours()){
+                    //!Spore tempSpore = RandomGenerator.generateRandomSpore();
+                    Spore tempSpore = new Spore();
+                    t.addSpore(tempSpore);
+                    tempSpore.setTekton(t);
+                    sporeCount--;
+                    createdSpores.add(tempSpore);
+                    for(Tekton tt: t.getNeighbours()){
+                        //!Spore tempSpore2 = RandomGenerator.generateRandomSpore();
+                        Spore tempSpore2 = new Spore();
+                        tt.addSpore(tempSpore2);
+                        tempSpore2.setTekton(tt);
                         sporeCount--;
-                        for(Tekton tt: t.getNeighbours()){
-                            Spore tempSpore2 = new Spore();
-                            tt.addSpore(tempSpore2);
-                            tempSpore2.setTekton(tt);
-                            sporeCount--;
-                        }
-                        
-                    }
+                        createdSpores.add(tempSpore2);
+                    } 
+                }
             }
             sporulateLeft--;
         } else
             System.err.println("Fungusbody can't sporulate");
+        return createdSpores;     
     }
+
     /**
      * Checks if it can sporulate to neighbours's neighbours 
      * @return Whether it can sporulate to further than it's neighbouring tekton
