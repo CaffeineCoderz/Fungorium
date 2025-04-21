@@ -1,6 +1,7 @@
 package utils;
 import sporeTypes.*;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 
@@ -49,8 +50,8 @@ public class RandomGenerator {
             cumulativeProbability += entry.getValue();
             if (randomValue <= cumulativeProbability) {
                 try {
-                    return entry.getKey().newInstance();
-                } catch (InstantiationException | IllegalAccessException e) {
+                    return entry.getKey().getDeclaredConstructor().newInstance();
+                } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                     throw new RuntimeException("Failed to create Spore instance: " + entry.getKey().getSimpleName(), e);
                 }
             }
