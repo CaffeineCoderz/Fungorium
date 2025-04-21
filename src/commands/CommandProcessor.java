@@ -8,7 +8,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
@@ -948,7 +950,11 @@ public class CommandProcessor {
         Object obj = createdObjects.get(name);
         if (obj instanceof FungusBody) {
             FungusBody body = (FungusBody) obj;
-            body.sporulate();
+            List<Spore> createdSpores = body.sporulate();
+            for (Spore element : createdSpores) {
+                String created_name = "spore" + countObjectsOfType(Spore.class);
+                createdObjects.put(created_name, element);
+            }
             // Debug purposes
             // System.out.println("A FungusBody sporulált!");
         } else {
@@ -1577,4 +1583,5 @@ public class CommandProcessor {
             System.err.println("Hiba a kimenet fájlba irányításakor: " + e.getMessage());
         }
     }
+
 }
