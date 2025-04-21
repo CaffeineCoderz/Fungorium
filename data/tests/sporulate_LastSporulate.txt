@@ -1,0 +1,9 @@
+/create tekton t1
+/create tekton t2
+/set t1 addneighbour t2
+/create body b1
+/set b1 tekton t1
+/set b1 sporecount 3
+/set b1 sporulateleft 1
+sporulate b1
+status t1

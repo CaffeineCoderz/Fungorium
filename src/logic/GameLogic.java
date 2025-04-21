@@ -23,9 +23,11 @@ public class GameLogic {
 
     private CommandProcessor commandProcessor;
 
+    private Scanner scanner;
+
     public GameLogic() {
         // Initialize the command processor
-        this.commandProcessor = new CommandProcessor();
+        this.commandProcessor = new CommandProcessor(this);
     }
 
     /**
@@ -97,12 +99,16 @@ public class GameLogic {
         return players.get(id);
     }
 
+    public Scanner getScanner() {
+        return scanner;
+    }
+
     /**
      * Starts the game, handles player type selection,
      * then takes turns until the game time runs out.
      */
     public void startGame() {
-        Scanner scanner = new Scanner(System.in);
+        this.scanner = new Scanner(System.in);
         // First, we need to select the players
         selectPlayers(scanner);
 
@@ -121,16 +127,34 @@ public class GameLogic {
         while (true) {
             if (fungusPlayers == 0 && insectPlayers == 0) {
                 System.out.println(
-                        "Which type of player would you like to be? Fungus - Insect (F/I) OR type 'exit' to start the game.");
+                        "Which type of player would you like to be? Fungus - Insect (F/I) OR type 'start' to start the game.");
             } else {
                 System.out.println("Which type of player would you like to be? Fungus - Insect (F/I)");
             }
             String choice = scanner.nextLine().trim().toUpperCase();
 
-            if (choice.equals("EXIT")) {
+            if (choice.equals("START")) {
                 System.out.println("All players are ready. Starting the game...");
                 // commandProcessor.start();
                 // scanner.close();
+                return;
+            }
+
+            if (choice.equals("DUMMY")) {
+                System.out.println("Generating dummy players...");
+                for (int i = 1; i <= 2; i++) {
+                    String fungusName = "Fungus" + i;
+                    handleSpeciesCreation("Fungus", fungusName);
+                    System.out.println("Created Fungus player: " + fungusName);
+                    fungusPlayers--;
+                }
+                for (int i = 1; i <= 2; i++) {
+                    String insectName = "Insect" + i;
+                    handleSpeciesCreation("Insect", insectName);
+                    System.out.println("Created Insect player: " + insectName);
+                    insectPlayers--;
+                }
+                System.out.println("All dummy players created. Starting the game...");
                 return;
             }
 
@@ -157,7 +181,7 @@ public class GameLogic {
                                     .println("A player with this name already exists. Please choose a different name.");
                         }
                         break;
-                    case "exit":
+                    case "START":
                         if (fungusPlayers == 0 && insectPlayers == 0) {
                             System.out.println("All players are ready. Starting the game...");
                             scanner.close();
@@ -247,23 +271,44 @@ public class GameLogic {
 
     /**
      * Takes a turn for each player in the game.
+     * Scans for user input and processes commands.
+     * Skips rounds if necessary.
      * 
      * @param scanner The scanner to read user input.
      */
     public void takeTurn(Scanner scanner) {
         while (gameTime > 0) {
             System.out.println("---------> Round: " + (round + 1) + " <---------");
+            boolean skipRound = false;
 
             // Iterate through each player and prompt for commands
             for (String playerName : players.keySet()) {
+                if (skipRound) {
+                    break; // Ha a kört át kell ugrani, kilépünk a játékosok ciklusából
+                }
+                Object player = players.get(playerName);
                 System.out.println("It's " + playerName + "'s turn. Enter a command:");
                 while (true) {
                     System.out.print("> ");
                     String command = scanner.nextLine().trim().toLowerCase();
+
+                    // Check for skip commands
+                    if (command.equals("/trig skipround")) {
+                        System.out.println("Skipping the current round...");
+                        skipRound = true; // Beállítjuk, hogy az egész kört át kell ugrani
+                        break; // Kilépünk az aktuális játékos köréből
+                    }
+                    if (command.equals("/trig skipallrounds")) {
+                        System.out.println("Skipping all remaining rounds...");
+                        gameTime = 0; // End the game immediately
+                        GameLogic.endGame(commandProcessor.getCreatedObjects());
+                        return;
+                    }
+
                     if (command.equalsIgnoreCase("next")) {
                         break; // Move to the next player
                     }
-                    commandProcessor.process(command);
+                    commandProcessor.process(command, player);
                 }
             }
 
@@ -284,8 +329,6 @@ public class GameLogic {
                 break;
             }
         }
-
-        System.out.println("Game over!");
     }
 
     /**
@@ -318,9 +361,10 @@ public class GameLogic {
         }
 
         // Eredmények kiírása
-        System.out.println("Játék vége!");
+        System.out.println("<-------------------Játék vége!------------------->");
         System.out.println("Fungus győztes: " + fungusWinner + " pontszám: " + maxFungusScore);
         System.out.println("Insect győztes: " + insectWinner + " pontszám: " + maxInsectScore);
+        System.out.println("<------------------------------------------------->");
     }
     
     //! t1 -> newt <-t2 "Fák gyökerei sem nőnek össze. No para"
