@@ -22,5 +22,5 @@
 /set is1 addinsect i1
 eat i1 ss1
 move i1 th3
-status i1
-status is2
+/status i1
+/status is2

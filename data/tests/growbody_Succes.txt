@@ -11,5 +11,5 @@
 /create fungusspecies fs1
 /set fs1 addthread th1
 growbody th1
-status t1
-status fs1
+/status t1
+/status fs1

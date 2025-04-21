@@ -7,4 +7,4 @@
 /set is1 score 100
 /set is1 addinsect i1
 /trigger i1
-status is1
+/status is1

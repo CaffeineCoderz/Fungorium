@@ -237,6 +237,10 @@ public class CommandProcessor {
         objectTypeMap.put("onlythreadtekton", "OnlyThreadTekton");
     }
 
+    public void clearCreatedObjects() {
+        createdObjects.clear();
+    }
+
     // ! -------------------------- COMMNAD HANDLING -----------------------------
 
     /*
@@ -289,13 +293,15 @@ public class CommandProcessor {
             return;
         }
 
-        // * Kommentezz ki a következő sort, ha nem akarod, hogy a játékosok használhassák a rendszerparancsokat
-        /* 
-        if (systemCommands.contains(command)) {
-            System.out.println("Hiba: A rendszerparancsok nem használhatók játékosok által: " + command);
-            return;
-        }
-        */
+        // Kommentezz ki a következő sort, ha nem akarod, hogy a játékosok
+        // használhassák a rendszerparancsokat
+        /*
+            if (systemCommands.contains(command)) {
+            System.out.
+            println("Hiba: A rendszerparancsok nem használhatók játékosok által: " +command);
+         * return;
+         * }
+         */
 
         // Ha a parancs érvényes, hajtsd végre
         Consumer<String[]> action = commands.get(command);
@@ -1011,6 +1017,40 @@ public class CommandProcessor {
     }
 
     /*
+     * Teszt fájlok futtatására szolgáló függvény
+     * 
+     * @param fileName A teszt fájl neve (kiterjesztés nélkül).
+     * A fájlnak a "data/tests" mappában kell lennie.
+     */
+    public void runTest(String fileName) {
+        String testFilePath = "data/tests/" + fileName + ".txt";
+        String outputFilePath = "data/output/" + fileName + "_output.txt";
+
+        // Redirect System.out to the output file
+        try (BufferedReader reader = new BufferedReader(new FileReader(testFilePath));
+                PrintStream fileOut = new PrintStream(new FileOutputStream(outputFilePath))) {
+
+            // Redirect System.out to the file
+            PrintStream originalOut = System.out;
+            System.setOut(fileOut);
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                if (!line.isEmpty()) {
+                    process(line); // Process each command
+                }
+            }
+
+            // Restore the original System.out
+            System.setOut(originalOut);
+
+        } catch (IOException e) {
+            System.err.println("Hiba a teszt futtatása közben: " + e.getMessage());
+        }
+    }
+
+    /*
      * Set parancs formája: set <object> <property> <value>
      * Példa: /set th1 lifespan 10
      */
@@ -1184,16 +1224,25 @@ public class CommandProcessor {
             Insect insect = (Insect) obj;
             switch (property) {
                 case "species":
-                    insect.setMyOwner((InsectSpecies) createdObjects.get(value));
+                    if (createdObjects.get(value) instanceof InsectSpecies)
+                        insect.setMyOwner((InsectSpecies) createdObjects.get(value));
+                    else
+                        System.out.println(
+                                "Hiba: Nem megfelelő objektum típus vagy nem létezik ilyen nevű objektum: " + value);
                     break;
                 case "thread":
-                    insect.setThread((FungusThread) createdObjects.get(value));
+                    if (createdObjects.get(value) instanceof FungusThread)
+                        insect.setThread((FungusThread) createdObjects.get(value));
+                    else
+                        System.out.println(
+                                "Hiba: Nem megfelelő objektum típus vagy nem létezik ilyen nevű objektum:" + value);
                     break;
                 case "tekton":
                     if (createdObjects.get(value) instanceof Tekton)
                         insect.setRecentTekton((Tekton) createdObjects.get(value));
                     else
-                        System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + value);
+                        System.out.println(
+                                "Hiba: Nem megfelelő objektum típus vagy nem létezik ilyen nevű objektum:" + value);
                     break;
                 case "decrease":
                     insect.setDecrease(Boolean.parseBoolean(value));
@@ -1373,6 +1422,10 @@ public class CommandProcessor {
         if (obj instanceof Insect) {
             Insect insect = (Insect) obj;
             FungusThread th = (FungusThread) threadObject;
+            if (th == null) {
+                System.out.println("Hiba: Thread null értékű: " + thread);
+                return;
+            }
             insect.move(th);
             // Debug purposes
             // System.out.println("Az Insect mozgott!");
@@ -1449,6 +1502,24 @@ public class CommandProcessor {
         } else {
             System.out.println(
                     "Hiba: Valamlyik objektum típusa nem helyes a parancshoz: " + insectName + " " + threadName);
+        }
+    }
+
+    public void processTriggerCommand(String[] parts) {
+        String name = parts[1];
+        String objectName = parts[2];
+
+        if (!createdObjects.containsKey(name)) {
+            System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + name);
+            return;
+        }
+
+        Object obj = createdObjects.get(name);
+        if (obj instanceof FungusThread) {
+            FungusThread thread = (FungusThread) obj;
+            thread.decreaseLife();
+        } else {
+            System.out.println("Hiba: Az objektum nem thread típusú: " + name);
         }
     }
 

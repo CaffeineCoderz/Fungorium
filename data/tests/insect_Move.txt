@@ -15,4 +15,4 @@ growthread t3 th5 th6
 /set i1 thread th1
 move i1 th3
 move i1 th5
-status i1
+/status i1

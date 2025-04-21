@@ -31,13 +31,15 @@ public class main {
                     processor.start();
                     break;
                 case 2:
-                    tester.checkTestResults();
+
+                    tester.checkTestResults(gameLogic);
                     break;
                 case 3:
                     tester.printTestCases();
                     System.out.println("Which test case would you like to run? ");
                     int caseChoice = scanner.nextInt();
-                    tester.checkTestResults(caseChoice);
+                    tester.checkTestResults(gameLogic, caseChoice);
+
                     break;
                 case 4:
                     System.out.println("How many rounds should the game have?");
@@ -52,6 +54,9 @@ public class main {
                     break;
                 case 5:
                     System.out.println("Exiting the program. Goodbye!");
+                    break;
+                case 6:
+                    tester.clearOutputFiles();
                     break;
                 default:
                     System.out.println("Invalid choice. Please try again.");

@@ -4,8 +4,8 @@
 /set t1 addneighbour t2
 /set t1 addneighbour t3
 /create body b1
-/set b1 tekton t1
 /set b1 sporecount 4
+/set b1 tekton t1
 sporulate b1
-status t2
-status t3
+/status t2
+/status t3
