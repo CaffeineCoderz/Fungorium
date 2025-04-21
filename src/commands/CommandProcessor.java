@@ -772,12 +772,10 @@ public class CommandProcessor {
     public void processGrowBodyCommand(String[] parts) {
         String threadName = parts[1];
         String tekton = parts[2];
-
         if (!createdObjects.containsKey(threadName)) {
             System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + threadName);
             return;
         }
-
         if (!createdObjects.containsKey(tekton)) {
             System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + tekton);
             return;
@@ -787,6 +785,7 @@ public class CommandProcessor {
         if (obj instanceof FungusThread) {
             FungusThread thread = (FungusThread) obj;
             Tekton tektonObj = null;
+            //! Ahhoz, hogy testet növesszünk nem kell nekünk tudni a tektont, mivel a fonaltól egy getter-el megkapjuk a tektont
             if (createdObjects.get(tekton) instanceof Tekton) {
                 tektonObj = (Tekton) createdObjects.get(tekton);
             } else if (createdObjects.get(tekton) instanceof DecomposingTekton) {
@@ -803,12 +802,10 @@ public class CommandProcessor {
                 System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + tekton);
                 return;
             }
-            if (tektonObj.canGrowBody()) {
-                thread.getSpecies().growBody(thread);
-            } else {
-                System.out.println("Hiba: Nem lehet ide body-t növeszteni: " + tekton);
-                return;
-            }
+            //actual growbody
+            String bodyName = "bo" + (countObjectsOfType(FungusBody.class)+1);
+            FungusBody nBody = thread.getSpecies().growBody(thread);
+            createdObjects.put(bodyName, nBody);
         } else {
             System.out.println("Hiba: Nem lehet növeszteni ezt az objektumot: " + threadName);
         }
@@ -816,19 +813,19 @@ public class CommandProcessor {
 
     /*
      * growthread parancs formája:
-     * growthread <Tekton> <FungusBody> <newFungusThread>
-     * Példa: growthread t1 b1 th1
+     * growthread <Tekton> <FungusBody> 
+     * Példa: growthread t1 b1
      * 
      * growthread parancs formája:
-     * growthread <Tekton> <existingFungusThread> <newFungusThread>
-     * Példa: growthread t1 th1 th2
+     * growthread <Tekton> <existingFungusThread>
+     * Példa: growthread t1 th1
      * 
      * @param parts: parancs részei
      */
     public void processGrowThreadCommand(String[] parts) {
         String tektonName = parts[1];
         String secondParam = parts[2];
-        String newThreadName = parts[3];
+        String newThreadName = "th" + (countObjectsOfType(FungusThread.class)+1);
 
         // Második param type check
         Object obj = createdObjects.get(secondParam);
@@ -843,33 +840,15 @@ public class CommandProcessor {
             return;
         }
 
-        // Harmadikat nem ellnőrizzük, mert az új threadet létrehozzuk
-        // Inicializálás
-        String[] newThreadParts = { "thread", newThreadName };
-        processCreateCommand(newThreadParts);
-        FungusThread newThread = (FungusThread) createdObjects.get(newThreadName);
-
-        // Sikeresség ellenőrzés
-        if (newThread == null) {
-            System.out.println("Hiba: Nem sikerült létrehozni a FungusThread-et: " + newThreadName);
-            return;
-        }
-
         // Második param fungusBody Típusú
         if (obj instanceof FungusBody) {
             if (createdObjects.get(tektonName) instanceof Tekton
                     && createdObjects.get(secondParam) instanceof FungusBody) {
                 Tekton tekton = (Tekton) createdObjects.get(tektonName);
                 FungusBody body = (FungusBody) createdObjects.get(secondParam);
-
-                // Actual growThread
-                if (tekton.canGrowThread()) {
-                    // ! Az új thread be lesz adva a függvénybe
-                    body.getSpecies().growThread(tekton, body, newThread);
-                } else {
-                    System.out.println("Hiba: Nem lehet ide threadet növeszteni: " + tektonName);
-                    return;
-                }
+                //Actual growthread
+                FungusThread nThread = body.getSpecies().growThread(tekton, body);
+                createdObjects.put(newThreadName, nThread);
             } else {
                 System.out.println("Hiba: Valamelyik paraméter nem megfelelő típusú.");
             }
@@ -878,15 +857,9 @@ public class CommandProcessor {
                     && createdObjects.get(secondParam) instanceof FungusThread) {
                 Tekton tekton = (Tekton) createdObjects.get(tektonName);
                 FungusThread thread = (FungusThread) createdObjects.get(secondParam);
-
-                // Actual growThread
-                if (tekton.canGrowThread()) {
-                    // ! Az új thread be lesz adva a függvénybe
-                    thread.getSpecies().growThread(tekton, thread, newThread);
-                } else {
-                    System.out.println("Hiba: Nem lehet ide threadet növeszteni: " + tektonName);
-                    return;
-                }
+                //Actual growthread
+                FungusThread nThread = thread.getSpecies().growThread(tekton, thread);
+                createdObjects.put(newThreadName, nThread);                    
             } else {
                 System.out.println("Hiba: Valamelyik paraméter nem megfelelő típusú.");
             }
