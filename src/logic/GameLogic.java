@@ -118,12 +118,57 @@ public class GameLogic {
         }
     }
 
+    public void printGuide() {
+        String[] guideLines = {
+                "The goal of the game is to achieve the highest score possible.",
+                "At the end of the game, there will be two winners: one FungusSpecies and one InsectSpecies.",
+                "\033[0;32m",
+                "\tThe FungusSpecies with the most FungusBodies wins.(Highest score)",
+                "\tThe InsectSpecies with the most Insects wins.(Highest score)",
+                "\033[0m",
+                "During the game, players can issue commands to control the Fungus and Insect species.",
+                "These user commands can be viewed using the 'help' command.",
+                "All system and user commands can be viewed with the '/helpsys' command.",
+                "At the end of their turn, players can move to the next player using the 'next' command."
+        };
+
+        String guideTitle = "Fungorium Game Guide";
+
+        // Find the longest line
+        int maxLength = guideTitle.length();
+        for (String line : guideLines) {
+            if (line.length() > maxLength) {
+                maxLength = line.length();
+            }
+        }
+
+        // Generate the arrows dynamically
+        String arrows = "<" + "-".repeat(maxLength + 4) + ">";
+
+        // Center the title
+        int totalWidth = maxLength + 4; // Total width of the arrow line
+        int padding = (totalWidth - guideTitle.length()) / 2; // Calculate padding for centering
+        String centeredTitle = " ".repeat(padding) + guideTitle;
+
+        // Print the guide
+        System.out.println(arrows);
+        System.out.print("\033[1;35m");
+        System.out.println(centeredTitle);
+        System.out.print("\033[0m");// Used for resetting the changes.
+        System.out.println(arrows);
+        for (String line : guideLines) {
+            System.out.println(line);
+        }
+        System.out.println(arrows);
+    }
+
     /**
      * Selects the players and their types (Fungus or Insect).
      * 
      * @param scanner The scanner to read user input.
      */
     private void selectPlayers(Scanner scanner) {
+        System.out.println("Dummy players can be added by typing 'dummy'.");
         while (true) {
             if (fungusPlayers == 0 && insectPlayers == 0) {
                 System.out.println(
@@ -134,7 +179,9 @@ public class GameLogic {
             String choice = scanner.nextLine().trim().toUpperCase();
 
             if (choice.equals("START")) {
+                printGuide();
                 System.out.println("All players are ready. Starting the game...");
+
                 // commandProcessor.start();
                 // scanner.close();
                 return;
@@ -154,6 +201,7 @@ public class GameLogic {
                     System.out.println("Created Insect player: " + insectName);
                     insectPlayers--;
                 }
+                printGuide();
                 System.out.println("All dummy players created. Starting the game...");
                 return;
             }
@@ -366,9 +414,9 @@ public class GameLogic {
         System.out.println("Insect győztes: " + insectWinner + " pontszám: " + maxInsectScore);
         System.out.println("<------------------------------------------------->");
     }
-    
-    //! t1 -> newt <-t2 "Fák gyökerei sem nőnek össze. No para"
-    private Boolean canReachThread(Insect insect, FungusThread toThread){
+
+    // ! t1 -> newt <-t2 "Fák gyökerei sem nőnek össze. No para"
+    private Boolean canReachThread(Insect insect, FungusThread toThread) {
         Integer distance = 2;
         switch (insect.gEffect()) {
             case SLOW:
@@ -382,33 +430,35 @@ public class GameLogic {
                 break;
         }
         FungusThread temp = insect.getThread().getPrev();
-        for (Integer i = 0; i < distance ; i++) {
+        for (Integer i = 0; i < distance; i++) {
             if (temp == toThread) {
-                return true;   
+                return true;
             }
-            //? a Body-hoz értünk meg kell nézni, hogy ér-e el másik threadet a bodyból
+            // ? a Body-hoz értünk meg kell nézni, hogy ér-e el másik threadet a bodyból
             else if (temp == null) {
-                Integer remainingDistance = distance-i-1; //Mivel az hogy rálép a Body-ra az is egy lépés, 
-                //szóval Body-ból kijövő fonalak közti váltás az nem 1 hanem 2 lépés
-                //0: nem csinál semmit,
-                //1: body-ból kinövő threadeket nézi, 
-                //2: 1-es és a threadek szomszédai
-                if(canReachFromBody(toThread, temp, remainingDistance)) return true;
+                Integer remainingDistance = distance - i - 1; // Mivel az hogy rálép a Body-ra az is egy lépés,
+                // szóval Body-ból kijövő fonalak közti váltás az nem 1 hanem 2 lépés
+                // 0: nem csinál semmit,
+                // 1: body-ból kinövő threadeket nézi,
+                // 2: 1-es és a threadek szomszédai
+                if (canReachFromBody(toThread, temp, remainingDistance))
+                    return true;
                 break;
             }
             temp = temp.getPrev();
         }
 
         temp = insect.getThread().getNext();
-        for (Integer i = 0; i < distance ; i++) {
+        for (Integer i = 0; i < distance; i++) {
             if (temp == toThread) {
-                return true;   
-            }else if (temp == null) {
+                return true;
+            } else if (temp == null) {
                 break;
             }
-            if (temp.getNext() == null){
-                if (toThread.getBody() == temp.getBody()){
-                    if(canReachFromBody(toThread, temp, distance-i-1)) return true;
+            if (temp.getNext() == null) {
+                if (toThread.getBody() == temp.getBody()) {
+                    if (canReachFromBody(toThread, temp, distance - i - 1))
+                        return true;
                 }
                 break;
             }
@@ -417,33 +467,33 @@ public class GameLogic {
         return false;
     }
 
-    private Boolean canReachFromBody(FungusThread toThread, FungusThread temp,Integer distance){
-        for (FungusThread bodyThreads :temp.getBody().getThreads()) {
+    private Boolean canReachFromBody(FungusThread toThread, FungusThread temp, Integer distance) {
+        for (FungusThread bodyThreads : temp.getBody().getThreads()) {
             if (bodyThreads == toThread) {
                 return true;
-            }else{
+            } else {
                 Boolean dirChange = false;
                 FungusThread bodyThreadtemp;
-                //? t3-ből növesztettük a Body-t és a body-ból t1-et és t2-t
-                //? t1<- FBody ->t2
-                //?        ^
-                //?        |
-                //?        t3
+                // ? t3-ből növesztettük a Body-t és a body-ból t1-et és t2-t
+                // ? t1<- FBody ->t2
+                // ? ^
+                // ? |
+                // ? t3
                 if (bodyThreads.getNext() == null && bodyThreads.getPrev() != null) {
                     bodyThreadtemp = bodyThreads.getPrev();
                     dirChange = true;
-                }else{
+                } else {
                     bodyThreadtemp = bodyThreads.getNext();
                     dirChange = false;
                 }
 
                 for (int j = 0; j < distance; j++) {
-                    if(bodyThreadtemp == toThread){
+                    if (bodyThreadtemp == toThread) {
                         return true;
                     }
                     if (dirChange) {
                         bodyThreadtemp = bodyThreadtemp.getPrev();
-                    }else
+                    } else
                         bodyThreadtemp = bodyThreadtemp.getNext();
                 }
             }
@@ -451,4 +501,3 @@ public class GameLogic {
         return false;
     }
 }
-

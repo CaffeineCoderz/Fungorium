@@ -291,13 +291,15 @@ public class CommandProcessor {
             return;
         }
 
-        // * Kommentezz ki a következő sort, ha nem akarod, hogy a játékosok használhassák a rendszerparancsokat
-        /* 
-        if (systemCommands.contains(command)) {
-            System.out.println("Hiba: A rendszerparancsok nem használhatók játékosok által: " + command);
-            return;
-        }
-        */
+        // Kommentezz ki a következő sort, ha nem akarod, hogy a játékosok
+        // használhassák a rendszerparancsokat
+        /*
+            if (systemCommands.contains(command)) {
+            System.out.
+            println("Hiba: A rendszerparancsok nem használhatók játékosok által: " +command);
+         * return;
+         * }
+         */
 
         // Ha a parancs érvényes, hajtsd végre
         Consumer<String[]> action = commands.get(command);
@@ -1521,6 +1523,24 @@ public class CommandProcessor {
         } else {
             System.out.println(
                     "Hiba: Valamlyik objektum típusa nem helyes a parancshoz: " + insectName + " " + threadName);
+        }
+    }
+
+    public void processTriggerCommand(String[] parts) {
+        String name = parts[1];
+        String objectName = parts[2];
+
+        if (!createdObjects.containsKey(name)) {
+            System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + name);
+            return;
+        }
+
+        Object obj = createdObjects.get(name);
+        if (obj instanceof FungusThread) {
+            FungusThread thread = (FungusThread) obj;
+            thread.decreaseLife();
+        } else {
+            System.out.println("Hiba: Az objektum nem thread típusú: " + name);
         }
     }
 
