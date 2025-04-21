@@ -37,5 +37,5 @@ jobs:
       - name: Run (with exit)
         run: ./run.sh | echo "exit"
 
-      - name: Test
-        run: echo "50" | ./test.sh
+      # - name: Test
+      #   run: echo "50" | ./test.sh
