@@ -277,6 +277,7 @@ public class Tekton {
      * neighbors.
      */
     public void breakTekton() {
+        // Először eltávolítjuk az összes rovar, fonal és spóra kapcsolatot
         for (int i = insects.size() - 1; i >= 0; i--) {
             Insect insect = insects.get(i);
             insect.deadInsect();
@@ -289,19 +290,38 @@ public class Tekton {
             Spore spore = spores.get(i);
             spore.absorbed();
         }
-        body.getSpecies().destroyBody(body);
+        if (body != null) {
+            body.getSpecies().destroyBody(body);
+        }
+    
+        // Létrehozzuk az új Tektonokat
         Tekton t1 = new Tekton(this);
         Tekton t2 = new Tekton(this);
-
-        for (Tekton tekton : neighbours) {
-            tekton.removeNeighbour(this);
-
-            tekton.addNeighbour(t1);
-            tekton.addNeighbour(t2);
+    
+        // Szomszédok felosztása
+        int mid = neighbours.size() / 2;
+        List<Tekton> t1Neighbours = new ArrayList<>(neighbours.subList(0, mid));
+        List<Tekton> t2Neighbours = new ArrayList<>(neighbours.subList(mid, neighbours.size()));
+    
+        // Az új Tektonok szomszédainak beállítása
+        for (Tekton neighbour : t1Neighbours) {
+            neighbour.removeNeighbour(this);
+            neighbour.addNeighbour(t1);
+            t1.addNeighbour(neighbour);
         }
+    
+        for (Tekton neighbour : t2Neighbours) {
+            neighbour.removeNeighbour(this);
+            neighbour.addNeighbour(t2);
+            t2.addNeighbour(neighbour);
+        }
+    
+        // Az új Tektonok egymás szomszédai lesznek
         t1.addNeighbour(t2);
-
         t2.addNeighbour(t1);
+    
+        // Az eredeti Tekton szomszédainak törlése
+        neighbours.clear();
     }
     
     // ! még nincs statikus diagramba beleírva!

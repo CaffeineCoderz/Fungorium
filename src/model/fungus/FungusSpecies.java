@@ -7,6 +7,7 @@ import java.util.List;
 import fungus.FungusThread;
 import insect.*;
 import tektonTypes.FeedThreadTekton;
+import tektonTypes.OnlyThreadTekton;
 import tektonTypes.Tekton;
 import utils.Logger;
 
@@ -278,7 +279,7 @@ public class FungusSpecies implements iControl {
             thread.setBody(fb);
             return fb;
         } else {
-            System.err.println("Nincs elegendo spóra");
+            System.out.println("Sikertelen testnövesztés. A tektonon nincs elég spóra");
         }
         return null;
     }

@@ -27,7 +27,7 @@ public class main {
             switch (choice) {
                 case 1:
                     CommandProcessor processor = new CommandProcessor();
-                    processor.processConfigText("config");
+                    // processor.processConfigText("config");
                     processor.start();
                     break;
                 case 2:

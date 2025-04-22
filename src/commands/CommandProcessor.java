@@ -283,12 +283,14 @@ public class CommandProcessor {
         String[] parts = input.split(" ");
         String command = parts[0];
 
-        if (player instanceof FungusSpecies && !fungusCommands.contains(command) && !commonCommands.contains(command) && !systemCommands.contains(command)) {
+        if (player instanceof FungusSpecies && !fungusCommands.contains(command) && !commonCommands.contains(command)
+                && !systemCommands.contains(command)) {
             System.out.println("Hiba: FungusSpecies nem használhatja ezt a parancsot: " + command);
             return;
         }
 
-        if (player instanceof InsectSpecies && !insectCommands.contains(command) && !commonCommands.contains(command) && !systemCommands.contains(command)) {
+        if (player instanceof InsectSpecies && !insectCommands.contains(command) && !commonCommands.contains(command)
+                && !systemCommands.contains(command)) {
             System.out.println("Hiba: InsectSpecies nem használhatja ezt a parancsot: " + command);
             return;
         }
@@ -296,9 +298,10 @@ public class CommandProcessor {
         // Kommentezz ki a következő sort, ha nem akarod, hogy a játékosok
         // használhassák a rendszerparancsokat
         /*
-            if (systemCommands.contains(command)) {
-            System.out.
-            println("Hiba: A rendszerparancsok nem használhatók játékosok által: " +command);
+         * if (systemCommands.contains(command)) {
+         * System.out.
+         * println("Hiba: A rendszerparancsok nem használhatók játékosok által: "
+         * +command);
          * return;
          * }
          */
@@ -712,6 +715,14 @@ public class CommandProcessor {
                             .orElse("N/A"))
                     .toList()
                     .toString();
+            String tektonNames = tekton.getNeighbours().stream()
+                    .map(tektonObj -> createdObjects.entrySet().stream()
+                            .filter(entry -> entry.getValue() == tektonObj)
+                            .map(Map.Entry::getKey)
+                            .findFirst()
+                            .orElse("N/A"))
+                    .toList()
+                    .toString();
             String sporeNames = tekton.getSpores().stream()
                     .map(spore -> createdObjects.entrySet().stream()
                             .filter(entry -> entry.getValue() == spore)
@@ -733,7 +744,7 @@ public class CommandProcessor {
                     + "\n\tCanGrowBody: " + tekton.canGrowBody()
                     + "\n\tBodies: " + bodyName
                     + "\n\tInsects: " + insectNames
-                    + "\n\tNeighbours: " + tekton.getNeighbours()
+                    + "\n\tNeighbours: " + tektonNames
                     + "\n\tSpores: " + sporeNames
                     + "\n\tThreads: " + threadNames);
         } else {
@@ -872,7 +883,6 @@ public class CommandProcessor {
     public void processEatCommand(String[] parts) {
         String SporeName = parts[1];
         String InsectName = parts[2];
-
         if (!createdObjects.containsKey(SporeName)) {
             System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + SporeName);
             return;
@@ -885,11 +895,19 @@ public class CommandProcessor {
 
         Object objSpore = createdObjects.get(SporeName);
         Object objInsect = createdObjects.get(InsectName);
-
         if (objInsect instanceof Insect) {
             Insect insect = (Insect) objInsect;
             Spore spore = (Spore) objSpore;
-            insect.consumeSpore(spore);
+            if (spore instanceof MultiplyInsectSpore) {
+                Insect newInsect = insect.consumeMultiplySpore(spore);
+                if (newInsect != null) {
+                    String newInsectName = generateUniqueName("i", countObjectsOfType(Insect.class));
+                    createdObjects.put(newInsectName, newInsect);
+                    // System.out.println("Új rovar jött létre: " + newInsectName);
+                }
+            } else {
+                insect.consumeSpore(spore);
+            }
             // Debug purposes
             // System.out.println("Az Insect megette a Spore-t!");
         } else {
@@ -1313,12 +1331,18 @@ public class CommandProcessor {
                         System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + value);
                     break;
                 case "addneighbour":
-                    if (createdObjects.get(value) instanceof Tekton)
-                        tekton.addNeighbour((Tekton) createdObjects.get(value));
+                    if (createdObjects.get(value) instanceof Tekton){
+                        Tekton neighbour = (Tekton) createdObjects.get(value);
+                        tekton.addNeighbour(neighbour);
+                        neighbour.addNeighbour(tekton);
+                    }
                     break;
                 case "removeneighbour":
-                    if (createdObjects.get(value) instanceof Tekton)
-                        tekton.removeNeighbour((Tekton) createdObjects.get(value));
+                    if (createdObjects.get(value) instanceof Tekton){
+                        Tekton neighbour = (Tekton) createdObjects.get(value);
+                        tekton.removeNeighbour(neighbour);
+                        neighbour.removeNeighbour(tekton);
+                    }
                     break;
                 case "addinsect":
                     if (createdObjects.get(value) instanceof Insect)
@@ -1421,7 +1445,7 @@ public class CommandProcessor {
                 System.out.println("Hiba: Thread null értékű: " + thread);
                 return;
             }
-            insect.move(th);
+            gameLogic.MoveInsect(insect, th);
             // Debug purposes
             // System.out.println("Az Insect mozgott!");
         } else {
@@ -1485,6 +1509,7 @@ public class CommandProcessor {
                 FungusBody b = new FungusBody();
                 thread.getSpecies().addBody(b);
                 thread.getTekton().setBody(b);
+                thread.getSpecies().addScore(1);
                 String baseName = "b";
                 int fungusBodyCount = countObjectsOfType(FungusBody.class);
                 String bodyname = generateUniqueName(baseName, fungusBodyCount);
@@ -1510,11 +1535,32 @@ public class CommandProcessor {
         }
 
         Object obj = createdObjects.get(name);
-        if (obj instanceof FungusThread) {
+        if (name.equals("timeelapsed")) {
+            for (Object object : createdObjects.values()) {
+                if (object instanceof InsectSpecies) {
+                    InsectSpecies insectSpecies = (InsectSpecies) object;
+                    insectSpecies.timeElapsed();
+                } else if (object instanceof FungusSpecies) {
+                    FungusSpecies fungusSpecies = (FungusSpecies) object;
+                    fungusSpecies.timeElapsed();
+                }
+            }
+        } else if (obj instanceof FungusSpecies) {
+            FungusSpecies fungusSpecies = (FungusSpecies) obj;
+            fungusSpecies.timeElapsed();
+        } else if (obj instanceof InsectSpecies) {
+            InsectSpecies insectSpecies = (InsectSpecies) obj;
+            insectSpecies.timeElapsed();
+        } else if (obj instanceof FungusThread) {
             FungusThread thread = (FungusThread) obj;
             thread.decreaseLife();
-        } else {
-            System.out.println("Hiba: Az objektum nem thread típusú: " + name);
+        } else if (obj instanceof Insect) {
+            Insect insect = (Insect) obj;
+            insect.timeElapsed();
+        }
+
+        else {
+            System.out.println("Hiba: Nem megfelelő objektum típus: " + name);
         }
     }
 
