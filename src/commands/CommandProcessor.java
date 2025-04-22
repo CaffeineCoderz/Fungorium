@@ -148,10 +148,10 @@ public class CommandProcessor {
         commandDescriptions.put("move", "move <Insect> <Thread>");
 
         commands.put("growbody", this::processGrowBodyCommand);
-        commandDescriptions.put("growbody", "grow <FungusThread>");
+        commandDescriptions.put("growbody", "growbody <FungusThread>");
 
         commands.put("growthread", this::processGrowThreadCommand);
-        commandDescriptions.put("growthread", "grow <Tekton> <FungusBody>/<existingFungusThread>");
+        commandDescriptions.put("growthread", "growthread <Tekton> <FungusBody>/<FungusThread>");
 
         commands.put("eatinsect", this::processEatInsectCommand);
         commandDescriptions.put("eatinsect", "eatinsect <Insect> <Thread>");
@@ -169,7 +169,7 @@ public class CommandProcessor {
         commandDescriptions.put("/helpsys", "/helpsys");
 
         commands.put("/helpobj", parts -> helpObj());
-        commandDescriptions.put("/helpObj", "/helpObj");
+        commandDescriptions.put("/helpobj", "/helpobj");
 
         commands.put("/load", parts -> processConfigText(parts[1]));
         commandDescriptions.put("/load", "/load <filename>");
@@ -207,10 +207,10 @@ public class CommandProcessor {
         commandDescriptions.put("move", "move <Insect> <Thread>");
 
         commands.put("growbody", this::processGrowBodyCommand);
-        commandDescriptions.put("growbody", "grow <FungusThread>");
+        commandDescriptions.put("growbody", "growbody <FungusThread>");
 
         commands.put("growthread", this::processGrowThreadCommand);
-        commandDescriptions.put("growthread", "grow <Tekton> <FungusBody>/<existingFungusThread>");
+        commandDescriptions.put("growthread", "growthread <Tekton> <FungusBody>/<FungusThread>");
 
         commands.put("eatinsect", this::processEatInsectCommand);
         commandDescriptions.put("eatinsect", "eatinsect <Insect> <Thread>");
