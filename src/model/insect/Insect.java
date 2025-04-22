@@ -2,6 +2,7 @@ package insect;
 
 import fungus.FungusThread;
 import interfaces.iControl;
+import sporeTypes.MultiplyInsectSpore;
 import sporeTypes.Spore;
 import tektonTypes.Tekton;
 import utils.*;
@@ -267,6 +268,12 @@ public class Insect{
         s.consume(this);
     }
 
+    public Insect consumeMultiplySpore(Spore s) {
+        MultiplyInsectSpore m = (MultiplyInsectSpore) s;
+        addScore(m.getNutValue());
+        return m.consumeMultiply(this);
+    }
+
     // iControl interface
 
     /**
@@ -333,9 +340,19 @@ public class Insect{
     /**
      * The insect duplicates itself. It is called whenever the Insect eats a MultiplyInsectSpore 
      */
-    public void duplicate(){
+    // public void duplicate(){
+    //     Insect doppelGanger = new Insect(this);
+    //     myOwner.addInsect(doppelGanger);
+    // }
+
+    /**
+     * The insect duplicates itself. It is called whenever the Insect eats a
+     * MultiplyInsectSpore
+     */
+    public Insect duplicate() {
         Insect doppelGanger = new Insect(this);
         myOwner.addInsect(doppelGanger);
+        return doppelGanger;
     }
 
     /**

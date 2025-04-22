@@ -20,4 +20,10 @@ public class MultiplyInsectSpore extends Spore{
         insect.duplicate();
         absorbed();
     }
+
+    public Insect consumeMultiply(Insect insect){
+        Insect newInsect = insect.duplicate();
+        absorbed();
+        return newInsect;
+    }
 }
