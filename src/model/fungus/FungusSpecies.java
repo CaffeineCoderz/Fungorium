@@ -135,11 +135,41 @@ public class FungusSpecies implements iControl {
         if (targetTekton.canGrowThread()){
             FungusThread nThread = new FungusThread(null,false);
             addThread(nThread);
+            //Fonal amiből növesztünk nem híd + a cél tekton nem egyezik meg a kiinduló fonal tektonjával -->
+            // --> Ilyenkor bridge keletkezik, mivel két tektonnal definiáljuk a fonalat.
             if(!oThread.isBridge() && oThread.getTektons().get(0) != targetTekton){
+                //? Csak akkor lehessen még hidat növeszteni, ha a kiinduló fonalnak nincs olyan híd szomszédja(prev és next), mivel ezen formában
+                //? ha nem lenne ilyen kikötés, akkor az az eset megtörténhet,hogy:
+                //? Hídból(híd1) növesztünk egy fonalat(th1) a híd belseje felé, ez még okés
+                //? Th1 ből növesztünk egy új fonalat(híd2) egy másik (szomszédos)tektonra
+                //? Ilyenkor a tekton belsejéből növesztünk hidat, amit nem kéne
+                if (oThread.getPrev().isBridge()){
+                    System.err.println("You can't grow from this thread a bridge to another tekton.");
+                    return null;
+                }
 
+                //Ellenőrzés, hogy szomszédosak egymással ezen tektonok
+                boolean areNeighbours = false;
+                for (Tekton neighbour : targetTekton.getNeighbours()){
+                    if (neighbour == oThread.getTektons().get(0)) {
+                        areNeighbours = true;
+                        break;
+                    }
+                }
+                if (!areNeighbours) {
+                    System.err.println("The two Tektons between which the thread would grow are not adjacent.");
+                    return null;
+                }
+                
                 nThread.setBridge(true);
                 nThread.addTekton(oThread.getTektons().get(0));
                 oThread.getTektons().get(0).addThread(nThread);
+            }else if (oThread.isBridge() && oThread.getTektons().get(1) != targetTekton) { 
+                //Ha a fonal amiből növesztünk híd és
+                //Ha nem egyezik meg a cél tekton a kiinduló fonal, azon oldalán lévő tektonjával, amelyből még nem nőt fonál, 
+                //akkor nem nőhet oda új fonal
+                System.err.println("The target tekton did not match the tekton on the side of the starting thread(,what is a bridge,) from which no thread had yet grown.");
+                return null;
             }
             nThread.addTekton(targetTekton);
             targetTekton.addThread(nThread);
@@ -241,9 +271,6 @@ public class FungusSpecies implements iControl {
             }
             fb.setTekton(thread.getTekton(null));
             fb.addThread(thread);
-
-            // ! amelyik threadből növesszük a testet, annak a testje a növesztett test
-            // legyen
             thread.setBody(fb);
             return fb;
         } else {
