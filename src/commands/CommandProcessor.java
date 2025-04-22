@@ -1371,7 +1371,7 @@ public class CommandProcessor {
                 case "removeneighbour":
                     if (createdObjects.get(value) instanceof Tekton){
                         Tekton neighbour = (Tekton) createdObjects.get(value);
-                        tekton.removeNeighbour((Tekton) createdObjects.get(value));
+                        tekton.removeNeighbour(neighbour);
                         neighbour.removeNeighbour(tekton);
                     }
                     break;
