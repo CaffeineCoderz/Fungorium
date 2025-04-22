@@ -134,7 +134,6 @@ public class FungusSpecies implements iControl {
     public FungusThread growThread(Tekton targetTekton, FungusThread oThread) {
         if (targetTekton.canGrowThread()){
             FungusThread nThread = new FungusThread(null,false);
-            addThread(nThread);
             //Fonal amiből növesztünk nem híd + a cél tekton nem egyezik meg a kiinduló fonal tektonjával -->
             // --> Ilyenkor bridge keletkezik, mivel két tektonnal definiáljuk a fonalat.
             if(!oThread.isBridge() && oThread.getTektons().get(0) != targetTekton){
@@ -171,6 +170,7 @@ public class FungusSpecies implements iControl {
                 System.err.println("The target tekton did not match the tekton on the side of the starting thread(,what is a bridge,) from which no thread had yet grown.");
                 return null;
             }
+            addThread(nThread);
             nThread.addTekton(targetTekton);
             targetTekton.addThread(nThread);
             // ! Be kell állítani hogy melyik testhez tartozik
@@ -187,6 +187,10 @@ public class FungusSpecies implements iControl {
     }
     public FungusThread growThread(Tekton targetTekton, FungusBody body) {
         if (targetTekton.canGrowThread()){
+            if(targetTekton != body.getTekton()){
+                System.err.println("The targeted tekton is not the tekton on which the body is stationed!");
+                return null;
+            }
             FungusThread nThread = new FungusThread();
             addThread(nThread);
             nThread.addTekton(targetTekton);
