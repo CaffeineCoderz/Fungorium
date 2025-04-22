@@ -1,27 +1,30 @@
-t2:
-Tekton:
-CanGrowThread: true
-CanGrowBody: true
-Bodies: N/A
-Insects: N/A
-Neighbours: [t1, t3]
-Spores: [spore1]
-Threads: N/A
-t3:
-Tekton:
-CanGrowThread: true
-CanGrowBody: true
-Bodies: N/A
-Insects: N/A
-Neighbours: [t2, t4]
-Spores: [spore2]
-Threads: N/A
-t4:
-Tekton:
-CanGrowThread: true
-CanGrowBody: true
-Bodies: N/A
-Insects: N/A
-Neighbours: [t3]
-Spores: N/A
-Threads: N/A
+Név: t2
+Tekton: 
+	CanGrowThread: true
+	CanGrowBody: true
+	Bodies: N/A
+	Insects: []
+	Neighbours: [t1, t3]
+	Spores: [spore0]
+	Threads: []
+
+Név: t3
+Tekton: 
+	CanGrowThread: true
+	CanGrowBody: true
+	Bodies: N/A
+	Insects: []
+	Neighbours: [t2, t4]
+	Spores: [spore1]
+	Threads: []
+
+Név: t4
+Tekton: 
+	CanGrowThread: true
+	CanGrowBody: true
+	Bodies: N/A
+	Insects: []
+	Neighbours: [t3]
+	Spores: []
+	Threads: []
+
