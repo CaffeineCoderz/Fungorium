@@ -213,7 +213,7 @@ public class Insect{
                     ft.setLifeSpan(4);
                 }
         } else
-            System.err.println("Insect can't cut threads");
+            System.out.println("Insect can't cut threads");
 
     }
 
@@ -241,7 +241,7 @@ public class Insect{
             }
 
         } else
-           System.err.println("Insect cannot move because it is stunned!");
+           System.out.println("A rovar bénítva van.");
     }
 
     /**

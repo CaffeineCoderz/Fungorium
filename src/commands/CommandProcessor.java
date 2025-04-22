@@ -819,12 +819,12 @@ public class CommandProcessor {
                 System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + tekton);
                 return;
             }
-            if (tektonObj.canGrowBody()) {
-                thread.getSpecies().growBody(thread);
-            } else {
-                System.out.println("Hiba: Nem lehet ide body-t növeszteni: " + tekton);
-                return;
-            }
+            // if (tektonObj.canGrowBody()) {
+            thread.getSpecies().growBody(thread);
+            // } else {
+            //     System.out.println("Hiba: Nem lehet ide body-t növeszteni: " + tekton);
+            //     return;
+            // }
         } else {
             System.out.println("Hiba: Nem lehet növeszteni ezt az objektumot: " + threadName);
         }
@@ -1534,6 +1534,7 @@ public class CommandProcessor {
                 FungusBody b = new FungusBody();
                 thread.getSpecies().addBody(b);
                 thread.getTekton().setBody(b);
+                thread.getSpecies().addScore(1);
                 String baseName = "b";
                 int fungusBodyCount = countObjectsOfType(FungusBody.class);
                 String bodyname = generateUniqueName(baseName, fungusBodyCount);

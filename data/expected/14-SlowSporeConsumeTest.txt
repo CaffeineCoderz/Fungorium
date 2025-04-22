@@ -1,10 +1,11 @@
 Sikertelen elmozgás
-i1:
+Név: i1
 Insect:
-Owner: is1
-Thread: th1
-Effect: slow
-is1:
+    Owner: is1
+    Thread: th1
+    Effect: SLOW
+
+Név: is1
 InsectSpecies:
-Score: 2
-Insects: [i1]
+    Score: 2
+    Insects: [i1]
