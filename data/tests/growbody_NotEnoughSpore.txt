@@ -1,4 +1,6 @@
 /create tekton t1
+/create fungusspecies fs1
 /create thread th1
-/set th1 tekton t1
-growbody th1
+/set th1 species fs1
+/set th1 addtekton t1
+growbody th1 t1

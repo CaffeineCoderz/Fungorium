@@ -1,10 +1,12 @@
 A rovar bénítva van.
-i1:
-Insect:
-Owner: N/A
-Thread: th1
-Effect: stun
-is1:
-InsectSpecies:
-Score: 2
-Insects: [i1]
+Név: i1
+Insect: 
+	Owner: is1
+	Thread: th1
+	Effect: STUN
+
+Név: is1
+InsectSpecies: 
+	Score: 2
+	Insects: [i1]
+

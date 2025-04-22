@@ -7,6 +7,7 @@ import java.util.List;
 import fungus.FungusThread;
 import insect.*;
 import tektonTypes.FeedThreadTekton;
+import tektonTypes.OnlyThreadTekton;
 import tektonTypes.Tekton;
 import utils.Logger;
 
@@ -227,9 +228,13 @@ public class FungusSpecies implements iControl {
             System.err.println("Thread is a bridge. You can't grow a body from a bridge!");
             return;
         }
+        if(thread.getTekton() instanceof OnlyThreadTekton){
+            System.out.println("Sikertelen testnövesztés. A tektonon nem nőhet gombatest");
+            return;
+        }
         Integer atleast = 2;
         boolean enoughSpore = thread.getTekton(null).isThereEnoughSpore(atleast);
-        if (thread.getTekton() != null) {
+        if (thread.getTekton().getBody() != null) {
             System.out.println("Sikertelen testnövesztés. A tektonon már van gombatest.");
             return;
         }
@@ -242,12 +247,12 @@ public class FungusSpecies implements iControl {
             }
             fb.setTekton(thread.getTekton(null));
             fb.addThread(thread);
-
+            addScore(1);
             // ! amelyik threadből növesszük a testet, annak a testje a növesztett test
             // legyen
             thread.setBody(fb);
         } else {
-            System.err.println("Nincs elegendo spóra");
+            System.out.println("Sikertelen testnövesztés. A tektonon nincs elég spóra");
         }
     }
 
