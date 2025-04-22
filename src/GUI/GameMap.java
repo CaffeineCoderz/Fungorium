@@ -11,11 +11,12 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.awt.geom.Point2D;
+
 
 class GameMapScreen extends JFrame {
-    private static final int MAP_WIDTH = 20;
-    private static final int MAP_HEIGHT = 20;
-    private static final int CELL_SIZE = 40; // Alapértelmezett cellaméret pixelben
+    private static final int MAP_WIDTH = 800; // Például a térkép pixel szélessége
+    private static final int MAP_HEIGHT = 600; // Például a térkép pixel magassága
     private static final double ZOOM_SPEED = 0.02;
 
     private MapPanel mapPanel;
@@ -55,14 +56,14 @@ class GameMapScreen extends JFrame {
     }
 
     private class MapPanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener {
-        private List<Point> tektonok;
-        private List<Point> rovarok;
+        private List<Point2D.Double> tektonok; // Folytonos koordináták
+        private List<Point2D.Double> rovarok; // Folytonos koordináták
         private AffineTransform transform = new AffineTransform();
         private BufferedImage backgroundImage;
         private Point dragStartPoint;
 
         public MapPanel() {
-            setPreferredSize(new Dimension(MAP_WIDTH * CELL_SIZE, MAP_HEIGHT * CELL_SIZE));
+            setPreferredSize(new Dimension(MAP_WIDTH, MAP_HEIGHT));
             setBackground(Color.LIGHT_GRAY);
             addMouseListener(this);
             addMouseMotionListener(this);
@@ -72,19 +73,23 @@ class GameMapScreen extends JFrame {
                 backgroundImage = ImageIO.read(new File("src/GUI/DATA/background.png"));
             } catch (IOException e) {
                 System.err.println("Hiba a háttérkép betöltése közben: " + e.getMessage());
-                backgroundImage = null; // Kezeld a hibát megfelelően
+                backgroundImage = null;
             }
-    
-            // Tektonok és rovarok véletlenszerű elhelyezése
+
             Random random = new Random();
             tektonok = new ArrayList<>();
             rovarok = new ArrayList<>();
-            int numEntities = 20; // Például 20 tekton és 20 rovar
+            int numEntities = 20;
             for (int i = 0; i < numEntities; i++) {
-                tektonok.add(new Point(random.nextInt(MAP_WIDTH), random.nextInt(MAP_HEIGHT)));
-                rovarok.add(new Point(random.nextInt(MAP_WIDTH), random.nextInt(MAP_HEIGHT)));
+                tektonok.add(new Point2D.Double(random.nextDouble() * MAP_WIDTH, random.nextDouble() * MAP_HEIGHT));
+                rovarok.add(new Point2D.Double(random.nextDouble() * MAP_WIDTH, random.nextDouble() * MAP_HEIGHT));
             }
-    
+
+            // Kezdeti középre igazítás
+            int panelWidth = getWidth();
+            int panelHeight = getHeight();
+            transform.translate(panelWidth / 2.0 - MAP_WIDTH / 2.0,
+                                 panelHeight / 2.0 - MAP_HEIGHT / 2.0);
         }
 
         @Override
@@ -94,47 +99,21 @@ class GameMapScreen extends JFrame {
             if (backgroundImage != null) {
                 g2d.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
             } else {
-                // Ha nincs háttérkép, rajzolhatsz egy alapszínt
                 g2d.setColor(Color.gray);
                 g2d.fillRect(0, 0, getWidth(), getHeight());
             }
             g2d.transform(transform);
 
-            int panelWidth = getWidth();
-            int panelHeight = getHeight();
-            int mapPixelWidth = MAP_WIDTH * CELL_SIZE;
-            int mapPixelHeight = MAP_HEIGHT * CELL_SIZE;
-
-            // Kezdeti eltolás a térkép közepére igazításához
-            AffineTransform initialTransform = new AffineTransform();
-            initialTransform.translate(panelWidth / 2.0 - mapPixelWidth / 2.0,
-                                        panelHeight / 2.0 - mapPixelHeight / 2.0);
-
-            // Alkalmazzuk a zoom és mozgatás transzformációkat az eredeti után
-            AffineTransform combinedTransform = new AffineTransform(initialTransform);
-            combinedTransform.concatenate(transform);
-            g2d.transform(combinedTransform);
-
-            // Koordináta-rendszer rajzolása (opcionális)
-            g2d.setColor(Color.white);
-            for (int i = 0; i <= MAP_WIDTH; i++) {
-                g2d.drawLine(i * CELL_SIZE, 0, i * CELL_SIZE, MAP_HEIGHT * CELL_SIZE);
-            }
-            for (int j = 0; j <= MAP_HEIGHT; j++) {
-                g2d.drawLine(0, j * CELL_SIZE, MAP_WIDTH * CELL_SIZE, j * CELL_SIZE);
-            }
-
-            // Tektonok rajzolása
+            int tektonSize = 20;
             g2d.setColor(Color.BLUE);
-            for (Point tekton : tektonok) {
-                g2d.fillRect(tekton.x * CELL_SIZE, tekton.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+            for (Point2D.Double tekton : tektonok) {
+                g2d.fillRect((int) tekton.getX() - tektonSize / 2, (int) tekton.getY() - tektonSize / 2, tektonSize, tektonSize);
             }
 
-            // Rovarok rajzolása
+            int insectSize = 10;
             g2d.setColor(Color.RED);
-            int insectSize = CELL_SIZE / 2;
-            for (Point rovar : rovarok) {
-                g2d.fillOval(rovar.x * CELL_SIZE + CELL_SIZE / 4, rovar.y * CELL_SIZE + CELL_SIZE / 4, insectSize, insectSize);
+            for (Point2D.Double rovar : rovarok) {
+                g2d.fillOval((int) rovar.getX() - insectSize / 2, (int) rovar.getY() - insectSize / 2, insectSize, insectSize);
             }
 
             g2d.dispose();
@@ -166,24 +145,33 @@ class GameMapScreen extends JFrame {
         @Override
         public void mouseWheelMoved(MouseWheelEvent e) {
             double zoomFactor = 1.0 - e.getWheelRotation() * ZOOM_SPEED;
-            Point mousePoint = e.getPoint();
-        
-            transform.translate(mousePoint.x, mousePoint.y);
+            int centerX = getWidth() / 2;
+            int centerY = getHeight() / 2;
+
+            transform.translate(centerX, centerY);
             transform.scale(zoomFactor, zoomFactor);
-            transform.translate(-mousePoint.x, -mousePoint.y);
-        
+            transform.translate(-centerX, -centerY);
+
             repaint();
         }
 
-        // Implement unused mouse event methods
         @Override
-        public void mouseClicked(MouseEvent e) {}
+        public void mouseClicked(MouseEvent e) {
+            // Nem használjuk
+        }
         @Override
-        public void mouseEntered(MouseEvent e) {}
+        public void mouseMoved(MouseEvent e) {
+            // Nem használjuk
+        }
         @Override
-        public void mouseExited(MouseEvent e) {}
+        public void mouseEntered(MouseEvent e) {
+            // Nem használjuk
+        }
         @Override
-        public void mouseMoved(MouseEvent e) {}
+        public void mouseExited(MouseEvent e) {
+            // Nem használjuk
+        }
+
     }
 
     public static void main(String[] args) {
