@@ -283,12 +283,14 @@ public class CommandProcessor {
         String[] parts = input.split(" ");
         String command = parts[0];
 
-        if (player instanceof FungusSpecies && !fungusCommands.contains(command) && !commonCommands.contains(command) && !systemCommands.contains(command)) {
+        if (player instanceof FungusSpecies && !fungusCommands.contains(command) && !commonCommands.contains(command)
+                && !systemCommands.contains(command)) {
             System.out.println("Hiba: FungusSpecies nem használhatja ezt a parancsot: " + command);
             return;
         }
 
-        if (player instanceof InsectSpecies && !insectCommands.contains(command) && !commonCommands.contains(command) && !systemCommands.contains(command)) {
+        if (player instanceof InsectSpecies && !insectCommands.contains(command) && !commonCommands.contains(command)
+                && !systemCommands.contains(command)) {
             System.out.println("Hiba: InsectSpecies nem használhatja ezt a parancsot: " + command);
             return;
         }
@@ -296,9 +298,10 @@ public class CommandProcessor {
         // Kommentezz ki a következő sort, ha nem akarod, hogy a játékosok
         // használhassák a rendszerparancsokat
         /*
-            if (systemCommands.contains(command)) {
-            System.out.
-            println("Hiba: A rendszerparancsok nem használhatók játékosok által: " +command);
+         * if (systemCommands.contains(command)) {
+         * System.out.
+         * println("Hiba: A rendszerparancsok nem használhatók játékosok által: "
+         * +command);
          * return;
          * }
          */
@@ -768,7 +771,6 @@ public class CommandProcessor {
         }
     }
 
-
     /*
      * growbody parancs formája: growbody <FungusThread> <Tekton>
      * Példa: growbody th1 t1
@@ -908,7 +910,6 @@ public class CommandProcessor {
     public void processEatCommand(String[] parts) {
         String SporeName = parts[1];
         String InsectName = parts[2];
-
         if (!createdObjects.containsKey(SporeName)) {
             System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + SporeName);
             return;
@@ -921,11 +922,19 @@ public class CommandProcessor {
 
         Object objSpore = createdObjects.get(SporeName);
         Object objInsect = createdObjects.get(InsectName);
-
         if (objInsect instanceof Insect) {
             Insect insect = (Insect) objInsect;
             Spore spore = (Spore) objSpore;
-            insect.consumeSpore(spore);
+            if (spore instanceof MultiplyInsectSpore) {
+                Insect newInsect = insect.consumeMultiplySpore(spore);
+                if (newInsect != null) {
+                    String newInsectName = generateUniqueName("i", countObjectsOfType(Insect.class));
+                    createdObjects.put(newInsectName, newInsect);
+                    // System.out.println("Új rovar jött létre: " + newInsectName);
+                }
+            } else {
+                insect.consumeSpore(spore);
+            }
             // Debug purposes
             // System.out.println("Az Insect megette a Spore-t!");
         } else {

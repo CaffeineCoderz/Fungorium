@@ -1,4 +1,5 @@
-is1:
-InsectSpecies:
-Score: 1
-Insects: [i1, i2]
+Név: is1
+InsectSpecies: 
+	Score: 1
+	Insects: [i0, i1]
+
