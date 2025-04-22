@@ -1591,7 +1591,7 @@ public class CommandProcessor {
         }
 
         else {
-            System.out.println("Hiba: Az objektum nem thread típusú: " + name);
+            System.out.println("Hiba: Nem megfelelő objektum típus: " + name);
         }
     }
 
