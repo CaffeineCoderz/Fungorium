@@ -715,6 +715,14 @@ public class CommandProcessor {
                             .orElse("N/A"))
                     .toList()
                     .toString();
+            String tektonNames = tekton.getNeighbours().stream()
+                    .map(tektonObj -> createdObjects.entrySet().stream()
+                            .filter(entry -> entry.getValue() == tektonObj)
+                            .map(Map.Entry::getKey)
+                            .findFirst()
+                            .orElse("N/A"))
+                    .toList()
+                    .toString();
             String sporeNames = tekton.getSpores().stream()
                     .map(spore -> createdObjects.entrySet().stream()
                             .filter(entry -> entry.getValue() == spore)
@@ -736,7 +744,7 @@ public class CommandProcessor {
                     + "\n\tCanGrowBody: " + tekton.canGrowBody()
                     + "\n\tBodies: " + bodyName
                     + "\n\tInsects: " + insectNames
-                    + "\n\tNeighbours: " + tekton.getNeighbours()
+                    + "\n\tNeighbours: " + tektonNames
                     + "\n\tSpores: " + sporeNames
                     + "\n\tThreads: " + threadNames);
         } else {
