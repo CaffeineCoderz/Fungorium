@@ -1,4 +1,4 @@
-/create feedingtekton ft1
+/create feedthreadtekton ft1
 /create tekton t1
 /create body b1
 /set t1 addneighbour ft1

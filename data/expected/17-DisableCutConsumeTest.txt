@@ -1,10 +1,12 @@
-is1:
-InsectSpecies:
-Score: 2
-Insects: [i1]
-i1:
-Insect:
-Owner: N/A
-Thread: th1
-Effect: disablecut
-Sikertelen fonálvágás
+Név: is1
+InsectSpecies: 
+	Score: 2
+	Insects: [i1]
+
+Név: i1
+Insect: 
+	Owner: is1
+	Thread: th1
+	Effect: NO_CUT
+
+Insect can't cut threads

@@ -1,9 +1,11 @@
-i1:
-Insect:
-Owner: N/A
-Thread: th4
-Effect: fast
-is1:
-InsectSpecies:
-Score: 2
-Insects: [i1]
+Név: i1
+Insect: 
+	Owner: is1
+	Thread: th4
+	Effect: FAST
+
+Név: is1
+InsectSpecies: 
+	Score: 2
+	Insects: [i1]
+
