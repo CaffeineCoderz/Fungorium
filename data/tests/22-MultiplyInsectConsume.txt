@@ -1,0 +1,12 @@
+/create insectspecies is1
+/create insect i0
+/set is1 addinsect i0
+/set i0 species is1
+/create tekton t1
+/create thread th1
+/set th1 addtekton t1
+/create multiplyinsectspore ms1
+/set ms1 tekton t1
+/set ms1 nutrition 1
+eat ms1 i0
+/status is1

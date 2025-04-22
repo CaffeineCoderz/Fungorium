@@ -7,7 +7,6 @@ public class DecreasingTekton extends Tekton{
 
     public DecreasingTekton(){
         super(true, true);
-        log = Logger.getLogger("DecreasingTektonLogger");
     }
 
     /**
@@ -22,13 +21,9 @@ public class DecreasingTekton extends Tekton{
     @Override
     public void addInsect(Insect insect){
         if (!insects.contains(insect)) {
-            log.askQ("insects not contains insect", false);
-            log.stepIn("insect.setDecrease(true)");
             insect.setDecrease(true);
-            log.stepOut( "insect.setDecrease(true)", null);
-            log.stepIn("insects.add(insect)");
-            log.stepOut("insects.add(insect)", insects.add(insect));
-        }else log.askQ("insects contains insect", false);
+            insects.add(insect);
+        }else System.err.println("Insect is already on the tekton!");
     }  
     /**
      * Removes an insect from the DecreasingTekton.
@@ -42,14 +37,10 @@ public class DecreasingTekton extends Tekton{
     @Override
     public void removeInsect(Insect insect){
         if (!insects.contains(insect) || insects.isEmpty()) {
-            log.askQ("'insects' is empty or it not contains param:insect", false);
+            System.err.println("There are no insects on the Tekton or it does not contain the insect");
             return;
         }
-        log.stepIn("insect.setDecrease(false)");
         insect.setDecrease(false);
-        log.stepOut("insect.setDecrease(false)", null);
-        
-        log.stepIn("insects.remove(insect)");
-        log.stepOut("insects.remove(insect)",insects.remove(insect));
+        insects.remove(insect);
     }    
 }

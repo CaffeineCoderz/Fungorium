@@ -6,12 +6,13 @@ import insect.Insect;
 
 import sporeTypes.Spore;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import commands.CommandProcessor;
 import utils.Logger;
 
-
-public class Tekton{
+public class Tekton {
     private Boolean canGrowBody;
     private Boolean canGrowThread;
     private List<Spore> spores;
@@ -20,9 +21,7 @@ public class Tekton{
     protected FungusBody body;
     private List<Tekton> neighbours;
 
-    protected Logger log = Logger.getLogger("TektonLogger");
-
-    public Tekton(){
+    public Tekton() {
         this.canGrowBody = true;
         this.canGrowThread = true;
         this.spores = new ArrayList<>();
@@ -43,10 +42,12 @@ public class Tekton{
     }
 
     /**
-     * Checks if there are at least the given amount of spores available in this Tekton.
+     * Checks if there are at least the given amount of spores available in this
+     * Tekton.
      * 
      * @param amount the amount of spores to check for.
-     * @return true if there are at least the given amount of spores available in this Tekton, false otherwise.
+     * @return true if there are at least the given amount of spores available in
+     *         this Tekton, false otherwise.
      */
     public Boolean isThereEnoughSpore(Integer amount) {
         return spores.size() >= amount;
@@ -61,11 +62,12 @@ public class Tekton{
         this.body = tekton.getBody();
         this.neighbours = tekton.getNeighbours();
     }
-    
+
     /**
      * Sets whether this Tekton can grow a FungusBody or not.
      * 
-     * @param canGrowBody true if this Tekton can grow a FungusBody, false otherwise.
+     * @param canGrowBody true if this Tekton can grow a FungusBody, false
+     *                    otherwise.
      */
     public void setGrowBody(Boolean canGrowBody) {
         this.canGrowBody = canGrowBody;
@@ -74,7 +76,8 @@ public class Tekton{
     /**
      * Sets whether this Tekton can grow a FungusThread or not.
      * 
-     * @param canGrowThread true if this Tekton can grow a FungusThread, false otherwise.
+     * @param canGrowThread true if this Tekton can grow a FungusThread, false
+     *                      otherwise.
      */
     public void setGrowThread(Boolean canGrowThread) {
         this.canGrowThread = canGrowThread;
@@ -97,10 +100,11 @@ public class Tekton{
     public void removeSpore(Spore spore) {
         spores.remove(spore);
     }
+
     /**
      * Removes the first Spore object from the list of associated spores.
      */
-    public void removeSpore(){
+    public void removeSpore() {
         spores.remove(0);
     }
 
@@ -116,25 +120,30 @@ public class Tekton{
     /**
      * Removes a specified Insect object from the list of associated insects.
      * 
-     * @param insect the Insect object to remove from the list of associated insects.
+     * @param insect the Insect object to remove from the list of associated
+     *               insects.
      */
     public void removeInsect(Insect insect) {
         insects.remove(insect);
     }
 
     /**
-     * Adds a FungusThread instance to the list of threads associated with this Tekton.
+     * Adds a FungusThread instance to the list of threads associated with this
+     * Tekton.
      * 
-     * @param thread the FungusThread instance to add to the list of associated threads.
+     * @param thread the FungusThread instance to add to the list of associated
+     *               threads.
      */
     public void addThread(FungusThread thread) {
         threads.add(thread);
     }
 
     /**
-     * Removes a specified FungusThread instance from the list of threads associated with this Tekton.
+     * Removes a specified FungusThread instance from the list of threads associated
+     * with this Tekton.
      * 
-     * @param thread the FungusThread instance to remove from the list of associated threads.
+     * @param thread the FungusThread instance to remove from the list of associated
+     *               threads.
      */
     public void removeThread(FungusThread thread) {
         threads.remove(thread);
@@ -143,21 +152,20 @@ public class Tekton{
     /**
      * Sets the FungusBody associated with this Tekton.
      * If the FungusBody is null, the current FungusBody is removed.
-     * If the Tekton already has a FungusBody, nothing is done and a debug message is printed.
+     * If the Tekton already has a FungusBody, nothing is done and a debug message
+     * is printed.
+     * 
      * @param nbody the FungusBody to set as the associated FungusBody.
      */
     public void setBody(FungusBody nbody) {
-        if(nbody == null){
-            body=null;
-            canGrowBody=true;
-        }
-        else if(body == null){
+        if (nbody == null) {
+            body = null;
+            canGrowBody = true;
+        } else if (body == null) {
             this.body = nbody;
-            canGrowBody=false;
-        }
-        else
-            log.askQ("Tekton already has a FungusBody on it", false);
-        
+            canGrowBody = false;
+        } else
+            System.err.println("Tekton already has a FungusBody on it");
     }
 
     /**
@@ -181,7 +189,8 @@ public class Tekton{
     /**
      * Retrieves the list of Spore objects associated with this Tekton.
      * 
-     * @return a list of Spore objects representing the spores associated with this Tekton.
+     * @return a list of Spore objects representing the spores associated with this
+     *         Tekton.
      */
     public List<Spore> getSpores() {
         return spores;
@@ -193,8 +202,7 @@ public class Tekton{
      * @param neighbour the Tekton object to remove from the list of neighbors.
      */
     public void removeNeighbour(Tekton neighbour) {
-        log.stepIn("neighbours.remove(neighbour)");
-        log.stepOut("neighbours.remove(neighbour)", neighbours.remove(neighbour));
+        neighbours.remove(neighbour);
     }
 
     /**
@@ -203,10 +211,8 @@ public class Tekton{
      * @param neighbour the Tekton object to add to the list of neighbors.
      */
     public void addNeighbour(Tekton neighbour) {
-        log.stepIn("neighbours.add(neighbour)");
-        
-        log.stepOut("neighbours.add(neighbour)", neighbours.add(neighbour));
-        
+        neighbours.add(neighbour);
+
     }
 
     /**
@@ -236,7 +242,8 @@ public class Tekton{
     /**
      * Retrieves the list of Insect objects associated with this Tekton.
      * 
-     * @return a list of Insect objects representing the insects associated with this Tekton.
+     * @return a list of Insect objects representing the insects associated with
+     *         this Tekton.
      */
     // ! még nincs statikus diagramba beleírva!
     public List<Insect> getInsects() {
@@ -246,12 +253,12 @@ public class Tekton{
     /**
      * Retrieves the list of FungusThread instances associated with this Tekton.
      * 
-     * @return a list of FungusThread objects representing the threads associated with this Tekton.
+     * @return a list of FungusThread objects representing the threads associated
+     *         with this Tekton.
      */
     public List<FungusThread> getThreads() {
         return threads;
     }
-
 
     /**
      * Retrieves the list of Tekton objects that are neighbors of this Tekton.
@@ -262,7 +269,6 @@ public class Tekton{
         return neighbours;
     }
 
-    
     /**
      * Breaks this Tekton into two smaller Tekton objects, removing all associations
      * with insects, threads, and spores. The two new Tekton objects are added to
@@ -271,66 +277,55 @@ public class Tekton{
      * neighbors.
      */
     public void breakTekton() {
-        log.stepIn("Going through all insect in 'insects'");
-        for (int i = insects.size()-1; i>=0;i--) {
+        // Először eltávolítjuk az összes rovar, fonal és spóra kapcsolatot
+        for (int i = insects.size() - 1; i >= 0; i--) {
             Insect insect = insects.get(i);
-            log.stepIn("insect.deadInsect()");
             insect.deadInsect();
-            log.stepOut("insect.deadInsect()", null);
-        }   
-        log.stepOut("End Cycle",null);     
-        log.stepIn("Going through all thread in 'threads'");
-        for (FungusThread ft: threads) {
-            log.stepIn("ft.setIsDying(true)");
+        }
+        for (FungusThread ft : threads) {
             ft.setIsDying(true);
-            log.stepOut("ft.setIsDying(true)", null);
-            log.stepIn("ft.getSpecies().destroyThread(ft)");
             ft.getSpecies().destroyThread(ft);
-            log.stepOut("ft.getSpecies().destroyThread(ft)", null);
         }
-        log.stepOut("End Cycle",null);
-        log.stepIn("Going through all spore in 'spores'");
-        for (int i = spores.size()-1; i>=0;i--) {
+        for (int i = spores.size() - 1; i >= 0; i--) {
             Spore spore = spores.get(i);
-            log.stepIn("spore.absorbed()");
             spore.absorbed();
-            log.stepOut("spore.absorbed()", null);
         }
-        log.stepOut("End Cycle",null);
-        log.stepIn("body.getSpecies().destroyBody(body)");
-        body.getSpecies().destroyBody(body); 
-        log.stepOut("body.getSpecies().destroyBody(body)", null);
-        log.askQ("Create Tekton: t1", false);
+        if (body != null) {
+            body.getSpecies().destroyBody(body);
+        }
+    
+        // Létrehozzuk az új Tektonokat
         Tekton t1 = new Tekton(this);
-        log.askQ("Create Tekton: t2", false);
         Tekton t2 = new Tekton(this);
-
-        log.stepIn("Going through all neigbouring tekton");
-        for (Tekton tekton : neighbours) {
-            log.stepIn("tekton.removeNeighbour(this)");
-            tekton.removeNeighbour(this);
-            log.stepOut("tekton.removeNeighbour(this)",null);
-
-            log.stepIn("tekton.addNeighbour(t1)");
-            tekton.addNeighbour(t1);
-            log.stepOut("tekton.addNeighbour(t1)",null);
-            
-            log.stepIn("tekton.addNeighbour(t2)");
-            tekton.addNeighbour(t2);
-            log.stepOut("tekton.addNeighbour(t2)", null);
+    
+        // Szomszédok felosztása
+        int mid = neighbours.size() / 2;
+        List<Tekton> t1Neighbours = new ArrayList<>(neighbours.subList(0, mid));
+        List<Tekton> t2Neighbours = new ArrayList<>(neighbours.subList(mid, neighbours.size()));
+    
+        // Az új Tektonok szomszédainak beállítása
+        for (Tekton neighbour : t1Neighbours) {
+            neighbour.removeNeighbour(this);
+            neighbour.addNeighbour(t1);
+            t1.addNeighbour(neighbour);
         }
-        log.stepOut("End Cycle",null);
-
-        log.stepIn("t1.addNeighbour(t2)");
+    
+        for (Tekton neighbour : t2Neighbours) {
+            neighbour.removeNeighbour(this);
+            neighbour.addNeighbour(t2);
+            t2.addNeighbour(neighbour);
+        }
+    
+        // Az új Tektonok egymás szomszédai lesznek
         t1.addNeighbour(t2);
-        log.stepOut("t1.addNeighbour(t2)", null);
-
-        log.stepIn("t2.addNeighbour(t1)");
         t2.addNeighbour(t1);
-        log.stepOut("t2.addNeighbour(t1)", null);
+    
+        // Az eredeti Tekton szomszédainak törlése
+        neighbours.clear();
     }
+    
     // ! még nincs statikus diagramba beleírva!
-    public void deleteTekton(){
+    public void deleteTekton() {
         for (Tekton tekton : neighbours)
             tekton.removeNeighbour(this);
     }

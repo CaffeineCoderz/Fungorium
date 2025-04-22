@@ -1,0 +1,11 @@
+Sikertelen elmozgás
+Név: i1
+Insect:
+    Owner: is1
+    Thread: th1
+    Effect: SLOW
+
+Név: is1
+InsectSpecies:
+    Score: 2
+    Insects: [i1]

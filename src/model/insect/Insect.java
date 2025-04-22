@@ -2,6 +2,7 @@ package insect;
 
 import fungus.FungusThread;
 import interfaces.iControl;
+import sporeTypes.MultiplyInsectSpore;
 import sporeTypes.Spore;
 import tektonTypes.Tekton;
 import utils.*;
@@ -21,9 +22,6 @@ public class Insect{
     private Tekton recentTekton;
     private FungusThread thread;
     private InsectSpecies myOwner;
-
-    private Logger log = Logger.getLogger("InsectLogger");
-
     public Insect() {
         this.movingEffectTimer = 0;
         this.abilityEffectTimer = 0;
@@ -206,21 +204,16 @@ public class Insect{
         // Legyen meg a képessége, hogy fonalat vágjon és Ne vágja maga alatt a fát.
 
         if (canCut == true && effect != InsectEffects.STUN && effect != InsectEffects.NO_CUT && thread != ft) {
-            log.askQ("Insect can cut threads", false);
                 if (ft.isBridge()) {
-                    log.stepIn("ft.setIsDying(true)");
                     ft.setIsDying(true);
                     ft.setLifeSpan(2);
-                    log.stepOut("ft.setIsDying(true)", null);
                 }else{
                     // ! Még nem végleges
-                    log.stepIn("ft.setLifeSpan(2)");
                     ft.setIsDying(true);
                     ft.setLifeSpan(4);
-                    log.stepOut("ft.setLifeSpan(2)", null);
                 }
         } else
-            log.askQ("Insect can't cut threads", false);
+            System.out.println("Insect can't cut threads");
 
     }
 
@@ -235,34 +228,20 @@ public class Insect{
      */
     public void move(FungusThread ft) {
         if (effect != InsectEffects.STUN) {
-            log.askQ("Insect is not stunned", false);
             if (ft.isBridge()) {
-                log.askQ("Thread is a bridge", false);
-                log.stepIn("recentTekton.removeInsect(this)");
                 recentTekton.removeInsect(this);
-                log.stepOut("recentTekton.removeInsect(this)", null);
 
-                log.stepIn("ft.insectSetting(this)");
                 ft.insectSetting(this);
-                log.stepOut("ft.insectSetting(this)", null);
                 
-                log.stepIn("setThread(ft)");
                 setThread(ft);
-                log.stepOut("setThread(ft)", null);
 
-                log.stepIn("recentTekton.addInsect(this)");
                 recentTekton.addInsect(this);
-                log.stepOut("recentTekton.addInsect(this)", null);
             } else {
-                log.askQ("Thread is not a bridge", false);
-                log.stepIn("setThread(ft)");
                 setThread(ft);
-                log.stepOut("setThread(ft);", null);
-
             }
 
         } else
-            log.askQ("Insect is not stunned", false);
+           System.out.println("A rovar bénítva van.");
     }
 
     /**
@@ -285,12 +264,14 @@ public class Insect{
      * @param s the Spore object to be consumed by the insect.
      */
     public void consumeSpore(Spore s) {
-        log.stepIn("addScore(s.getNutValue())");
         addScore(s.getNutValue());
-        log.stepOut("addScore(s.getNutValue())", null);
-        log.stepIn("s.consume(this)");
         s.consume(this);
-        log.stepOut("s.consume(this)", null);
+    }
+
+    public Insect consumeMultiplySpore(Spore s) {
+        MultiplyInsectSpore m = (MultiplyInsectSpore) s;
+        addScore(m.getNutValue());
+        return m.consumeMultiply(this);
     }
 
     // iControl interface
@@ -322,11 +303,8 @@ public class Insect{
      * @param Round the current round number.
      */
     public void timeElapsed() {
-        log.askQ("Decrease timers", false);
         if (onDecreasing) {
-            log.stepIn("this.decreaseScore(1)");
             this.decreaseScore(1);
-            log.stepOut("this.decreaseScore(1)", null);
         }
         if (movingEffectTimer > 0) {
             movingEffectTimer--;
@@ -362,13 +340,19 @@ public class Insect{
     /**
      * The insect duplicates itself. It is called whenever the Insect eats a MultiplyInsectSpore 
      */
-    public void duplicate(){
-        log.askQ("Duplicate", false);
-        log.askQ("Create new Insect: doppelGanger", false);
+    // public void duplicate(){
+    //     Insect doppelGanger = new Insect(this);
+    //     myOwner.addInsect(doppelGanger);
+    // }
+
+    /**
+     * The insect duplicates itself. It is called whenever the Insect eats a
+     * MultiplyInsectSpore
+     */
+    public Insect duplicate() {
         Insect doppelGanger = new Insect(this);
-        log.stepIn("myOwner.addInsect(doppelGanger)");
         myOwner.addInsect(doppelGanger);
-        log.stepOut("myOwner.addInsect(doppelGanger)", null);
+        return doppelGanger;
     }
 
     /**
@@ -377,12 +361,8 @@ public class Insect{
 
     // ! Ha mégis tároljuk majd a fonalakon a rovarokat akkor függvény kell jelenleg ennyi
     public void deadInsect(){
-        log.stepIn("myOwner.removeInsect(this)");
         myOwner.removeInsect(this);
-        log.stepOut("myOwner.removeInsect(this)", null);
-        log.stepIn("recentTekton.removeInsect(this)");
         recentTekton.removeInsect(this);
-        log.stepOut("recentTekton.removeInsect(this)", null);
         recentTekton = null;
         thread = null;
     }

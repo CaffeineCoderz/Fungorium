@@ -21,8 +21,6 @@ public class FungusThread {
     private FungusThread prevThread;
     private FungusThread nextThread;
 
-    private Logger log = Logger.getLogger("FungusThreadLogger");
-
     public FungusThread() {
         this.lifeSpan = 0;
         this.bridge = false;
@@ -163,9 +161,7 @@ public class FungusThread {
         }
         tektons.add(tekton);
         if(tektons.size() == 2){
-            log.stepIn("setBridge(true)");
             setBridge(true);
-            log.stepOut("setBridge(true)", null);
         }
     }
 
@@ -228,6 +224,16 @@ public class FungusThread {
         }
     }
 
+    public Tekton getTekton() {
+        if (tektons.size() == 0) {
+            return null;
+        } else if (tektons.size() == 1) {
+            return tektons.get(0);
+        } else {
+            return tektons.get(0);
+        }
+    }
+
     /**
      * Sets the Tekton object associated with the given Insect object to the
      * "other" Tekton associated with this fungus thread, if this fungus thread
@@ -270,9 +276,7 @@ public class FungusThread {
      */
     public void destroy() {
         for (Tekton tekton : tektons) {
-            log.stepIn("tekton.removeThread(this)");
             tekton.removeThread(this);
-            log.stepOut("tekton.removeThread(this)", null);
         }
     }
 

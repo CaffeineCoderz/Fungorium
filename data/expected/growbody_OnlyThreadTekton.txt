@@ -1,0 +1,11 @@
+Sikertelen testnövesztés. A tektonon nem nőhet gombatest
+Név: t1 
+OnlyTreadTekton: 
+	CanGrowThread: true
+	CanGrowBody: false
+	Bodies: N/A
+	Insects: []
+	Neighbours: []
+	Spores: []
+	Threads: [th1]
+

@@ -1,0 +1,9 @@
+/create onlythreadtekton t1
+/create fungusspecies fs1
+/create thread th1
+/set th1 species fs1
+/set fs1 addthread th1
+/set th1 addtekton t1
+/set t1 addthread th1
+growbody th1 t1
+/status t1

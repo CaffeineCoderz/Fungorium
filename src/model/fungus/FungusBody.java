@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import sporeTypes.Spore;
 import tektonTypes.Tekton;
-import utils.Logger;
+import utils.*;
 
 public class FungusBody {
     private Integer sporeCount;
@@ -12,7 +12,6 @@ public class FungusBody {
     private List<FungusThread> threads;
     private Tekton tekton;
     private FungusSpecies species;
-    private Logger log = Logger.getLogger("FungusBodyLogger");
 
     public FungusBody() {
         this.sporeCount = 0;
@@ -105,64 +104,47 @@ public class FungusBody {
      * spreads a spore to each of the neighboring Tektons. The number of spores
      * available and the number of sporulations left are decremented.
      */
-    public void sporulate() {
-        // implementáció
+    public List<Spore> sporulate() {
+        List<Spore> createdSpores = new ArrayList<>();
         if(isThereEnough()){
             if(!canSporeNeighbours()){
-
-                log.askQ("Body has enough spore to sporulate neighbours", false);
-                if(this.tekton == null){
-                    log.askQ("Tekton is null", false);
-                    return;
+                if(this.tekton == null) {
+                    System.err.println("Tekton is null.");
+                    return createdSpores;
                 }
-                log.askQ("Going through all neighbouring tektons", false);
                 for(Tekton t : tekton.getNeighbours()){
-                    log.askQ("Create Spore: tempspore", false);
+                    //!Spore tempSpore = RandomGenerator.generateRandomSpore();
                     Spore tempSpore = new Spore();
-                    log.stepIn("t.addSpore(tempSpore)");
                     t.addSpore(tempSpore);
-                    log.stepOut("t.addSpore(tempSpore)", null);
-                    log.stepIn("tempSpore.setTekton(t)");
                     tempSpore.setTekton(t);
-                    log.stepOut("tempSpore.setTekton(t)", null);
                     sporeCount--;
+                    createdSpores.add(tempSpore);
                 }
-                log.askQ("End Cycle", false);
             }
-            else
-                {
-                    log.askQ("Body has enough spore to sporulate neighbours and neighbours's neighbours", false);
-                    log.askQ("Going through all neighbouring tektons", false);
-                    for(Tekton t : tekton.getNeighbours()){
-                        log.askQ("Create Spore : tempspore", false);
-                        Spore tempSpore = new Spore();
-                        log.stepIn("t.addSpore(tempSpore)");
-                        t.addSpore(tempSpore);
-                        log.stepOut("t.addSpore(tempSpore)", null);
-                        log.stepIn("tempSpore.setTekton(t)");
-                        tempSpore.setTekton(t);
-                        log.stepOut("tempSpore.setTekton(t)", null);
+            else{
+                for(Tekton t : tekton.getNeighbours()){
+                    //!Spore tempSpore = RandomGenerator.generateRandomSpore();
+                    Spore tempSpore = new Spore();
+                    t.addSpore(tempSpore);
+                    tempSpore.setTekton(t);
+                    sporeCount--;
+                    createdSpores.add(tempSpore);
+                    for(Tekton tt: t.getNeighbours()){
+                        //!Spore tempSpore2 = RandomGenerator.generateRandomSpore();
+                        Spore tempSpore2 = new Spore();
+                        tt.addSpore(tempSpore2);
+                        tempSpore2.setTekton(tt);
                         sporeCount--;
-                        log.askQ("Going through all neighbouring tektons", false);
-                        for(Tekton tt: t.getNeighbours()){
-                            log.askQ("Create Spore : tempspore2", false);
-                            Spore tempSpore2 = new Spore();
-                            log.stepIn("tt.addSpore(tempSpore2)");
-                            tt.addSpore(tempSpore2);
-                            log.stepOut("tt.addSpore(tempSpore2)", null);
-                            log.stepIn("tempSpore2.setTekton(tt)");
-                            tempSpore2.setTekton(tt);
-                            log.stepOut("tempSpore2.setTekton(tt)", null);
-                            sporeCount--;
-                        }
-                        log.askQ("End Cycle", false);
-                    }
-                    log.askQ("End Cycle", false);
+                        createdSpores.add(tempSpore2);
+                    } 
+                }
             }
             sporulateLeft--;
         } else
-            log.askQ("Fungusbody can't sporulate", false);
+            System.out.println("Fungusbody can't sporulate");
+        return createdSpores;     
     }
+
     /**
      * Checks if it can sporulate to neighbours's neighbours 
      * @return Whether it can sporulate to further than it's neighbouring tekton
@@ -214,11 +196,7 @@ public class FungusBody {
      */
     public Boolean isThereEnough() {
         // implementáció
-        if(sporeCount > 1){
-
-            return true;
-        }
-        return false;
+        return sporeCount > 1;
     }
 
     /**
