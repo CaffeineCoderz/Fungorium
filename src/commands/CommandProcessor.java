@@ -1366,17 +1366,14 @@ public class CommandProcessor {
                     break;
                 case "addneighbour":
                     if (createdObjects.get(value) instanceof Tekton){
-                        Tekton neighbour= (Tekton) createdObjects.get(value);
+                        Tekton neighbour = (Tekton) createdObjects.get(value);
                         tekton.addNeighbour(neighbour);
                         neighbour.addNeighbour(tekton);
                     }
                     break;
                 case "removeneighbour":
-                    if (createdObjects.get(value) instanceof Tekton){
-                    Tekton neighbour= (Tekton) createdObjects.get(value);
-                    tekton.removeNeighbour(neighbour);
-                    neighbour.removeNeighbour(tekton);
-                }
+                    if (createdObjects.get(value) instanceof Tekton)
+                        tekton.removeNeighbour((Tekton) createdObjects.get(value));
                     break;
                 case "addinsect":
                     if (createdObjects.get(value) instanceof Insect)
@@ -1479,7 +1476,7 @@ public class CommandProcessor {
                 System.out.println("Hiba: Thread null értékű: " + thread);
                 return;
             }
-            insect.move(th);
+            gameLogic.MoveInsect(insect, th);
             // Debug purposes
             // System.out.println("Az Insect mozgott!");
         } else {

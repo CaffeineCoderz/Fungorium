@@ -415,6 +415,12 @@ public class GameLogic {
         System.out.println("<------------------------------------------------->");
     }
 
+    public void MoveInsect(Insect insect, FungusThread toThread){
+        if(canReachThread(insect, toThread)){
+            insect.move(toThread);
+        }
+    }
+
     // ! t1 -> newt <-t2 "Fák gyökerei sem nőnek össze. No para"
     private Boolean canReachThread(Insect insect, FungusThread toThread) {
         Integer distance = 2;
