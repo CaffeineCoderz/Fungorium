@@ -1,0 +1,12 @@
+/create feedthreadtekton ft1
+/create tekton t1
+/create body b1
+/set t1 addneighbour ft1
+/set b1 tekton t1
+growthread t1 b1 th1
+growthread ft1 th1 th2
+growthread ft1 th2 th3
+/set th2 lifespan 0
+/set th2 isdying true
+/trigger th2
+/status th3

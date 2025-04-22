@@ -1,0 +1,3 @@
+/load createConfig
+/load setConfig
+/load statusAll

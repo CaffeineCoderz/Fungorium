@@ -1,0 +1,18 @@
+t2:
+Tekton:
+CanGrowThread: true
+CanGrowBody: true
+Bodies: N/A
+Insects: N/A
+Neighbours: t1
+Spores: [spore1]
+Threads: N/A
+t3:
+Tekton:
+CanGrowThread: true
+CanGrowBody: true
+Bodies: N/A
+Insects: N/A
+Neighbours: t1
+Spores: [spore2]
+Threads: N/A

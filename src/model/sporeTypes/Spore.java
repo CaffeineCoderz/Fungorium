@@ -10,8 +10,6 @@ import utils.*;
 public class Spore {
     private Integer nutritionValue;
     private Tekton myTekton;
-    protected Logger log = Logger.getLogger("Spore");
-
     /**
      * Default Constructor
      */
@@ -34,9 +32,7 @@ public class Spore {
      * @param insect The insect, who consumes the spore
      */
     public void consume(Insect insect){ // ? Itt történjen a pont kiosztás?
-        log.stepIn("absorbed();");
         absorbed();
-        log.stepOut("absorbed();", null);
     }
 
     /**
@@ -46,6 +42,14 @@ public class Spore {
     public void setTekton(Tekton tekton) {
         myTekton = tekton;
     }
+    /**
+     * Retrieves the Tekton object associated with this Spore.
+     *
+     * @return the Tekton object where this Spore is located, or null if not set.
+     */
+    public Tekton getTekton(){
+        return myTekton;
+    }
 
     //Ez a Spore példány pusztulását segíti. Leginkább azért kell, mivel tekton törésnél és elfogyasztásnál is ugyanazok a folyamatok mennek végbe.
     /**
@@ -53,9 +57,7 @@ public class Spore {
      * Removes itself from the tekton it is staying on. 
      */
     public void absorbed() {
-        log.stepIn("myTekton.removeSpore(this)");
         myTekton.removeSpore(this);
-        log.stepOut("myTekton.removeSpore(this)", null);
         myTekton = null;
     }
     /**
@@ -65,5 +67,10 @@ public class Spore {
      */
     public Integer getNutValue(){
         return nutritionValue;
+    }
+
+    // ! nincs stat. diagramban
+    public void setNutValue(Integer nutval){
+        nutritionValue = nutval;
     }
 }

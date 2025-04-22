@@ -1,11 +1,11 @@
 package fungus;
+
 import java.util.ArrayList;
 import java.util.List;
 import sporeTypes.Spore;
 import tektonTypes.Tekton;
-import utils.Logger;
+import utils.*;
 
-//! NEM TELJES IMPLEMENTACIO MEG
 public class FungusBody {
     private Integer sporeCount;
     private Integer sporulateLeft;
@@ -13,7 +13,13 @@ public class FungusBody {
     private Tekton tekton;
     private FungusSpecies species;
 
-    private Logger log = Logger.getLogger("FungusBodyLogger");
+    public FungusBody() {
+        this.sporeCount = 0;
+        this.sporulateLeft = 0;
+        this.threads = new ArrayList<>();
+        this.tekton = null;
+        this.species = null;
+    }
 
     public FungusBody(Integer sporeCount, Integer sporulateLeft) {
         this.sporeCount = sporeCount;
@@ -24,15 +30,26 @@ public class FungusBody {
     }
 
     /**
+     * Sets the spore count for this fungus body.
+     * 
+     * @param c the new value of spore count.
+     */
+    public void setSporeC(Integer c){
+        sporeCount = c;
+    }
+
+    /**
      * Gets the FungusSpecies that this fungus body is part of.
+     * 
      * @return the FungusSpecies that this fungus body is part of.
      */
-    public FungusSpecies getSpecies(){
+    public FungusSpecies getSpecies() {
         return species;
     }
 
     /**
      * Adds a fungus thread to this fungus body.
+     * 
      * @param thread the FungusThread to be added.
      */
     public void addThread(FungusThread thread) {
@@ -61,22 +78,25 @@ public class FungusBody {
     /**
      * Retrieves the Tekton object associated with this fungus body.
      * 
-     * @return a Tekton object representing the Tekton where this fungus body is located.
+     * @return a Tekton object representing the Tekton where this fungus body is
+     *         located.
      */
     public Tekton getTekton() {
         return tekton;
     }
+
     /**
      * Retrieves the list of fungus threads associated with this fungus body.
      * 
-     * @return a list of FungusThread objects representing the threads of this fungus body.
+     * @return a list of FungusThread objects representing the threads of this
+     *         fungus body.
      */
-    public List<FungusThread> getThreads(){
+    public List<FungusThread> getThreads() {
         return threads;
     }
 
     // ! Not implemented yet
-    
+
     /**
      * Spreads spores to the neighboring Tektons.
      * 
@@ -84,58 +104,57 @@ public class FungusBody {
      * spreads a spore to each of the neighboring Tektons. The number of spores
      * available and the number of sporulations left are decremented.
      */
-    public void sporulate() {
-        // implementáció
+    public List<Spore> sporulate() {
+        List<Spore> createdSpores = new ArrayList<>();
         if(isThereEnough()){
-            if(sporeCount<10){
-                log.askQ("Body has enough spore to sporulate neighbours", false);
-                log.askQ("Start Cycle", false);
+            if(!canSporeNeighbours()){
+                if(this.tekton == null) {
+                    System.err.println("Tekton is null.");
+                    return createdSpores;
+                }
                 for(Tekton t : tekton.getNeighbours()){
-                    log.askQ("Create Spore : tempspore", false);
+                    //!Spore tempSpore = RandomGenerator.generateRandomSpore();
                     Spore tempSpore = new Spore();
-                    log.stepIn("t.addSpore(tempSpore)");
                     t.addSpore(tempSpore);
-                    log.stepOut("t.addSpore(tempSpore)", null);
-                    log.stepIn("tempSpore.setTekton(t)");
                     tempSpore.setTekton(t);
-                    log.stepOut("tempSpore.setTekton(t)", null);
                     sporeCount--;
+                    createdSpores.add(tempSpore);
                 }
-                log.askQ("End Cycle", false);
-                
             }
-            else
-                {
-                    log.askQ("Body has enough spore to sporulate neighbours and neighbours's neighbours", false);
-                    log.askQ("Start Cycle", false);
-                    for(Tekton t : tekton.getNeighbours()){
-                        log.askQ("Create Spore : tempspore", false);
-                        Spore tempSpore = new Spore();
-                        log.stepIn("t.addSpore(tempSpore)");
-                        t.addSpore(tempSpore);
-                        log.stepOut("t.addSpore(tempSpore)", null);
-                        log.stepIn("tempSpore.setTekton(t)");
-                        tempSpore.setTekton(t);
-                        log.stepOut("tempSpore.setTekton(t)", null);
+            else{
+                for(Tekton t : tekton.getNeighbours()){
+                    //!Spore tempSpore = RandomGenerator.generateRandomSpore();
+                    Spore tempSpore = new Spore();
+                    t.addSpore(tempSpore);
+                    tempSpore.setTekton(t);
+                    sporeCount--;
+                    createdSpores.add(tempSpore);
+                    for(Tekton tt: t.getNeighbours()){
+                        //!Spore tempSpore2 = RandomGenerator.generateRandomSpore();
+                        Spore tempSpore2 = new Spore();
+                        tt.addSpore(tempSpore2);
+                        tempSpore2.setTekton(tt);
                         sporeCount--;
-                        log.askQ("Start Cycle", false);
-                        for(Tekton tt: t.getNeighbours()){
-                            log.askQ("Create Spore : tempspore2", false);
-                            Spore tempSpore2 = new Spore();
-                            log.stepIn("tt.addSpore(tempSpore2)");
-                            tt.addSpore(tempSpore);
-                            log.stepOut("tt.addSpore(tempSpore2)", null);
-                            log.stepIn("tempSpore2.setTekton(tt)");
-                            tempSpore.setTekton(tt);
-                            log.stepOut("tempSpore2.setTekton(tt)", null);
-                        }
-                        log.askQ("End Cycle", false);
-                    }
-                    log.askQ("End Cycle", false);
+                        createdSpores.add(tempSpore2);
+                    } 
                 }
-        sporulateLeft--;
+            }
+            sporulateLeft--;
+        } else
+            System.out.println("Fungusbody can't sporulate");
+        return createdSpores;     
+    }
+
+    /**
+     * Checks if it can sporulate to neighbours's neighbours 
+     * @return Whether it can sporulate to further than it's neighbouring tekton
+     */
+    public Boolean canSporeNeighbours(){
+        int c =0;
+        for (Tekton t : tekton.getNeighbours()) {
+            c+= t.getNeighbours().size();
         }
-        else log.askQ("Fungusbody can't sporulate", false);
+        return sporeCount >= c;   
     }
 
     /**
@@ -149,7 +168,7 @@ public class FungusBody {
      */
     public Boolean timeToDie() {
         // implementáció
-        if(sporulateLeft <= 0){
+        if (sporulateLeft <= 0) {
             return true;
         }
         return false;
@@ -177,20 +196,26 @@ public class FungusBody {
      */
     public Boolean isThereEnough() {
         // implementáció
-        if(sporeCount > 5){
-            return true;
-        }
-        return false;
+        return sporeCount > 1;
     }
-    
+
     /**
      * Returns the number of spores available in the fungus body.
      * 
-     * @return an Integer representing the number of spores available in the fungus body.
+     * @return an Integer representing the number of spores available in the fungus
+     *         body.
      */
-    public Integer getSporeCount(){
+    public Integer getSporeCount() {
         return sporeCount;
     }
 
-    
+    /**
+     * Sets the species of this fungus body.
+     *
+     * @param species the FungusSpecies instance to associate with this
+     *                fungus body.
+     */
+    public void setSpecies(FungusSpecies species) {
+        this.species = species;
+    }
 }

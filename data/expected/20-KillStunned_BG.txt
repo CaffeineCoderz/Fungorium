@@ -1,0 +1,15 @@
+Név: t1
+Tekton: 
+	CanGrowThread: true
+	CanGrowBody: false
+	Bodies: b0
+	Insects: []
+	Neighbours: []
+	Spores: []
+	Threads: [th1]
+
+Név: fs1
+FungusSpecies: 
+	Score: 1
+	Bodies: [b0, N/A]
+

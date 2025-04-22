@@ -1,0 +1,13 @@
+/delete t1
+/delete t2
+/delete t3
+/delete i1
+/delete sp1
+/delete sp2
+/delete th1
+/delete th2 
+/delete b1
+/delete b2
+/delete s1
+/delete s2
+/delete s3

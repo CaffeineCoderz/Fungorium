@@ -1,14 +1,16 @@
 package sporeTypes;
 
 import insect.Insect;
+import tektonTypes.Tekton;
 import utils.*;
 
 public class DisableCutSpore extends Spore {
-    
     public DisableCutSpore(){
-        log = Logger.getLogger("DisableCutSpore");
     }
+    public DisableCutSpore(Tekton t, int nt){
+        super(t, nt);
 
+    }
     /**
      * Disables the given insect's ability to cut fungus threads.
      * This method is called when an insect consumes this spore.
@@ -16,11 +18,7 @@ public class DisableCutSpore extends Spore {
      */
     @Override
     public void consume(Insect insect){
-        log.stepIn("insect.disableCut()");
         insect.disableCut();
-        log.stepOut("insect.disableCut()", null);
-        log.stepIn("absorbed()");
         absorbed();
-        log.stepOut("absorbed()", null);
     }
 }

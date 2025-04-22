@@ -1,0 +1,14 @@
+/create tekton t1
+/create tekton t2
+/create tekton t3
+/create tekton t4
+/set t1 addneighbour t2
+/set t2 addneighbour t3
+/set t3 addneighbour t4
+/create body b1
+/set b1 tekton t1
+/set b1 sporecount 5
+sporulate b1
+/status t2
+/status t3
+/status t4

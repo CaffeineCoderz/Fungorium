@@ -1,0 +1,10 @@
+/create decreasetekton dt1
+/create insect i1
+/create thread th1
+/create insectspecies is1
+/set th1 addtekton dt1
+/set i1 thread th1
+/set is1 addscore 100
+/set is1 addinsect i1
+/trigger i1
+/status is1
