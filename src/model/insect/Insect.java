@@ -4,6 +4,7 @@ import fungus.FungusThread;
 import interfaces.iControl;
 import sporeTypes.MultiplyInsectSpore;
 import sporeTypes.Spore;
+import tektonTypes.DecreasingTekton;
 import tektonTypes.Tekton;
 import utils.*;
 
@@ -238,6 +239,15 @@ public class Insect{
                 recentTekton.addInsect(this);
             } else {
                 setThread(ft);
+                if(ft.getTektons().get(0) instanceof DecreasingTekton){
+                    onDecreasing = true;
+                }
+                else onDecreasing = false;
+                if(recentTekton != ft.getTektons()){
+                    recentTekton.removeInsect(this);
+                    ft.getTekton().addInsect(this);
+                }
+                recentTekton = ft.getTekton();
             }
 
         } else
