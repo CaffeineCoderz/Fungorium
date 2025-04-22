@@ -130,6 +130,7 @@ public class CommandProcessor {
         commands.put("/break", this::processBreakCommand);
         commandDescriptions.put("/break", "/break <Tekton>");
 
+        commands.put("/trig", this::processTriggerCommand);
         commandDescriptions.put("/trig", "/trig <event>");
 
         commands.put("cut", this::processCutCommand);
@@ -188,7 +189,7 @@ public class CommandProcessor {
 
         commands.put("/break", this::processBreakCommand);
         commandDescriptions.put("/break", "/break <Tekton>");
-
+        commands.put("/trig", this::processTriggerCommand);
         commandDescriptions.put("/trig", "/trig <event>");
 
         commands.put("cut", this::processCutCommand);
@@ -1560,12 +1561,12 @@ public class CommandProcessor {
         String name = parts[1];
         String objectName = parts[2];
 
-        if (!createdObjects.containsKey(name)) {
+        if (!createdObjects.containsKey(objectName)) {
             System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + name);
             return;
         }
 
-        Object obj = createdObjects.get(name);
+        Object obj = createdObjects.get(objectName);
         if (name.equals("timeelapsed")) {
             for (Object object : createdObjects.values()) {
                 if (object instanceof InsectSpecies) {

@@ -4,7 +4,11 @@
 /create insectspecies is1
 /set th1 addtekton dt1
 /set i1 thread th1
+/set i1 tekton dt1
+/set tekton addinsect i1
+/set i1 species is1
 /set is1 addscore 100
 /set is1 addinsect i1
-/trigger i1
+/trig timeelapsed is1
 /status is1
+/status i1
