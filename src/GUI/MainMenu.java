@@ -2,6 +2,9 @@ package GUI;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class MainMenu extends JFrame {
 
@@ -69,8 +72,27 @@ public class MainMenu extends JFrame {
     }
 
     private void showRules() {
-        // itt majd rendesen ossze kell rakni a jatekszabalyokat
-        JOptionPane.showMessageDialog(this, "Játékszabályok:\n1. ...\n2. ...\n3. ...", "Játékszabályok", JOptionPane.INFORMATION_MESSAGE);
+        String currentWorkingDirectory = System.getProperty("user.dir");
+        System.out.println("Current Working Directory: " + currentWorkingDirectory);
+    
+        StringBuilder rulesText = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new FileReader("src/GUI/DATA/GameRules.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                rulesText.append(line).append("\n");
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Hiba történt a játékszabályok fájl beolvasása közben!\nKeresett hely: " + currentWorkingDirectory + "\\GameRules.txt", "Hiba", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+            return;
+        }
+    
+        JTextArea textArea = new JTextArea(rulesText.toString());
+        textArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setPreferredSize(new Dimension(350, 250));
+    
+        JOptionPane.showMessageDialog(this, scrollPane, "Játékszabályok", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public static void main(String[] args) {
