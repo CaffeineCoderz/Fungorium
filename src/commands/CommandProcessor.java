@@ -130,6 +130,7 @@ public class CommandProcessor {
         commands.put("/break", this::processBreakCommand);
         commandDescriptions.put("/break", "/break <Tekton>");
 
+        commands.put("/trig", this::processTriggerCommand);
         commandDescriptions.put("/trig", "/trig <event>");
 
         commands.put("cut", this::processCutCommand);
@@ -188,7 +189,7 @@ public class CommandProcessor {
 
         commands.put("/break", this::processBreakCommand);
         commandDescriptions.put("/break", "/break <Tekton>");
-
+        commands.put("/trig", this::processTriggerCommand);
         commandDescriptions.put("/trig", "/trig <event>");
 
         commands.put("cut", this::processCutCommand);
@@ -1149,6 +1150,9 @@ public class CommandProcessor {
                     else
                         System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + value);
                     break;
+                case "sporulateleft":
+                    body.setSporulateLeft(Integer.parseInt(value));
+                    break;
                 default:
                     System.out.println("Hiba: Nem létezik ilyen tulajdonság: " + property);
                     return;
@@ -1338,11 +1342,8 @@ public class CommandProcessor {
                     }
                     break;
                 case "removeneighbour":
-                    if (createdObjects.get(value) instanceof Tekton){
-                        Tekton neighbour = (Tekton) createdObjects.get(value);
-                        tekton.removeNeighbour(neighbour);
-                        neighbour.removeNeighbour(tekton);
-                    }
+                    if (createdObjects.get(value) instanceof Tekton)
+                        tekton.removeNeighbour((Tekton) createdObjects.get(value));
                     break;
                 case "addinsect":
                     if (createdObjects.get(value) instanceof Insect)
@@ -1529,12 +1530,12 @@ public class CommandProcessor {
         String name = parts[1];
         String objectName = parts[2];
 
-        if (!createdObjects.containsKey(name)) {
+        if (!createdObjects.containsKey(objectName)) {
             System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + name);
             return;
         }
 
-        Object obj = createdObjects.get(name);
+        Object obj = createdObjects.get(objectName);
         if (name.equals("timeelapsed")) {
             for (Object object : createdObjects.values()) {
                 if (object instanceof InsectSpecies) {

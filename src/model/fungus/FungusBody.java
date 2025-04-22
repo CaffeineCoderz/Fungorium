@@ -114,6 +114,9 @@ public class FungusBody {
                 }
                 for(Tekton t : tekton.getNeighbours()){
                     //!Spore tempSpore = RandomGenerator.generateRandomSpore();
+                    if(t==this.tekton){
+                    continue;
+                }
                     Spore tempSpore = new Spore();
                     t.addSpore(tempSpore);
                     tempSpore.setTekton(t);
@@ -123,6 +126,8 @@ public class FungusBody {
             }
             else{
                 for(Tekton t : tekton.getNeighbours()){
+                    if(t==this.tekton){
+                        continue;}
                     //!Spore tempSpore = RandomGenerator.generateRandomSpore();
                     Spore tempSpore = new Spore();
                     t.addSpore(tempSpore);
@@ -130,6 +135,8 @@ public class FungusBody {
                     sporeCount--;
                     createdSpores.add(tempSpore);
                     for(Tekton tt: t.getNeighbours()){
+                        if(tt==this.tekton){
+                            continue;}
                         //!Spore tempSpore2 = RandomGenerator.generateRandomSpore();
                         Spore tempSpore2 = new Spore();
                         tt.addSpore(tempSpore2);
@@ -217,5 +224,11 @@ public class FungusBody {
      */
     public void setSpecies(FungusSpecies species) {
         this.species = species;
+    }
+    public void setSporulateLeft(Integer sporulateLeft) {
+        this.sporulateLeft = sporulateLeft;
+    }
+    public Integer getSporulateLeft() {
+        return sporulateLeft;
     }
 }
