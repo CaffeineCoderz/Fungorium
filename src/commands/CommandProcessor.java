@@ -1570,7 +1570,13 @@ public class CommandProcessor {
                     fungusSpecies.timeElapsed();
                 }
             }
-        }else if (obj instanceof FungusThread) {
+        } else if(obj instanceof FungusSpecies){
+            FungusSpecies fungusSpecies = (FungusSpecies) obj;
+            fungusSpecies.timeElapsed();
+        } else if (obj instanceof InsectSpecies) {
+            InsectSpecies insectSpecies = (InsectSpecies) obj;
+            insectSpecies.timeElapsed();
+        } else if (obj instanceof FungusThread) {
             FungusThread thread = (FungusThread) obj;
             thread.decreaseLife();
         } else if(obj instanceof Insect){
