@@ -1476,7 +1476,7 @@ public class CommandProcessor {
                 System.out.println("Hiba: Thread null értékű: " + thread);
                 return;
             }
-            insect.move(th);
+            gameLogic.MoveInsect(insect, th);
             // Debug purposes
             // System.out.println("Az Insect mozgott!");
         } else {
