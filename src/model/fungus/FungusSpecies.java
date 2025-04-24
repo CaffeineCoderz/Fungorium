@@ -442,7 +442,36 @@ public class FungusSpecies implements iControl {
             growBody(ft);
         } else
             System.err.println("There is no stunned insect on tekton");
+    }
 
+    /**
+     * Consumes stunned insects on the given FungusThread's Tekton.
+     * 
+     * If the FungusThread is a bridge, the method returns immediately without
+     * doing anything. Otherwise, it iterates through all insects on the Tekton
+     * associated with the FungusThread. If any insect is stunned, the insect is
+     * killed. If at least one insect is killed, an opportunity to grow a body on
+     * the Tekton is provided.
+     * 
+     * @param ft the FungusThread instance whose Tekton's insects are to be checked.
+     * @param cmdproc the CommandProcessor instance to remove the insect from the createdObjects hashmap.
+     */
+    public void eatInsect(FungusThread ft, CommandProcessor cmdproc) {
+        if (ft.isBridge()) {
+            System.err.println("Thread was a bridge!");
+            return;
+        }
+        Boolean someoneDied = false;
+        for (Insect insect : ft.getTekton(null).getInsects()) {
+            if (insect.gEffect() == InsectEffects.STUN) {
+                insect.deadInsect(cmdproc);
+                someoneDied = true;
+            }
+        }
+        if (someoneDied) {
+            growBody(ft);
+        } else
+            System.err.println("There is no stunned insect on tekton");
     }
 
     /**

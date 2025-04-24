@@ -1,5 +1,6 @@
 package insect;
 
+import commands.CommandProcessor;
 import fungus.FungusThread;
 import interfaces.iControl;
 import sporeTypes.MultiplyInsectSpore;
@@ -13,16 +14,17 @@ import insect.InsectEffects;
 // ! - Az elrágott fonalak nem pusztulnak el azonnal, hanem csak egy kis idő elteltével (ez fonaltípustól függő idő). 
 // ! A fonalak képesek megenni a tektonjukon található bénult rovarokat. Ilyenkor a rovar elpusztul, a fonal pedig gombatestet növeszthet.
 
-public class Insect{
+public class Insect {
     private Integer movingEffectTimer;
     private Integer abilityEffectTimer;
     private Boolean canCut;
     private InsectEffects effect;
     private Boolean onDecreasing;
-    
+
     private Tekton recentTekton;
     private FungusThread thread;
     private InsectSpecies myOwner;
+
     public Insect() {
         this.movingEffectTimer = 0;
         this.abilityEffectTimer = 0;
@@ -31,7 +33,8 @@ public class Insect{
         this.recentTekton = null;
         this.effect = InsectEffects.NORMAL;
     }
-    public Insect(Insect i){
+
+    public Insect(Insect i) {
         this.canCut = true;
         this.onDecreasing = i.onDecreasing;
         this.recentTekton = i.recentTekton;
@@ -39,10 +42,11 @@ public class Insect{
         this.myOwner = i.myOwner;
     }
 
-    public void setMyOwner(InsectSpecies my){
+    public void setMyOwner(InsectSpecies my) {
         myOwner = my;
     }
-    public InsectSpecies getMyOwner(){
+
+    public InsectSpecies getMyOwner() {
         return myOwner;
     }
 
@@ -205,14 +209,14 @@ public class Insect{
         // Legyen meg a képessége, hogy fonalat vágjon és Ne vágja maga alatt a fát.
 
         if (canCut == true && effect != InsectEffects.STUN && effect != InsectEffects.NO_CUT && thread != ft) {
-                if (ft.isBridge()) {
-                    ft.setIsDying(true);
-                    ft.setLifeSpan(2);
-                }else{
-                    // ! Még nem végleges
-                    ft.setIsDying(true);
-                    ft.setLifeSpan(4);
-                }
+            if (ft.isBridge()) {
+                ft.setIsDying(true);
+                ft.setLifeSpan(2);
+            } else {
+                // ! Még nem végleges
+                ft.setIsDying(true);
+                ft.setLifeSpan(4);
+            }
         } else
             System.out.println("Insect can't cut threads");
 
@@ -233,17 +237,17 @@ public class Insect{
                 recentTekton.removeInsect(this);
 
                 ft.insectSetting(this);
-                
+
                 setThread(ft);
 
                 recentTekton.addInsect(this);
             } else {
                 setThread(ft);
-                if(ft.getTektons().get(0) instanceof DecreasingTekton){
+                if (ft.getTektons().get(0) instanceof DecreasingTekton) {
                     onDecreasing = true;
-                }
-                else onDecreasing = false;
-                if(recentTekton != ft.getTektons()){
+                } else
+                    onDecreasing = false;
+                if (recentTekton != ft.getTektons()) {
                     recentTekton.removeInsect(this);
                     ft.getTekton().addInsect(this);
                 }
@@ -251,7 +255,7 @@ public class Insect{
             }
 
         } else
-           System.out.println("A rovar bénítva van.");
+            System.out.println("A rovar bénítva van.");
     }
 
     /**
@@ -347,11 +351,12 @@ public class Insect{
     }
 
     /**
-     * The insect duplicates itself. It is called whenever the Insect eats a MultiplyInsectSpore 
+     * The insect duplicates itself. It is called whenever the Insect eats a
+     * MultiplyInsectSpore
      */
     // public void duplicate(){
-    //     Insect doppelGanger = new Insect(this);
-    //     myOwner.addInsect(doppelGanger);
+    // Insect doppelGanger = new Insect(this);
+    // myOwner.addInsect(doppelGanger);
     // }
 
     /**
@@ -365,14 +370,30 @@ public class Insect{
     }
 
     /**
-     * The insect dies. It is called when the Tekton breaks and the insect is present on it. 
+     * The insect dies. It is called when the Tekton breaks and the insect is
+     * present on it.
      */
 
-    // ! Ha mégis tároljuk majd a fonalakon a rovarokat akkor függvény kell jelenleg ennyi
-    public void deadInsect(){
+    // ! Ha mégis tároljuk majd a fonalakon a rovarokat akkor függvény kell jelenleg
+    // ennyi
+    public void deadInsect() {
         myOwner.removeInsect(this);
         recentTekton.removeInsect(this);
         recentTekton = null;
         thread = null;
+    }
+
+    public void deadInsect(CommandProcessor cmdproc) {
+        myOwner.removeInsect(this);
+        recentTekton.removeInsect(this);
+        recentTekton = null;
+        thread = null;
+        String objKey = cmdproc.findByObject(this);
+        if (objKey != null) {
+            cmdproc.getCreatedObjects().remove(objKey);
+        } else {
+            System.out.println(
+                    "Hiba: Az Insect objektum nem található a CommandProcessor által kezelt objektumok között. Deadinsect()");
+        }
     }
 }
