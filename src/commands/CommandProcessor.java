@@ -130,6 +130,7 @@ public class CommandProcessor {
         commands.put("/break", this::processBreakCommand);
         commandDescriptions.put("/break", "/break <Tekton>");
 
+        commands.put("/trig", this::processTriggerCommand);
         commandDescriptions.put("/trig", "/trig <event>");
 
         commands.put("cut", this::processCutCommand);
@@ -188,7 +189,7 @@ public class CommandProcessor {
 
         commands.put("/break", this::processBreakCommand);
         commandDescriptions.put("/break", "/break <Tekton>");
-
+        commands.put("/trig", this::processTriggerCommand);
         commandDescriptions.put("/trig", "/trig <event>");
 
         commands.put("cut", this::processCutCommand);
@@ -1147,6 +1148,9 @@ public class CommandProcessor {
                     else
                         System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + value);
                     break;
+                case "sporulateleft":
+                    body.setSporulateLeft(Integer.parseInt(value));
+                    break;
                 default:
                     System.out.println("Hiba: Nem létezik ilyen tulajdonság: " + property);
                     return;
@@ -1527,12 +1531,12 @@ public class CommandProcessor {
         String name = parts[1];
         String objectName = parts[2];
 
-        if (!createdObjects.containsKey(name)) {
+        if (!createdObjects.containsKey(objectName)) {
             System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + name);
             return;
         }
 
-        Object obj = createdObjects.get(name);
+        Object obj = createdObjects.get(objectName);
         if (name.equals("timeelapsed")) {
             for (Object object : createdObjects.values()) {
                 if (object instanceof InsectSpecies) {
@@ -1559,40 +1563,6 @@ public class CommandProcessor {
 
         else {
             System.out.println("Hiba: Nem megfelelő objektum típus: " + name);
-        }
-    }
-
-    // ! --------------- Tesztes részhez tartozik -------------------------
-    /*
-     * Parancsok kiírása egy fájlba
-     */
-    public void writeCommandsToFile(String fileName) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
-            for (String command : commands.keySet()) {
-                writer.write(command);
-                writer.newLine();
-            }
-        } catch (IOException e) {
-            System.out.println("Hiba a fájl írásakor: " + e.getMessage());
-        }
-    }
-
-    /*
-     * redirectOutputToFile metódus: átirányítja a System.out kimenetet egy fájlba.
-     * 
-     * PrintStream originalOut = System.out; // Mentsd el az eredeti kimenetet
-     * redirectOutputToFile("output.log");
-     * // ... program futása ...
-     * System.setOut(originalOut); // Állítsd vissza az eredeti kimenetet
-     */
-    public void redirectOutputToFile(String fileName) {
-        try {
-            File file = new File(fileName);
-            FileOutputStream fos = new FileOutputStream(file);
-            PrintStream ps = new PrintStream(fos);
-            System.setOut(ps); // A System.out kimenet átirányítása a fájlba
-        } catch (IOException e) {
-            System.err.println("Hiba a kimenet fájlba irányításakor: " + e.getMessage());
         }
     }
 }
