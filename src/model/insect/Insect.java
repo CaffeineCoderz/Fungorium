@@ -325,7 +325,6 @@ public class Insect{
         if (movingEffectTimer == 0 && abilityEffectTimer == 0) {
             effect = InsectEffects.NORMAL;
         }
-
     }
 
     /**
