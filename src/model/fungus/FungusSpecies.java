@@ -86,7 +86,14 @@ public class FungusSpecies implements iControl {
      * @param body the FungusBody instance to add.
      */
     public void addBody(FungusBody body) {
+        if(body != null){
         bodies.add(body);
+        addScore(1);
+        }
+        else{
+            System.err.println("Null body cannot be added to the species.");
+        }
+        
     }
 
     /**
@@ -134,7 +141,7 @@ public class FungusSpecies implements iControl {
     //! Szekvencián javítani ~ Diviki Mivel a growBridge-et bele mergeltem (hamarabb kellett volna erre rá jönni)
     public FungusThread growThread(Tekton targetTekton, FungusThread oThread) {
         if (targetTekton.canGrowThread()){
-            FungusThread nThread = new FungusThread(null,false);
+            FungusThread nThread = new FungusThread(null,false, this);
             //Fonal amiből növesztünk nem híd + a cél tekton nem egyezik meg a kiinduló fonal tektonjával -->
             // --> Ilyenkor bridge keletkezik, mivel két tektonnal definiáljuk a fonalat.
             if(!oThread.isBridge() && oThread.getTektons().get(0) != targetTekton){
@@ -143,11 +150,12 @@ public class FungusSpecies implements iControl {
                 //? Hídból(híd1) növesztünk egy fonalat(th1) a híd belseje felé, ez még okés
                 //? Th1 ből növesztünk egy új fonalat(híd2) egy másik (szomszédos)tektonra
                 //? Ilyenkor a tekton belsejéből növesztünk hidat, amit nem kéne
-                if (oThread.getPrev().isBridge()){
-                    System.err.println("You can't grow from this thread a bridge to another tekton.");
-                    return null;
+                if(oThread.getPrev()!=null){
+                    if (oThread.getPrev().isBridge()){
+                        System.err.println("You can't grow from this thread a bridge to another tekton.");
+                        return null;
+                    }
                 }
-
                 //Ellenőrzés, hogy szomszédosak egymással ezen tektonok
                 boolean areNeighbours = false;
                 for (Tekton neighbour : targetTekton.getNeighbours()){
@@ -202,6 +210,7 @@ public class FungusSpecies implements iControl {
             targetTekton.addThread(nThread);
 
             body.addThread(nThread);
+            nThread.setSpecies(this);
             return nThread;
         } else {
             System.err.println("Tekton cant have new threads");
@@ -267,16 +276,17 @@ public class FungusSpecies implements iControl {
             return null;
         }
         Integer atleast = 2;
-        boolean enoughSpore = thread.getTekton(null).isThereEnoughSpore(atleast);
+        boolean enoughSpore = thread.getTekton().isThereEnoughSpore(atleast);
         if (enoughSpore) {
             FungusBody fb = new FungusBody(null, null);
             thread.getTekton(null).setBody(fb);
             for (Integer i = 0; i < atleast; i++) {
-                thread.getTekton(null).getSpores().get(i).absorbed();
+                thread.getTekton().getSpores().get(i).absorbed();
             }
             fb.setTekton(thread.getTekton(null));
             fb.addThread(thread);
             thread.setBody(fb);
+            this.addBody(fb);
             return fb;
         } else {
             System.out.println("Sikertelen testnövesztés. A tektonon nincs elég spóra");
@@ -340,13 +350,14 @@ public class FungusSpecies implements iControl {
             ft.decreaseLife();
             return;
         }
-        if (ft.getLifeSpan() == 0) {
+        if (ft.getLifeSpan()!= null && ft.getLifeSpan() == 0) {
             while (ft.getNext() != null) {
                 ft.getNext().setConnected(false);
                 List<Tekton> tektons = ft.getNext().getTektons();
                 for (int i = 0; i < tektons.size(); i++) {
                     if (tektons.get(i).getClass() != tektonTypes.FeedThreadTekton.class) {
                         ft.setIsDying(true);
+                        ft.setBody(null);
                     }
                 }
                 ft = ft.getNext();
@@ -375,7 +386,9 @@ public class FungusSpecies implements iControl {
      */
     public void destroyBody(FungusBody fb) {
         for (FungusThread ft : fb.getThreads()) {
-            destroyThread(ft);
+            ft.setIsDying(true);
+            ft.setBody(null);
+            //! ide lehet beimplementálni, hogy sorba a következő ebből a bodyból eredendő threadek body-ja nullra legyen állítva
         }
         fb.getTekton().setBody(null);
     }

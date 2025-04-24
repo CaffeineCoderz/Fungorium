@@ -32,11 +32,11 @@ public class FungusThread {
         connected = true;
     }
 
-    public FungusThread(Integer lifeSpan, Boolean bridge) {
+    public FungusThread(Integer lifeSpan, Boolean bridge, FungusSpecies Species) {
         this.lifeSpan = lifeSpan;
         this.bridge = bridge;
         this.isDying = false;
-        this.species = null;
+        this.species = Species;
         this.tektons = new ArrayList<>();
         prevThread = null;
         nextThread = null;
@@ -145,7 +145,7 @@ public class FungusThread {
             return;
         }
         lifeSpan--;
-        if (lifeSpan <= 0) {
+        if (lifeSpan == 0) {
             this.destroy();
         }
     }
@@ -182,6 +182,7 @@ public class FungusThread {
      *                otherwise.
      */
     public void setIsDying(Boolean isDying) {
+        if(isDying==true)
         this.isDying = isDying;
     }
 
