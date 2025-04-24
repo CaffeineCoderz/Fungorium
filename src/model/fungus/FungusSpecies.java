@@ -354,8 +354,10 @@ public class FungusSpecies implements iControl {
         for (FungusThread thread : threads) {
             destroyThread(thread);
             String objKey = cmdproc.findByObject(thread);
-            if (objKey != null && thread.getLifeSpan() != null && thread.getLifeSpan() == 0) {
-                cmdproc.getCreatedObjects().remove(objKey);
+            if(thread.getLifeSpan()!=null){
+                if (objKey != null &&  thread.getLifeSpan() == 0) {
+                    cmdproc.getCreatedObjects().remove(objKey);
+                }
             }
         }
     }
@@ -373,27 +375,32 @@ public class FungusSpecies implements iControl {
             return;
         }
         if (ft.getLifeSpan()!= null && ft.getLifeSpan() == 0) {
+            FungusThread originthread = ft;
             while (ft.getNext() != null) {
                 ft.getNext().setConnected(false);
-                List<Tekton> tektons = ft.getNext().getTektons();
-                for (int i = 0; i < tektons.size(); i++) {
-                    if (tektons.get(i).getClass() != tektonTypes.FeedThreadTekton.class) {
+                if(ft.isBridge()){
+                    ft.setIsDying(true);
+                }else{
+                    if (ft.getTekton() instanceof FeedThreadTekton) {
+                        ft.setIsDying(false);    
+                    } else{
                         ft.setIsDying(true);
-                        ft.setBody(null);
                     }
-                }
+                    
+            }
+                ft.setBody(null);
                 ft = ft.getNext();
             }
-            deleteThread(ft);
+            deleteThread(originthread);
             boolean success;
             for (FungusBody body : bodies) {
-                success = body.removeThread(ft);
+                success = body.removeThread(originthread);
                 if (success) {
                     break;
                 }
             }
 
-            ft.destroy();
+            originthread.destroy();
         }
 
     }

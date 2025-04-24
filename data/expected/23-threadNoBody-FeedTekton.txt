@@ -1,9 +1,10 @@
 th3:
 FungusThread:
-Species: N/A
-Body: N/A
+Species: fs1
+Body: b1
 Tektons: [ft1]
 IsBridge: false
+Lifespan: null
 IsDying: false
 Next: false
-Prev: false
+Prev: th2

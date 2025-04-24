@@ -4,7 +4,6 @@
 /set b1 tekton t1
 /set b1 species fs1
 /set fs1 addbody b1
-/status b1
 /create tekton t2
 /set t1 addneighbour t2
 growthread t1 b1
@@ -17,5 +16,4 @@ cut th2 i1
 /trig fs1
 /trig fs1
 /status th2
-/status th3
 cut th1 i1
