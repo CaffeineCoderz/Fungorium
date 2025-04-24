@@ -354,7 +354,7 @@ public class FungusSpecies implements iControl {
         for (FungusThread thread : threads) {
             destroyThread(thread);
             String objKey = cmdproc.findByObject(thread);
-            if (objKey != null) {
+            if (objKey != null && thread.getLifeSpan() != null && thread.getLifeSpan() == 0) {
                 cmdproc.getCreatedObjects().remove(objKey);
             }
         }
