@@ -1538,16 +1538,34 @@ public class CommandProcessor {
 
         Object obj = createdObjects.get(objectName);
         if (name.equals("timeelapsed")) {
-            for (Object object : createdObjects.values()) {
-                if (object instanceof InsectSpecies) {
-                    InsectSpecies insectSpecies = (InsectSpecies) object;
-                    insectSpecies.timeElapsed();
-                } else if (object instanceof FungusSpecies) {
-                    FungusSpecies fungusSpecies = (FungusSpecies) object;
-                    fungusSpecies.timeElapsed(this);
-                }
+            if(obj ==null){
+                for (Object object : createdObjects.values()) {
+                    if (object instanceof InsectSpecies) {
+                        InsectSpecies insectSpecies = (InsectSpecies) object;
+                        insectSpecies.timeElapsed();
+                    } else if (object instanceof FungusSpecies) {
+                        FungusSpecies fungusSpecies = (FungusSpecies) object;
+                        fungusSpecies.timeElapsed();
+                    }
+            }} else if(obj instanceof FungusSpecies) {
+                FungusSpecies fungusSpecies = (FungusSpecies) obj;
+                fungusSpecies.timeElapsed();
+            } else if (obj instanceof InsectSpecies) {
+                InsectSpecies insectSpecies = (InsectSpecies) obj;
+                insectSpecies.timeElapsed();
+            } else if (obj instanceof FungusThread) {
+                FungusThread thread = (FungusThread) obj;
+                thread.decreaseLife();
+            } else if (obj instanceof Insect) {
+                Insect insect = (Insect) obj;
+                insect.timeElapsed();
             }
-        } else if (obj instanceof FungusSpecies) {
+            else {
+                System.out.println("Hiba: Nem megfelelő objektum típus: " + name);
+            }
+                
+            }
+        } /* else if (obj instanceof FungusSpecies) {
             FungusSpecies fungusSpecies = (FungusSpecies) obj;
             fungusSpecies.timeElapsed(this);
         } else if (obj instanceof InsectSpecies) {
@@ -1559,7 +1577,7 @@ public class CommandProcessor {
         } else if (obj instanceof Insect) {
             Insect insect = (Insect) obj;
             insect.timeElapsed();
-        }
+        } */
 
         else {
             System.out.println("Hiba: Nem megfelelő objektum típus: " + name);
