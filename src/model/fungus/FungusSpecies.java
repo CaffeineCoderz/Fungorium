@@ -4,6 +4,7 @@ import interfaces.iControl;
 import java.util.ArrayList;
 import java.util.List;
 
+import commands.CommandProcessor;
 import fungus.FungusThread;
 import insect.*;
 import tektonTypes.FeedThreadTekton;
@@ -325,6 +326,28 @@ public class FungusSpecies implements iControl {
         }
         for (FungusThread thread : threads) {
             destroyThread(thread);
+        }
+    }
+
+    @Override
+    public void timeElapsed(CommandProcessor cmdproc) {
+        for (FungusBody body : bodies) {
+            body.produceSpore();
+
+            if (body.timeToDie()) {
+                destroyBody(body);
+                String objKey = cmdproc.findByObject(body);
+                if (objKey != null) {
+                    cmdproc.getCreatedObjects().remove(objKey);
+                }
+            }
+        }
+        for (FungusThread thread : threads) {
+            destroyThread(thread);
+            String objKey = cmdproc.findByObject(thread);
+            if (objKey != null) {
+                cmdproc.getCreatedObjects().remove(objKey);
+            }
         }
     }
 

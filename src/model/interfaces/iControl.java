@@ -1,5 +1,7 @@
 package interfaces;
 
+import commands.CommandProcessor;
+
 public interface iControl {
     /**
      * Adds the specified amount to the score.
@@ -20,4 +22,10 @@ public interface iControl {
      *
      */
     void timeElapsed();
+
+    /**
+     * Handles the elapsed time for a given round.
+     *
+     */
+    void timeElapsed(CommandProcessor commandProcessor);
 }
