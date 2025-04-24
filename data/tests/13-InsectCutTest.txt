@@ -14,8 +14,8 @@ growthread t2 th2
 /set i1 thread th3
 cut th2 i1
 /status th2
-/trig timeelapsed fs1
-/trig timeelapsed fs1
+/trig fs1
+/trig fs1
 /status th2
 /status th3
 cut th1 i1
