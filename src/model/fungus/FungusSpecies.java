@@ -329,7 +329,6 @@ public class FungusSpecies implements iControl {
         }
     }
 
-    @Override
     public void timeElapsed(CommandProcessor cmdproc) {
         for (FungusBody body : bodies) {
             body.produceSpore();

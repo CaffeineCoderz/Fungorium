@@ -3,6 +3,7 @@ package insect;
 import java.util.ArrayList;
 import java.util.List;
 
+import commands.CommandProcessor;
 import fungus.FungusSpecies;
 import fungus.FungusThread;
 import interfaces.iControl;

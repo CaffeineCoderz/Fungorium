@@ -1544,12 +1544,12 @@ public class CommandProcessor {
                     insectSpecies.timeElapsed();
                 } else if (object instanceof FungusSpecies) {
                     FungusSpecies fungusSpecies = (FungusSpecies) object;
-                    fungusSpecies.timeElapsed();
+                    fungusSpecies.timeElapsed(this);
                 }
             }
         } else if (obj instanceof FungusSpecies) {
             FungusSpecies fungusSpecies = (FungusSpecies) obj;
-            fungusSpecies.timeElapsed();
+            fungusSpecies.timeElapsed(this);
         } else if (obj instanceof InsectSpecies) {
             InsectSpecies insectSpecies = (InsectSpecies) obj;
             insectSpecies.timeElapsed();

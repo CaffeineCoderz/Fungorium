@@ -22,10 +22,4 @@ public interface iControl {
      *
      */
     void timeElapsed();
-
-    /**
-     * Handles the elapsed time for a given round.
-     *
-     */
-    void timeElapsed(CommandProcessor commandProcessor);
 }
