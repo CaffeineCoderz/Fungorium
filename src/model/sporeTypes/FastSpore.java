@@ -6,11 +6,23 @@ import tektonTypes.*;
 
 public class FastSpore extends Spore {
 
+    /**
+     * Default constructor for the FastSpore class.
+     * This constructor initializes a FastSpore object without any specific Tekton
+     * or nutrition value.
+     */
     public FastSpore() {
+        // Default constructor
     }
 
-    public FastSpore(Tekton t, int v) {
-        super(t, v);
+    /**
+     * Constructor for the FastSpore class.
+     * 
+     * @param t      the Tekton object associated with this spore.
+     * @param nutval the nutrition value of the spore.
+     */
+    public FastSpore(Tekton t, int nutval) {
+        super(t, nutval);
     }
 
     @Override

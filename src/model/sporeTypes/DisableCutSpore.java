@@ -5,11 +5,20 @@ import tektonTypes.Tekton;
 import utils.*;
 
 public class DisableCutSpore extends Spore {
+    /**
+     * Default constructor for the DisableCutSpore class.
+     */
     public DisableCutSpore(){
+        // Default constructor
     }
-    public DisableCutSpore(Tekton t, int nt){
-        super(t, nt);
 
+    /**
+     * Constructor for the DisableCutSpore class.
+     * @param t the Tekton object associated with this spore.
+     * @param nutval the nutrition value of the spore.
+     */
+    public DisableCutSpore(Tekton t, int nutval){
+        super(t, nutval);
     }
     /**
      * Disables the given insect's ability to cut fungus threads.
