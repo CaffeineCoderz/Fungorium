@@ -7,6 +7,7 @@ import java.util.List;
 import commands.CommandProcessor;
 import fungus.FungusThread;
 import insect.*;
+import tektonTypes.DecomposingTekton;
 import tektonTypes.FeedThreadTekton;
 import tektonTypes.OnlyThreadTekton;
 import tektonTypes.Tekton;
@@ -191,6 +192,9 @@ public class FungusSpecies implements iControl {
             if(oThread.getBody() != null){
                 oThread.getBody().addThread(nThread);
             }
+            if(targetTekton instanceof DecomposingTekton){
+                nThread.setIsDying(true);
+            }
             return nThread;
         } else {
             System.out.println("Tekton cant have new threads");
@@ -214,6 +218,9 @@ public class FungusSpecies implements iControl {
 
             body.addThread(nThread);
             nThread.setSpecies(this);
+            if(targetTekton instanceof DecomposingTekton){
+                nThread.setIsDying(true);
+            }
             return nThread;
         } else {
             System.err.println("Tekton cant have new threads");
@@ -275,7 +282,7 @@ public class FungusSpecies implements iControl {
             return null;
         }
         else if (!thread.getTekton(null).canGrowBody()) {
-            System.out.println("Tekton already contains a body");
+            System.out.println("Can't grow body on this tekton!");
             return null;
         }
         Integer atleast = 2;
