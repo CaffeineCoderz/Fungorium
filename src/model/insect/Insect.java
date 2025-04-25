@@ -292,7 +292,7 @@ public class Insect {
         return m.consumeMultiply(this);
     }
 
-    // iControl interface
+    // ! iControl interface
 
     /**
      * Increases the score of this insect by the specified amount.

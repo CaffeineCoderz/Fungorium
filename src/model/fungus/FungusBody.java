@@ -95,8 +95,6 @@ public class FungusBody {
         return threads;
     }
 
-    // ! Not implemented yet
-
     /**
      * Spreads spores to the neighboring Tektons.
      * 
@@ -174,11 +172,7 @@ public class FungusBody {
      * @return true if the fungus body should die, false otherwise.
      */
     public Boolean timeToDie() {
-        // implementáció
-        if (sporulateLeft == 0) {
-            return true;
-        }
-        return false;
+        return sporulateLeft == 0;
     }
 
     /**
@@ -188,7 +182,6 @@ public class FungusBody {
      * method is called when the fungus body is grown.
      */
     public void produceSpore() {
-        // implementáció
         sporeCount++;
     }
 
@@ -202,7 +195,6 @@ public class FungusBody {
      * @return true if there are available spores, false otherwise.
      */
     public Boolean isThereEnough() {
-        // implementáció
         return sporeCount > 1;
     }
 

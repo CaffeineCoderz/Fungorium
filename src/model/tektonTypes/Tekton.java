@@ -245,7 +245,6 @@ public class Tekton {
      * @return a list of Insect objects representing the insects associated with
      *         this Tekton.
      */
-    // ! még nincs statikus diagramba beleírva!
     public List<Insect> getInsects() {
         return insects;
     }
@@ -324,7 +323,10 @@ public class Tekton {
         neighbours.clear();
     }
     
-    // ! még nincs statikus diagramba beleírva!
+    /**
+     * Deletes this Tekton and removes all its associations with its neighbors.
+     * This method is called when the Tekton is no longer needed or has been broken.
+     */
     public void deleteTekton() {
         for (Tekton tekton : neighbours)
             tekton.removeNeighbour(this);

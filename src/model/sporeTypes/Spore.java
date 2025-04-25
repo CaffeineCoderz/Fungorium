@@ -69,7 +69,11 @@ public class Spore {
         return nutritionValue;
     }
 
-    // ! nincs stat. diagramban
+    /**
+     * Sets the nutrition value of the spore.
+     * 
+     * @param nutval the new nutrition value to be set.
+     */
     public void setNutValue(Integer nutval){
         nutritionValue = nutval;
     }

@@ -8,8 +8,14 @@ public class StunSpore extends Spore{
     
     
     public StunSpore(){    }
-    public StunSpore(Tekton t, int nt){
-        super(t, nt);
+
+    /**
+     * Constructor for the StunSpore class.
+     * @param t the Tekton object associated with this spore.
+     * @param nutval the nutrition value of the spore.
+     */
+    public StunSpore(Tekton t, int nutval){
+        super(t, nutval);
 
     }
     /**
