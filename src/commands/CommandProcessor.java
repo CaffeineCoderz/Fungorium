@@ -504,7 +504,7 @@ public class CommandProcessor {
                         "Hiba: Nem lehet törölni az Insect-et, mert nincs hozzárendelve Entomologist vagy Tekton!");
                 return;
             }
-            insect.deadInsect();
+            insect.deadInsect(this);
         } else if (obj instanceof Spore || obj instanceof FastSpore || obj instanceof MultiplyInsectSpore
                 || obj instanceof SlowSpore || obj instanceof StunSpore || obj instanceof DisableCutSpore) {
             Spore spore = (Spore) obj;
@@ -528,7 +528,7 @@ public class CommandProcessor {
         } else if (obj instanceof InsectSpecies) {
             InsectSpecies player = (InsectSpecies) obj;
             for (Insect insect : player.getInsects()) {
-                insect.deadInsect();
+                insect.deadInsect(this);
                 player.removeInsect(insect);
             }
         } else if (obj instanceof FungusSpecies) {
@@ -998,7 +998,7 @@ public class CommandProcessor {
         Object obj = createdObjects.get(name);
         if (obj instanceof Insect) {
             Insect insect = (Insect) obj;
-            insect.deadInsect();
+            insect.deadInsect(this);
             // Debug purposes
             // System.out.println("Az Insect meghalt!");
         } else {
@@ -1507,7 +1507,7 @@ public class CommandProcessor {
         if (objInsect instanceof Insect && objThread instanceof FungusThread) {
             Insect insect = (Insect) objInsect;
             FungusThread thread = (FungusThread) objThread;
-            insect.deadInsect();
+            insect.deadInsect(this);
             if (thread.getTekton().canGrowBody() && thread.getTekton() != null) {
                 FungusBody b = new FungusBody();
                 thread.getSpecies().addBody(b);
