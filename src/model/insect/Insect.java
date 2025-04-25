@@ -209,15 +209,19 @@ public class Insect {
         // Legyen meg a képessége, hogy fonalat vágjon és Ne vágja maga alatt a fát.
 
         if (canCut == true && effect != InsectEffects.STUN && effect != InsectEffects.NO_CUT && thread != ft) {
-            if (ft.isBridge()) {
-                ft.setIsDying(true);
-                ft.setLifeSpan(2);
-            } else {
-                // ! Még nem végleges
-                ft.setIsDying(true);
-                ft.setLifeSpan(4);
-            }
-        } else
+            if(ft==this.getThread().getPrev() || ft==this.getThread().getNext()){
+                if (ft.isBridge()) {
+                    ft.setIsDying(true);
+                    ft.setLifeSpan(2);
+                }else{
+                    // ! Még nem végleges
+                    ft.setIsDying(true);
+                    ft.setLifeSpan(4);
+                }
+            } else
+                System.out.println("Insect can't cut threads that are not next to it");
+        }else
+
             System.out.println("Insect can't cut threads");
 
     }

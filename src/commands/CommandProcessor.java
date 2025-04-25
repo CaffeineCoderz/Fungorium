@@ -620,7 +620,8 @@ public class CommandProcessor {
                     + "\n\tSpecies: " + speciesName
                     + "\n\tTekton: " + tektonName
                     + "\n\tThreads: " + threadNames
-                    + "\n\tSporecount: " + body.getSporeCount());
+                    + "\n\tSporecount: " + body.getSporeCount()
+                    + "\n\tSporulateLeft: " + body.getSporulateLeft());
         } else if (obj instanceof FungusSpecies) {
             FungusSpecies species = (FungusSpecies) obj;
             String bodyNames = species.getBodies().stream()

@@ -145,7 +145,7 @@ public class FungusSpecies implements iControl {
             FungusThread nThread = new FungusThread(null,false, this);
             //Fonal amiből növesztünk nem híd + a cél tekton nem egyezik meg a kiinduló fonal tektonjával -->
             // --> Ilyenkor bridge keletkezik, mivel két tektonnal definiáljuk a fonalat.
-            if(!oThread.isBridge() && oThread.getTektons().get(0) != targetTekton){
+            if(!oThread.isBridge() && oThread.getTekton() != targetTekton){
                 //? Csak akkor lehessen még hidat növeszteni, ha a kiinduló fonalnak nincs olyan híd szomszédja(prev és next), mivel ezen formában
                 //? ha nem lenne ilyen kikötés, akkor az az eset megtörténhet,hogy:
                 //? Hídból(híd1) növesztünk egy fonalat(th1) a híd belseje felé, ez még okés
@@ -160,7 +160,7 @@ public class FungusSpecies implements iControl {
                 //Ellenőrzés, hogy szomszédosak egymással ezen tektonok
                 boolean areNeighbours = false;
                 for (Tekton neighbour : targetTekton.getNeighbours()){
-                    if (neighbour == oThread.getTektons().get(0)) {
+                    if (neighbour == oThread.getTekton()) {
                         areNeighbours = true;
                         break;
                     }
@@ -188,10 +188,12 @@ public class FungusSpecies implements iControl {
             nThread.setPrevThread(oThread);
 
             oThread.setNextThread(nThread);
-            oThread.getBody().addThread(nThread);
+            if(oThread.getBody() != null){
+                oThread.getBody().addThread(nThread);
+            }
             return nThread;
         } else {
-            System.err.println("Tekton cant have new threads");
+            System.out.println("Tekton cant have new threads");
         }
         return null;
     }
@@ -273,7 +275,7 @@ public class FungusSpecies implements iControl {
             return null;
         }
         else if (!thread.getTekton(null).canGrowBody()) {
-            System.err.println("Tekton already contains a body");
+            System.out.println("Tekton already contains a body");
             return null;
         }
         Integer atleast = 2;
@@ -344,18 +346,20 @@ public class FungusSpecies implements iControl {
             body.produceSpore();
 
             if (body.timeToDie()) {
-                destroyBody(body);
                 String objKey = cmdproc.findByObject(body);
                 if (objKey != null) {
                     cmdproc.getCreatedObjects().remove(objKey);
                 }
+                destroyBody(body);
             }
         }
         for (FungusThread thread : threads) {
             destroyThread(thread);
             String objKey = cmdproc.findByObject(thread);
-            if (objKey != null && thread.getLifeSpan() != null && thread.getLifeSpan() == 0) {
-                cmdproc.getCreatedObjects().remove(objKey);
+            if(thread.getLifeSpan()!=null){
+                if (objKey != null &&  thread.getLifeSpan() == 0) {
+                    cmdproc.getCreatedObjects().remove(objKey);
+                }
             }
         }
     }
@@ -373,27 +377,32 @@ public class FungusSpecies implements iControl {
             return;
         }
         if (ft.getLifeSpan()!= null && ft.getLifeSpan() == 0) {
+            FungusThread originthread = ft;
             while (ft.getNext() != null) {
                 ft.getNext().setConnected(false);
-                List<Tekton> tektons = ft.getNext().getTektons();
-                for (int i = 0; i < tektons.size(); i++) {
-                    if (tektons.get(i).getClass() != tektonTypes.FeedThreadTekton.class) {
+                if(ft.isBridge()){
+                    ft.setIsDying(true);
+                }else{
+                    if (ft.getTekton() instanceof FeedThreadTekton) {
+                        ft.setIsDying(false);    
+                    } else{
                         ft.setIsDying(true);
-                        ft.setBody(null);
                     }
-                }
+                    
+            }
+                ft.setBody(null);
                 ft = ft.getNext();
             }
-            deleteThread(ft);
+            deleteThread(originthread);
             boolean success;
             for (FungusBody body : bodies) {
-                success = body.removeThread(ft);
+                success = body.removeThread(originthread);
                 if (success) {
                     break;
                 }
             }
 
-            ft.destroy();
+            originthread.destroy();
         }
 
     }

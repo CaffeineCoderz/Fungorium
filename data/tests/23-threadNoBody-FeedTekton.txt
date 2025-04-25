@@ -1,12 +1,21 @@
 /create feedthreadtekton ft1
 /create tekton t1
+/create fungusspecies fs1
 /create body b1
+/set b1 species fs1
+/set b1 sporulateleft 2
+/set fs1 addbody b1
 /set t1 addneighbour ft1
 /set b1 tekton t1
-growthread t1 b1 th1
-growthread ft1 th1 th2
-growthread ft1 th2 th3
-/set th2 lifespan 0
-/set th2 isdying true
-/trigger th2
+growthread t1 b1
+growthread ft1 th1
+growthread ft1 th2
+/create insectspecies is1
+/create insect i1
+/set i1 species is1
+/set is1 addinsect i1
+/set i1 thread th3
+cut th2 i1
+/trig fs1
+/trig fs1
 /status th3
