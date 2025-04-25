@@ -1,3 +1,4 @@
+Can't grow body on this tekton!
 Hiba: Nem lehetett gombatestet növeszteni a megadott paraméterekkel.
 Név: t1
 OnlyThreadTekton: 

@@ -1,14 +1,20 @@
 /create decreasetekton dt1
+/create tekton t1
+/set t1 addneighbour dt1
+/create fungusspecies fs1
 /create insect i1
 /create thread th1
 /create insectspecies is1
-/set th1 addtekton dt1
-/set i1 thread th1
-/set i1 tekton dt1
-/set tekton addinsect i1
+/set th1 addtekton t1
+/set t1 addthread th1
+/set th1 species fs1
+growthread dt1 th1
+growthread dt1 th2
 /set i1 species is1
 /set is1 addscore 100
 /set is1 addinsect i1
-/trig timeelapsed is1
+/set i1 thread th1
+/set i1 tekton t1
+move i1 th3
+/trig is1
 /status is1
-/status i1
