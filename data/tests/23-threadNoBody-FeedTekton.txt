@@ -7,15 +7,15 @@
 /set fs1 addbody b1
 /set t1 addneighbour ft1
 /set b1 tekton t1
-/status b1
 growthread t1 b1
 growthread ft1 th1
 growthread ft1 th2
-/status th3
-/set th2 lifespan 1
-/set th2 isdying true
-/status th3
+/create insectspecies is1
+/create insect i1
+/set i1 species is1
+/set is1 addinsect i1
+/set i1 thread th3
+cut th2 i1
 /trig fs1
-/status b1
-/status th2
+/trig fs1
 /status th3

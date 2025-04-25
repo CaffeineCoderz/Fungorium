@@ -145,7 +145,7 @@ public class FungusSpecies implements iControl {
             FungusThread nThread = new FungusThread(null,false, this);
             //Fonal amiből növesztünk nem híd + a cél tekton nem egyezik meg a kiinduló fonal tektonjával -->
             // --> Ilyenkor bridge keletkezik, mivel két tektonnal definiáljuk a fonalat.
-            if(!oThread.isBridge() && oThread.getTektons().get(0) != targetTekton){
+            if(!oThread.isBridge() && oThread.getTekton() != targetTekton){
                 //? Csak akkor lehessen még hidat növeszteni, ha a kiinduló fonalnak nincs olyan híd szomszédja(prev és next), mivel ezen formában
                 //? ha nem lenne ilyen kikötés, akkor az az eset megtörténhet,hogy:
                 //? Hídból(híd1) növesztünk egy fonalat(th1) a híd belseje felé, ez még okés
@@ -160,7 +160,7 @@ public class FungusSpecies implements iControl {
                 //Ellenőrzés, hogy szomszédosak egymással ezen tektonok
                 boolean areNeighbours = false;
                 for (Tekton neighbour : targetTekton.getNeighbours()){
-                    if (neighbour == oThread.getTektons().get(0)) {
+                    if (neighbour == oThread.getTekton()) {
                         areNeighbours = true;
                         break;
                     }
@@ -188,10 +188,12 @@ public class FungusSpecies implements iControl {
             nThread.setPrevThread(oThread);
 
             oThread.setNextThread(nThread);
-            oThread.getBody().addThread(nThread);
+            if(oThread.getBody() != null){
+                oThread.getBody().addThread(nThread);
+            }
             return nThread;
         } else {
-            System.err.println("Tekton cant have new threads");
+            System.out.println("Tekton cant have new threads");
         }
         return null;
     }
@@ -273,7 +275,7 @@ public class FungusSpecies implements iControl {
             return null;
         }
         else if (!thread.getTekton(null).canGrowBody()) {
-            System.err.println("Tekton already contains a body");
+            System.out.println("Tekton already contains a body");
             return null;
         }
         Integer atleast = 2;
@@ -344,11 +346,11 @@ public class FungusSpecies implements iControl {
             body.produceSpore();
 
             if (body.timeToDie()) {
-                destroyBody(body);
                 String objKey = cmdproc.findByObject(body);
                 if (objKey != null) {
                     cmdproc.getCreatedObjects().remove(objKey);
                 }
+                destroyBody(body);
             }
         }
         for (FungusThread thread : threads) {

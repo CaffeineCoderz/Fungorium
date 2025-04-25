@@ -1,1 +1,2 @@
 Sikertelen testnövesztés. A tektonon már van gombatest.
+Hiba: Nem lehetett gombatestet növeszteni a megadott paraméterekkel.

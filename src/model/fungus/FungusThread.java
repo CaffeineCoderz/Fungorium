@@ -21,7 +21,7 @@ public class FungusThread {
     private FungusThread nextThread;
 
     public FungusThread() {
-        this.lifeSpan = 0;
+        this.lifeSpan = null;
         this.bridge = false;
         this.isDying = false;
         this.species = null;

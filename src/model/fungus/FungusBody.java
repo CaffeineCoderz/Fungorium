@@ -175,7 +175,7 @@ public class FungusBody {
      */
     public Boolean timeToDie() {
         // implementáció
-        if (sporulateLeft <= 0) {
+        if (sporulateLeft == 0) {
             return true;
         }
         return false;
