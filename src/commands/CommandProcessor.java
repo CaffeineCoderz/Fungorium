@@ -1512,7 +1512,6 @@ public class CommandProcessor {
                 FungusBody b = new FungusBody();
                 thread.getSpecies().addBody(b);
                 thread.getTekton().setBody(b);
-                thread.getSpecies().addScore(1);
                 String baseName = "b";
                 int fungusBodyCount = countObjectsOfType(FungusBody.class);
                 String bodyname = generateUniqueName(baseName, fungusBodyCount);
