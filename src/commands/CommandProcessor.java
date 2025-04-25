@@ -1516,11 +1516,11 @@ public class CommandProcessor {
                 int fungusBodyCount = countObjectsOfType(FungusBody.class);
                 String bodyname = generateUniqueName(baseName, fungusBodyCount);
                 getCreatedObjects().put(bodyname, b);
+                thread.getSpecies().addBody(null);
             } else {
                 System.out.println("Hiba: Nem lehet ide body-t növeszteni.");
                 return;
             }
-            thread.getSpecies().addBody(null);
         } else {
             System.out.println(
                     "Hiba: Valamlyik objektum típusa nem helyes a parancshoz: " + insectName + " " + threadName);

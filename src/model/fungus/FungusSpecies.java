@@ -92,9 +92,6 @@ public class FungusSpecies implements iControl {
         bodies.add(body);
         addScore(1);
         }
-        else{
-            System.err.println("Null body cannot be added to the species.");
-        }
         
     }
 
