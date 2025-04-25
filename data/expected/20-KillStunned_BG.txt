@@ -11,5 +11,5 @@ Tekton:
 Név: fs1
 FungusSpecies: 
 	Score: 1
-	Bodies: [b0, N/A]
+	Bodies: [b0]
 

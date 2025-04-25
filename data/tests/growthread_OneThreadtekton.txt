@@ -1,12 +1,20 @@
 /create tekton t1
 /create onethreadtekton ot1
 /create tekton t2
+/create fungusspecies fs1
+/create fungusspecies fs2
 /set t1 addneighbour ot1
 /set t2 addneighbour ot1
 /create thread th1
-/set th1 tekton t1
+/set th1 species fs1
+/set fs1 addthread th1
+/set th1 addtekton t1
+/set t1 addthread th1
 /create thread th2
-/set th2 tekton t2
-growthread ot1 th1 th3
-growthread ot1 th2 th4
+/set th2 addtekton t2
+/set th2 species fs2
+/set fs2 addthread th2
+/set t2 addthread th2
+growthread ot1 th1
+growthread ot1 th2
 /status th3

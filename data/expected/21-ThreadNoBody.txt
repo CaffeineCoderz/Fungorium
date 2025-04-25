@@ -4,7 +4,7 @@ Species: N/A
 Body: N/A
 Tektons: [t1, t2]
 IsBridge: true
-LifeSpan: 2
+LifeSpan: null
 Next: th3
 Prev: N/A
 th2:

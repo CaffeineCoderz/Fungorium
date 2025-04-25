@@ -5,7 +5,6 @@ import java.util.List;
 
 import insect.Insect;
 import tektonTypes.Tekton;
-import utils.Logger;
 
 // ! - Az elrágott fonalak nem pusztulnak el azonnal, hanem csak egy kis idő elteltével (ez fonaltípustól függő idő). 
 // ! A fonalak képesek megenni a tektonjukon található bénult rovarokat. Ilyenkor a rovar elpusztul, a fonal pedig gombatestet növeszthet.
@@ -22,7 +21,7 @@ public class FungusThread {
     private FungusThread nextThread;
 
     public FungusThread() {
-        this.lifeSpan = 0;
+        this.lifeSpan = null;
         this.bridge = false;
         this.isDying = false;
         this.species = null;
@@ -32,11 +31,11 @@ public class FungusThread {
         connected = true;
     }
 
-    public FungusThread(Integer lifeSpan, Boolean bridge) {
+    public FungusThread(Integer lifeSpan, Boolean bridge, FungusSpecies Species) {
         this.lifeSpan = lifeSpan;
         this.bridge = bridge;
         this.isDying = false;
-        this.species = null;
+        this.species = Species;
         this.tektons = new ArrayList<>();
         prevThread = null;
         nextThread = null;
@@ -145,7 +144,7 @@ public class FungusThread {
             return;
         }
         lifeSpan--;
-        if (lifeSpan <= 0) {
+        if (lifeSpan == 0) {
             this.destroy();
         }
     }
@@ -181,8 +180,14 @@ public class FungusThread {
      * @param isDying true if this fungus thread should be marked as dying, false
      *                otherwise.
      */
-    public void setIsDying(Boolean isDying) {
-        this.isDying = isDying;
+    public void setIsDying(Boolean NisDying) {
+        this.isDying = NisDying;
+        if(lifeSpan == null&&isDying){
+            if(isBridge()){
+                lifeSpan = 2;
+            }else
+                lifeSpan = 4;
+        }
     }
 
     /**
@@ -277,6 +282,12 @@ public class FungusThread {
     public void destroy() {
         for (Tekton tekton : tektons) {
             tekton.removeThread(this);
+        }
+        if(this.getPrev() != null){
+            this.getPrev().setNextThread(null);
+        }
+        if(this.getNext() != null){
+            this.getNext().setPrevThread(null);
         }
     }
 

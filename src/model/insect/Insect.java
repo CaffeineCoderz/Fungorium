@@ -4,6 +4,7 @@ import fungus.FungusThread;
 import interfaces.iControl;
 import sporeTypes.MultiplyInsectSpore;
 import sporeTypes.Spore;
+import tektonTypes.DecreasingTekton;
 import tektonTypes.Tekton;
 import utils.*;
 
@@ -204,6 +205,7 @@ public class Insect{
         // Legyen meg a képessége, hogy fonalat vágjon és Ne vágja maga alatt a fát.
 
         if (canCut == true && effect != InsectEffects.STUN && effect != InsectEffects.NO_CUT && thread != ft) {
+            if(ft==this.getThread().getPrev() || ft==this.getThread().getNext()){
                 if (ft.isBridge()) {
                     ft.setIsDying(true);
                     ft.setLifeSpan(2);
@@ -212,7 +214,9 @@ public class Insect{
                     ft.setIsDying(true);
                     ft.setLifeSpan(4);
                 }
-        } else
+            } else
+                System.out.println("Insect can't cut threads that are not next to it");
+        }else
             System.out.println("Insect can't cut threads");
 
     }
@@ -238,6 +242,15 @@ public class Insect{
                 recentTekton.addInsect(this);
             } else {
                 setThread(ft);
+                if(ft.getTektons().get(0) instanceof DecreasingTekton){
+                    onDecreasing = true;
+                }
+                else onDecreasing = false;
+                if(recentTekton != ft.getTektons()){
+                    recentTekton.removeInsect(this);
+                    ft.getTekton().addInsect(this);
+                }
+                recentTekton = ft.getTekton();
             }
 
         } else
@@ -315,7 +328,6 @@ public class Insect{
         if (movingEffectTimer == 0 && abilityEffectTimer == 0) {
             effect = InsectEffects.NORMAL;
         }
-
     }
 
     /**

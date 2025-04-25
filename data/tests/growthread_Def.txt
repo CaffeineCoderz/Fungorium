@@ -1,9 +1,12 @@
 /create tekton t1
 /create tekton t2
+/create fungusspecies fs1
 /set t1 addneighbour t2
 /create body b1
+/set b1 species fs1
+/set fs1 addbody b1
 /set b1 tekton t1
-growthread t1 b1 th1
-growthread t2 th1 th2
+growthread t1 b1
+growthread t2 th1
 /status th1
 /status th2
