@@ -504,7 +504,7 @@ public class CommandProcessor {
                         "Hiba: Nem lehet törölni az Insect-et, mert nincs hozzárendelve Entomologist vagy Tekton!");
                 return;
             }
-            insect.deadInsect();
+            insect.deadInsect(this);
         } else if (obj instanceof Spore || obj instanceof FastSpore || obj instanceof MultiplyInsectSpore
                 || obj instanceof SlowSpore || obj instanceof StunSpore || obj instanceof DisableCutSpore) {
             Spore spore = (Spore) obj;
@@ -528,7 +528,7 @@ public class CommandProcessor {
         } else if (obj instanceof InsectSpecies) {
             InsectSpecies player = (InsectSpecies) obj;
             for (Insect insect : player.getInsects()) {
-                insect.deadInsect();
+                insect.deadInsect(this);
                 player.removeInsect(insect);
             }
         } else if (obj instanceof FungusSpecies) {
@@ -620,7 +620,8 @@ public class CommandProcessor {
                     + "\n\tSpecies: " + speciesName
                     + "\n\tTekton: " + tektonName
                     + "\n\tThreads: " + threadNames
-                    + "\n\tSporecount: " + body.getSporeCount());
+                    + "\n\tSporecount: " + body.getSporeCount()
+                    + "\n\tSporulateLeft: " + body.getSporulateLeft());
         } else if (obj instanceof FungusSpecies) {
             FungusSpecies species = (FungusSpecies) obj;
             String bodyNames = species.getBodies().stream()
@@ -780,9 +781,7 @@ public class CommandProcessor {
         }
     }
 
-
-
-    //! Javítani doksiban
+    // ! Javítani doksiban
     /*
      * growbody parancs formája: growbody <FungusThread>
      * Példa: growbody th1
@@ -799,8 +798,8 @@ public class CommandProcessor {
         Object obj = createdObjects.get(threadName);
         if (obj instanceof FungusThread) {
             FungusThread thread = (FungusThread) obj;
-            //actual growbody
-            String bodyName = "bo" + (countObjectsOfType(FungusBody.class)+1);
+            // actual growbody
+            String bodyName = "bo" + (countObjectsOfType(FungusBody.class) + 1);
             FungusBody nBody = thread.getSpecies().growBody(thread);
             if (nBody == null) {
                 System.out.println("Hiba: Nem lehetett gombatestet növeszteni a megadott paraméterekkel.");
@@ -814,7 +813,7 @@ public class CommandProcessor {
 
     /*
      * growthread parancs formája:
-     * growthread <Tekton> <FungusBody> 
+     * growthread <Tekton> <FungusBody>
      * Példa: growthread t1 b1
      * 
      * growthread parancs formája:
@@ -826,7 +825,7 @@ public class CommandProcessor {
     public void processGrowThreadCommand(String[] parts) {
         String tektonName = parts[1];
         String secondParam = parts[2];
-        String newThreadName = "th" + (countObjectsOfType(FungusThread.class)+1);
+        String newThreadName = "th" + (countObjectsOfType(FungusThread.class) + 1);
 
         // Második param type check
         Object obj = createdObjects.get(secondParam);
@@ -847,7 +846,7 @@ public class CommandProcessor {
                     && createdObjects.get(secondParam) instanceof FungusBody) {
                 Tekton tekton = (Tekton) createdObjects.get(tektonName);
                 FungusBody body = (FungusBody) createdObjects.get(secondParam);
-                //Actual growthread
+                // Actual growthread
                 FungusThread nThread = body.getSpecies().growThread(tekton, body);
                 if (nThread == null) {
                     System.out.println("Hiba: Nem lehetett fonalat növeszteni a megadott paraméterekkel");
@@ -862,13 +861,13 @@ public class CommandProcessor {
                     && createdObjects.get(secondParam) instanceof FungusThread) {
                 Tekton tekton = (Tekton) createdObjects.get(tektonName);
                 FungusThread thread = (FungusThread) createdObjects.get(secondParam);
-                //Actual growthread
+                // Actual growthread
                 FungusThread nThread = thread.getSpecies().growThread(tekton, thread);
                 if (nThread == null) {
                     System.out.println("Hiba: Nem lehetett fonalat növeszteni a megadott paraméterekkel");
                     return;
                 }
-                createdObjects.put(newThreadName, nThread);                    
+                createdObjects.put(newThreadName, nThread);
             } else {
                 System.out.println("Hiba: Valamelyik paraméter nem megfelelő típusú.");
             }
@@ -934,7 +933,7 @@ public class CommandProcessor {
         if (obj instanceof FungusBody) {
             FungusBody body = (FungusBody) obj;
             List<Spore> createdSpores = body.sporulate();
-            if(createdSpores == null){
+            if (createdSpores == null) {
                 System.out.println("Hiba: Nem sikerült spórát szórni");
                 return;
             }
@@ -999,7 +998,7 @@ public class CommandProcessor {
         Object obj = createdObjects.get(name);
         if (obj instanceof Insect) {
             Insect insect = (Insect) obj;
-            insect.deadInsect();
+            insect.deadInsect(this);
             // Debug purposes
             // System.out.println("Az Insect meghalt!");
         } else {
@@ -1335,15 +1334,18 @@ public class CommandProcessor {
                         System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + value);
                     break;
                 case "addneighbour":
-                    if (createdObjects.get(value) instanceof Tekton){
+                    if (createdObjects.get(value) instanceof Tekton) {
                         Tekton neighbour = (Tekton) createdObjects.get(value);
                         tekton.addNeighbour(neighbour);
                         neighbour.addNeighbour(tekton);
                     }
                     break;
                 case "removeneighbour":
-                    if (createdObjects.get(value) instanceof Tekton)
-                        tekton.removeNeighbour((Tekton) createdObjects.get(value));
+                    if (createdObjects.get(value) instanceof Tekton) {
+                        Tekton neighbour = (Tekton) createdObjects.get(value);
+                        tekton.removeNeighbour(neighbour);
+                        neighbour.removeNeighbour(tekton);
+                    }
                     break;
                 case "addinsect":
                     if (createdObjects.get(value) instanceof Insect)
@@ -1505,12 +1507,11 @@ public class CommandProcessor {
         if (objInsect instanceof Insect && objThread instanceof FungusThread) {
             Insect insect = (Insect) objInsect;
             FungusThread thread = (FungusThread) objThread;
-            insect.deadInsect();
+            insect.deadInsect(this);
             if (thread.getTekton().canGrowBody() && thread.getTekton() != null) {
                 FungusBody b = new FungusBody();
                 thread.getSpecies().addBody(b);
                 thread.getTekton().setBody(b);
-                thread.getSpecies().addScore(1);
                 String baseName = "b";
                 int fungusBodyCount = countObjectsOfType(FungusBody.class);
                 String bodyname = generateUniqueName(baseName, fungusBodyCount);
@@ -1528,14 +1529,9 @@ public class CommandProcessor {
 
     public void processTriggerCommand(String[] parts) {
         String name = parts[1];
-        String objectName = parts[2];
 
-        if (!createdObjects.containsKey(objectName)) {
-            System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + name);
-            return;
-        }
+        Object obj = createdObjects.get(name);
 
-        Object obj = createdObjects.get(objectName);
         if (name.equals("timeelapsed")) {
             for (Object object : createdObjects.values()) {
                 if (object instanceof InsectSpecies) {
@@ -1543,12 +1539,15 @@ public class CommandProcessor {
                     insectSpecies.timeElapsed();
                 } else if (object instanceof FungusSpecies) {
                     FungusSpecies fungusSpecies = (FungusSpecies) object;
-                    fungusSpecies.timeElapsed();
+                    fungusSpecies.timeElapsed(this);
                 }
             }
-        } else if (obj instanceof FungusSpecies) {
+        } else if (!createdObjects.containsKey(name)) {
+            System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + name);
+            return;
+        } else if(obj instanceof FungusSpecies) {
             FungusSpecies fungusSpecies = (FungusSpecies) obj;
-            fungusSpecies.timeElapsed();
+            fungusSpecies.timeElapsed(this);
         } else if (obj instanceof InsectSpecies) {
             InsectSpecies insectSpecies = (InsectSpecies) obj;
             insectSpecies.timeElapsed();
@@ -1559,44 +1558,9 @@ public class CommandProcessor {
             Insect insect = (Insect) obj;
             insect.timeElapsed();
         }
-
         else {
             System.out.println("Hiba: Nem megfelelő objektum típus: " + name);
         }
     }
-
-    // ! --------------- Tesztes részhez tartozik -------------------------
-    /*
-     * Parancsok kiírása egy fájlba
-     */
-    public void writeCommandsToFile(String fileName) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
-            for (String command : commands.keySet()) {
-                writer.write(command);
-                writer.newLine();
-            }
-        } catch (IOException e) {
-            System.out.println("Hiba a fájl írásakor: " + e.getMessage());
-        }
-    }
-
-    /*
-     * redirectOutputToFile metódus: átirányítja a System.out kimenetet egy fájlba.
-     * 
-     * PrintStream originalOut = System.out; // Mentsd el az eredeti kimenetet
-     * redirectOutputToFile("output.log");
-     * // ... program futása ...
-     * System.setOut(originalOut); // Állítsd vissza az eredeti kimenetet
-     */
-    public void redirectOutputToFile(String fileName) {
-        try {
-            File file = new File(fileName);
-            FileOutputStream fos = new FileOutputStream(file);
-            PrintStream ps = new PrintStream(fos);
-            System.setOut(ps); // A System.out kimenet átirányítása a fájlba
-        } catch (IOException e) {
-            System.err.println("Hiba a kimenet fájlba irányításakor: " + e.getMessage());
-        }
-    }
-
 }
+

@@ -1,18 +1,28 @@
 /create tekton t1
 /create tekton t2
+/create fungusspecies fs1
+/create fungusspecies fs2
 /set t1 addneighbour t2
 /create tekton t3
 /set t2 addneighbour t3
 /create insect i1
 /create thread th1
-/set th1 tekton t1
-growthread t2 th1 th2
-growthread t2 th2 th3
+/set th1 addtekton t1
+/set th1 species fs1
+/set fs1 addthread th1
+/set t1 addthread th1
+growthread t2 th1
+growthread t2 th2
 /create thread th4
-/set th4 tekton t2
-growthread t3 th4 th5
-growthread t3 th5 th6
+/set th4 addtekton t2
+/set t2 addthread th4
+/set th4 species fs2
+/set fs2 addthread th4
+growthread t3 th4
+growthread t3 th5
 /set i1 thread th1
+/set i1 tekton t1
+/set t1 addinsect i1
 move i1 th3
 move i1 th5
 /status i1

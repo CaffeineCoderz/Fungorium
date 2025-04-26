@@ -6,9 +6,14 @@ import fungus.FungusThread;
 
 public class DecomposingTekton extends Tekton{
 
+    /**
+     * Default constructor for the DecomposingTekton class.
+     */
     public DecomposingTekton(){
         super(true, true);
     }
+
+    
 
     /**
      * Adds a FungusThread instance to the list of threads associated with this DecomposingTekton.

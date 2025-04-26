@@ -418,6 +418,8 @@ public class GameLogic {
     public void MoveInsect(Insect insect, FungusThread toThread){
         if(canReachThread(insect, toThread)){
             insect.move(toThread);
+        }else{
+            System.out.println("Sikertelen elmozgás");
         }
     }
 

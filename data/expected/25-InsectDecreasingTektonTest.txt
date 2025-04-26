@@ -1,4 +1,5 @@
-is1:
-InsectSpecies:
-Score: 98
-Insects: [i1]
+Név: is1
+InsectSpecies: 
+	Score: 99
+	Insects: [i1]
+

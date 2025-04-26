@@ -1,1 +1,2 @@
-Sikertelen testnövesztés. A tektonon már van gombatest.
+Can't grow body on this tekton!
+Hiba: Nem lehetett gombatestet növeszteni a megadott paraméterekkel.

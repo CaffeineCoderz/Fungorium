@@ -1,10 +1,13 @@
 /create tekton t1
 /create tekton t2
 /set t1 addneighbour t2
+/create fungusspecies fs1
 /create body b1
+/set b1 species fs1
 /set b1 tekton t1
 /set t1 body b1
 /set b1 sporecount 3
 /set b1 sporulateleft 1
 sporulate b1
+/trig fs1
 /status t1
