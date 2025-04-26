@@ -1,5 +1,5 @@
 Név: t1
-Tekton:
+Tekton: 
 	CanGrowThread: true
 	CanGrowBody: true
 	Bodies: N/A
@@ -7,5 +7,4 @@ Tekton:
 	Neighbours: [t2]
 	Spores: []
 	Threads: []
-
 
