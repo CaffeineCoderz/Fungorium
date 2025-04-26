@@ -291,7 +291,7 @@ public class FungusSpecies implements iControl {
             FungusBody fb = new FungusBody(null, null);
             thread.getTekton(null).setBody(fb);
             for (Integer i = 0; i < atleast; i++) {
-                thread.getTekton().getSpores().get(0).absorbed();
+                thread.getTekton().getSpores().get(i).absorbed();
             }
             fb.setTekton(thread.getTekton(null));
             fb.addThread(thread);
