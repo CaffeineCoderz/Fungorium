@@ -291,7 +291,7 @@ public class FungusSpecies implements iControl {
             FungusBody fb = new FungusBody(null, null);
             thread.getTekton().setBody(fb);
             for (Integer i = 0; i < atleast; i++) {
-                thread.getTekton().getSpores().get(i).absorbed();
+                thread.getTekton().getSpores().get(0).absorbed();
             }
             fb.setTekton(thread.getTekton());
             fb.addThread(thread);
@@ -338,7 +338,6 @@ public class FungusSpecies implements iControl {
     public void timeElapsed() {
         for (FungusBody body : bodies) {
             body.produceSpore();
-
             if (body.timeToDie()) {
                 destroyBody(body);
             }
@@ -349,17 +348,20 @@ public class FungusSpecies implements iControl {
     }
 
     public void timeElapsed(CommandProcessor cmdproc) {
+        List<FungusBody> removeBodies = new ArrayList();
         for (FungusBody body : bodies) {
-            body.produceSpore();
-
             if (body.timeToDie()) {
                 String objKey = cmdproc.findByObject(body);
                 if (objKey != null) {
                     cmdproc.getCreatedObjects().remove(objKey);
                 }
                 destroyBody(body);
+                removeBodies.add(body);
+            }else {
+                body.produceSpore();
             }
         }
+        bodies.removeAll(removeBodies);
         for (FungusThread thread : threads) {
             destroyThread(thread);
             String objKey = cmdproc.findByObject(thread);
