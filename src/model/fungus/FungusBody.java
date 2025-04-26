@@ -128,7 +128,7 @@ public class FungusBody {
     
         int depth = 0;
     
-        while (!queue.isEmpty() && sporeCount > 0 && depth <= 2) {
+        while (!queue.isEmpty() && sporeCount > 0 && depth < 2) {
             int levelSize = queue.size(); // Hány elem van ezen a szinten
     
             for (int i = 0; i < levelSize; i++) {
