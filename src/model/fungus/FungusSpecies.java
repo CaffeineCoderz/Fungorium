@@ -281,7 +281,7 @@ public class FungusSpecies implements iControl {
             System.err.println("Thread is a bridge. You can't grow a body from a bridge!");
             return null;
         }
-        else if (!thread.getTekton(null).canGrowBody()) {
+        else if (!thread.getTekton().canGrowBody()) {
             System.out.println("Can't grow body on this tekton!");
             return null;
         }
@@ -289,11 +289,11 @@ public class FungusSpecies implements iControl {
         boolean enoughSpore = thread.getTekton().isThereEnoughSpore(atleast);
         if (enoughSpore) {
             FungusBody fb = new FungusBody(null, null);
-            thread.getTekton(null).setBody(fb);
+            thread.getTekton().setBody(fb);
             for (Integer i = 0; i < atleast; i++) {
-                thread.getTekton().getSpores().get(0).absorbed();
+                thread.getTekton().getSpores().get(i).absorbed();
             }
-            fb.setTekton(thread.getTekton(null));
+            fb.setTekton(thread.getTekton());
             fb.addThread(thread);
             thread.setBody(fb);
             this.addBody(fb);
@@ -448,7 +448,7 @@ public class FungusSpecies implements iControl {
             return;
         }
         Boolean someoneDied = false;
-        for (Insect insect : ft.getTekton(null).getInsects()) {
+        for (Insect insect : ft.getTekton().getInsects()) {
             if (insect.gEffect() == InsectEffects.STUN) {
                 insect.deadInsect();
                 someoneDied = true;
@@ -478,7 +478,7 @@ public class FungusSpecies implements iControl {
             return;
         }
         Boolean someoneDied = false;
-        for (Insect insect : ft.getTekton(null).getInsects()) {
+        for (Insect insect : ft.getTekton().getInsects()) {
             if (insect.gEffect() == InsectEffects.STUN) {
                 insect.deadInsect(cmdproc);
                 someoneDied = true;
