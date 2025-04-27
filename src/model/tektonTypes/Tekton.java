@@ -299,8 +299,10 @@ public class Tekton {
             if (objKey != null) {
                 commandProcessor.getCreatedObjects().remove(objKey);
             }
+            body.getSpecies().deleteBody(body);
             body.setSporulateLeft(0);
             body.getSpecies().destroyBody(body);
+            
         }
     
         // Létrehozzuk az új Tektonokat

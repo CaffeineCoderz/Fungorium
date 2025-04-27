@@ -419,7 +419,7 @@ public class FungusSpecies implements iControl {
     public void timeElapsed(CommandProcessor cmdproc) {
         List<FungusBody> removeBodies = new ArrayList();
         for (FungusBody body : bodies) {
-            if (body.timeToDie()) {
+            if (body.getSporulateLeft()==0) {;
                 String objKey = cmdproc.findByObject(body);
                 if (objKey != null) {
                     cmdproc.getCreatedObjects().remove(objKey);
@@ -466,7 +466,7 @@ public class FungusSpecies implements iControl {
                         ft.setIsDying(true);
                     }
                     
-            }
+            }   
                 ft.setPrevBody(null);
                 ft = ft.getNext();
             }
@@ -509,46 +509,58 @@ public class FungusSpecies implements iControl {
     public void destroyBody(FungusBody fb) {
         for (FungusThread ft : fb.getThreads()) {
             ft.setConnected(false);
-            FungusThread mainThread;
-            if(ft.getMyBody()!=null&&ft.getMyBody()== fb){
-                ft.setMyBody(null);
-                mainThread = ft;
-                FungusThread temp = ft.getNext();
-                while(temp.getNext() != null) {
-                    if(mainThread.getPrevBody()!=null){
-                        temp.setPrevBody(mainThread.getPrevBody());
-                    }else{
-                        temp.setPrevBody(null);
-                    }
-                    if(temp.myBody!=null){
-                        break;
-                    }
-                    if(temp.getPrevBody()==null&& temp.getNextBody()==null){
-                        temp.setIsDying(true);
-                    }
-                    temp = temp.getNext();
-                }
-                temp = ft.getPrev();
+            FungusThread mainThread = new FungusThread();
+            if(ft.getNextBody()==null){
+                ft.setIsDying(true);
+            }
+            FungusThread temp = ft;
+            if(temp.getMyBody()!=null && temp.getMyBody()==fb){
+                mainThread =ft;
                 while(temp.getPrev() != null) {
                     if(mainThread.getNextBody()!=null){
                         temp.setNextBody(mainThread.getNextBody());
                     }else{
                         temp.setNextBody(null);
                     }
-                    if(temp.myBody!=null){
+                    if(temp.getPrevBody()==null&& temp.getNextBody()==null){
+                        temp.setIsDying(true);
+                    }
+                    if(temp.myBody!=null&&temp.myBody!=fb){
                         break;
+                    }
+                    temp = temp.getPrev();
+                }
+                while(temp.getNext()!=null){
+                    if(mainThread.getPrevBody()!=null){
+                        temp.setPrevBody(mainThread.getPrevBody());
+                    }else{
+                        //temp.setNextBody(null);
                     }
                     if(temp.getPrevBody()==null&& temp.getNextBody()==null){
                         temp.setIsDying(true);
                     }
-                    temp = temp.getPrev();
+                    if(temp.myBody!=null&&temp.myBody!=fb){
+                        break;
+                    }
+                    temp = temp.getNext();
+                }
+            }else{
+                temp=ft;
+                
+                while(temp != null) {
+                    temp.setPrevBody(null);
+                    if(temp.getNextBody()==null){
+                        temp.setIsDying(true);
+                        temp.setLifeSpan(temp.getLifeSpan()+1);
+                    }
+                    if(temp.myBody!=null){
+                        break;
+                    }
+                    temp = temp.getNext();
                 }
             }
-
-            //! ide lehet beimplementálni, hogy sorba a következő ebből a bodyból eredendő threadek body-ja nullra legyen állítva
         }
-        
-        this.deleteBody(fb);
+        //! ide lehet beimplementálni, hogy sorba a következő ebből a bodyból eredendő threadek body-ja nullra legyen állítva
         fb.getTekton().setBody(null);
         fb.setTekton(null);
     }
