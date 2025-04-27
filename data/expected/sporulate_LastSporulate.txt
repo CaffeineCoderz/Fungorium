@@ -1,5 +1,5 @@
 Név: t1
-Tekton:
+Tekton: 
 	CanGrowThread: true
 	CanGrowBody: true
 	Bodies: N/A
@@ -7,3 +7,5 @@ Tekton:
 	Neighbours: [t2]
 	Spores: []
 	Threads: []
+
+Hiba: Nem létezik ilyen nevű objektum: b1
