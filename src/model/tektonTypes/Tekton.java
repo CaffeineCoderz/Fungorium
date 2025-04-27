@@ -56,11 +56,11 @@ public class Tekton {
     public Tekton(Tekton tekton) {
         this.canGrowBody = tekton.canGrowBody();
         this.canGrowThread = tekton.canGrowThread();
-        this.spores = tekton.getSpores();
-        this.insects = tekton.getInsects();
-        this.threads = tekton.getThreads();
+        this.spores = new ArrayList<>(tekton.getSpores());
+        this.insects = new ArrayList<>(tekton.getInsects());
+        this.threads = new ArrayList<>(tekton.getThreads());
         this.body = tekton.getBody();
-        this.neighbours = tekton.getNeighbours();
+        this.neighbours = new ArrayList<>(tekton.getNeighbours());
     }
 
     /**
@@ -275,27 +275,40 @@ public class Tekton {
      * Tekton. The two new Tekton objects are also added to each other's list of
      * neighbors.
      */
-    public void breakTekton() {
+    public List<Tekton> breakTekton(CommandProcessor commandProcessor) {
         // Először eltávolítjuk az összes rovar, fonal és spóra kapcsolatot
         for (int i = insects.size() - 1; i >= 0; i--) {
             Insect insect = insects.get(i);
-            insect.deadInsect();
+            insect.deadInsect(commandProcessor);
         }
         for (FungusThread ft : threads) {
             ft.setIsDying(true);
+            ft.setLifeSpan(0);
             ft.getSpecies().destroyThread(ft);
+            String objKey = commandProcessor.findByObject(ft);
+            if (objKey != null) {
+                commandProcessor.getCreatedObjects().remove(objKey);
+            }
         }
         for (int i = spores.size() - 1; i >= 0; i--) {
             Spore spore = spores.get(i);
             spore.absorbed();
         }
         if (body != null) {
+            String objKey = commandProcessor.findByObject(body);
+            if (objKey != null) {
+                commandProcessor.getCreatedObjects().remove(objKey);
+            }
+            body.setSporulateLeft(0);
             body.getSpecies().destroyBody(body);
         }
     
         // Létrehozzuk az új Tektonokat
         Tekton t1 = new Tekton(this);
         Tekton t2 = new Tekton(this);
+        t1.neighbours = new ArrayList<>();
+        t2.neighbours = new ArrayList<>();
+        
     
         // Szomszédok felosztása
         int mid = neighbours.size() / 2;
@@ -318,9 +331,17 @@ public class Tekton {
         // Az új Tektonok egymás szomszédai lesznek
         t1.addNeighbour(t2);
         t2.addNeighbour(t1);
-    
+        t1.getThreads().clear();
+        t2.getThreads().clear();
+        
+        String objKey = commandProcessor.findByObject(this);
+        commandProcessor.getCreatedObjects().remove(objKey);
         // Az eredeti Tekton szomszédainak törlése
         neighbours.clear();
+        List<Tekton> tektons = new ArrayList<>();
+        tektons.add(t1);
+        tektons.add(t2);
+        return tektons;
     }
     
     /**

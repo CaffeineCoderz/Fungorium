@@ -8,7 +8,7 @@
 /set th1 species fs1
 /create body b1
 /set b1 tekton t1
-/set th1 body b1
+/set th1 prevbody b1
 /set b1 addthread th1
 growthread dt1 th1
 /status th2

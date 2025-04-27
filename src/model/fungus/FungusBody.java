@@ -20,7 +20,7 @@ public class FungusBody {
 
     public FungusBody() {
         this.sporeCount = 0;
-        this.sporulateLeft = 0;
+        this.sporulateLeft = 2;
         this.threads = new ArrayList<>();
         this.tekton = null;
         this.species = null;

@@ -6,6 +6,8 @@
 /set fs1 addbody b1
 /create tekton t2
 /set t1 addneighbour t2
+/create tekton t3
+/set t3 addneighbour t2
 growthread t1 b1
 growthread t2 th1
 growthread t2 th2
