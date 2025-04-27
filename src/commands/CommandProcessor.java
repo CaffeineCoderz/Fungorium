@@ -1493,7 +1493,11 @@ public class CommandProcessor {
                 || obj instanceof FeedThreadTekton || obj instanceof OneThreadTekton
                 || obj instanceof OnlyThreadTekton) {
             Tekton tekton = (Tekton) obj;
-            tekton.breakTekton(this);
+            String newtektonName = name + "-1";
+            String newtektonName2 = name + "-2";
+            List<Tekton> tektons = tekton.breakTekton(this);
+            createdObjects.put(newtektonName, tektons.get(0));
+            createdObjects.put(newtektonName2, tektons.get(1));
             // Debug purposes
             // System.out.println("Az Tekton eltört!");
         } else {

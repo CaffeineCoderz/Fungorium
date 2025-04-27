@@ -275,7 +275,7 @@ public class Tekton {
      * Tekton. The two new Tekton objects are also added to each other's list of
      * neighbors.
      */
-    public void breakTekton(CommandProcessor commandProcessor) {
+    public List<Tekton> breakTekton(CommandProcessor commandProcessor) {
         // Először eltávolítjuk az összes rovar, fonal és spóra kapcsolatot
         for (int i = insects.size() - 1; i >= 0; i--) {
             Insect insect = insects.get(i);
@@ -329,14 +329,15 @@ public class Tekton {
         // Az új Tektonok egymás szomszédai lesznek
         t1.addNeighbour(t2);
         t2.addNeighbour(t1);
-        String newtektonName = "t" + (commandProcessor.countObjectsOfType(FungusThread.class) + 1);
-        commandProcessor.getCreatedObjects().put(newtektonName, t1);
-        String newtektonName2 = "t" + (commandProcessor.countObjectsOfType(FungusThread.class) + 1);
-        commandProcessor.getCreatedObjects().put(newtektonName2, t2);
+        
         String objKey = commandProcessor.findByObject(this);
         commandProcessor.getCreatedObjects().remove(objKey);
         // Az eredeti Tekton szomszédainak törlése
         neighbours.clear();
+        List<Tekton> tektons = new ArrayList<>();
+        tektons.add(t1);
+        tektons.add(t2);
+        return tektons;
     }
     
     /**
