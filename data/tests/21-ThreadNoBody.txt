@@ -11,9 +11,7 @@ growthread t2 th1
 growthread t2 th2
 /set b1 sporulateleft 1
 sporulate b1
-/status b1
 /trig fs1
-/status b1
 /status th2
 /trig fs1
 /trig fs1

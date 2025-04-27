@@ -3,7 +3,9 @@ Hiba: Nem lehetett fonalat növeszteni a megadott paraméterekkel
 Név: th3
 FungusThread: 
 	Species: fs1
-	Body: N/A
+	PrevBody: b1
+	NextBody: N/A
+	MyBody: N/A
 	Tektons: [t1, ot1]
 	IsBridge: true
 	Lifespan: null

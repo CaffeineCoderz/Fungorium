@@ -5,7 +5,10 @@
 /create fungusspecies fs2
 /set t1 addneighbour ot1
 /set t2 addneighbour ot1
+/create body b1
 /create thread th1
+/set b1 addthread th1
+/set th1 prevbody b1
 /set th1 species fs1
 /set fs1 addthread th1
 /set th1 addtekton t1
