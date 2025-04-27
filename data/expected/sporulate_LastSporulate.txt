@@ -1,0 +1,9 @@
+Név: t1
+Tekton:
+	CanGrowThread: true
+	CanGrowBody: true
+	Bodies: N/A
+	Insects: []
+	Neighbours: [t2]
+	Spores: []
+	Threads: []
