@@ -92,7 +92,7 @@ public class CommandProcessor {
     private Set<String> insectCommands = Set.of("move", "cut", "eat");
     private Set<String> commonCommands = Set.of("help", "exit");
     private Set<String> systemCommands = Set.of("/helpsys", "/helpobj", "/load", "/break", "/kill", "/set", "/delete",
-            "/status", "/save", "/log", "/trig");
+            "/status", "/save", "/log", "/trig", "/create");
 
     private GameLogic gameLogic;
 
@@ -189,6 +189,7 @@ public class CommandProcessor {
 
         commands.put("/break", this::processBreakCommand);
         commandDescriptions.put("/break", "/break <Tekton>");
+
         commands.put("/trig", this::processTriggerCommand);
         commandDescriptions.put("/trig", "/trig <event>");
 
@@ -201,8 +202,8 @@ public class CommandProcessor {
         commands.put("eat", this::processEatCommand);
         commandDescriptions.put("eat", "eat <Spore> <Insect>");
 
-        commands.put("kill", this::processKillCommand);
-        commandDescriptions.put("kill", "kill <Insect>");
+        commands.put("/kill", this::processKillCommand);
+        commandDescriptions.put("/kill", "/kill <Insect>");
 
         commands.put("move", this::processMoveCommand);
         commandDescriptions.put("move", "move <Insect> <Thread>");
@@ -333,8 +334,8 @@ public class CommandProcessor {
         System.out.println("eat <Spore> <Insect> \t\t\t\t eats a spore with the selected insect");
         System.out.println("move <Insect> <Thread> \t\t\t\t moves an insect to the selected thread");
         System.out.println("growBody <FungusThread> <Tekton> \t\t grows a body");
-        System.out.println("growThread <Tekton> <FungusBody> <newThread> \t grows a thread from the selected body");
-        System.out.println("growThread <Tekton> <Thread> <newThread> \t grows a thread from an existing thread");
+        System.out.println("growThread <Tekton> <FungusBody> \t\t grows a thread from the selected body");
+        System.out.println("growThread <Tekton> <Thread> \t\t\t grows a thread from an existing thread");
         System.out.println("sporulate <FungusBody> \t\t\t\t sporulates with the selected body");
         System.out.println("exit \t\t\t\t\t\t exits the program");
     }
