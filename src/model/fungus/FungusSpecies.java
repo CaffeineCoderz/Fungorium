@@ -417,7 +417,7 @@ public class FungusSpecies implements iControl {
     }
 
     public void timeElapsed(CommandProcessor cmdproc) {
-        List<FungusBody> removeBodies = new ArrayList();
+        List<FungusBody> removeBodies = new ArrayList<>();
         for (FungusBody body : bodies) {
             if (body.timeToDie()) {
                 String objKey = cmdproc.findByObject(body);
