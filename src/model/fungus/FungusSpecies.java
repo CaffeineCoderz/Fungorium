@@ -210,9 +210,9 @@ public class FungusSpecies implements iControl {
                     }
                     nThread.setPrevThread(oThread);
                     oThread.setNextThread(nThread);
-                    if(targetTekton instanceof DecomposingTekton){
+/*                     if(targetTekton instanceof DecomposingTekton){
                         nThread.setIsDying(true);
-                    }
+                    } */
                     return nThread;
                 }else if(oThread.getPrev()==null){
                     //Ha a kiinduló fonál nem híd és a cél tekton nem egyezik meg a kiinduló fonal, azon oldalán lévő tektonjával, amelyre már nőtt fonál,
@@ -232,9 +232,9 @@ public class FungusSpecies implements iControl {
                     nThread.setNextThread(oThread);
 
                     oThread.setPrevThread(nThread);
-                    if(targetTekton instanceof DecomposingTekton){
+/*                     if(targetTekton instanceof DecomposingTekton){
                         nThread.setIsDying(true);
-                    }
+                    } */
                     return nThread;
                 }
             } else {
