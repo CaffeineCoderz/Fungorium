@@ -56,11 +56,11 @@ public class Tekton {
     public Tekton(Tekton tekton) {
         this.canGrowBody = tekton.canGrowBody();
         this.canGrowThread = tekton.canGrowThread();
-        this.spores = tekton.getSpores();
-        this.insects = tekton.getInsects();
-        this.threads = tekton.getThreads();
+        this.spores = new ArrayList<>(tekton.getSpores());
+        this.insects = new ArrayList<>(tekton.getInsects());
+        this.threads = new ArrayList<>(tekton.getThreads());
         this.body = tekton.getBody();
-        this.neighbours = tekton.getNeighbours();
+        this.neighbours = new ArrayList<>(tekton.getNeighbours());
     }
 
     /**
@@ -306,6 +306,8 @@ public class Tekton {
         // Létrehozzuk az új Tektonokat
         Tekton t1 = new Tekton(this);
         Tekton t2 = new Tekton(this);
+        t1.neighbours = new ArrayList<>();
+        t2.neighbours = new ArrayList<>();
         
     
         // Szomszédok felosztása
@@ -329,6 +331,8 @@ public class Tekton {
         // Az új Tektonok egymás szomszédai lesznek
         t1.addNeighbour(t2);
         t2.addNeighbour(t1);
+        t1.getThreads().clear();
+        t2.getThreads().clear();
         
         String objKey = commandProcessor.findByObject(this);
         commandProcessor.getCreatedObjects().remove(objKey);
