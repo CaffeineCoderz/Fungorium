@@ -168,7 +168,7 @@ public class GameLogic {
      * @param scanner The scanner to read user input.
      */
     private void selectPlayers(Scanner scanner) {
-        System.out.println("The inputs can't process hungarian characters properly, please use english characters.");
+        System.out.println("The inputs can't process Hungarian characters properly, please use english characters.");
         System.out.println("Dummy players can be added by typing 'dummy'.");
         while (true) {
             if (fungusPlayers == 0 && insectPlayers == 0) {
