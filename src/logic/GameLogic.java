@@ -168,6 +168,7 @@ public class GameLogic {
      * @param scanner The scanner to read user input.
      */
     private void selectPlayers(Scanner scanner) {
+        System.out.println("The inputs can't process Hungarian characters properly, please use english characters.");
         System.out.println("Dummy players can be added by typing 'dummy'.");
         while (true) {
             if (fungusPlayers == 0 && insectPlayers == 0) {
@@ -443,7 +444,7 @@ public class GameLogic {
                 return true;
             }
             // ? a Body-hoz értünk meg kell nézni, hogy ér-e el másik threadet a bodyból
-            else if (temp.getPrev() == null) {
+            else if (temp.getPrev() == null|| temp.getMyBody()!=null) {
                 Integer remainingDistance = distance - i - 1; // Mivel az hogy rálép a Body-ra az is egy lépés,
                 // szóval Body-ból kijövő fonalak közti váltás az nem 1 hanem 2 lépés
                 // 0: nem csinál semmit,
@@ -455,7 +456,8 @@ public class GameLogic {
                 //Normál esetben ez azt jelenti, hogy Body-hoz értünk, de ha a fonal FeedThreadTektonon van
                 //az életben tartja, úgy hogy nincs kapcsolata semmilyen testel. 
                 //!A Body csak is kizárólag ebben az esetben lehet null. Máskor sosem. 
-                if (temp.getBody() != null) {
+                //Olyan is lehet hogy valahol egy összefüggő fonál sor közepén nőtt a test, ezért azt is vizsgáljuk.
+                if (temp.getPrevBody() != null || temp.getMyBody() != null) {
                     if (canReachFromBody(toThread, temp, remainingDistance))
                     return true;
                 }//Nem csinálunk semmit, ha a body null. Akadályba ütköztünk, ezen úton nem érjük el a keresett fonalat
@@ -472,13 +474,15 @@ public class GameLogic {
                 break;
             }
             //Ha a getNext() null, akkor fixen egy olyan fonalon vagyunk jelenleg, amiből még gombatest nőtt
-            if (temp.getNext() == null) {
+            if (temp.getNext() == null|| temp.getMyBody() != null) {
                 //Van az az eset, ha szegény rovarunk olyan fonalakon mozog, amelyeknek megszünt a kapcsolata a gombatestjével
                 //Nos ilyenkor a cél fonal Body-ja null. Ilyenkor nem tudjuk, megnézni, hogy a cél fonal body-jaból elérhető-e a 
                 //keresett fonal, hiszen a test az null.
                 //Ha tempnek és a toThreadnek megegyezik a Body-ja(és ez nem null), csak akkor nézhetjük meg, hogy elérhető-e
                 //adott body-ból a keresett fonalunk
-                if (toThread.getBody() == temp.getBody() && temp.getBody() != null) {
+                //Ha gombatesthez érünk, akkor az a thread amiből kinőtt a gombatest, akkor az annak a mybodyjában van eltárolva
+                //Míg a toThreadnek akkor az adott body fixen PrevBody-ban van.
+                if (toThread.getPrevBody()!=null && temp.getMyBody() != null && toThread.getPrevBody() == temp.getMyBody()) {
                     if (canReachFromBody(toThread, temp, distance - i - 1))
                         return true;
                 }
@@ -490,7 +494,39 @@ public class GameLogic {
     }
 
     private Boolean canReachFromBody(FungusThread toThread, FungusThread temp, Integer distance) {
-        for (FungusThread bodyThreads : temp.getBody().getThreads()) {
+        if(temp.getMyBody()!= null){
+            for (FungusThread bodyThreads : temp.getMyBody().getThreads()) {
+                if (bodyThreads == toThread) {
+                    return true;
+                } else {
+                    Boolean dirChange = false;
+                    FungusThread bodyThreadtemp;
+                    // ? t3-ből növesztettük a Body-t és a body-ból t1-et és t2-t
+                    // ? t1<- FBody ->t2
+                    // ? ^
+                    // ? |
+                    // ? t3
+                    if (bodyThreads.getNext() == null && bodyThreads.getPrev() != null) {
+                        bodyThreadtemp = bodyThreads.getPrev();
+                        dirChange = true;
+                    } else {
+                        bodyThreadtemp = bodyThreads.getNext();
+                        dirChange = false;
+                    }
+
+                    for (int j = 0; j < distance; j++) {
+                        if (bodyThreadtemp == toThread) {
+                            return true;
+                        }
+                        if (dirChange) {
+                            bodyThreadtemp = bodyThreadtemp.getPrev();
+                        } else
+                            bodyThreadtemp = bodyThreadtemp.getNext();
+                    }
+                }
+            }
+        }else{
+            for (FungusThread bodyThreads : temp.getPrevBody().getThreads()) {
             if (bodyThreads == toThread) {
                 return true;
             } else {
@@ -519,7 +555,7 @@ public class GameLogic {
                         bodyThreadtemp = bodyThreadtemp.getNext();
                 }
             }
-        }
+        }}
         return false;
     }
 }

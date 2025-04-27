@@ -1,2 +1,1 @@
-i1:
 Hiba: Nem létezik ilyen nevű objektum: i1

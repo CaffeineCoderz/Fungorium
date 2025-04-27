@@ -1,11 +1,27 @@
-th2:
-FungusThread:
-Species: N/A
-Body: N/A
-Tektons: [t1, t2]
-IsBridge: true
-LifeSpan: null
-Next: th3
-Prev: N/A
-th2:
+Név: th1
+FungusThread: 
+	Species: fs1
+	PrevBody: N/A
+	NextBody: N/A
+	MyBody: N/A
+	Tektons: [t1]
+	IsBridge: false
+	Lifespan: 4
+	IsDying: true
+	Next: th2
+	Prev: N/A
+
+Név: th2
+FungusThread: 
+	Species: fs1
+	PrevBody: N/A
+	NextBody: N/A
+	MyBody: N/A
+	Tektons: [t1, t2]
+	IsBridge: true
+	Lifespan: 2
+	IsDying: true
+	Next: N/A
+	Prev: th1
+
 Hiba: Nem létezik ilyen nevű objektum: th2
