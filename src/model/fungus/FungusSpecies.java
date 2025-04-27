@@ -203,12 +203,10 @@ public class FungusSpecies implements iControl {
                     //Ellenőrizzük, hogy a kiinduló fonál kapcsolódik e testhez, ha igen akkor beállítjuk az újnak is prevbodynak
                     //ha nem akkor az új fonál is haldokolva fog nőni. Mivel nem haldokló fonál csak testtől tud nőni olyan irányba ahol nincs testje
                     //Nextbody nem lehet, mert akkor nem nőhetne a fonál next irányba
-                    if(oThread.getPrev()!=null){
-                        if(oThread.getPrev().getPrevBody() != null){
-                            nThread.setPrevBody(oThread.getPrevBody());
-                        }else{
-                            nThread.setIsDying(true);
-                        }
+                    if(oThread.getPrevBody() != null){
+                        nThread.setPrevBody(oThread.getPrevBody());
+                    }else{
+                        nThread.setIsDying(true);
                     }
                     nThread.setPrevThread(oThread);
                     oThread.setNextThread(nThread);
@@ -226,7 +224,7 @@ public class FungusSpecies implements iControl {
                     targetTekton.addThread(nThread);
                     // ! Be kell állítani hogy melyik testhez tartozik
                     //ugyan az a logika mint feljebb, csak most a nextbodyt állítjuk be
-                    if(oThread.getNext().getNextBody() != null){
+                    if(oThread.getNextBody() != null){
                         nThread.setNextBody(oThread.getNextBody());
                     }else{
                         nThread.setIsDying(true);
@@ -336,33 +334,39 @@ public class FungusSpecies implements iControl {
             FungusBody fb = new FungusBody(null, null);
             thread.getTekton().setBody(fb);
             for (Integer i = 0; i < atleast; i++) {
-                thread.getTekton().getSpores().get(i).absorbed();
+                thread.getTekton().getSpores().get(0).absorbed();
             }
             fb.setTekton(thread.getTekton());
             fb.addThread(thread);
             thread.setMyBody(fb);
+            thread.setConnected(true);
             //Ha a prev null, akkor tudjuk, hogy a fonál elején vagyunk, és beállítjuk,
             //hogy az adott threadnek, hogy a fonál elején van az új test, és ezt az összes threadnek next irányba
             //Ha a egyik se null, akkor tudjuk, hogy a fonál közepén vagyunk, és beállítjuk,
             //hogy az adott thread megszűnik, előtte utána kiszedjük a threadet,
             //A connected true azt jelzi hogy közvetlen testhez kapcsolódik a fonál
             //mindkét irányba átállítjuk a threadeknek a prev és next bodyt, attól függően hogy melyiket kell
-            thread.getNext().setPrevBody(fb);
-            FungusThread temp = thread.getPrev();
-            temp = thread.getNext();
-            while(temp.getNext() != null){
-                temp.getNext().setPrevBody(fb);
-                temp = temp.getNext();
+            if(thread.getNext() != null){
+                FungusThread temp = thread.getNext();
+                while(temp.getNext() != null){
+                    temp.getNext().setPrevBody(fb);
+                    if(temp.getMyBody()!= null){
+                        break;
+                    }
+                    temp = temp.getNext();
+                }
+            }else if(thread.getPrev() != null){
+                FungusThread temp = thread.getPrev();
+                while(temp.getPrev() != null){
+                    temp.getPrev().setNextBody(fb);
+                    if(temp.getMyBody()!= null){
+                        break;
+                    }
+                    temp = temp.getPrev();
+                }
             }
-            thread.getPrev().setNextBody(fb);
-            temp = thread.getPrev();
-            while(temp.getPrev() != null){
-                temp.getPrev().setNextBody(fb);
-                temp = temp.getPrev();
-            }
-
-            thread.setConnected(true);
-            
+            this.addBody(fb);
+            return fb;
         } else {
             System.out.println("Sikertelen testnövesztés. A tektonon nincs elég spóra");
         }

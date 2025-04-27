@@ -559,8 +559,18 @@ public class CommandProcessor {
 
         if (obj instanceof FungusThread) {
             FungusThread thread = (FungusThread) obj;
-            String bodyName = createdObjects.entrySet().stream()
-                    .filter(entry -> entry.getValue() == thread.getBody())
+            String PrevBodyName = createdObjects.entrySet().stream()
+                    .filter(entry -> entry.getValue() == thread.getPrevBody())
+                    .map(Map.Entry::getKey)
+                    .findFirst()
+                    .orElse("N/A");
+            String NextBodyName = createdObjects.entrySet().stream()
+                    .filter(entry -> entry.getValue() == thread.getNextBody())
+                    .map(Map.Entry::getKey)
+                    .findFirst()
+                    .orElse("N/A");
+            String MyBodyName = createdObjects.entrySet().stream()
+                    .filter(entry -> entry.getValue() == thread.getMyBody())
                     .map(Map.Entry::getKey)
                     .findFirst()
                     .orElse("N/A");
@@ -589,7 +599,9 @@ public class CommandProcessor {
                     .orElse("N/A");
             System.out.println("FungusThread: "
                     + "\n\tSpecies: " + speciesName
-                    + "\n\tBody: " + bodyName
+                    + "\n\tPrevBody: " + PrevBodyName
+                    + "\n\tNextBody: " + NextBodyName
+                    + "\n\tMyBody: " + MyBodyName
                     + "\n\tTektons: " + tektonNames
                     + "\n\tIsBridge: " + thread.isBridge()
                     + "\n\tLifespan: " + thread.getLifeSpan()
@@ -1099,8 +1111,14 @@ public class CommandProcessor {
                 case "isdying":
                     thread.setIsDying(Boolean.parseBoolean(value));
                     break;
-                case "body":
-                    thread.setBody((FungusBody) createdObjects.get(value));
+                case "prevbody":
+                    thread.setPrevBody((FungusBody) createdObjects.get(value));
+                    break;
+                case "nextbody":
+                    thread.setNextBody((FungusBody) createdObjects.get(value));
+                    break;
+                case "mybody":
+                    thread.setMyBody((FungusBody) createdObjects.get(value));
                     break;
                 case "species":
                     thread.setSpecies((FungusSpecies) createdObjects.get(value));

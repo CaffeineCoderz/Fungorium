@@ -11,7 +11,6 @@
 growthread t1 b1
 growthread t2 th1
 growthread t2 th2
-growthread t3 th3
 /create insect i1
 /set i1 thread th3
 cut th2 i1
