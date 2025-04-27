@@ -43,6 +43,7 @@ public class main {
 
                     break;
                 case 3:
+                    gameLogic.getCommandProcessor().clearCreatedObjects();
                     System.out.println("How many rounds should the game have?");
                     int rounds = scanner.nextInt();
                     if(rounds < 1) {
