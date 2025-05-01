@@ -5,8 +5,6 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import javax.swing.border.Border;
-import java.awt.geom.RoundRectangle2D;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
