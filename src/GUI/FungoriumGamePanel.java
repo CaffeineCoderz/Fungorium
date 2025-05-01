@@ -9,6 +9,22 @@ import java.awt.event.MouseAdapter;
 import commands.CommandProcessor;
 import fungus.*;
 import insect.*;
+import fungus.FungusBody;
+import fungus.FungusThread;
+import insect.Insect;
+import insect.InsectEffects;
+import sporeTypes.DisableCutSpore;
+import sporeTypes.FastSpore;
+import sporeTypes.MultiplyInsectSpore;
+import sporeTypes.SlowSpore;
+import sporeTypes.Spore;
+import sporeTypes.StunSpore;
+import tektonTypes.DecomposingTekton;
+import tektonTypes.DecreasingTekton;
+import tektonTypes.FeedThreadTekton;
+import tektonTypes.OneThreadTekton;
+import tektonTypes.OnlyThreadTekton;
+import tektonTypes.Tekton;
 import tektonTypes.*;
 import sporeTypes.*;
 
@@ -32,7 +48,7 @@ public class FungoriumGamePanel extends JPanel {
     // Handlers
     private CommandProcessor commandProcessor;
     private RenderMap renderMap;
-
+    private static GameStateHandler saver = new GameStateHandler();
     // Positions and cells
     private Map<String, Point> objectPositions = new HashMap<>();
     private Set<Point> occupiedCells = new HashSet<>();
@@ -224,12 +240,6 @@ public class FungoriumGamePanel extends JPanel {
 
         // Draw all objects
         drawTektons(g2d);
-        drawBodies(g2d);
-        drawSpores(g2d);
-        // TODO
-        // drawInsects(g2d);
-        drawThreads(g2d);
-
         calculateTektonCardinalPoints();
         // Égtáji pontok (zöld pontok) rajzolása
         g2d.setColor(Color.GREEN);
@@ -238,6 +248,13 @@ public class FungoriumGamePanel extends JPanel {
                 g2d.fill(new Ellipse2D.Double(p.x - 5, p.y - 5, 10, 10));
             }
         }
+        drawBodies(g2d);
+        drawSpores(g2d);
+        // TODO
+        // drawInsects(g2d);
+        drawThreads(g2d);
+
+        
     }
 
     private void drawGrid(Graphics2D g2d) {
@@ -542,7 +559,7 @@ public class FungoriumGamePanel extends JPanel {
             g2d.draw(new Ellipse2D.Double(x, y, width, height));
         }
     }
-
+    /*
     private void drawThreads(Graphics2D g2d) {
         for (Map.Entry<String, Object> entry : commandProcessor.getCreatedObjects().entrySet()) {
             if (entry.getValue() instanceof FungusThread) {
@@ -599,6 +616,125 @@ public class FungoriumGamePanel extends JPanel {
                     g2d.setColor(Color.WHITE);
                     g2d.drawString(entry.getKey(), pos.x, pos.y);
                 }
+            }
+        }
+    }
+ */
+
+       private void drawThreads(Graphics2D g2d) {
+        for (Map.Entry<String, Object> entry : commandProcessor.getCreatedObjects().entrySet()) {
+            if (entry.getValue() instanceof FungusThread) {
+                FungusThread thread = (FungusThread) entry.getValue();
+    
+                try {
+                    if (thread.isBridge()) {
+                        // Draw bridge threads
+                        List<Tekton> tektons = thread.getTektons();
+                        if (tektons.size() >= 2) {
+                            Tekton firstTekton = tektons.get(0);
+                            Tekton secondTekton = tektons.get(1);
+    
+                            String firstTektonName = commandProcessor.findByObject(firstTekton);
+                            String secondTektonName = commandProcessor.findByObject(secondTekton);
+    
+                            if (firstTektonName != null && secondTektonName != null) {
+                                Point firstControlPoint = getCardinalPoint(firstTektonName, "e");
+                                Point secondControlPoint = getCardinalPoint(secondTektonName, "w");
+    
+                                if (firstControlPoint != null && secondControlPoint != null) {
+                                    g2d.setColor(new Color(150, 75, 0));
+                                    g2d.setStroke(new BasicStroke(THREAD_WIDTH));
+                                    // Draw the bridge line between the two control points
+                                    g2d.draw(new Line2D.Double(firstControlPoint.x, firstControlPoint.y,
+                                            secondControlPoint.x, secondControlPoint.y));
+                                    //debug
+                                    System.out.println("bridge");
+                                    /*
+                                    for(Point p : tektonCardinalPoints.get(firstTektonName)){
+                                        g2d.fill(new Ellipse2D.Double(p.x - 5, p.y - 5, 10, 10));
+                                    }
+                                    for (Point p : tektonCardinalPoints.get(secondTektonName)) {
+                                        g2d.fill(new Ellipse2D.Double(p.x - 5, p.y - 5, 10, 10));
+                                    }
+                                    */
+                                }
+                            }
+                        }
+                    } else if(thread.getNext() != null){
+                        // Draw connection to next thread if exists
+                        String nextThreadName = commandProcessor.findByObject(thread.getNext());
+                        if (nextThreadName != null && objectPositions.containsKey(nextThreadName)) {
+                            Point nextThreadPos = objectPositions.get(nextThreadName);
+                            Point threadPos = objectPositions.getOrDefault(entry.getKey(), nextThreadPos);
+    
+                            g2d.setColor(new Color(150, 75, 0));
+                            g2d.setStroke(new BasicStroke(THREAD_WIDTH));
+                            g2d.draw(new Line2D.Double(
+                                    threadPos.x, threadPos.y,
+                                    nextThreadPos.x, nextThreadPos.y));
+                        }
+                    } else {
+                        // Draw non-bridge threads
+                        Tekton tekton = thread.getTektons().isEmpty() ? null : thread.getTektons().get(0);
+                        if (tekton != null) {
+                            String tektonName = commandProcessor.findByObject(tekton);
+                            if (tektonName != null) {
+                                Point controlPoint = getCardinalPoint(tektonName, "n");
+                                Point bodyPoint = null;
+    
+                                if (thread.getMyBody() != null) {
+                                    String bodyName = commandProcessor.findByObject(thread.getMyBody());
+                                    if (bodyName != null) {
+                                        bodyPoint = objectPositions.get(bodyName);
+                                    }
+                                }
+    
+                                if (controlPoint != null && bodyPoint != null) {
+                                    g2d.setColor(new Color(150, 75, 0));
+                                    g2d.setStroke(new BasicStroke(THREAD_WIDTH));
+                                    g2d.draw(new Line2D.Double(controlPoint.x, controlPoint.y, bodyPoint.x, bodyPoint.y));
+                                    System.out.println("Found controlPoint + bodyPoint");
+                                } else if (controlPoint != null) {
+                                    Point anotherControlPoint = getCardinalPoint(tektonName, "s");
+                                    if (anotherControlPoint != null) {
+                                        g2d.setColor(new Color(150, 75, 0));
+                                        g2d.setStroke(new BasicStroke(THREAD_WIDTH));
+                                        g2d.draw(new Line2D.Double(controlPoint.x, controlPoint.y, anotherControlPoint.x,
+                                                anotherControlPoint.y));
+                                        System.out.println("NOT Found controlPoint + bodyPoint");
+                                    }
+                                }
+                            }
+                        }
+                    }
+    
+                    // Draw connections threads
+                    drawThreadConnections(g2d, thread, entry.getKey());
+    
+                    // Draw thread name
+                    Point pos = objectPositions.get(entry.getKey());
+                    if (pos != null) {
+                        g2d.setColor(Color.WHITE);
+                        g2d.drawString(entry.getKey(), pos.x, pos.y);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error drawing thread: " + entry.getKey() + " - " + e.getMessage());
+                }
+            }
+        }
+    }
+    
+    private void drawThreadConnections(Graphics2D g2d, FungusThread thread, String threadKey) {
+        // Draw connection to next thread
+        if (thread.getNext() != null) {
+            String nextThreadName = commandProcessor.findByObject(thread.getNext());
+            if (nextThreadName != null && objectPositions.containsKey(nextThreadName)) {
+                Point nextThreadPos = objectPositions.get(nextThreadName);
+                Point threadPos = objectPositions.getOrDefault(threadKey, nextThreadPos);
+    
+                g2d.setColor(new Color(150, 75, 0));
+                g2d.setStroke(new BasicStroke(THREAD_WIDTH));
+                g2d.draw(new Line2D.Double(threadPos.x, threadPos.y, nextThreadPos.x, nextThreadPos.y));
             }
         }
     }
@@ -737,6 +873,14 @@ public class FungoriumGamePanel extends JPanel {
         repaint();
     }
 
+    public void setObjectPositions(Map<String, Point> newPositions) {
+        this.objectPositions = newPositions;
+    }
+
+    public Map<String, Point> getObjectPositions() {
+        return objectPositions;
+    }
+
     public static void createAndShowGUI(CommandProcessor commandProcessor) {
         JFrame frame = new JFrame("Fungorium Game");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -749,9 +893,29 @@ public class FungoriumGamePanel extends JPanel {
 
         // Add a simple control panel
         JPanel controlPanel = new JPanel();
+
+        // Update View button
         JButton updateButton = new JButton("Update View");
         updateButton.addActionListener(e -> gamePanel.updateGameState());
         controlPanel.add(updateButton);
+
+        // Save Game button
+        JButton saveButton = new JButton("Save Game");
+        saveButton.addActionListener(e -> {
+            saver.saveGameState(gamePanel.getObjectPositions(), "gameState.xml");
+            JOptionPane.showMessageDialog(frame, "Game state saved to gameState.xml");
+        });
+        controlPanel.add(saveButton);
+
+        // Load Game button
+        JButton loadButton = new JButton("Load Game");
+        loadButton.addActionListener(e -> {
+            Map<String, Point> loadedPositions = saver.loadGameState("gameState.xml");
+            gamePanel.setObjectPositions(loadedPositions);
+            gamePanel.updateGameState();
+            JOptionPane.showMessageDialog(frame, "Game state loaded from gameState.xml");
+        });
+        controlPanel.add(loadButton);
 
         frame.add(controlPanel, BorderLayout.SOUTH);
     }

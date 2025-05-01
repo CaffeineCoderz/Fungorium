@@ -9,8 +9,8 @@ public class main {
     public static void main(String[] args) {
         GameLogic gameLogic = new GameLogic();
         CommandProcessor commandProcessor = gameLogic.getCommandProcessor();
-        commandProcessor.processConfigText("createConfig");
-        commandProcessor.processConfigText("setConfig");
+        commandProcessor.processConfigText("config");
+        // commandProcessor.processConfigText("setConfig");
 
         FungoriumGamePanel.createAndShowGUI(commandProcessor);
                     
