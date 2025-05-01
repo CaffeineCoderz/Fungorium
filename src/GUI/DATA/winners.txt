@@ -1,0 +1,8 @@
+<FungusSpecies>
+Nagy Lajos
+Név 2
+Név 3
+<InsectSpecies>
+Nagy Ádám
+Név 2
+Név 3
