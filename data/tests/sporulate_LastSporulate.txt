@@ -12,3 +12,4 @@
 sporulate b1
 /trig fs1
 /status t1
+/status b1

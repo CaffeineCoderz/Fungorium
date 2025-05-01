@@ -1,7 +1,9 @@
 Név: th1
 FungusThread: 
 	Species: fs1
-	Body: b1
+	PrevBody: b1
+	NextBody: N/A
+	MyBody: N/A
 	Tektons: [t1]
 	IsBridge: false
 	Lifespan: null
@@ -12,7 +14,9 @@ FungusThread:
 Név: th2
 FungusThread: 
 	Species: fs1
-	Body: b1
+	PrevBody: b1
+	NextBody: N/A
+	MyBody: N/A
 	Tektons: [t1, t2]
 	IsBridge: true
 	Lifespan: null

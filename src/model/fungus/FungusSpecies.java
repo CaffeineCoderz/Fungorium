@@ -92,9 +92,6 @@ public class FungusSpecies implements iControl {
         bodies.add(body);
         addScore(1);
         }
-        else{
-            System.err.println("Null body cannot be added to the species.");
-        }
         
     }
 
@@ -142,62 +139,109 @@ public class FungusSpecies implements iControl {
      */
     //! Szekvencián javítani ~ Diviki Mivel a growBridge-et bele mergeltem (hamarabb kellett volna erre rá jönni)
     public FungusThread growThread(Tekton targetTekton, FungusThread oThread) {
-        if (targetTekton.canGrowThread()){
-            FungusThread nThread = new FungusThread(null,false, this);
-            //Fonal amiből növesztünk nem híd + a cél tekton nem egyezik meg a kiinduló fonal tektonjával -->
-            // --> Ilyenkor bridge keletkezik, mivel két tektonnal definiáljuk a fonalat.
-            if(!oThread.isBridge() && oThread.getTekton() != targetTekton){
-                //? Csak akkor lehessen még hidat növeszteni, ha a kiinduló fonalnak nincs olyan híd szomszédja(prev és next), mivel ezen formában
-                //? ha nem lenne ilyen kikötés, akkor az az eset megtörténhet,hogy:
-                //? Hídból(híd1) növesztünk egy fonalat(th1) a híd belseje felé, ez még okés
-                //? Th1 ből növesztünk egy új fonalat(híd2) egy másik (szomszédos)tektonra
-                //? Ilyenkor a tekton belsejéből növesztünk hidat, amit nem kéne
-                if(oThread.getPrev()!=null){
-                    if (oThread.getPrev().isBridge()){
-                        System.err.println("You can't grow from this thread a bridge to another tekton.");
+        if((oThread.getPrev() == null || oThread.getNext() == null)&& oThread.getMyBody()== null){
+            if (targetTekton.canGrowThread()){
+                FungusThread nThread = new FungusThread(null,false, this);
+                //Fonal amiből növesztünk nem híd + a cél tekton nem egyezik meg a kiinduló fonal tektonjával -->
+                // --> Ilyenkor bridge keletkezik, mivel két tektonnal definiáljuk a fonalat.
+                if(!oThread.isBridge() && oThread.getTekton() != targetTekton){
+                    //? Csak akkor lehessen még hidat növeszteni, ha a kiinduló fonalnak nincs olyan híd szomszédja(prev és next), mivel ezen formában
+                    //? ha nem lenne ilyen kikötés, akkor az az eset megtörténhet,hogy:
+                    //? Hídból(híd1) növesztünk egy fonalat(th1) a híd belseje felé, ez még okés
+                    //? Th1 ből növesztünk egy új fonalat(híd2) egy másik (szomszédos)tektonra
+                    //? Ilyenkor a tekton belsejéből növesztünk hidat, amit nem kéne
+                    if(oThread.getPrev()!=null){
+                        if (oThread.getPrev().isBridge()){
+                            System.err.println("You can't grow from this thread a bridge to another tekton.");
+                            return null;
+                        }
+                    }
+                    //Hátrafelé növéshez szükséges ellenőrzés
+                    if(oThread.getNext()!=null){
+                        if (oThread.getNext().isBridge()){
+                            System.err.println("You can't grow from this thread a bridge to another tekton.");
+                            return null;
+                        }
+                    }
+                    //Ellenőrzés, hogy szomszédosak egymással ezen tektonok
+                    boolean areNeighbours = false;
+                    for (Tekton neighbour : targetTekton.getNeighbours()){
+                        if (neighbour == oThread.getTekton()) {
+                            areNeighbours = true;
+                            break;
+                        }
+                    }
+                    if (!areNeighbours) {
+                        System.err.println("The two Tektons between which the thread would grow are not adjacent.");
                         return null;
                     }
-                }
-                //Ellenőrzés, hogy szomszédosak egymással ezen tektonok
-                boolean areNeighbours = false;
-                for (Tekton neighbour : targetTekton.getNeighbours()){
-                    if (neighbour == oThread.getTekton()) {
-                        areNeighbours = true;
-                        break;
+                    
+                    nThread.setBridge(true);
+                    //Ha prev irányba növesztünk hidat, akkor a target tekton lesz a 0. listaelem, hogy a logika fentmaradjon
+                    if(oThread.getNext()!=null && oThread.getPrev()==null){
+                        nThread.addTekton(targetTekton);
+                        nThread.addTekton(oThread.getTekton());
+                    }else{
+                        nThread.addTekton(oThread.getTektons().get(0));
+                        nThread.addTekton(targetTekton);
                     }
-                }
-                if (!areNeighbours) {
-                    System.err.println("The two Tektons between which the thread would grow are not adjacent.");
+                    oThread.getTektons().get(0).addThread(nThread);
+                }else if (oThread.isBridge() && oThread.getTektons().get(1) != targetTekton) { 
+                    //Ha a fonal amiből növesztünk híd és
+                    //Ha nem egyezik meg a cél tekton a kiinduló fonal, azon oldalán lévő tektonjával, amelyből még nem nőt fonál, 
+                    //akkor nem nőhet oda új fonal
+                    System.err.println("The target tekton did not match the tekton on the side of the starting thread(,what is a bridge,) from which no thread had yet grown.");
                     return null;
                 }
-                
-                nThread.setBridge(true);
-                nThread.addTekton(oThread.getTektons().get(0));
-                oThread.getTektons().get(0).addThread(nThread);
-            }else if (oThread.isBridge() && oThread.getTektons().get(1) != targetTekton) { 
-                //Ha a fonal amiből növesztünk híd és
-                //Ha nem egyezik meg a cél tekton a kiinduló fonal, azon oldalán lévő tektonjával, amelyből még nem nőt fonál, 
-                //akkor nem nőhet oda új fonal
-                System.err.println("The target tekton did not match the tekton on the side of the starting thread(,what is a bridge,) from which no thread had yet grown.");
-                return null;
-            }
-            addThread(nThread);
-            nThread.addTekton(targetTekton);
-            targetTekton.addThread(nThread);
-            // ! Be kell állítani hogy melyik testhez tartozik
-            nThread.setBody(oThread.getBody());
-            nThread.setPrevThread(oThread);
+                if(oThread.getNext()==null){
+                    addThread(nThread);
+                    if(!nThread.isBridge()){
+                        nThread.addTekton(targetTekton);
+                    }
+                    targetTekton.addThread(nThread);
+                    // ! Be kell állítani hogy melyik testhez tartozik
+                    //Ellenőrizzük, hogy a kiinduló fonál kapcsolódik e testhez, ha igen akkor beállítjuk az újnak is prevbodynak
+                    //ha nem akkor az új fonál is haldokolva fog nőni. Mivel nem haldokló fonál csak testtől tud nőni olyan irányba ahol nincs testje
+                    //Nextbody nem lehet, mert akkor nem nőhetne a fonál next irányba
+                    if(oThread.getPrevBody() != null){
+                        nThread.setPrevBody(oThread.getPrevBody());
+                    }else{
+                        nThread.setIsDying(true);
+                    }
+                    nThread.setPrevThread(oThread);
+                    oThread.setNextThread(nThread);
+/*                     if(targetTekton instanceof DecomposingTekton){
+                        nThread.setIsDying(true);
+                    } */
+                    return nThread;
+                }else if(oThread.getPrev()==null){
+                    //Ha a kiinduló fonál nem híd és a cél tekton nem egyezik meg a kiinduló fonal, azon oldalán lévő tektonjával, amelyre már nőtt fonál,
+                    addThread(nThread);
+                    if(!nThread.isBridge()){
+                        nThread.addTekton(targetTekton);
+                        
+                    }
+                    targetTekton.addThread(nThread);
+                    // ! Be kell állítani hogy melyik testhez tartozik
+                    //ugyan az a logika mint feljebb, csak most a nextbodyt állítjuk be
+                    if(oThread.getNextBody() != null){
+                        nThread.setNextBody(oThread.getNextBody());
+                    }else{
+                        nThread.setIsDying(true);
+                    }
+                    nThread.setNextThread(oThread);
 
-            oThread.setNextThread(nThread);
-            if(oThread.getBody() != null){
-                oThread.getBody().addThread(nThread);
+                    oThread.setPrevThread(nThread);
+/*                     if(targetTekton instanceof DecomposingTekton){
+                        nThread.setIsDying(true);
+                    } */
+                    return nThread;
+                }
+            } else {
+                System.out.println("Tekton cant have new threads");
             }
-            if(targetTekton instanceof DecomposingTekton){
-                nThread.setIsDying(true);
-            }
-            return nThread;
         } else {
-            System.out.println("Tekton cant have new threads");
+            System.err.println("Can't grow thread from this thread.");
         }
         return null;
     }
@@ -212,8 +256,7 @@ public class FungusSpecies implements iControl {
             nThread.addTekton(targetTekton);
             nThread.setPrevThread(null);
             // ! Be kell állítani hogy melyik testhez tartozik
-            nThread.setBody(body);
-
+            nThread.setPrevBody(body);
             targetTekton.addThread(nThread);
 
             body.addThread(nThread);
@@ -295,7 +338,33 @@ public class FungusSpecies implements iControl {
             }
             fb.setTekton(thread.getTekton());
             fb.addThread(thread);
-            thread.setBody(fb);
+            thread.setMyBody(fb);
+            thread.setConnected(true);
+            //Ha a prev null, akkor tudjuk, hogy a fonál elején vagyunk, és beállítjuk,
+            //hogy az adott threadnek, hogy a fonál elején van az új test, és ezt az összes threadnek next irányba
+            //Ha a egyik se null, akkor tudjuk, hogy a fonál közepén vagyunk, és beállítjuk,
+            //hogy az adott thread megszűnik, előtte utána kiszedjük a threadet,
+            //A connected true azt jelzi hogy közvetlen testhez kapcsolódik a fonál
+            //mindkét irányba átállítjuk a threadeknek a prev és next bodyt, attól függően hogy melyiket kell
+            if(thread.getNext() != null){
+                FungusThread temp = thread.getNext();
+                while(temp.getNext() != null){
+                    temp.getNext().setPrevBody(fb);
+                    if(temp.getMyBody()!= null){
+                        break;
+                    }
+                    temp = temp.getNext();
+                }
+            }else if(thread.getPrev() != null){
+                FungusThread temp = thread.getPrev();
+                while(temp.getPrev() != null){
+                    temp.getPrev().setNextBody(fb);
+                    if(temp.getMyBody()!= null){
+                        break;
+                    }
+                    temp = temp.getPrev();
+                }
+            }
             this.addBody(fb);
             return fb;
         } else {
@@ -348,9 +417,9 @@ public class FungusSpecies implements iControl {
     }
 
     public void timeElapsed(CommandProcessor cmdproc) {
-        List<FungusBody> removeBodies = new ArrayList();
+        List<FungusBody> removeBodies = new ArrayList<>();
         for (FungusBody body : bodies) {
-            if (body.timeToDie()) {
+            if (body.getSporulateLeft()==0) {;
                 String objKey = cmdproc.findByObject(body);
                 if (objKey != null) {
                     cmdproc.getCreatedObjects().remove(objKey);
@@ -387,8 +456,7 @@ public class FungusSpecies implements iControl {
         }
         if (ft.getLifeSpan()!= null && ft.getLifeSpan() == 0) {
             FungusThread originthread = ft;
-            while (ft.getNext() != null) {
-                ft.getNext().setConnected(false);
+            while (ft.getNext() != null || ft.getNext().getMyBody() != null) {
                 if(ft.isBridge()){
                     ft.setIsDying(true);
                 }else{
@@ -398,9 +466,23 @@ public class FungusSpecies implements iControl {
                         ft.setIsDying(true);
                     }
                     
-            }
-                ft.setBody(null);
+            }   
+                ft.setPrevBody(null);
                 ft = ft.getNext();
+            }
+            while(ft.getPrev() != null || ft.getPrev().getMyBody() != null) {
+                if(ft.isBridge()){
+                    ft.setIsDying(true);
+                }else{
+                    if (ft.getTekton() instanceof FeedThreadTekton) {
+                        ft.setIsDying(false);    
+                    } else{
+                        ft.setIsDying(true);
+                    }
+                    
+                }
+                ft.setNextBody(null);
+                ft = ft.getPrev();
             }
             deleteThread(originthread);
             boolean success;
@@ -426,11 +508,61 @@ public class FungusSpecies implements iControl {
      */
     public void destroyBody(FungusBody fb) {
         for (FungusThread ft : fb.getThreads()) {
-            ft.setIsDying(true);
-            ft.setBody(null);
-            //! ide lehet beimplementálni, hogy sorba a következő ebből a bodyból eredendő threadek body-ja nullra legyen állítva
+            ft.setConnected(false);
+            FungusThread mainThread = new FungusThread();
+            if(ft.getNextBody()==null){
+                ft.setIsDying(true);
+            }
+            FungusThread temp = ft;
+            if(temp.getMyBody()!=null && temp.getMyBody()==fb){
+                mainThread =ft;
+                while(temp.getPrev() != null) {
+                    if(mainThread.getNextBody()!=null){
+                        temp.setNextBody(mainThread.getNextBody());
+                    }else{
+                        temp.setNextBody(null);
+                    }
+                    if(temp.getPrevBody()==null&& temp.getNextBody()==null){
+                        temp.setIsDying(true);
+                    }
+                    if(temp.myBody!=null&&temp.myBody!=fb){
+                        break;
+                    }
+                    temp = temp.getPrev();
+                }
+                while(temp.getNext()!=null){
+                    if(mainThread.getPrevBody()!=null){
+                        temp.setPrevBody(mainThread.getPrevBody());
+                    }else{
+                        //temp.setNextBody(null);
+                    }
+                    if(temp.getPrevBody()==null&& temp.getNextBody()==null){
+                        temp.setIsDying(true);
+                    }
+                    if(temp.myBody!=null&&temp.myBody!=fb){
+                        break;
+                    }
+                    temp = temp.getNext();
+                }
+            }else{
+                temp=ft;
+                
+                while(temp != null) {
+                    temp.setPrevBody(null);
+                    if(temp.getNextBody()==null){
+                        temp.setIsDying(true);
+                        temp.setLifeSpan(temp.getLifeSpan()+1);
+                    }
+                    if(temp.myBody!=null){
+                        break;
+                    }
+                    temp = temp.getNext();
+                }
+            }
         }
+        //! ide lehet beimplementálni, hogy sorba a következő ebből a bodyból eredendő threadek body-ja nullra legyen állítva
         fb.getTekton().setBody(null);
+        fb.setTekton(null);
     }
 
     /**
