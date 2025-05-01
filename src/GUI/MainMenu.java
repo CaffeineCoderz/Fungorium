@@ -3,13 +3,15 @@ package GUI;
 import javax.swing.*;
 import java.awt.*;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
+import javax.swing.border.Border;
+import java.awt.geom.RoundRectangle2D;
 import java.io.IOException;
+import javax.imageio.ImageIO;
 
 public class MainMenu extends JFrame {
 
-    // szerintem ilyen szimpla boven elegendo ahoz hogy valasszunk nem kell jol kineznie
-    // de ha megis akkor majd atirjuk
     public MainMenu() {
         setTitle("Fungorium - Főmenü");
         setSize(450, 350);
@@ -17,27 +19,42 @@ public class MainMenu extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
 
-        //main panel
-        JPanel mainPanel = new JPanel(new BorderLayout());
+        BackgroundPanel mainPanel = new BackgroundPanel("src/GUI/DATA/background.png");
+        mainPanel.setLayout(new BorderLayout());
         mainPanel.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
 
-        // cim panel
         JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JLabel titleLabel = new JLabel("Fungorium");
+        titlePanel.setOpaque(false);
+
+        JLabel titleLabel = new JLabel("Fungorium") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                g2d.setColor(Color.BLACK);
+                g2d.setStroke(new BasicStroke(2));
+                g2d.drawString(getText(), 2, getHeight() - 10);
+
+                g2d.setColor(getForeground());
+                g2d.drawString(getText(), 0, getHeight() - 12);
+
+                g2d.dispose();
+            }
+        };
         titleLabel.setFont(new Font("Arial", Font.BOLD, 32));
+        titleLabel.setForeground(Color.WHITE);
         titlePanel.add(titleLabel);
         mainPanel.add(titlePanel, BorderLayout.NORTH);
 
-        // gombok panel
-        JPanel buttonPanel = new JPanel(new GridLayout(3, 1, 10, 15)); // 3 sor, 1 oszlop
+        JPanel buttonPanel = new JPanel(new GridLayout(3, 1, 10, 15));
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 50, 0, 50));
+        buttonPanel.setOpaque(false);
 
-        // gomb
         JButton newGameButton = createStyledButton("Új játék indítása");
         JButton rulesButton = createStyledButton("Játékszabályok");
         JButton exitButton = createStyledButton("Kilépés");
 
-        // gomb+panel
         buttonPanel.add(newGameButton);
         buttonPanel.add(rulesButton);
         buttonPanel.add(exitButton);
@@ -46,23 +63,20 @@ public class MainMenu extends JFrame {
 
         add(mainPanel);
 
-        // Gombok esemenyei
         newGameButton.addActionListener(e -> openChooseSpeciesScreen());
         rulesButton.addActionListener(e -> showRules());
         exitButton.addActionListener(e -> System.exit(0));
     }
 
-    // oszinten nem tudom milyen gomb kell egyenlore ez elegendo
     private JButton createStyledButton(String text) {
         JButton button = new JButton(text);
         button.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        button.setBackground(new Color(240, 240, 240));
-        button.setForeground(new Color(60, 60, 60));
+        button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 200)),
-                BorderFactory.createEmptyBorder(10, 20, 10, 20)
-        ));
+        button.setContentAreaFilled(true);
+        button.setOpaque(true);
+        button.setMargin(new Insets(5, 15, 5, 15));
+        button.setBackground(new Color(30, 144, 255));
         return button;
     }
 
@@ -74,7 +88,7 @@ public class MainMenu extends JFrame {
     private void showRules() {
         String currentWorkingDirectory = System.getProperty("user.dir");
         System.out.println("Current Working Directory: " + currentWorkingDirectory);
-    
+
         StringBuilder rulesText = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new FileReader("src/GUI/DATA/GameRules.txt"))) {
             String line;
@@ -86,16 +100,36 @@ public class MainMenu extends JFrame {
             e.printStackTrace();
             return;
         }
-    
+
         JTextArea textArea = new JTextArea(rulesText.toString());
         textArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(textArea);
         scrollPane.setPreferredSize(new Dimension(350, 250));
-    
+
         JOptionPane.showMessageDialog(this, scrollPane, "Játékszabályok", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new MainMenu().setVisible(true));
+    }
+
+    private static class BackgroundPanel extends JPanel {
+        private Image backgroundImage;
+
+        public BackgroundPanel(String imagePath) {
+            try {
+                backgroundImage = ImageIO.read(new File(imagePath));
+            } catch (IOException e) {
+                System.err.println("Hiba a háttérkép betöltése közben: " + e.getMessage());
+            }
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            if (backgroundImage != null) {
+                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+            }
+        }
     }
 }

@@ -35,9 +35,11 @@ class GameMapScreen extends JFrame {
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("Fájl");
         JMenuItem backToMainMenuItem = new JMenuItem("Vissza a főmenübe");
+        JMenuItem showResultsMenuItem = new JMenuItem("Eredmények megtekintése");
         JMenuItem exitGameItem = new JMenuItem("Kilépés");
 
         fileMenu.add(backToMainMenuItem);
+        fileMenu.add(showResultsMenuItem);
         fileMenu.addSeparator();
         fileMenu.add(exitGameItem);
         menuBar.add(fileMenu);
@@ -46,6 +48,11 @@ class GameMapScreen extends JFrame {
         //fomenube vissza gomb
         backToMainMenuItem.addActionListener(e -> {
             new MainMenu().setVisible(true);
+            dispose();
+        });
+
+        showResultsMenuItem.addActionListener(e -> {
+            new ResultScreen().setVisible(true);
             dispose();
         });
 
