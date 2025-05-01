@@ -216,7 +216,7 @@ public class FungoriumGamePanel extends JPanel {
         calculateObjectPositions();
 
         // Draw the grid (optional) RED
-        // drawGrid(g2d);
+        drawGrid(g2d);
 
         // Draw all objects
         drawTektons(g2d);
