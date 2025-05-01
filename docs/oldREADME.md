@@ -15,11 +15,12 @@ chmod +x run.sh
 ./run.sh
 ```
 
-## Run && Compile at the same time:
-#### 3. Run && Compile:
+## Tesztek
+
+#### 3. Tesztek futtatása:
 ```sh
-chmod +x runcompile.sh
-./runcompile.sh
+chmod +x test.sh
+./test.sh
 ```
 ## Compile
 

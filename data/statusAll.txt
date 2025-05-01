@@ -8,6 +8,8 @@
 /status i2
 /status sp1
 /status sp2
+/status sp3
+/status sp4
 /status th1
 /status th2 
 /status b1
