@@ -149,20 +149,17 @@ public class FungoriumGamePanel extends JPanel {
 
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Calculate positions if not already set
-        if (objectPositions.isEmpty()) {
-            calculateObjectPositions();
-        }
+        calculateObjectPositions();
 
         // Draw the grid (optional) RED
         // drawGrid(g2d);
 
         // Draw all objects
         drawTektons(g2d);
-        // drawThreads(g2d);
         drawBodies(g2d);
-        // drawSpores(g2d);
+        drawSpores(g2d);
         // drawInsects(g2d);
+        // drawThreads(g2d);
     }
 
     private void drawGrid(Graphics2D g2d) {
@@ -264,18 +261,35 @@ public class FungoriumGamePanel extends JPanel {
             } else if (obj instanceof Spore) {
                 Spore spore = (Spore) obj;
                 Tekton tekton = spore.getTekton();
-                if (tekton != null) {
-                    String tektonName = commandProcessor.findByObject(tekton);
-                    if (tektonName != null && objectPositions.containsKey(tektonName)) {
-                        Point tektonPos = objectPositions.get(tektonName);
-                        // Position spores around the tekton
-                        int offsetX = (int) (Math.random() * 40 - 20);
-                        int offsetY = (int) (Math.random() * 40 - 20);
+                Point tektonPos = getTektonPosition(tekton);
+                if (tektonPos != null) {
+
+                        // Get cell dimensions
+                        int cellWidth = getWidth() / renderMap.getCols();
+                        int cellHeight = getHeight() / renderMap.getRows();
+
+                        // Calculate Tekton's center coordinates
+                        int tektonCenterX = tektonPos.y * cellWidth + (cellWidth * TEKTON_CELLS / 2);
+                        int tektonCenterY = tektonPos.x * cellHeight + (cellHeight * TEKTON_CELLS / 2);
+
+                        // Calculate Tekton's radius (use min to handle non-square cells)
+                        int radius = Math.min(cellWidth, cellHeight) * TEKTON_CELLS / 2;
+
+                        // Add 10% margin so spores don't touch the edge
+                        int margin = (int) (radius * 0.1);
+                        radius -= margin;
+
+                        int offsetX, offsetY;
+                        do {
+                            offsetX = (int) (Math.random() * radius * 2 - radius);
+                            offsetY = (int) (Math.random() * radius * 2 - radius);
+                        } while (offsetX * offsetX + offsetY * offsetY > radius * radius);
+
+                        // Set final spore position
                         objectPositions.put(name, new Point(
-                                tektonPos.x + offsetX,
-                                tektonPos.y + offsetY));
+                                tektonCenterX + offsetX,
+                                tektonCenterY + offsetY));
                     }
-                }
             } else if (obj instanceof Insect) {
                 Insect insect = (Insect) obj;
                 FungusThread thread = insect.getThread();
@@ -319,9 +333,8 @@ public class FungoriumGamePanel extends JPanel {
     }
 
     private Point getTektonCenter(Tekton tekton) {
-        String tektonName = commandProcessor.findByObject(tekton);
-        if (tektonName != null && objectPositions.containsKey(tektonName)) {
-            Point tektonPos = objectPositions.get(tektonName);
+        Point tektonPos = getTektonPosition(tekton);
+        if (tektonPos != null) {
             int cellWidth = getWidth() / renderMap.getCols();
             int cellHeight = getHeight() / renderMap.getRows();
 
@@ -333,6 +346,15 @@ public class FungoriumGamePanel extends JPanel {
         }
         return null;
     }
+
+    private Point getTektonPosition(Tekton tekton) {
+        String tektonName = commandProcessor.findByObject(tekton);
+        if (tektonName != null && objectPositions.containsKey(tektonName)) {
+            return objectPositions.get(tektonName);
+        }
+        return null;
+    }
+
 
     private void drawTektons(Graphics2D g2d) {
         int cellWidth = getWidth() / renderMap.getCols();
@@ -594,7 +616,6 @@ public class FungoriumGamePanel extends JPanel {
 
         FungoriumGamePanel gamePanel = new FungoriumGamePanel(commandProcessor);
         frame.add(gamePanel);
-
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
