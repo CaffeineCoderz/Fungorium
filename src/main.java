@@ -1,16 +1,27 @@
 import java.util.Scanner;
+
+import javax.swing.SwingUtilities;
+
+import GUI.FungoriumGamePanel;
+import GUI.MainMenu;
 import commands.CommandProcessor;
 import commands.Tester;
 import logic.GameLogic;
 
 public class main {
-
     public static void main(String[] args) {
+        GameLogic gameLogic = new GameLogic();
+        CommandProcessor commandProcessor = gameLogic.getCommandProcessor();
+        commandProcessor.processConfigText("config");
+        // commandProcessor.processConfigText("setConfig");
+
+        //FungoriumGamePanel.createAndShowGUI(commandProcessor);
+        SwingUtilities.invokeLater(() -> new MainMenu(commandProcessor).setVisible(true));
         Scanner scanner = new Scanner(System.in);
         int choice = 0;
 
         Tester tester = new Tester();
-        GameLogic gameLogic = new GameLogic();
+        // GameLogic gameLogic = new GameLogic();
 
         while (choice != 4) {
             System.out.println("<=========================================>");

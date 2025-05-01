@@ -38,8 +38,8 @@ import utils.*;
 // TODO /delete <name>   -  befejezni a delete parancsot
 //      /status    az összes állapot lekérdezése
 //      /status <name> állapot lekérdezés
-//      /save játék állását menti fájlba
-//      /log a konzolon lévő kimeneteket menti fáklba
+//  TODO    /save játék állását menti fájlba
+// TODO     /log a konzolon lévő kimeneteket menti fáklba
 //      /trig események triggerelése nr: Következő kör np: Következő játékos
 //      /chance breaktekton && spora milyen fajta
 //
@@ -49,10 +49,8 @@ import utils.*;
 //      exit
 //   *FungusSpecies Commands:
 //      growBody <FungusThread> <Tekton> 
-//    ?MEGJ: Itt kell egy fungusbody neveti is majd beadni különben nem tudja majd a user követni mi lett a body neve
-// TODO growThread <Tekton> <FungusBody> <newFungusThread>(not existing, give a name and will create a new one)                  - ToDo: hiányzó paraméter a fvben
-//     growThread <Tekton> <FungusBody> kéne maradjon
-// TODO growThread <Tekton> <existingFungusThread> <newFungusThread>(not existing, give a name and will create a new one)        - ToDo: hiányzó paraméter a fvben
+//      growThread <Tekton> <FungusBody>
+//      growThread <Tekton> <FungusThread>
 //      sporulate <FungusBody>
 //      eatinsect <Insect> <Thread> 
 //   *InsectSpecies Commands:
@@ -357,7 +355,7 @@ public class CommandProcessor {
         System.out.println("/break <Tekton> \t\t\t\t breaks a tekton");
         System.out.println("/kill <Insect> \t\t\t\t\t kills an insect");
         System.out.println("/set <object> <property> <value> \t\t sets the property of the object to the given value");
-        System.out.println("/log <filename> \t\t\t\t saves the console output to a file");
+        // System.out.println("/log <filename> \t\t\t\t saves the console output to a file");
         System.out.println("/trig <event> \t\t\t\t\t triggers an event (next round, next player)");
         System.out.println("/endgame \t\t\t\t\t ends the game and prints the winners");
         System.out.println(" ");
