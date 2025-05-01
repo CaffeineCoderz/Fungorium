@@ -91,6 +91,7 @@ public class MainMenu extends JFrame {
         button.setOpaque(true);
         button.setMargin(new Insets(5, 15, 5, 15));
         button.setBackground(new Color(30, 144, 255));
+        button.setPreferredSize(new Dimension(250, 40)); 
         return button;
     }
 

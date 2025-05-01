@@ -27,9 +27,9 @@ public class Settings {
         gbc.anchor = GridBagConstraints.CENTER; // Középre igazítás
 
         // Gombok létrehozása
-        JButton button1 = createStyledButton("Gomb 1");
-        JButton button2 = createStyledButton("Gomb 2");
-        JButton button3 = createStyledButton("Gomb 3");
+        JButton PlayerCountButton = createStyledButton("Jatekosok szama: ");
+        JButton SetTypeAndNameButton = createStyledButton("Jatekosok tipusa es neve: ");
+        JButton LoadButton = createStyledButton("Load");
         JButton button4 = createStyledButton("Gomb 4");
         JButton button5 = createStyledButton("Gomb 5");
         JButton button6 = createStyledButton("Gomb 6");
@@ -37,23 +37,26 @@ public class Settings {
         // Gombok elhelyezése
         gbc.gridx = 0;
         gbc.gridy = 0;
-        buttonPanel.add(button1, gbc);
+        buttonPanel.add(PlayerCountButton, gbc);
 
         gbc.gridx = 1;
-        buttonPanel.add(button4, gbc);
+        gbc.gridy = 0;
+        buttonPanel.add(SetTypeAndNameButton, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 1;
-        buttonPanel.add(button2, gbc);
+        buttonPanel.add(LoadButton, gbc);
 
         gbc.gridx = 1;
-        buttonPanel.add(button5, gbc);
+        gbc.gridy = 1;
+        buttonPanel.add(button4, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 2;
-        buttonPanel.add(button3, gbc);
+        buttonPanel.add(button5, gbc);
 
         gbc.gridx = 1;
+        gbc.gridy = 2;
         buttonPanel.add(button6, gbc);
 
         // Gombok panel hozzáadása a fő panel közepéhez
@@ -78,8 +81,17 @@ public class Settings {
         // Ablak megjelenítése
         settingsFrame.setVisible(true);
         
-        button1.addActionListener(e -> {
+        PlayerCountButton.addActionListener(e -> {
             new ResultScreen().setVisible(true); // Megnyitja a ResultScreen ablakot
+        });
+        SetTypeAndNameButton.addActionListener(e -> {
+            // Felugró ablak létrehozása
+            JOptionPane.showMessageDialog(
+                settingsFrame, // Szülő ablak
+                "A Player 2 köre következik.", // Üzenet
+                "Kör információ", // Ablak címe
+                JOptionPane.INFORMATION_MESSAGE // Információs ikon
+            );
         });
     }
 
@@ -91,7 +103,7 @@ public class Settings {
         button.setFocusPainted(false);
         button.setOpaque(true);
         button.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2)); // Fehér szegély
-        button.setPreferredSize(new Dimension(150, 40)); // Kisebb gombméret
+        button.setPreferredSize(new Dimension(250, 40)); // Kisebb gombméret
         return button;
     }
 }
