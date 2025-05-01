@@ -91,7 +91,7 @@ class ResultScreen extends JFrame {
         JButton backToMenuButton = new JButton("Vissza a főmenübe");
         styleButton(backToMenuButton);
         backToMenuButton.addActionListener(e -> {
-            new MainMenu().setVisible(true);
+            //new MainMenu(commandP).setVisible(true);
             dispose();
         });
 

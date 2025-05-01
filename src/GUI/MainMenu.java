@@ -1,6 +1,9 @@
 package GUI;
 
 import javax.swing.*;
+
+import commands.CommandProcessor;
+
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,7 +13,9 @@ import javax.imageio.ImageIO;
 
 public class MainMenu extends JFrame {
 
-    public MainMenu() {
+    protected CommandProcessor commandProcessor;
+    public MainMenu(CommandProcessor commandP) {
+        commandProcessor = commandP;
         setTitle("Fungorium - Főmenü");
         setSize(450, 350);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -61,7 +66,7 @@ public class MainMenu extends JFrame {
 
         add(mainPanel);
 
-        newGameButton.addActionListener(e -> openChooseSpeciesScreen());
+        newGameButton.addActionListener(e -> openChooseSpeciesScreen(commandP));
         rulesButton.addActionListener(e -> showRules());
         exitButton.addActionListener(e -> System.exit(0));
     }
@@ -78,8 +83,8 @@ public class MainMenu extends JFrame {
         return button;
     }
 
-    private void openChooseSpeciesScreen() {
-        new ChooseSpecies().setVisible(true);
+    private void openChooseSpeciesScreen(CommandProcessor commandP) {
+        FungoriumGamePanel.createAndShowGUI(commandP);
         dispose();
     }
 
@@ -108,7 +113,8 @@ public class MainMenu extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new MainMenu().setVisible(true));
+        CommandProcessor commandProcessor = new CommandProcessor();
+        SwingUtilities.invokeLater(() -> new MainMenu(commandProcessor).setVisible(true));
     }
 
     private static class BackgroundPanel extends JPanel {
