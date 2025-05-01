@@ -17,12 +17,12 @@ public class MainMenu extends JFrame {
     public MainMenu(CommandProcessor commandP) {
         commandProcessor = commandP;
         setTitle("Fungorium - Főmenü");
-        setSize(450, 350);
+        setSize(800, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
 
-        BackgroundPanel mainPanel = new BackgroundPanel("src/GUI/DATA/background.png");
+        BackgroundPanel mainPanel = new BackgroundPanel("src/resources/PanelBg/menuPanel.jpg");
         mainPanel.setLayout(new BorderLayout());
         mainPanel.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
 
@@ -49,25 +49,36 @@ public class MainMenu extends JFrame {
         titleLabel.setForeground(Color.WHITE);
         titlePanel.add(titleLabel);
         mainPanel.add(titlePanel, BorderLayout.NORTH);
-
-        JPanel buttonPanel = new JPanel(new GridLayout(3, 1, 10, 15));
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 50, 0, 50));
+        
+        // Gombok panel
+        JPanel buttonPanel = new JPanel(new GridLayout(3, 1, 10, 10)); // 3 sor, 1 oszlop, kisebb térköz
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 100, 20, 100)); // Margók a gombok körül
         buttonPanel.setOpaque(false);
 
         JButton newGameButton = createStyledButton("Új játék indítása");
         JButton rulesButton = createStyledButton("Játékszabályok");
+        JButton settingsButton = createStyledButton("Beállítások");
         JButton exitButton = createStyledButton("Kilépés");
 
         buttonPanel.add(newGameButton);
         buttonPanel.add(rulesButton);
+        buttonPanel.add(settingsButton);
         buttonPanel.add(exitButton);
 
-        mainPanel.add(buttonPanel, BorderLayout.CENTER);
+        // Középre helyező panel
+        JPanel centerPanel = new JPanel(new GridBagLayout());
+        centerPanel.setOpaque(false);
+        centerPanel.add(buttonPanel);
+        mainPanel.add(centerPanel, BorderLayout.CENTER);
 
         add(mainPanel);
 
         newGameButton.addActionListener(e -> openChooseSpeciesScreen(commandP));
         rulesButton.addActionListener(e -> showRules());
+        settingsButton.addActionListener(e -> {
+            Settings.showSettings(this,commandP); 
+            dispose();
+        });
         exitButton.addActionListener(e -> System.exit(0));
     }
 
@@ -80,6 +91,7 @@ public class MainMenu extends JFrame {
         button.setOpaque(true);
         button.setMargin(new Insets(5, 15, 5, 15));
         button.setBackground(new Color(30, 144, 255));
+        button.setPreferredSize(new Dimension(250, 40)); 
         return button;
     }
 
