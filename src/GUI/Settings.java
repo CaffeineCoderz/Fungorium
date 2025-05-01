@@ -1,11 +1,11 @@
 package GUI;
-
 import javax.swing.*;
+import commands.CommandProcessor;
 import java.awt.*;
 
 public class Settings {
 
-    public static void showSettings(JFrame parent) {
+    public static void showSettings(JFrame parent, CommandProcessor commandProc) {
         // Új ablak létrehozása
         JFrame settingsFrame = new JFrame("Beállítások");
         settingsFrame.setSize(800, 800);
@@ -60,8 +60,11 @@ public class Settings {
         mainPanel.add(buttonPanel, BorderLayout.CENTER);
 
         // Mentés és bezárás gomb (alsó rész)
-        JButton saveAndCloseButton = createStyledButton("Mentés és bezárás");
-        saveAndCloseButton.addActionListener(e -> settingsFrame.dispose()); // Jelenleg csak bezárja az ablakot
+        JButton saveAndCloseButton = createStyledButton("Mentés és vissza a főmenübe");
+        saveAndCloseButton.addActionListener(e -> {
+            settingsFrame.dispose(); // Bezárja a Settings ablakot
+            new MainMenu(commandProc).setVisible(true); // Visszatér a MainMenu-hoz
+        });
 
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         bottomPanel.setOpaque(false);

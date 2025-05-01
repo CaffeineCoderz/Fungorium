@@ -75,7 +75,10 @@ public class MainMenu extends JFrame {
 
         newGameButton.addActionListener(e -> openChooseSpeciesScreen(commandP));
         rulesButton.addActionListener(e -> showRules());
-        settingsButton.addActionListener(e -> Settings.showSettings(this));
+        settingsButton.addActionListener(e -> {
+            Settings.showSettings(this,commandP); 
+            dispose();
+        });
         exitButton.addActionListener(e -> System.exit(0));
     }
 
