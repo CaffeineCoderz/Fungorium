@@ -94,7 +94,6 @@ public class FungoriumGamePanel extends JPanel {
     public FungoriumGamePanel(CommandProcessor commandProcessor) {
         this.commandProcessor = commandProcessor;
         setPreferredSize(new Dimension(800, 800));
-
         renderMap = new RenderMap(RenderMap.MapSize.MEDIUM);
 
         // Initialize the status text area
@@ -211,8 +210,46 @@ public class FungoriumGamePanel extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
 
         // Rajzoljuk a térképet
+        drawTiledBackground(g2d);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Draw the tiled background
+        calculateObjectPositions();
+
+        // Draw the grid (optional) RED
+        // drawGrid(g2d);
+
+        // Draw all objects
+        drawTektons(g2d);
+
+        calculateTektonCardinalPoints();
+        // Égtáji pontok (zöld pontok) rajzolása
+        g2d.setColor(Color.GREEN);
+        for (List<Point> points : tektonCardinalPoints.values()) {
+            for (Point p : points) {
+                g2d.fill(new Ellipse2D.Double(p.x - 5, p.y - 5, 10, 10));
+            }
+        }
+        drawSpores(g2d);
+        drawThreads(g2d);
+        drawInsects(g2d);
+        drawBodies(g2d);
+    }
+
+    // PIROS
+    private void drawGrid(Graphics2D g2d) {
+        // A RenderMap által definiált cellák kirajzolása
+        g2d.setColor(Color.RED);
+        int cellWidth = getWidth() / renderMap.getCols();
+        int cellHeight = getHeight() / renderMap.getRows();
+
+        for (Point tile : renderMap.getTiles()) {
+            int x = tile.y * cellWidth;
+            int y = tile.x * cellHeight;
+            g2d.drawRect(x, y, cellWidth, cellHeight);
+        }
+    }
+
+    private void drawTiledBackground(Graphics2D g2d) {
         if (backgroundImage != null) {
             int originalWidth = backgroundImage.getWidth(this);
             int originalHeight = backgroundImage.getHeight(this);
@@ -228,45 +265,6 @@ public class FungoriumGamePanel extends JPanel {
                     }
                 }
             }
-        }
-
-
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        calculateObjectPositions();
-
-        // Draw the grid (optional) RED
-        //drawGrid(g2d);
-
-        // Draw all objects
-        drawTektons(g2d);
-        calculateTektonCardinalPoints();
-        // Égtáji pontok (zöld pontok) rajzolása
-        g2d.setColor(Color.GREEN);
-        for (List<Point> points : tektonCardinalPoints.values()) {
-            for (Point p : points) {
-                g2d.fill(new Ellipse2D.Double(p.x - 5, p.y - 5, 10, 10));
-            }
-        }
-        drawBodies(g2d);
-        drawSpores(g2d);
-        // TODO
-        // drawInsects(g2d);
-        drawThreads(g2d);
-
-        
-    }
-
-    private void drawGrid(Graphics2D g2d) {
-        // A RenderMap által definiált cellák kirajzolása
-        g2d.setColor(Color.RED);
-        int cellWidth = getWidth() / renderMap.getCols();
-        int cellHeight = getHeight() / renderMap.getRows();
-
-        for (Point tile : renderMap.getTiles()) {
-            int x = tile.y * cellWidth;
-            int y = tile.x * cellHeight;
-            g2d.drawRect(x, y, cellWidth, cellHeight);
         }
     }
 
