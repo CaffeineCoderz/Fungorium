@@ -14,6 +14,8 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
+import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -59,6 +61,12 @@ public class FungoriumGamePanel extends JPanel {
     private Image onlyThreadTektonBgCircular;
 
     private Image fungusBodyImg;
+
+    // Thread grow
+    private Map<String, Point> threadEndpoints = new HashMap<>(); // Thread végpontok tárolása
+    private Map<String, List<Point>> tektonCardinalPoints = new HashMap<>(); // Tekton égtáji pontjai
+    private List<Line2D> possibleGrowthLines = new ArrayList<>(); // Lehetséges növekedési irányok
+    private Map<FungusThread, String> threadDirections = new HashMap<>();
 
     public FungoriumGamePanel(CommandProcessor commandProcessor) {
         this.commandProcessor = commandProcessor;
@@ -152,14 +160,24 @@ public class FungoriumGamePanel extends JPanel {
         calculateObjectPositions();
 
         // Draw the grid (optional) RED
-        // drawGrid(g2d);
+        drawGrid(g2d);
 
         // Draw all objects
         drawTektons(g2d);
         drawBodies(g2d);
         drawSpores(g2d);
+        // TODO
         // drawInsects(g2d);
         // drawThreads(g2d);
+
+        calculateTektonCardinalPoints();
+        // Égtáji pontok (zöld pontok) rajzolása
+        g2d.setColor(Color.GREEN);
+        for (List<Point> points : tektonCardinalPoints.values()) {
+            for (Point p : points) {
+                g2d.fill(new Ellipse2D.Double(p.x - 5, p.y - 5, 10, 10));
+            }
+        }
     }
 
     private void drawGrid(Graphics2D g2d) {
@@ -304,6 +322,56 @@ public class FungoriumGamePanel extends JPanel {
                     }
                 }
             }
+        }
+    }
+
+    private void calculateTektonCardinalPoints() {
+        tektonCardinalPoints.clear();
+        int cellWidth = getWidth() / renderMap.getCols();
+        int cellHeight = getHeight() / renderMap.getRows();
+
+        for (Map.Entry<String, Point> entry : objectPositions.entrySet()) {
+            String name = entry.getKey();
+            Object obj = commandProcessor.getCreatedObjects().get(name);
+
+            if (obj instanceof Tekton) {
+                Point topLeft = entry.getValue();
+                int x = topLeft.y * cellWidth;
+                int y = topLeft.x * cellHeight;
+                int width = cellWidth * TEKTON_CELLS;
+                int height = cellHeight * TEKTON_CELLS;
+
+                // Égtáji pontok számítása
+                Point center = new Point(x + width / 2, y + height / 2);
+                int offset = Math.min(width, height) / 2;
+
+                List<Point> points = new ArrayList<>();
+                points.add(new Point(center.x + offset, center.y)); // East (E)
+                points.add(new Point(center.x, center.y - offset)); // North (N)
+                points.add(new Point(center.x - offset, center.y)); // West (W)
+                points.add(new Point(center.x, center.y + offset)); // South (S)
+
+                tektonCardinalPoints.put(name, points);
+            }
+        }
+    }
+
+    private Point getCardinalPoint(String tektonName, String direction) {
+        List<Point> points = tektonCardinalPoints.get(tektonName);
+        if (points == null)
+            return null;
+
+        switch (direction.toLowerCase()) {
+            case "e":
+                return points.get(0); // East
+            case "n":
+                return points.get(1); // North
+            case "w":
+                return points.get(2); // West
+            case "s":
+                return points.get(3); // South
+            default:
+                return null;
         }
     }
 
