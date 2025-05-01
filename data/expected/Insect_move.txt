@@ -1,6 +1,7 @@
-Sikertelen rovarmozgás. A megadott fonál nem elérhető
-i1:
-Insect:
-Owner: N/A
-Thread: th3
-Effect: normal
+Sikertelen elmozgás
+Név: i1
+Insect: 
+	Owner: N/A
+	Thread: th3
+	Effect: NORMAL
+

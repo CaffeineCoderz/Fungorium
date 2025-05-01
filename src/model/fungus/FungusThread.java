@@ -5,7 +5,6 @@ import java.util.List;
 
 import insect.Insect;
 import tektonTypes.Tekton;
-import utils.Logger;
 
 // ! - Az elrágott fonalak nem pusztulnak el azonnal, hanem csak egy kis idő elteltével (ez fonaltípustól függő idő). 
 // ! A fonalak képesek megenni a tektonjukon található bénult rovarokat. Ilyenkor a rovar elpusztul, a fonal pedig gombatestet növeszthet.
@@ -16,13 +15,15 @@ public class FungusThread {
     private Boolean isDying;
     private List<Tekton> tektons;
     private FungusSpecies species;
-    private FungusBody body;
+    private FungusBody prevbody;
+    private FungusBody nextbody;
     private Boolean connected;
+    FungusBody myBody;
     private FungusThread prevThread;
     private FungusThread nextThread;
 
     public FungusThread() {
-        this.lifeSpan = 0;
+        this.lifeSpan = null;
         this.bridge = false;
         this.isDying = false;
         this.species = null;
@@ -30,17 +31,23 @@ public class FungusThread {
         prevThread = null;
         nextThread = null;
         connected = true;
+        myBody = null;
+        prevbody = null;
+        nextbody = null;
     }
 
-    public FungusThread(Integer lifeSpan, Boolean bridge) {
+    public FungusThread(Integer lifeSpan, Boolean bridge, FungusSpecies Species) {
         this.lifeSpan = lifeSpan;
         this.bridge = bridge;
         this.isDying = false;
-        this.species = null;
+        this.species = Species;
         this.tektons = new ArrayList<>();
         prevThread = null;
         nextThread = null;
         connected=true;
+        myBody = null;
+        prevbody = null;
+        nextbody = null;
     }
 
     public FungusThread(Integer lifeSpan, Boolean bridge, FungusThread prev) {
@@ -52,16 +59,26 @@ public class FungusThread {
         prevThread = prev;
         nextThread = null;
         connected=true;
-        if (prev != null)
-            body = prev.getBody();
-        else
-            body = null;
+        myBody = null;
+        if (prev != null&& prev.getPrevBody()!= null) {
+            prevbody = prev.getPrevBody();}
+        else{
+            prevbody = null;
+            nextbody = null;
+        }
     }
 
     public void setConnected(Boolean bool){
         this.connected=bool;
     }
 
+    public FungusBody getMyBody() {
+        return myBody;
+    }
+
+    public void setMyBody(FungusBody NBody) {
+        this.myBody = NBody;
+    }
     /**
      * Sets the previous thread
      * 
@@ -94,17 +111,24 @@ public class FungusThread {
      * 
      * @return
      */
-    public FungusBody getBody() {
-        return body;
+    public FungusBody getPrevBody() {
+        return prevbody;
     }
 
+    public FungusBody getNextBody() {
+        return nextbody;
+    }
     /**
      * Sets the body
      * 
      * @param nBody
      */
-    public void setBody(FungusBody nBody) {
-        body = nBody;
+    public void setPrevBody(FungusBody nBody) {
+        prevbody = nBody;
+    }
+
+    public void setNextBody(FungusBody nBody) {
+        nextbody = nBody;
     }
 
     /**
@@ -145,7 +169,7 @@ public class FungusThread {
             return;
         }
         lifeSpan--;
-        if (lifeSpan <= 0) {
+        if (lifeSpan == 0) {
             this.destroy();
         }
     }
@@ -181,8 +205,14 @@ public class FungusThread {
      * @param isDying true if this fungus thread should be marked as dying, false
      *                otherwise.
      */
-    public void setIsDying(Boolean isDying) {
-        this.isDying = isDying;
+    public void setIsDying(Boolean NisDying) {
+        this.isDying = NisDying;
+        if(lifeSpan == null&&isDying){
+            if(isBridge()){
+                lifeSpan = 2;
+            }else
+                lifeSpan = 4;
+        }
     }
 
     /**
@@ -278,6 +308,12 @@ public class FungusThread {
         for (Tekton tekton : tektons) {
             tekton.removeThread(this);
         }
+        if(this.getPrev() != null){
+            this.getPrev().setNextThread(null);
+        }
+        if(this.getNext() != null){
+            this.getNext().setPrevThread(null);
+        }
     }
 
     /**
@@ -293,8 +329,5 @@ public class FungusThread {
     // ! nincs statikus diagram
     public void setLifeSpan(Integer lifeSpan) {
         this.lifeSpan = lifeSpan;
-    }
-    public void disconnected(){
-        
     }
 }

@@ -1,7 +1,12 @@
 package fungus;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+import java.util.Set;
+
 import sporeTypes.Spore;
 import tektonTypes.Tekton;
 import utils.*;
@@ -15,7 +20,7 @@ public class FungusBody {
 
     public FungusBody() {
         this.sporeCount = 0;
-        this.sporulateLeft = 0;
+        this.sporulateLeft = 2;
         this.threads = new ArrayList<>();
         this.tekton = null;
         this.species = null;
@@ -95,8 +100,6 @@ public class FungusBody {
         return threads;
     }
 
-    // ! Not implemented yet
-
     /**
      * Spreads spores to the neighboring Tektons.
      * 
@@ -106,44 +109,59 @@ public class FungusBody {
      */
     public List<Spore> sporulate() {
         List<Spore> createdSpores = new ArrayList<>();
-        if(isThereEnough()){
-            if(!canSporeNeighbours()){
-                if(this.tekton == null) {
-                    System.err.println("Tekton is null.");
-                    return createdSpores;
-                }
-                for(Tekton t : tekton.getNeighbours()){
-                    //!Spore tempSpore = RandomGenerator.generateRandomSpore();
-                    Spore tempSpore = new Spore();
-                    t.addSpore(tempSpore);
-                    tempSpore.setTekton(t);
-                    sporeCount--;
-                    createdSpores.add(tempSpore);
-                }
-            }
-            else{
-                for(Tekton t : tekton.getNeighbours()){
-                    //!Spore tempSpore = RandomGenerator.generateRandomSpore();
-                    Spore tempSpore = new Spore();
-                    t.addSpore(tempSpore);
-                    tempSpore.setTekton(t);
-                    sporeCount--;
-                    createdSpores.add(tempSpore);
-                    for(Tekton tt: t.getNeighbours()){
-                        //!Spore tempSpore2 = RandomGenerator.generateRandomSpore();
-                        Spore tempSpore2 = new Spore();
-                        tt.addSpore(tempSpore2);
-                        tempSpore2.setTekton(tt);
-                        sporeCount--;
-                        createdSpores.add(tempSpore2);
-                    } 
-                }
-            }
-            sporulateLeft--;
-        } else
+    
+        if (!isThereEnough()) {
             System.out.println("Fungusbody can't sporulate");
-        return createdSpores;     
+            return createdSpores;
+        }
+    
+        Queue<Tekton> queue = new LinkedList<>();
+        Set<Tekton> visited = new HashSet<>();
+    
+        if (this.tekton == null) {
+            System.err.println("Tekton is null.");
+            return createdSpores;
+        }
+    
+        queue.offer(this.tekton);
+        visited.add(this.tekton);
+    
+        int depth = 0;
+    
+        while (!queue.isEmpty() && sporeCount > 0 && depth < 2) {
+            int levelSize = queue.size(); // Hány elem van ezen a szinten
+    
+            for (int i = 0; i < levelSize; i++) {
+                Tekton current = queue.poll();
+    
+                for (Tekton neighbour : current.getNeighbours()) {
+                    if (neighbour != this.tekton && !visited.contains(neighbour)) {
+                        Spore tempSpore = new Spore();
+                        neighbour.addSpore(tempSpore);
+                        tempSpore.setTekton(neighbour);
+                        sporeCount--;
+                        createdSpores.add(tempSpore);
+    
+                        queue.offer(neighbour);
+                        visited.add(neighbour);
+    
+                        if (sporeCount <= 0) {
+                            break;
+                        }
+                    }
+                }
+                if (sporeCount <= 0) {
+                    break;
+                }
+            }
+            depth++; // Egy szinttel mélyebbre megyünk
+        }
+    
+        sporulateLeft--;
+        return createdSpores;
     }
+    
+    
 
     /**
      * Checks if it can sporulate to neighbours's neighbours 
@@ -167,11 +185,7 @@ public class FungusBody {
      * @return true if the fungus body should die, false otherwise.
      */
     public Boolean timeToDie() {
-        // implementáció
-        if (sporulateLeft <= 0) {
-            return true;
-        }
-        return false;
+        return sporulateLeft == 0;
     }
 
     /**
@@ -181,7 +195,6 @@ public class FungusBody {
      * method is called when the fungus body is grown.
      */
     public void produceSpore() {
-        // implementáció
         sporeCount++;
     }
 
@@ -195,7 +208,6 @@ public class FungusBody {
      * @return true if there are available spores, false otherwise.
      */
     public Boolean isThereEnough() {
-        // implementáció
         return sporeCount > 1;
     }
 
@@ -217,5 +229,11 @@ public class FungusBody {
      */
     public void setSpecies(FungusSpecies species) {
         this.species = species;
+    }
+    public void setSporulateLeft(Integer sporulateLeft) {
+        this.sporulateLeft = sporulateLeft;
+    }
+    public Integer getSporulateLeft() {
+        return sporulateLeft;
     }
 }

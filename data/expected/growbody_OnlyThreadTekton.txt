@@ -1,6 +1,7 @@
-Sikertelen testnövesztés. A tektonon nem nőhet gombatest
-Név: t1 
-OnlyTreadTekton: 
+Can't grow body on this tekton!
+Hiba: Nem lehetett gombatestet növeszteni a megadott paraméterekkel.
+Név: t1
+OnlyThreadTekton: 
 	CanGrowThread: true
 	CanGrowBody: false
 	Bodies: N/A

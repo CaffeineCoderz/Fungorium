@@ -38,8 +38,8 @@ import utils.*;
 // TODO /delete <name>   -  befejezni a delete parancsot
 //      /status    az összes állapot lekérdezése
 //      /status <name> állapot lekérdezés
-//      /save játék állását menti fájlba
-//      /log a konzolon lévő kimeneteket menti fáklba
+//  TODO    /save játék állását menti fájlba
+// TODO     /log a konzolon lévő kimeneteket menti fáklba
 //      /trig események triggerelése nr: Következő kör np: Következő játékos
 //      /chance breaktekton && spora milyen fajta
 //
@@ -49,10 +49,8 @@ import utils.*;
 //      exit
 //   *FungusSpecies Commands:
 //      growBody <FungusThread> <Tekton> 
-//    ?MEGJ: Itt kell egy fungusbody neveti is majd beadni különben nem tudja majd a user követni mi lett a body neve
-// TODO growThread <Tekton> <FungusBody> <newFungusThread>(not existing, give a name and will create a new one)                  - ToDo: hiányzó paraméter a fvben
-//     growThread <Tekton> <FungusBody> kéne maradjon
-// TODO growThread <Tekton> <existingFungusThread> <newFungusThread>(not existing, give a name and will create a new one)        - ToDo: hiányzó paraméter a fvben
+//      growThread <Tekton> <FungusBody>
+//      growThread <Tekton> <FungusThread>
 //      sporulate <FungusBody>
 //      eatinsect <Insect> <Thread> 
 //   *InsectSpecies Commands:
@@ -92,7 +90,7 @@ public class CommandProcessor {
     private Set<String> insectCommands = Set.of("move", "cut", "eat");
     private Set<String> commonCommands = Set.of("help", "exit");
     private Set<String> systemCommands = Set.of("/helpsys", "/helpobj", "/load", "/break", "/kill", "/set", "/delete",
-            "/status", "/save", "/log", "/trig");
+            "/status", "/save", "/log", "/trig", "/create");
 
     private GameLogic gameLogic;
 
@@ -130,6 +128,7 @@ public class CommandProcessor {
         commands.put("/break", this::processBreakCommand);
         commandDescriptions.put("/break", "/break <Tekton>");
 
+        commands.put("/trig", this::processTriggerCommand);
         commandDescriptions.put("/trig", "/trig <event>");
 
         commands.put("cut", this::processCutCommand);
@@ -148,10 +147,10 @@ public class CommandProcessor {
         commandDescriptions.put("move", "move <Insect> <Thread>");
 
         commands.put("growbody", this::processGrowBodyCommand);
-        commandDescriptions.put("growbody", "grow <FungusThread> <Tekton>");
+        commandDescriptions.put("growbody", "growbody <FungusThread>");
 
         commands.put("growthread", this::processGrowThreadCommand);
-        commandDescriptions.put("growthread", "grow <Tekton> <FungusBody>/<existingFungusThread> <newFungusThread>");
+        commandDescriptions.put("growthread", "growthread <Tekton> <FungusBody>/<FungusThread>");
 
         commands.put("eatinsect", this::processEatInsectCommand);
         commandDescriptions.put("eatinsect", "eatinsect <Insect> <Thread>");
@@ -169,7 +168,7 @@ public class CommandProcessor {
         commandDescriptions.put("/helpsys", "/helpsys");
 
         commands.put("/helpobj", parts -> helpObj());
-        commandDescriptions.put("/helpObj", "/helpObj");
+        commandDescriptions.put("/helpobj", "/helpobj");
 
         commands.put("/load", parts -> processConfigText(parts[1]));
         commandDescriptions.put("/load", "/load <filename>");
@@ -189,6 +188,7 @@ public class CommandProcessor {
         commands.put("/break", this::processBreakCommand);
         commandDescriptions.put("/break", "/break <Tekton>");
 
+        commands.put("/trig", this::processTriggerCommand);
         commandDescriptions.put("/trig", "/trig <event>");
 
         commands.put("cut", this::processCutCommand);
@@ -200,17 +200,17 @@ public class CommandProcessor {
         commands.put("eat", this::processEatCommand);
         commandDescriptions.put("eat", "eat <Spore> <Insect>");
 
-        commands.put("kill", this::processKillCommand);
-        commandDescriptions.put("kill", "kill <Insect>");
+        commands.put("/kill", this::processKillCommand);
+        commandDescriptions.put("/kill", "/kill <Insect>");
 
         commands.put("move", this::processMoveCommand);
         commandDescriptions.put("move", "move <Insect> <Thread>");
 
         commands.put("growbody", this::processGrowBodyCommand);
-        commandDescriptions.put("growbody", "grow <FungusThread> <Tekton>");
+        commandDescriptions.put("growbody", "growbody <FungusThread>");
 
         commands.put("growthread", this::processGrowThreadCommand);
-        commandDescriptions.put("growthread", "grow <Tekton> <FungusBody>/<existingFungusThread> <newFungusThread>");
+        commandDescriptions.put("growthread", "growthread <Tekton> <FungusBody>/<FungusThread>");
 
         commands.put("eatinsect", this::processEatInsectCommand);
         commandDescriptions.put("eatinsect", "eatinsect <Insect> <Thread>");
@@ -332,8 +332,8 @@ public class CommandProcessor {
         System.out.println("eat <Spore> <Insect> \t\t\t\t eats a spore with the selected insect");
         System.out.println("move <Insect> <Thread> \t\t\t\t moves an insect to the selected thread");
         System.out.println("growBody <FungusThread> <Tekton> \t\t grows a body");
-        System.out.println("growThread <Tekton> <FungusBody> <newThread> \t grows a thread from the selected body");
-        System.out.println("growThread <Tekton> <Thread> <newThread> \t grows a thread from an existing thread");
+        System.out.println("growThread <Tekton> <FungusBody> \t\t grows a thread from the selected body");
+        System.out.println("growThread <Tekton> <Thread> \t\t\t grows a thread from an existing thread");
         System.out.println("sporulate <FungusBody> \t\t\t\t sporulates with the selected body");
         System.out.println("exit \t\t\t\t\t\t exits the program");
     }
@@ -355,7 +355,7 @@ public class CommandProcessor {
         System.out.println("/break <Tekton> \t\t\t\t breaks a tekton");
         System.out.println("/kill <Insect> \t\t\t\t\t kills an insect");
         System.out.println("/set <object> <property> <value> \t\t sets the property of the object to the given value");
-        System.out.println("/log <filename> \t\t\t\t saves the console output to a file");
+        // System.out.println("/log <filename> \t\t\t\t saves the console output to a file");
         System.out.println("/trig <event> \t\t\t\t\t triggers an event (next round, next player)");
         System.out.println("/endgame \t\t\t\t\t ends the game and prints the winners");
         System.out.println(" ");
@@ -503,7 +503,7 @@ public class CommandProcessor {
                         "Hiba: Nem lehet törölni az Insect-et, mert nincs hozzárendelve Entomologist vagy Tekton!");
                 return;
             }
-            insect.deadInsect();
+            insect.deadInsect(this);
         } else if (obj instanceof Spore || obj instanceof FastSpore || obj instanceof MultiplyInsectSpore
                 || obj instanceof SlowSpore || obj instanceof StunSpore || obj instanceof DisableCutSpore) {
             Spore spore = (Spore) obj;
@@ -527,7 +527,7 @@ public class CommandProcessor {
         } else if (obj instanceof InsectSpecies) {
             InsectSpecies player = (InsectSpecies) obj;
             for (Insect insect : player.getInsects()) {
-                insect.deadInsect();
+                insect.deadInsect(this);
                 player.removeInsect(insect);
             }
         } else if (obj instanceof FungusSpecies) {
@@ -558,8 +558,18 @@ public class CommandProcessor {
 
         if (obj instanceof FungusThread) {
             FungusThread thread = (FungusThread) obj;
-            String bodyName = createdObjects.entrySet().stream()
-                    .filter(entry -> entry.getValue() == thread.getBody())
+            String PrevBodyName = createdObjects.entrySet().stream()
+                    .filter(entry -> entry.getValue() == thread.getPrevBody())
+                    .map(Map.Entry::getKey)
+                    .findFirst()
+                    .orElse("N/A");
+            String NextBodyName = createdObjects.entrySet().stream()
+                    .filter(entry -> entry.getValue() == thread.getNextBody())
+                    .map(Map.Entry::getKey)
+                    .findFirst()
+                    .orElse("N/A");
+            String MyBodyName = createdObjects.entrySet().stream()
+                    .filter(entry -> entry.getValue() == thread.getMyBody())
                     .map(Map.Entry::getKey)
                     .findFirst()
                     .orElse("N/A");
@@ -588,7 +598,9 @@ public class CommandProcessor {
                     .orElse("N/A");
             System.out.println("FungusThread: "
                     + "\n\tSpecies: " + speciesName
-                    + "\n\tBody: " + bodyName
+                    + "\n\tPrevBody: " + PrevBodyName
+                    + "\n\tNextBody: " + NextBodyName
+                    + "\n\tMyBody: " + MyBodyName
                     + "\n\tTektons: " + tektonNames
                     + "\n\tIsBridge: " + thread.isBridge()
                     + "\n\tLifespan: " + thread.getLifeSpan()
@@ -619,7 +631,8 @@ public class CommandProcessor {
                     + "\n\tSpecies: " + speciesName
                     + "\n\tTekton: " + tektonName
                     + "\n\tThreads: " + threadNames
-                    + "\n\tSporecount: " + body.getSporeCount());
+                    + "\n\tSporecount: " + body.getSporeCount()
+                    + "\n\tSporulateLeft: " + body.getSporulateLeft());
         } else if (obj instanceof FungusSpecies) {
             FungusSpecies species = (FungusSpecies) obj;
             String bodyNames = species.getBodies().stream()
@@ -779,52 +792,31 @@ public class CommandProcessor {
         }
     }
 
+    // ! Javítani doksiban
     /*
-     * growbody parancs formája: growbody <FungusThread> <Tekton>
-     * Példa: growbody th1 t1
+     * growbody parancs formája: growbody <FungusThread>
+     * Példa: growbody th1
      * 
      * @param parts: parancs részei
      */
     public void processGrowBodyCommand(String[] parts) {
         String threadName = parts[1];
-        String tekton = parts[2];
-
         if (!createdObjects.containsKey(threadName)) {
             System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + threadName);
-            return;
-        }
-
-        if (!createdObjects.containsKey(tekton)) {
-            System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + tekton);
             return;
         }
 
         Object obj = createdObjects.get(threadName);
         if (obj instanceof FungusThread) {
             FungusThread thread = (FungusThread) obj;
-            Tekton tektonObj = null;
-            if (createdObjects.get(tekton) instanceof Tekton) {
-                tektonObj = (Tekton) createdObjects.get(tekton);
-            } else if (createdObjects.get(tekton) instanceof DecomposingTekton) {
-                tektonObj = (DecomposingTekton) createdObjects.get(tekton);
-            } else if (createdObjects.get(tekton) instanceof DecreasingTekton) {
-                tektonObj = (DecreasingTekton) createdObjects.get(tekton);
-            } else if (createdObjects.get(tekton) instanceof FeedThreadTekton) {
-                tektonObj = (FeedThreadTekton) createdObjects.get(tekton);
-            } else if (createdObjects.get(tekton) instanceof OneThreadTekton) {
-                tektonObj = (OneThreadTekton) createdObjects.get(tekton);
-            } else if (createdObjects.get(tekton) instanceof OnlyThreadTekton) {
-                tektonObj = (OnlyThreadTekton) createdObjects.get(tekton);
-            } else {
-                System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + tekton);
+            // actual growbody
+            String bodyName = "bo" + (countObjectsOfType(FungusBody.class) + 1);
+            FungusBody nBody = thread.getSpecies().growBody(thread);
+            if (nBody == null) {
+                System.out.println("Hiba: Nem lehetett gombatestet növeszteni a megadott paraméterekkel.");
                 return;
             }
-            // if (tektonObj.canGrowBody()) {
-            thread.getSpecies().growBody(thread);
-            // } else {
-            //     System.out.println("Hiba: Nem lehet ide body-t növeszteni: " + tekton);
-            //     return;
-            // }
+            createdObjects.put(bodyName, nBody);
         } else {
             System.out.println("Hiba: Nem lehet növeszteni ezt az objektumot: " + threadName);
         }
@@ -832,19 +824,19 @@ public class CommandProcessor {
 
     /*
      * growthread parancs formája:
-     * growthread <Tekton> <FungusBody> <newFungusThread>
-     * Példa: growthread t1 b1 th1
+     * growthread <Tekton> <FungusBody>
+     * Példa: growthread t1 b1
      * 
      * growthread parancs formája:
-     * growthread <Tekton> <existingFungusThread> <newFungusThread>
-     * Példa: growthread t1 th1 th2
+     * growthread <Tekton> <existingFungusThread>
+     * Példa: growthread t1 th1
      * 
      * @param parts: parancs részei
      */
     public void processGrowThreadCommand(String[] parts) {
         String tektonName = parts[1];
         String secondParam = parts[2];
-        String newThreadName = parts[3];
+        String newThreadName = "th" + (countObjectsOfType(FungusThread.class) + 1);
 
         // Második param type check
         Object obj = createdObjects.get(secondParam);
@@ -859,33 +851,19 @@ public class CommandProcessor {
             return;
         }
 
-        // Harmadikat nem ellnőrizzük, mert az új threadet létrehozzuk
-        // Inicializálás
-        String[] newThreadParts = { "thread", newThreadName };
-        processCreateCommand(newThreadParts);
-        FungusThread newThread = (FungusThread) createdObjects.get(newThreadName);
-
-        // Sikeresség ellenőrzés
-        if (newThread == null) {
-            System.out.println("Hiba: Nem sikerült létrehozni a FungusThread-et: " + newThreadName);
-            return;
-        }
-
         // Második param fungusBody Típusú
         if (obj instanceof FungusBody) {
             if (createdObjects.get(tektonName) instanceof Tekton
                     && createdObjects.get(secondParam) instanceof FungusBody) {
                 Tekton tekton = (Tekton) createdObjects.get(tektonName);
                 FungusBody body = (FungusBody) createdObjects.get(secondParam);
-
-                // Actual growThread
-                if (tekton.canGrowThread()) {
-                    // ! Az új thread be lesz adva a függvénybe
-                    body.getSpecies().growThread(tekton, body, newThread);
-                } else {
-                    System.out.println("Hiba: Nem lehet ide threadet növeszteni: " + tektonName);
+                // Actual growthread
+                FungusThread nThread = body.getSpecies().growThread(tekton, body);
+                if (nThread == null) {
+                    System.out.println("Hiba: Nem lehetett fonalat növeszteni a megadott paraméterekkel");
                     return;
                 }
+                createdObjects.put(newThreadName, nThread);
             } else {
                 System.out.println("Hiba: Valamelyik paraméter nem megfelelő típusú.");
             }
@@ -894,15 +872,13 @@ public class CommandProcessor {
                     && createdObjects.get(secondParam) instanceof FungusThread) {
                 Tekton tekton = (Tekton) createdObjects.get(tektonName);
                 FungusThread thread = (FungusThread) createdObjects.get(secondParam);
-
-                // Actual growThread
-                if (tekton.canGrowThread()) {
-                    // ! Az új thread be lesz adva a függvénybe
-                    thread.getSpecies().growThread(tekton, thread, newThread);
-                } else {
-                    System.out.println("Hiba: Nem lehet ide threadet növeszteni: " + tektonName);
+                // Actual growthread
+                FungusThread nThread = thread.getSpecies().growThread(tekton, thread);
+                if (nThread == null) {
+                    System.out.println("Hiba: Nem lehetett fonalat növeszteni a megadott paraméterekkel");
                     return;
                 }
+                createdObjects.put(newThreadName, nThread);
             } else {
                 System.out.println("Hiba: Valamelyik paraméter nem megfelelő típusú.");
             }
@@ -968,6 +944,10 @@ public class CommandProcessor {
         if (obj instanceof FungusBody) {
             FungusBody body = (FungusBody) obj;
             List<Spore> createdSpores = body.sporulate();
+            if (createdSpores == null) {
+                System.out.println("Hiba: Nem sikerült spórát szórni");
+                return;
+            }
             for (Spore element : createdSpores) {
                 String created_name = "spore" + countObjectsOfType(Spore.class);
                 createdObjects.put(created_name, element);
@@ -1029,7 +1009,7 @@ public class CommandProcessor {
         Object obj = createdObjects.get(name);
         if (obj instanceof Insect) {
             Insect insect = (Insect) obj;
-            insect.deadInsect();
+            insect.deadInsect(this);
             // Debug purposes
             // System.out.println("Az Insect meghalt!");
         } else {
@@ -1130,8 +1110,14 @@ public class CommandProcessor {
                 case "isdying":
                     thread.setIsDying(Boolean.parseBoolean(value));
                     break;
-                case "body":
-                    thread.setBody((FungusBody) createdObjects.get(value));
+                case "prevbody":
+                    thread.setPrevBody((FungusBody) createdObjects.get(value));
+                    break;
+                case "nextbody":
+                    thread.setNextBody((FungusBody) createdObjects.get(value));
+                    break;
+                case "mybody":
+                    thread.setMyBody((FungusBody) createdObjects.get(value));
                     break;
                 case "species":
                     thread.setSpecies((FungusSpecies) createdObjects.get(value));
@@ -1179,6 +1165,9 @@ public class CommandProcessor {
                         body.removeThread((FungusThread) createdObjects.get(value));
                     else
                         System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + value);
+                    break;
+                case "sporulateleft":
+                    body.setSporulateLeft(Integer.parseInt(value));
                     break;
                 default:
                     System.out.println("Hiba: Nem létezik ilyen tulajdonság: " + property);
@@ -1362,12 +1351,18 @@ public class CommandProcessor {
                         System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + value);
                     break;
                 case "addneighbour":
-                    if (createdObjects.get(value) instanceof Tekton)
-                        tekton.addNeighbour((Tekton) createdObjects.get(value));
+                    if (createdObjects.get(value) instanceof Tekton) {
+                        Tekton neighbour = (Tekton) createdObjects.get(value);
+                        tekton.addNeighbour(neighbour);
+                        neighbour.addNeighbour(tekton);
+                    }
                     break;
                 case "removeneighbour":
-                    if (createdObjects.get(value) instanceof Tekton)
-                        tekton.removeNeighbour((Tekton) createdObjects.get(value));
+                    if (createdObjects.get(value) instanceof Tekton) {
+                        Tekton neighbour = (Tekton) createdObjects.get(value);
+                        tekton.removeNeighbour(neighbour);
+                        neighbour.removeNeighbour(tekton);
+                    }
                     break;
                 case "addinsect":
                     if (createdObjects.get(value) instanceof Insect)
@@ -1470,7 +1465,7 @@ public class CommandProcessor {
                 System.out.println("Hiba: Thread null értékű: " + thread);
                 return;
             }
-            insect.move(th);
+            gameLogic.MoveInsect(insect, th);
             // Debug purposes
             // System.out.println("Az Insect mozgott!");
         } else {
@@ -1497,7 +1492,11 @@ public class CommandProcessor {
                 || obj instanceof FeedThreadTekton || obj instanceof OneThreadTekton
                 || obj instanceof OnlyThreadTekton) {
             Tekton tekton = (Tekton) obj;
-            tekton.breakTekton();
+            String newtektonName = name + "-1";
+            String newtektonName2 = name + "-2";
+            List<Tekton> tektons = tekton.breakTekton(this);
+            createdObjects.put(newtektonName, tektons.get(0));
+            createdObjects.put(newtektonName2, tektons.get(1));
             // Debug purposes
             // System.out.println("Az Tekton eltört!");
         } else {
@@ -1529,21 +1528,20 @@ public class CommandProcessor {
         if (objInsect instanceof Insect && objThread instanceof FungusThread) {
             Insect insect = (Insect) objInsect;
             FungusThread thread = (FungusThread) objThread;
-            insect.deadInsect();
+            insect.deadInsect(this);
             if (thread.getTekton().canGrowBody() && thread.getTekton() != null) {
                 FungusBody b = new FungusBody();
                 thread.getSpecies().addBody(b);
                 thread.getTekton().setBody(b);
-                thread.getSpecies().addScore(1);
                 String baseName = "b";
                 int fungusBodyCount = countObjectsOfType(FungusBody.class);
                 String bodyname = generateUniqueName(baseName, fungusBodyCount);
                 getCreatedObjects().put(bodyname, b);
+                thread.getSpecies().addBody(null);
             } else {
                 System.out.println("Hiba: Nem lehet ide body-t növeszteni.");
                 return;
             }
-            thread.getSpecies().addBody(null);
         } else {
             System.out.println(
                     "Hiba: Valamlyik objektum típusa nem helyes a parancshoz: " + insectName + " " + threadName);
@@ -1552,75 +1550,38 @@ public class CommandProcessor {
 
     public void processTriggerCommand(String[] parts) {
         String name = parts[1];
-        String objectName = parts[2];
-
-        if (!createdObjects.containsKey(name)) {
-            System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + name);
-            return;
-        }
 
         Object obj = createdObjects.get(name);
-        if(name.equals("timeelapsed")){
+
+        if (name.equals("timeelapsed")) {
             for (Object object : createdObjects.values()) {
                 if (object instanceof InsectSpecies) {
                     InsectSpecies insectSpecies = (InsectSpecies) object;
                     insectSpecies.timeElapsed();
                 } else if (object instanceof FungusSpecies) {
                     FungusSpecies fungusSpecies = (FungusSpecies) object;
-                    fungusSpecies.timeElapsed();
+                    fungusSpecies.timeElapsed(this);
                 }
             }
-        } else if(obj instanceof FungusSpecies){
+        } else if (!createdObjects.containsKey(name)) {
+            System.out.println("Hiba: Nem létezik ilyen nevű objektum: " + name);
+            return;
+        } else if(obj instanceof FungusSpecies) {
             FungusSpecies fungusSpecies = (FungusSpecies) obj;
-            fungusSpecies.timeElapsed();
+            fungusSpecies.timeElapsed(this);
         } else if (obj instanceof InsectSpecies) {
             InsectSpecies insectSpecies = (InsectSpecies) obj;
             insectSpecies.timeElapsed();
         } else if (obj instanceof FungusThread) {
             FungusThread thread = (FungusThread) obj;
             thread.decreaseLife();
-        } else if(obj instanceof Insect){
+        } else if (obj instanceof Insect) {
             Insect insect = (Insect) obj;
             insect.timeElapsed();
-        }  
-        
+        }
         else {
-            System.out.println("Hiba: Az objektum nem thread típusú: " + name);
+            System.out.println("Hiba: Nem megfelelő objektum típus: " + name);
         }
     }
-
-    // ! --------------- Tesztes részhez tartozik -------------------------
-    /*
-     * Parancsok kiírása egy fájlba
-     */
-    public void writeCommandsToFile(String fileName) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
-            for (String command : commands.keySet()) {
-                writer.write(command);
-                writer.newLine();
-            }
-        } catch (IOException e) {
-            System.out.println("Hiba a fájl írásakor: " + e.getMessage());
-        }
-    }
-
-    /*
-     * redirectOutputToFile metódus: átirányítja a System.out kimenetet egy fájlba.
-     * 
-     * PrintStream originalOut = System.out; // Mentsd el az eredeti kimenetet
-     * redirectOutputToFile("output.log");
-     * // ... program futása ...
-     * System.setOut(originalOut); // Állítsd vissza az eredeti kimenetet
-     */
-    public void redirectOutputToFile(String fileName) {
-        try {
-            File file = new File(fileName);
-            FileOutputStream fos = new FileOutputStream(file);
-            PrintStream ps = new PrintStream(fos);
-            System.setOut(ps); // A System.out kimenet átirányítása a fájlba
-        } catch (IOException e) {
-            System.err.println("Hiba a kimenet fájlba irányításakor: " + e.getMessage());
-        }
-    }
-
 }
+

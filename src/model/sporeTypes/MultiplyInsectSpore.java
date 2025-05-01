@@ -2,15 +2,24 @@ package sporeTypes;
 
 import insect.Insect;
 import sporeTypes.Spore;
+import tektonTypes.Tekton;
 import utils.*;
 
 public class MultiplyInsectSpore extends Spore{
-    // Létezik olyan spóra, amelyik az őt megevő rovart osztódásra készteti.
-    // Ilyenkor keletkezik még egy, az előzőtől függetlenül élő rovar, akinek a
-    // rovarásza megegyezik az eredeti rovar rovarászával.
-    
     public MultiplyInsectSpore(){
+        // Default constructor
     }
+
+    /**
+     * Constructor for the MultiplyInsectSpore class.
+     * 
+     * @param t the Tekton object associated with this spore.
+     * @param y the nutrition value of the spore.
+     */
+    public MultiplyInsectSpore(Tekton t, int nutval){
+        super(t, nutval);
+    }
+
     /**
      * Consumes this spore and the given insect duplicates.
      * @param insect the insect which consumes this spore.
@@ -21,6 +30,13 @@ public class MultiplyInsectSpore extends Spore{
         absorbed();
     }
 
+    /**
+     * Consumes this spore and the given insect duplicates.
+     * @param insect the insect which consumes this spore.
+     * @return a new Insect object that is a duplicate of the consumed insect.
+     * 
+     * ! This is needed for the cmdproc class, to manage createdobjects
+     */
     public Insect consumeMultiply(Insect insect){
         Insect newInsect = insect.duplicate();
         absorbed();

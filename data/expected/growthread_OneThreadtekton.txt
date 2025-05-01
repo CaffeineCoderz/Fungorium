@@ -1,10 +1,15 @@
-Sikertelen fonálnövesztés. A tektonra már nem nőhet fonál.
-th3:
-FungusThread:
-Species: N/A
-Body: N/A
-Tektons: [t1, ot1]
-IsBridge: true
-LifeSpan: 2
-Next: N/A
-Prev: th1
+Tekton cant have new threads
+Hiba: Nem lehetett fonalat növeszteni a megadott paraméterekkel
+Név: th3
+FungusThread: 
+	Species: fs1
+	PrevBody: b1
+	NextBody: N/A
+	MyBody: N/A
+	Tektons: [t1, ot1]
+	IsBridge: true
+	Lifespan: null
+	IsDying: false
+	Next: N/A
+	Prev: th1
+

@@ -1,12 +1,15 @@
-th2:
-FungusThread:
-Species: N/A
-Body: b1
-Tektons: [t1, t2]
-IsBridge: true
-LifeSpan: 2
-IsDying: true
-Next: th3
-Prev: t1
+Név: th2
+FungusThread: 
+	Species: fs1
+	PrevBody: b1
+	NextBody: N/A
+	MyBody: N/A
+	Tektons: [t1, t2]
+	IsBridge: true
+	Lifespan: 2
+	IsDying: true
+	Next: th3
+	Prev: th1
+
 Hiba: Nem létezik ilyen nevű objektum: th2
-Sikertelen fonálvagas
+Insect can't cut threads that are not next to it
