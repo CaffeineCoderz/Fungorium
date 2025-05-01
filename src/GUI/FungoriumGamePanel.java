@@ -138,7 +138,7 @@ public class FungoriumGamePanel extends JPanel {
   
         // Load the background image
         try {
-            backgroundImage = ImageIO.read(new File("src/resources/bgdark.jpg"));
+            backgroundImage = ImageIO.read(new File("src/resources/PanelBg/gamePanel.jpg"));
         } catch (Exception e) {
             System.err.println("Error loading background image: " + e.getMessage());
         }
