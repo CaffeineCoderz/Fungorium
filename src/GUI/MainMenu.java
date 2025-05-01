@@ -22,7 +22,7 @@ public class MainMenu extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
 
-        BackgroundPanel mainPanel = new BackgroundPanel("src/GUI/DATA/background.png");
+        BackgroundPanel mainPanel = new BackgroundPanel("src/resources/bgDark.jpg");
         mainPanel.setLayout(new BorderLayout());
         mainPanel.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
 
