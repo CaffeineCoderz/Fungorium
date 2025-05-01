@@ -3,6 +3,9 @@ package GUI;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseAdapter;
+
 import commands.CommandProcessor;
 import fungus.*;
 import insect.*;
@@ -13,7 +16,9 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.PrintStream;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,12 +73,54 @@ public class FungoriumGamePanel extends JPanel {
     private List<Line2D> possibleGrowthLines = new ArrayList<>(); // Lehetséges növekedési irányok
     private Map<FungusThread, String> threadDirections = new HashMap<>();
 
+    private JTextArea statusTextArea;
+
     public FungoriumGamePanel(CommandProcessor commandProcessor) {
         this.commandProcessor = commandProcessor;
         setPreferredSize(new Dimension(800, 800));
 
         renderMap = new RenderMap(RenderMap.MapSize.MEDIUM);
 
+        // Initialize the status text area
+        statusTextArea = new JTextArea(5, 20);
+        statusTextArea.setEditable(false);
+        statusTextArea.setLineWrap(true);
+        statusTextArea.setWrapStyleWord(true);
+        statusTextArea.setBackground(new Color(240, 240, 240));
+        //statusTextArea.setBackground(new Color(240, 240, 255, 0));
+        statusTextArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        //statusTextArea.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+        statusTextArea.setFont(new Font("Arial", Font.PLAIN, 12));
+        // statusTextArea.setForeground(Color.WHITE);
+        setLayout(null); // Use absolute positioning
+        add(statusTextArea);
+        statusTextArea.setBounds(600, 10, 180, 100); // Position at the top-right corner
+
+        // Add mouse listener to detect clicks on objects
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                Point clickPoint = e.getPoint();
+                String clickedObjectName = getObjectAtPoint(clickPoint);
+                if (clickedObjectName != null) {
+                    String command = "/status " + clickedObjectName;
+
+                    // Capture System.out output
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    PrintStream originalOut = System.out;
+                    try {
+                        System.setOut(new PrintStream(outputStream));
+                        commandProcessor.process(command); // Execute the command
+                        System.out.flush();
+                        String status = outputStream.toString(); // Get the captured output
+                        statusTextArea.setText(status); // Display the status in the text area
+                    } finally {
+                        System.setOut(originalOut); // Restore original System.out
+                    }
+                }
+            }
+        });
+  
         // Load the background image
         try {
             backgroundImage = ImageIO.read(new File("src/resources/bgdark.jpg"));
@@ -110,6 +157,19 @@ public class FungoriumGamePanel extends JPanel {
         } catch (Exception e) {
             System.err.println("Error loading tekton images: " + e.getMessage());
         }
+    }
+
+    private String getObjectAtPoint(Point point) {
+        for (Map.Entry<String, Point> entry : objectPositions.entrySet()) {
+            Point objectPos = entry.getValue();
+            String objectName = entry.getKey();
+
+            // Check if the click is within the bounds of the object
+            if (point.distance(objectPos) <= 20) { // Adjust the radius as needed
+                return objectName;
+            }
+        }
+        return null;
     }
 
     private BufferedImage createCircularImage(BufferedImage input) {
@@ -160,7 +220,7 @@ public class FungoriumGamePanel extends JPanel {
         calculateObjectPositions();
 
         // Draw the grid (optional) RED
-        drawGrid(g2d);
+        //drawGrid(g2d);
 
         // Draw all objects
         drawTektons(g2d);
@@ -168,7 +228,7 @@ public class FungoriumGamePanel extends JPanel {
         drawSpores(g2d);
         // TODO
         // drawInsects(g2d);
-        // drawThreads(g2d);
+        drawThreads(g2d);
 
         calculateTektonCardinalPoints();
         // Égtáji pontok (zöld pontok) rajzolása
@@ -563,10 +623,9 @@ public class FungoriumGamePanel extends JPanel {
                 // Draw body name
                 g2d.drawString(name, pos.x - BODY_SIZE / 2 + 5, pos.y - BODY_SIZE / 2 + 15);
 
-                // Draw spore count if available
-                FungusBody body = (FungusBody) entry.getValue();
-                g2d.drawString("Spores: " + body.getSporeCount(), pos.x - BODY_SIZE / 2 + 5,
-                        pos.y - BODY_SIZE / 2 + 30);
+                // Draw spore count if available ONLY DEBUG
+                //FungusBody body = (FungusBody) entry.getValue();
+                //g2d.drawString("Spores: " + body.getSporeCount(), pos.x - BODY_SIZE / 2 + 5, pos.y - BODY_SIZE / 2 + 30);
             }
         }
     }

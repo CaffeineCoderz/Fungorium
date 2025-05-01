@@ -19,10 +19,9 @@
 /set th1 isdying false
 /set th1 mybody b1
 /set th1 species sp1
-/set th1 prev 
-/set th1 addTekton t1
-/set th1 addTekton t2
-/status th1
+/set th1 prev th2
+/set th1 addtekton t1
+/set th1 addtekton t2
 /set th2 lifespan 20
 /set th2 bridge false
 /set th2 isdying true
