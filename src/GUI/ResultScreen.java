@@ -31,7 +31,7 @@ class ResultScreen extends JFrame {
         JLabel crownLabel = new JLabel();
         crownLabel.setHorizontalAlignment(SwingConstants.CENTER);
         try {
-            ImageIcon crownIcon = new ImageIcon("src/GUI/DATA/crown.png");
+            ImageIcon crownIcon = new ImageIcon("src/resources/crown.png");
             crownLabel.setIcon(new ImageIcon(crownIcon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH)));
         } catch (Exception e) {
             System.err.println("Hiba a korona kép betöltése közben: " + e.getMessage());
