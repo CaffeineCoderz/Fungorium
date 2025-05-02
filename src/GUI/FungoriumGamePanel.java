@@ -576,8 +576,8 @@ public class FungoriumGamePanel extends JPanel {
 
                             if (firstTektonName != null && secondTektonName != null) {
                                 Point secondTektonCenter = getTektonCenter(secondTekton);
-                                Point firstControlPoint = getClosestCardinalPoint(firstTektonName, secondTektonCenter);
-                                Point secondControlPoint = getClosestCardinalPoint(secondTektonName,
+                                Point firstControlPoint = findClosestCardinalPoint(firstTektonName, secondTektonCenter);
+                                Point secondControlPoint = findClosestCardinalPoint(secondTektonName,
                                         getTektonCenter(firstTekton));
 
                                 if (firstControlPoint != null && secondControlPoint != null) {
@@ -652,7 +652,7 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
-    private Point getClosestCardinalPoint(String tektonName, Point targetPoint) {
+    private Point findClosestCardinalPoint(String tektonName, Point targetPoint) {
         List<Point> cardinalPoints = tektonCardinalPoints.get(tektonName);
         if (cardinalPoints == null || cardinalPoints.isEmpty()) {
             return null;
