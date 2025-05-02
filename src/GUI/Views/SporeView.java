@@ -50,7 +50,7 @@ public class SporeView extends AbstractGameObjectView {
         g2d.fill(new Ellipse2D.Double(position.x - SPORE_SIZE/2, position.y - SPORE_SIZE/2, 
             SPORE_SIZE, SPORE_SIZE));
         if (image != null) {
-            g2d.drawImage(image, position.x, position.y, SPORE_SIZE, SPORE_SIZE, null);
+            g2d.drawImage(image, position.x - SPORE_SIZE/2, position.y - SPORE_SIZE/2, SPORE_SIZE, SPORE_SIZE, null);
         }else{
             g2d.setColor(Color.WHITE);
             g2d.draw(new Ellipse2D.Double(position.x - SPORE_SIZE/2, position.y - SPORE_SIZE/2, 
