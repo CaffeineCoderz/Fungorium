@@ -55,7 +55,7 @@ public class FungoriumGamePanel extends JPanel {
     
     // Sizes
     private static final int TEKTON_SIZE = 80;
-    private static final int BODY_SIZE = 30;
+    private static final int BODY_SIZE = 45;
     private static final int SPORE_SIZE = 10;
     private static final int INSECT_SIZE = 15;
     private static final int THREAD_WIDTH = 3;
@@ -80,7 +80,14 @@ public class FungoriumGamePanel extends JPanel {
     private Image feedThreadTektonBgCircular;
     private Image oneThreadTektonBgCircular;
     private Image onlyThreadTektonBgCircular;
-
+    // Entity images
+    private Image defaultSporeImg;
+    private Image fastSporeImg;
+    private Image slowSporeImg;
+    private Image stunSporeImg;
+    private Image disableCutSporeImg;
+    private Image multiplyInsectSporeImg;
+    private Image insectImg;
     private Image fungusBodyImg;
 
     // Thread grow
@@ -138,36 +145,47 @@ public class FungoriumGamePanel extends JPanel {
   
         // Load the background image
         try {
-            backgroundImage = ImageIO.read(new File("src/resources/PanelBg/gamePanel.jpg"));
+            backgroundImage = ImageIO.read(new File("src/resources/PanelBg/gamePanel3.jpg"));
         } catch (Exception e) {
             System.err.println("Error loading background image: " + e.getMessage());
         }
 
         try {
-            // * Load SQARE tekton images
-            defTektonBg = ImageIO.read(new File("src/resources/tektons/defaultTekton.jpg"));
-            decomposingTektonBg = ImageIO.read(new File("src/resources/tektons/decomposingTekton.jpg"));
-            decreasingTektonBg = ImageIO.read(new File("src/resources/tektons/decreasingTekton.jpg"));
-            feedThreadTektonBg = ImageIO.read(new File("src/resources/tektons/feedThreadTekton.jpg"));
-            oneThreadTektonBg = ImageIO.read(new File("src/resources/tektons/oneThreadTekton.jpg"));
-            onlyThreadTektonBg = ImageIO.read(new File("src/resources/tektons/onlyThreadTekton.jpg"));
+            // * Load SQUARE tekton images
+            defTektonBg = ImageIO.read(new File("src/resources/tektons/defaultTekton1.jpg"));
+            decomposingTektonBg = ImageIO.read(new File("src/resources/tektons/decomposingTekton1.jpg"));
+            decreasingTektonBg = ImageIO.read(new File("src/resources/tektons/decreasingTekton1.jpg"));
+            feedThreadTektonBg = ImageIO.read(new File("src/resources/tektons/feedThreadTekton1.jpg"));
+            oneThreadTektonBg = ImageIO.read(new File("src/resources/tektons/oneThreadTekton1.jpg"));
+            onlyThreadTektonBg = ImageIO.read(new File("src/resources/tektons/onlyThreadTekton1.jpg"));
 
             // * Load CIRCULAR tekton images
             defTektonBgCircular = createCircularImage(
-                    ImageIO.read(new File("src/resources/tektons/defaultTekton.jpg")));
+                    ImageIO.read(new File("src/resources/tektons/defaultTekton1.jpg")));
             decomposingTektonBgCircular = createCircularImage(
-                    ImageIO.read(new File("src/resources/tektons/decomposingTekton.jpg")));
+                    ImageIO.read(new File("src/resources/tektons/decomposingTekton1.jpg")));
             decreasingTektonBgCircular = createCircularImage(
-                    ImageIO.read(new File("src/resources/tektons/decreasingTekton.jpg")));
+                    ImageIO.read(new File("src/resources/tektons/decreasingTekton1.jpg")));
             feedThreadTektonBgCircular = createCircularImage(
-                    ImageIO.read(new File("src/resources/tektons/feedThreadTekton.jpg")));
+                    ImageIO.read(new File("src/resources/tektons/feedThreadTekton1.jpg")));
             oneThreadTektonBgCircular = createCircularImage(
-                    ImageIO.read(new File("src/resources/tektons/oneThreadTekton.jpg")));
+                    ImageIO.read(new File("src/resources/tektons/oneThreadTekton1.jpg")));
             onlyThreadTektonBgCircular = createCircularImage(
-                    ImageIO.read(new File("src/resources/tektons/onlyThreadTekton.jpg")));
+                    ImageIO.read(new File("src/resources/tektons/onlyThreadTekton1.jpg")));
 
             // Load fungus body image
             fungusBodyImg = ImageIO.read(new File("src/resources/fungusBody.png"));
+
+            // Load spore images
+            defaultSporeImg = ImageIO.read(new File("src/resources/spores/spore.png"));
+            fastSporeImg = ImageIO.read(new File("src/resources/spores/fastSpore.png"));
+            slowSporeImg = ImageIO.read(new File("src/resources/spores/slowSpore.png"));
+            stunSporeImg = ImageIO.read(new File("src/resources/spores/stunSpore.png"));
+            disableCutSporeImg = ImageIO.read(new File("src/resources/spores/disableCutSpore.png"));
+            multiplyInsectSporeImg = ImageIO.read(new File("src/resources/spores/multiplyInsectSpore.png"));
+
+            // Load insect image
+            insectImg = ImageIO.read(new File("src/resources/insect.png"));
 
         } catch (Exception e) {
             System.err.println("Error loading tekton images: " + e.getMessage());
