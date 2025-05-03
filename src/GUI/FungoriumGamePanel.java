@@ -4,14 +4,12 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseAdapter;
 
 import commands.CommandProcessor;
 import fungus.FungusBody;
 import fungus.FungusThread;
 import insect.Insect;
-import insect.InsectEffects;
 import sporeTypes.Spore;
 import tektonTypes.Tekton;
 import GUI.Views.*;
@@ -55,13 +53,13 @@ public class FungoriumGamePanel extends JPanel {
     // Background image
     private Image backgroundImage;
     private Boolean initialPaint = true; // Flag to indicate if it's the first paint
-    // Tekton images
-    private Image defTektonBg;
-    private Image decomposingTektonBg;
-    private Image decreasingTektonBg;
-    private Image feedThreadTektonBg;
-    private Image oneThreadTektonBg;
-    private Image onlyThreadTektonBg;
+    // // Tekton images
+    // private Image defTektonBg;
+    // private Image decomposingTektonBg;
+    // private Image decreasingTektonBg;
+    // private Image feedThreadTektonBg;
+    // private Image oneThreadTektonBg;
+    // private Image onlyThreadTektonBg;
     // Circular tekton images
     private Image defTektonBgCircular;
     private Image decomposingTektonBgCircular;
@@ -190,13 +188,13 @@ public class FungoriumGamePanel extends JPanel {
      */
     private void loadResources() {
         try {
-            // * Load SQUARE tekton images
-            defTektonBg = ImageIO.read(new File("src/resources/tektons/defaultTekton1.jpg"));
-            decomposingTektonBg = ImageIO.read(new File("src/resources/tektons/decomposingTekton1.jpg"));
-            decreasingTektonBg = ImageIO.read(new File("src/resources/tektons/decreasingTekton1.jpg"));
-            feedThreadTektonBg = ImageIO.read(new File("src/resources/tektons/feedThreadTekton1.jpg"));
-            oneThreadTektonBg = ImageIO.read(new File("src/resources/tektons/oneThreadTekton1.jpg"));
-            onlyThreadTektonBg = ImageIO.read(new File("src/resources/tektons/onlyThreadTekton1.jpg"));
+            // // * Load SQUARE tekton images
+            // defTektonBg = ImageIO.read(new File("src/resources/tektons/defaultTekton1.jpg"));
+            // decomposingTektonBg = ImageIO.read(new File("src/resources/tektons/decomposingTekton1.jpg"));
+            // decreasingTektonBg = ImageIO.read(new File("src/resources/tektons/decreasingTekton1.jpg"));
+            // feedThreadTektonBg = ImageIO.read(new File("src/resources/tektons/feedThreadTekton1.jpg"));
+            // oneThreadTektonBg = ImageIO.read(new File("src/resources/tektons/oneThreadTekton1.jpg"));
+            // onlyThreadTektonBg = ImageIO.read(new File("src/resources/tektons/onlyThreadTekton1.jpg"));
 
             // * Load CIRCULAR tekton images
             defTektonBgCircular = createCircularImage(
