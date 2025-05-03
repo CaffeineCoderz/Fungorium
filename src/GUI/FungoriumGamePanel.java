@@ -4,38 +4,24 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseAdapter;
 
 import commands.CommandProcessor;
-import fungus.*;
-import insect.*;
 import fungus.FungusBody;
 import fungus.FungusThread;
 import insect.Insect;
 import insect.InsectEffects;
-import sporeTypes.DisableCutSpore;
-import sporeTypes.FastSpore;
-import sporeTypes.MultiplyInsectSpore;
-import sporeTypes.SlowSpore;
 import sporeTypes.Spore;
-import sporeTypes.StunSpore;
-import tektonTypes.DecomposingTekton;
-import tektonTypes.DecreasingTekton;
-import tektonTypes.FeedThreadTekton;
-import tektonTypes.OneThreadTekton;
-import tektonTypes.OnlyThreadTekton;
 import tektonTypes.Tekton;
-import tektonTypes.*;
-import sporeTypes.*;
+import GUI.Views.*;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -52,12 +38,11 @@ public class FungoriumGamePanel extends JPanel {
     // Positions and cells
     private Map<String, Point> objectPositions = new HashMap<>();
     private Set<Point> occupiedCells = new HashSet<>();
+
+    // Flag to indicate if positions need recalculation
+    private boolean shouldRecalculatePositions = true;
     
     // Sizes
-    private static final int TEKTON_SIZE = 80;
-    private static final int BODY_SIZE = 30;
-    private static final int SPORE_SIZE = 10;
-    private static final int INSECT_SIZE = 15;
     private static final int THREAD_WIDTH = 3;
     
     // Number of cells occupied by a Tekton
@@ -65,7 +50,7 @@ public class FungoriumGamePanel extends JPanel {
 
     // Background image
     private Image backgroundImage;
-
+    private Boolean initialPaint = true; // Flag to indicate if it's the first paint
     // Tekton images
     private Image defTektonBg;
     private Image decomposingTektonBg;
@@ -81,6 +66,18 @@ public class FungoriumGamePanel extends JPanel {
     private Image oneThreadTektonBgCircular;
     private Image onlyThreadTektonBgCircular;
 
+    private Image[] tektonImages;
+    // Entity images
+    private Image defaultSporeImg;
+    private Image fastSporeImg;
+    private Image slowSporeImg;
+    private Image stunSporeImg;
+    private Image disableCutSporeImg;
+    private Image multiplyInsectSporeImg;
+
+    private Image[] sporeImages;
+
+    private Image insectImg;
     private Image fungusBodyImg;
 
     // Thread grow
@@ -89,34 +86,41 @@ public class FungoriumGamePanel extends JPanel {
     private List<Line2D> possibleGrowthLines = new ArrayList<>(); // Lehetséges növekedési irányok
     private Map<FungusThread, String> threadDirections = new HashMap<>();
 
-    private JTextArea statusTextArea;
+    //! View osztályok
+    private TektonView tektonView = new TektonView();
+    private SporeView sporeView = new SporeView();
+    private BodyView bodyView = new BodyView();
+    private InsectView insectView = new InsectView();
+    private ThreadView threadView = new ThreadView();
+    private StatusView statusView;
 
     public FungoriumGamePanel(CommandProcessor commandProcessor) {
         this.commandProcessor = commandProcessor;
+        setLayout(null); // Absolute positioning for overlay panels
         setPreferredSize(new Dimension(800, 800));
         renderMap = new RenderMap(RenderMap.MapSize.MEDIUM);
 
-        // Initialize the status text area
-        statusTextArea = new JTextArea(5, 20);
-        statusTextArea.setEditable(false);
-        statusTextArea.setLineWrap(true);
-        statusTextArea.setWrapStyleWord(true);
-        statusTextArea.setBackground(new Color(240, 240, 240));
-        //statusTextArea.setBackground(new Color(240, 240, 255, 0));
-        statusTextArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        //statusTextArea.setBorder(BorderFactory.createLineBorder(Color.WHITE));
-        statusTextArea.setFont(new Font("Arial", Font.PLAIN, 12));
-        // statusTextArea.setForeground(Color.WHITE);
-        setLayout(null); // Use absolute positioning
-        add(statusTextArea);
-        statusTextArea.setBounds(600, 10, 180, 100); // Position at the top-right corner
+        // Initialize the status view
+        statusView = new StatusView();
+        //statusView.setBounds(600, 10, 180, 100);
+
+        statusView.setBounds(0, 0, 800, 800); // Position at the top-right corner
+        add(statusView);
 
         // Add mouse listener to detect clicks on objects
         addMouseListener(new MouseAdapter() {
+        /**
+         * Handles mouse clicks on the game panel. If the clicked point corresponds to a valid game object (tekton, fungus, insect, or spore), 
+         * a "/status <objectName>" command is executed and the resulting status string is displayed in the status view. If the clicked point does not
+         * correspond to a valid game object, the status view is cleared.
+         * 
+         * @param e the MouseEvent that triggered this method call
+         */
             @Override
             public void mouseClicked(MouseEvent e) {
                 Point clickPoint = e.getPoint();
                 String clickedObjectName = getObjectAtPoint(clickPoint);
+
                 if (clickedObjectName != null) {
                     String command = "/status " + clickedObjectName;
 
@@ -127,52 +131,37 @@ public class FungoriumGamePanel extends JPanel {
                         System.setOut(new PrintStream(outputStream));
                         commandProcessor.process(command); // Execute the command
                         System.out.flush();
-                        String status = outputStream.toString(); // Get the captured output
-                        statusTextArea.setText(status); // Display the status in the text area
+                        String status = outputStream.toString().trim(); // Get the captured output
+                        statusView.updateStatus(status); // Update the status view
                     } finally {
                         System.setOut(originalOut); // Restore original System.out
                     }
+                } else {
+                    statusView.clearStatus(); // Clear the status view if no valid object is clicked
                 }
+                statusView.repaint();
             }
-        });
-  
+        });       
+        
         // Load the background image
         try {
-            backgroundImage = ImageIO.read(new File("src/resources/PanelBg/gamePanel.jpg"));
+            backgroundImage = ImageIO.read(new File("src/resources/PanelBg/gamePanel3.jpg"));
         } catch (Exception e) {
             System.err.println("Error loading background image: " + e.getMessage());
         }
 
-        try {
-            // * Load SQARE tekton images
-            defTektonBg = ImageIO.read(new File("src/resources/tektons/defaultTekton.jpg"));
-            decomposingTektonBg = ImageIO.read(new File("src/resources/tektons/decomposingTekton.jpg"));
-            decreasingTektonBg = ImageIO.read(new File("src/resources/tektons/decreasingTekton.jpg"));
-            feedThreadTektonBg = ImageIO.read(new File("src/resources/tektons/feedThreadTekton.jpg"));
-            oneThreadTektonBg = ImageIO.read(new File("src/resources/tektons/oneThreadTekton.jpg"));
-            onlyThreadTektonBg = ImageIO.read(new File("src/resources/tektons/onlyThreadTekton.jpg"));
-
-            // * Load CIRCULAR tekton images
-            defTektonBgCircular = createCircularImage(
-                    ImageIO.read(new File("src/resources/tektons/defaultTekton.jpg")));
-            decomposingTektonBgCircular = createCircularImage(
-                    ImageIO.read(new File("src/resources/tektons/decomposingTekton.jpg")));
-            decreasingTektonBgCircular = createCircularImage(
-                    ImageIO.read(new File("src/resources/tektons/decreasingTekton.jpg")));
-            feedThreadTektonBgCircular = createCircularImage(
-                    ImageIO.read(new File("src/resources/tektons/feedThreadTekton.jpg")));
-            oneThreadTektonBgCircular = createCircularImage(
-                    ImageIO.read(new File("src/resources/tektons/oneThreadTekton.jpg")));
-            onlyThreadTektonBgCircular = createCircularImage(
-                    ImageIO.read(new File("src/resources/tektons/onlyThreadTekton.jpg")));
-
-            // Load fungus body image
-            fungusBodyImg = ImageIO.read(new File("src/resources/fungusBody.png"));
-
-        } catch (Exception e) {
-            System.err.println("Error loading tekton images: " + e.getMessage());
-        }
+        loadResources();
     }
+
+/**
+ * Retrieves the name of the object located at the specified point.
+ *
+ * This method checks if the given point is within a certain distance of any
+ * object's position and returns the name of the first matching object.
+ *
+ * @param point The point to check for object presence.
+ * @return The name of the object at the specified point, or null if no object is found.
+ */
 
     private String getObjectAtPoint(Point point) {
         for (Map.Entry<String, Point> entry : objectPositions.entrySet()) {
@@ -186,6 +175,68 @@ public class FungoriumGamePanel extends JPanel {
         }
         return null;
     }
+
+    /**
+     * Loads all resources needed for the game panel, including background and
+     * foreground images for the different types of Tektons, fungus bodies, spores
+     * and insects.
+     *
+     * @throws IOException if any of the resources cannot be loaded.
+     */
+    private void loadResources() {
+        try {
+            // * Load SQUARE tekton images
+            defTektonBg = ImageIO.read(new File("src/resources/tektons/defaultTekton1.jpg"));
+            decomposingTektonBg = ImageIO.read(new File("src/resources/tektons/decomposingTekton1.jpg"));
+            decreasingTektonBg = ImageIO.read(new File("src/resources/tektons/decreasingTekton1.jpg"));
+            feedThreadTektonBg = ImageIO.read(new File("src/resources/tektons/feedThreadTekton1.jpg"));
+            oneThreadTektonBg = ImageIO.read(new File("src/resources/tektons/oneThreadTekton1.jpg"));
+            onlyThreadTektonBg = ImageIO.read(new File("src/resources/tektons/onlyThreadTekton1.jpg"));
+
+            // * Load CIRCULAR tekton images
+            defTektonBgCircular = createCircularImage(
+                    ImageIO.read(new File("src/resources/tektons/defaultTekton1.jpg")));
+            decomposingTektonBgCircular = createCircularImage(
+                    ImageIO.read(new File("src/resources/tektons/decomposingTekton1.jpg")));
+            decreasingTektonBgCircular = createCircularImage(
+                    ImageIO.read(new File("src/resources/tektons/decreasingTekton1.jpg")));
+            feedThreadTektonBgCircular = createCircularImage(
+                    ImageIO.read(new File("src/resources/tektons/feedThreadTekton1.jpg")));
+            oneThreadTektonBgCircular = createCircularImage(
+                    ImageIO.read(new File("src/resources/tektons/oneThreadTekton1.jpg")));
+            onlyThreadTektonBgCircular = createCircularImage(
+                    ImageIO.read(new File("src/resources/tektons/onlyThreadTekton1.jpg")));
+
+            // Load fungus body image
+            fungusBodyImg = ImageIO.read(new File("src/resources/fungusBody.png"));
+
+            // Load spore images
+            defaultSporeImg = ImageIO.read(new File("src/resources/spores/spore.png"));
+            fastSporeImg = ImageIO.read(new File("src/resources/spores/fastSpore.png"));
+            slowSporeImg = ImageIO.read(new File("src/resources/spores/slowSpore.png"));
+            stunSporeImg = ImageIO.read(new File("src/resources/spores/stunSpore.png"));
+            disableCutSporeImg = ImageIO.read(new File("src/resources/spores/disableCutSpore.png"));
+            multiplyInsectSporeImg = ImageIO.read(new File("src/resources/spores/multiplyInsectSpore.png"));
+
+            // Load insect image
+            insectImg = ImageIO.read(new File("src/resources/insect.png"));
+
+        } catch (Exception e) {
+            System.err.println("Error loading resources: " + e.getMessage());
+        }
+    }
+
+/**
+ * Creates a circular cropped version of the input BufferedImage.
+ *
+ * This method takes an input image and creates a new BufferedImage
+ * containing only the circular region of the largest possible size
+ * centered within the input image. The resulting image is drawn with
+ * anti-aliasing for improved visual quality.
+ *
+ * @param input the original BufferedImage to be cropped to a circle
+ * @return a new BufferedImage containing the circular cropped region
+ */
 
     private BufferedImage createCircularImage(BufferedImage input) {
         int size = Math.min(input.getWidth(), input.getHeight());
@@ -204,22 +255,38 @@ public class FungoriumGamePanel extends JPanel {
         return circleBuffer;
     }
 
+    /**
+     * Custom paintComponent method to draw the game state on the screen.
+     *
+     * This method is called whenever the component needs to be redrawn.
+     * It is responsible for drawing the background image, the grid, all
+     * objects including tektons, spores, threads, insects and the fungus
+     * body. It also draws the égtáji pontok (green points) for the tektons.
+     * The method is optimized for performance by using a single Graphics2D
+     * object for all drawing operations and by minimizing the number of
+     * objects created during the drawing process.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
-
         // Rajzoljuk a térképet
         drawTiledBackground(g2d);
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        calculateObjectPositions();
+        if (shouldRecalculatePositions && !initialPaint) {
+            calculateObjectPositions();
+            shouldRecalculatePositions = false;
+        }
 
         // Draw the grid (optional) RED
         //drawGrid(g2d);
 
         // Draw all objects
-        drawTektons(g2d);
+        tektonImages = new Image[]{defTektonBgCircular, decomposingTektonBgCircular, decreasingTektonBgCircular,
+            feedThreadTektonBgCircular, oneThreadTektonBgCircular, onlyThreadTektonBgCircular};
+        tektonView.drawTektons(g2d, objectPositions, commandProcessor.getCreatedObjects(),
+        getWidth() / renderMap.getCols(), getHeight() / renderMap.getRows(), TEKTON_CELLS, tektonImages);
 
         calculateTektonCardinalPoints();
         // Égtáji pontok (zöld pontok) rajzolása
@@ -229,13 +296,31 @@ public class FungoriumGamePanel extends JPanel {
                 g2d.fill(new Ellipse2D.Double(p.x - 5, p.y - 5, 10, 10));
             }
         }
-        drawSpores(g2d);
+        sporeImages = new Image[]{defaultSporeImg, fastSporeImg, slowSporeImg, stunSporeImg,
+                disableCutSporeImg, multiplyInsectSporeImg};
+        sporeView.drawSpores(g2d, objectPositions, commandProcessor.getCreatedObjects(), sporeImages);
         drawThreads(g2d);
-        drawInsects(g2d);
-        drawBodies(g2d);
+        insectView.drawInsects(g2d, objectPositions, commandProcessor.getCreatedObjects(), insectImg);
+        bodyView.drawBodies(g2d, objectPositions, commandProcessor.getCreatedObjects(), fungusBodyImg);
+        
+
+        if (initialPaint) {
+            initialPaint = false;
+        }
     }
 
     // PIROS
+    
+    /**
+     * Draws the grid of cells defined by the RenderMap.
+     * 
+     * This method draws a red grid on the screen, where each cell is of size
+     * determined by the RenderMap. The grid is drawn by repeatedly drawing
+     * rectangles of the appropriate size, with their positions determined by
+     * the coordinates of the cells in the RenderMap.
+     * 
+     * @param g2d the Graphics2D object to draw the grid on
+     */
     private void drawGrid(Graphics2D g2d) {
         // A RenderMap által definiált cellák kirajzolása
         g2d.setColor(Color.RED);
@@ -249,6 +334,12 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
+    /**
+     * Draws the background image of the game, scaled down to a smaller size
+     * (e.g., 50% of the original size) and tiled to cover the entire screen.
+     * 
+     * @param g2d the Graphics2D object to draw the background on
+     */
     private void drawTiledBackground(Graphics2D g2d) {
         if (backgroundImage != null) {
             int originalWidth = backgroundImage.getWidth(this);
@@ -268,6 +359,21 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
+    /**
+     * Calculates the positions of all objects in the game world.
+     * 
+     * This method goes through all created objects and assigns them a position
+     * on the screen based on their type and any other relevant information.
+     * Positions are stored in the objectPositions map.
+     * 
+     * For Tektons, it randomly selects a free spot on the board and marks the
+     * cells as occupied.
+     * For FungusBodies, it sets the position to the center of the associated
+     * Tekton.
+     * For FungusThreads, it positions them between their connected objects.
+     * For Spores, it randomly assigns a position around the associated Tekton.
+     * For Insects, it positions them near their associated thread.
+     */
     private void calculateObjectPositions() {
         // Tekton init
         List<Point> tiles = renderMap.getTiles();
@@ -400,6 +506,11 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
+    /**
+     * Calculates the cardinal points of all Tekton objects on the map.
+     * These points are used for drawing the égtáji pontok (green points) for the Tektons.
+     * The points are stored in the tektonCardinalPoints map.
+     */
     private void calculateTektonCardinalPoints() {
         tektonCardinalPoints.clear();
         int cellWidth = getWidth() / renderMap.getCols();
@@ -431,6 +542,14 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
+    /**
+     * Returns the cardinal point of the given Tekton in the given direction.
+     * The direction should be given as a lowercase string ("e", "n", "w", "s").
+     * If the Tekton does not exist or the direction is invalid, returns null.
+     * @param tektonName the name of the Tekton
+     * @param direction the direction of the cardinal point
+     * @return the cardinal point of the given Tekton in the given direction
+     */
     private Point getCardinalPoint(String tektonName, String direction) {
         List<Point> points = tektonCardinalPoints.get(tektonName);
         if (points == null)
@@ -450,10 +569,28 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
+    /**
+     * Checks if the given cell area (top-left corner and size) is within the
+     * bounds of the map (maxCols and maxRows).
+     *
+     * @param topLeft the top-left corner of the cell area
+     * @param size    the size of the cell area
+     * @param maxCols the maximum number of columns of the map
+     * @param maxRows the maximum number of rows of the map
+     * @return true if the cell area is within the bounds of the map, false
+     *         otherwise
+     */
     private boolean isWithinBounds(Point topLeft, int size, int maxCols, int maxRows) {
         return topLeft.x + size <= maxRows && topLeft.y + size <= maxCols;
     }
 
+    /**
+     * Checks if the given cell area (top-left corner and size) is free of
+     * any occupied cells.
+     * @param topLeft the top-left corner of the cell area
+     * @param size    the size of the cell area
+     * @return true if all cells in the area are free, false otherwise
+     */
     private boolean isAreaFree(Point topLeft, int size) {
         for (int row = 0; row < size; row++) {
             for (int col = 0; col < size; col++) {
@@ -466,6 +603,13 @@ public class FungoriumGamePanel extends JPanel {
         return true;
     }
 
+    /**
+     * Adds all cells in the given cell area (top-left corner and size) to
+     * the occupiedCells set. This is used to keep track of which cells are
+     * currently occupied by a Tekton.
+     * @param topLeft the top-left corner of the cell area
+     * @param size    the size of the cell area
+     */
     private void occupyArea(Point topLeft, int size) {
         for (int row = 0; row < size; row++) {
             for (int col = 0; col < size; col++) {
@@ -475,6 +619,12 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
+    /**
+     * Calculates the center point of a Tekton object in pixel coordinates.
+     * @param tekton the Tekton object to calculate the center for
+     * @return the center point of the Tekton in pixel coordinates, or null if
+     *         the Tekton doesn't have a position
+     */
     private Point getTektonCenter(Tekton tekton) {
         Point tektonPos = getTektonPosition(tekton);
         if (tektonPos != null) {
@@ -490,6 +640,13 @@ public class FungoriumGamePanel extends JPanel {
         return null;
     }
 
+    /**
+     * Returns the position of the given Tekton as a Point object in cell
+     * coordinates, or null if the Tekton doesn't have a position.
+     * @param tekton the Tekton object to get the position for
+     * @return the position of the Tekton in cell coordinates, or null if
+     *         it doesn't have a position
+     */
     private Point getTektonPosition(Tekton tekton) {
         String tektonName = commandProcessor.findByObject(tekton);
         if (tektonName != null && objectPositions.containsKey(tektonName)) {
@@ -499,65 +656,12 @@ public class FungoriumGamePanel extends JPanel {
     }
 
 
-    private void drawTektons(Graphics2D g2d) {
-        int cellWidth = getWidth() / renderMap.getCols();
-        int cellHeight = getHeight() / renderMap.getRows();
-
-        // Iterate over objectPositions with the correct type
-        for (Map.Entry<String, Point> entry : objectPositions.entrySet()) {
-            String name = entry.getKey(); // The key is a String
-            Object obj = commandProcessor.getCreatedObjects().get(name); // Get the object by name
-            if (obj == null || !(obj instanceof Tekton)) {
-                continue; // Skip if not a Tekton
-            }
-            System.out.println("Drawing object: " + entry.getKey());
-
-            Point topLeft = entry.getValue(); // The value is a Point
-
-            // Calculate the Tekton's area
-            int x = topLeft.y * cellWidth;
-            int y = topLeft.x * cellHeight;
-            int width = cellWidth * TEKTON_CELLS;
-            int height = cellHeight * TEKTON_CELLS;
-
-            // Draw shadow (offset by 5 pixels and with a semi-transparent black color)
-            //g2d.setColor(new Color(139, 69, 19, 100)); // Semi-transparent brown
-            g2d.setColor(new Color(139, 69, 19, 255)); // Fully-visible brown
-            g2d.fill(new Ellipse2D.Double(x + 1, y + 5, width, height));
-
-            // Draw the Tekton image
-            drawTektonImage(g2d, name, x, y, width, height);
-
-            // Draw the Tekton name
-            g2d.setColor(Color.WHITE);
-            g2d.drawString(name, x, y);
-        }
-    }
-
-    private void drawTektonImage(Graphics2D g2d, String name, int x, int y, int width, int height) {
-        Object tekton = commandProcessor.getCreatedObjects().get(name);
-
-        if (tekton instanceof DecomposingTekton && decomposingTektonBgCircular != null) {
-            g2d.drawImage(decomposingTektonBgCircular, x, y, width, height, this);
-        } else if (tekton instanceof DecreasingTekton && decreasingTektonBgCircular != null) {
-            g2d.drawImage(decreasingTektonBgCircular, x, y, width, height, this);
-        } else if (tekton instanceof FeedThreadTekton && feedThreadTektonBgCircular != null) {
-            g2d.drawImage(feedThreadTektonBgCircular, x, y, width, height, this);
-        } else if (tekton instanceof OneThreadTekton && oneThreadTektonBgCircular != null) {
-            g2d.drawImage(oneThreadTektonBgCircular, x, y, width, height, this);
-        } else if (tekton instanceof OnlyThreadTekton && onlyThreadTektonBgCircular != null) {
-            g2d.drawImage(onlyThreadTektonBgCircular, x, y, width, height, this);
-        } else if (tekton instanceof Tekton && defTektonBgCircular != null) {
-            g2d.drawImage(defTektonBgCircular, x, y, width, height, this);
-        } else {
-            // Fallback: Draw a gray circle if no image is available
-            g2d.setColor(Color.LIGHT_GRAY);
-            g2d.fill(new Ellipse2D.Double(x, y, width, height));
-            g2d.setColor(Color.WHITE);
-            g2d.draw(new Ellipse2D.Double(x, y, width, height));
-        }
-    }
-  
+    /**
+     * Draws all FungusThreads in the game world, including connections to other
+     * threads and their associated Tekton(s). This method is called by the
+     * paintComponent method.
+     * @param g2d the Graphics2D object to draw the threads on
+     */
     private void drawThreads(Graphics2D g2d) {
         for (Map.Entry<String, Object> entry : commandProcessor.getCreatedObjects().entrySet()) {
             if (entry.getValue() instanceof FungusThread) {
@@ -652,6 +756,14 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
+    /**
+     * Finds the closest cardinal point to the given targetPoint for the given tektonName.
+     * If no cardinal points are found, returns null.
+     *
+     * @param tektonName the name of the tekton
+     * @param targetPoint the target point to find the closest cardinal point to
+     * @return the closest cardinal point, or null if none are found
+     */
     private Point findClosestCardinalPoint(String tektonName, Point targetPoint) {
         List<Point> cardinalPoints = tektonCardinalPoints.get(tektonName);
         if (cardinalPoints == null || cardinalPoints.isEmpty()) {
@@ -672,6 +784,13 @@ public class FungoriumGamePanel extends JPanel {
         return closestPoint;
     }
     
+    /**
+     * Draws a connection between a FungusThread and its next thread.
+     * If the next thread is not found, nothing is drawn.
+     * @param g2d the Graphics2D object to draw on
+     * @param thread the FungusThread to draw the connection for
+     * @param threadKey the name of the current thread, used to get its position
+     */
     private void drawThreadConnections(Graphics2D g2d, FungusThread thread, String threadKey) {
         // Draw connection to next thread
         if (thread.getNext() != null) {
@@ -687,147 +806,56 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
-    private void drawBodies(Graphics2D g2d) {
-        for (Map.Entry<String, Object> entry : commandProcessor.getCreatedObjects().entrySet()) {
-            if (entry.getValue() instanceof FungusBody) {
-                String name = entry.getKey();
-                Point pos = objectPositions.getOrDefault(name, new Point(100, 100));
-
-                // Draw the fungus body image if available
-                if (fungusBodyImg != null) {
-                    g2d.drawImage(fungusBodyImg, pos.x - BODY_SIZE / 2, pos.y - BODY_SIZE / 2, BODY_SIZE, BODY_SIZE,
-                            this);
-                } else {
-                    // Fallback: Draw an ellipse if the image is not available
-                    g2d.setColor(new Color(100, 50, 0));
-                    g2d.fill(new Ellipse2D.Double(pos.x - BODY_SIZE / 2, pos.y - BODY_SIZE / 2, BODY_SIZE, BODY_SIZE));
-                    g2d.setColor(Color.WHITE);
-                    g2d.draw(new Ellipse2D.Double(pos.x - BODY_SIZE / 2, pos.y - BODY_SIZE / 2, BODY_SIZE, BODY_SIZE));
-                }
-                // Draw body name
-                g2d.drawString(name, pos.x - BODY_SIZE / 2 + 5, pos.y - BODY_SIZE / 2 + 15);
-
-                // Draw spore count if available ONLY DEBUG
-                //FungusBody body = (FungusBody) entry.getValue();
-                //g2d.drawString("Spores: " + body.getSporeCount(), pos.x - BODY_SIZE / 2 + 5, pos.y - BODY_SIZE / 2 + 30);
-            }
-        }
-    }
-
-    private void drawSpores(Graphics2D g2d) {
-        for (Map.Entry<String, Object> entry : commandProcessor.getCreatedObjects().entrySet()) {
-            if (entry.getValue() instanceof Spore) {
-                String name = entry.getKey();
-                Point pos = objectPositions.getOrDefault(name, new Point(150, 150));
-
-                // Different colors for different spore types
-                Color color = Color.WHITE;
-                if (entry.getValue() instanceof FastSpore) {
-                    color = new Color(255, 200, 200); // Light red
-                } else if (entry.getValue() instanceof MultiplyInsectSpore) {
-                    color = new Color(200, 255, 200); // Light green
-                } else if (entry.getValue() instanceof SlowSpore) {
-                    color = new Color(200, 200, 255); // Light blue
-                } else if (entry.getValue() instanceof StunSpore) {
-                    color = new Color(255, 255, 200); // Light yellow
-                } else if (entry.getValue() instanceof DisableCutSpore) {
-                    color = new Color(255, 200, 255); // Light purple
-                }
-
-                g2d.setColor(color);
-                g2d.fill(new Ellipse2D.Double(pos.x - SPORE_SIZE / 2, pos.y - SPORE_SIZE / 2, SPORE_SIZE, SPORE_SIZE));
-                g2d.setColor(Color.WHITE);
-                g2d.draw(new Ellipse2D.Double(pos.x - SPORE_SIZE / 2, pos.y - SPORE_SIZE / 2, SPORE_SIZE, SPORE_SIZE));
-
-                // Draw spore name (small font)
-                Font originalFont = g2d.getFont();
-                g2d.setFont(new Font(originalFont.getName(), originalFont.getStyle(), 8));
-                g2d.drawString(name, pos.x - SPORE_SIZE / 2, pos.y - SPORE_SIZE / 2 - 2);
-                g2d.setFont(originalFont);
-            }
-        }
-    }
-
-    private void drawInsects(Graphics2D g2d) {
-        for (Map.Entry<String, Object> entry : commandProcessor.getCreatedObjects().entrySet()) {
-            if (entry.getValue() instanceof Insect) {
-                String name = entry.getKey();
-                // Point pos = objectPositions.getOrDefault(name, new Point(200, 200));
-                Insect insect = (Insect) entry.getValue();
-                FungusThread thread = insect.getThread();
-
-                Point pos;
-                if (thread != null) {
-                    String threadName = commandProcessor.findByObject(thread);
-                    if (threadName != null && objectPositions.containsKey(threadName)) {
-                        Point threadPos = objectPositions.get(threadName);
-                        // Position insect near the thread
-                        pos = new Point(threadPos.x + 10, threadPos.y + 10);
-                    } else {
-                        // Default position if thread position is not found
-                        pos = new Point(200, 200);
-                    }
-                } else {
-                    // Default position if thread is null
-                    pos = new Point(200, 200);
-                }
-
-                // Base insect color
-                g2d.setColor(new Color(150, 100, 50));
-                g2d.fill(new Ellipse2D.Double(pos.x - INSECT_SIZE / 2, pos.y - INSECT_SIZE / 2, INSECT_SIZE,
-                        INSECT_SIZE));
-                g2d.setColor(Color.WHITE);
-                g2d.draw(new Ellipse2D.Double(pos.x - INSECT_SIZE / 2, pos.y - INSECT_SIZE / 2, INSECT_SIZE,
-                        INSECT_SIZE));
-
-                // Draw effect indicator
-                InsectEffects effect = insect.gEffect();
-                if (effect != null) {
-                    switch (effect) {
-                        case STUN:
-                            g2d.setColor(Color.YELLOW);
-                            break;
-                        case SLOW:
-                            g2d.setColor(Color.BLUE);
-                            break;
-                        case FAST:
-                            g2d.setColor(Color.RED);
-                            break;
-                        case NO_CUT:
-                            g2d.setColor(Color.MAGENTA);
-                            break;
-                        default:
-                            g2d.setColor(Color.WHITE);
-                    }
-                    g2d.fillOval(pos.x - INSECT_SIZE / 4, pos.y - INSECT_SIZE / 4, INSECT_SIZE / 2, INSECT_SIZE / 2);
-                }
-
-                // Draw insect name
-                Font originalFont = g2d.getFont();
-                g2d.setFont(new Font(originalFont.getName(), originalFont.getStyle(), 8));
-                g2d.setColor(Color.WHITE);
-                g2d.drawString(name, pos.x - INSECT_SIZE / 2, pos.y - INSECT_SIZE / 2 - 2);
-                g2d.setFont(originalFont);
-
-                // Position of insect should be based on its getThread() method and it should be
-                // on the thread
-            }
-        }
-    }
-
+    /**
+     * Updates the game state by clearing the current object positions and
+     * occupied cells and setting a flag to recalculate the positions of all
+     * objects. Finally, the panel is repainted to reflect the changes.
+     * This method should be called whenever the game state has changed, such as
+     * after a command has been processed.
+     */
     public void updateGameState() {
         objectPositions.clear(); // Force recalculation of positions
         occupiedCells.clear(); // Clear occupied cells as positions are being recalculated
+        shouldRecalculatePositions = true; // Set the flag to recalculate positions
         repaint();
     }
+
+    /**
+     * Sets the positions of all objects in the game world.
+     * 
+     * @param newPositions a map containing the new positions of objects, 
+     *                     where the key is the object name and the value is 
+     *                     its position on the board.
+     */
 
     public void setObjectPositions(Map<String, Point> newPositions) {
         this.objectPositions = newPositions;
     }
 
+    /**
+     * Returns the current positions of all objects in the game world.
+     * 
+     * @return a map containing the positions of objects, where the key is the
+     *         object name and the value is its position on the board.
+     */
     public Map<String, Point> getObjectPositions() {
         return objectPositions;
     }
+
+/**
+ * Initializes and displays the main game window for the Fungorium Game.
+ * This method creates a JFrame containing the game panel and a control panel 
+ * with buttons to update the view, save the game state, and load the game state.
+ * 
+ * The game panel is initialized with the provided command processor and is added 
+ * to the frame. The control panel buttons trigger actions on the game panel, 
+ * such as updating the view, saving the current game state to a file, and 
+ * loading the game state from a file.
+ * 
+ * The frame is set to be visible and centered on the screen.
+ * 
+ * @param commandProcessor the CommandProcessor used to handle game commands and logic.
+ */
 
     public static void createAndShowGUI(CommandProcessor commandProcessor) {
         JFrame frame = new JFrame("Fungorium Game");
