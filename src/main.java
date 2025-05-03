@@ -36,13 +36,6 @@ public class main {
             choice = scanner.nextInt();
 
             switch (choice) {
-                /*
-                case 1:
-                    CommandProcessor processor = new CommandProcessor();
-                    // processor.processConfigText("config");
-                    processor.start();
-                    break;
-                 */
                 case 1:
                     tester.checkTestResults(gameLogic);
                     break;
@@ -73,6 +66,11 @@ public class main {
                     tester.clearOutputFiles();
                     break;
                  */
+                case 7:
+                    CommandProcessor processor = new CommandProcessor();
+                    processor.processConfigText("config");
+                    processor.start();
+                    break;
                 default:
                     System.out.println("Invalid choice. Please try again.");
             }

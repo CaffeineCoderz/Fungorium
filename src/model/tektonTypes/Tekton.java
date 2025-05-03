@@ -212,7 +212,6 @@ public class Tekton {
      */
     public void addNeighbour(Tekton neighbour) {
         neighbours.add(neighbour);
-
     }
 
     /**
