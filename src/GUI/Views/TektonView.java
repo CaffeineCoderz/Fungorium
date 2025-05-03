@@ -13,11 +13,10 @@ import tektonTypes.OnlyThreadTekton;
 import tektonTypes.Tekton;
 
 public class TektonView {
-    private static final int TEKTON_CELLS = 3;
     private static final int TEKTON_SIZE = 80;
 
     public void drawTektons(Graphics2D g2d, Map<String, Point> objectPositions, Map<String, Object> createdObjects,
-            int cellWidth, int cellHeight, Image[] tektonImages) {
+            int cellWidth, int cellHeight, int size, Image[] tektonImages) {
         for (Map.Entry<String, Point> entry : objectPositions.entrySet()) {
             String name = entry.getKey();
             Object obj = createdObjects.get(name);
@@ -28,8 +27,8 @@ public class TektonView {
             Point topLeft = entry.getValue();
             int x = topLeft.y * cellWidth;
             int y = topLeft.x * cellHeight;
-            int width = cellWidth * TEKTON_CELLS;
-            int height = cellHeight * TEKTON_CELLS;
+            int width = cellWidth * size;
+            int height = cellHeight * size;
 
             // Draw shadow
             g2d.setColor(new Color(139, 69, 19, 255));
@@ -64,5 +63,9 @@ public class TektonView {
             g2d.setColor(Color.WHITE);
             g2d.draw(new Ellipse2D.Double(x, y, width, height));
         }
+    }
+
+    public static int getTektonSize() {
+        return TEKTON_SIZE;
     }
 }
