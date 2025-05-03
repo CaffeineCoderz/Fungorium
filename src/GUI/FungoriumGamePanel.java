@@ -4,6 +4,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseAdapter;
 
 import commands.CommandProcessor;
@@ -101,6 +102,8 @@ public class FungoriumGamePanel extends JPanel {
 
         // Initialize the status view
         statusView = new StatusView();
+        //statusView.setBounds(600, 10, 180, 100);
+
         statusView.setBounds(0, 0, 800, 800); // Position at the top-right corner
         add(statusView);
 
@@ -131,8 +134,8 @@ public class FungoriumGamePanel extends JPanel {
                 }
                 statusView.repaint();
             }
-        });
-
+        });       
+        
         // Load the background image
         try {
             backgroundImage = ImageIO.read(new File("src/resources/PanelBg/gamePanel3.jpg"));
