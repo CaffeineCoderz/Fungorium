@@ -1,2 +1,2 @@
 #!/bin/bash
-java -cp out main
+java -cp out src/main
