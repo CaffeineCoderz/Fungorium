@@ -7,35 +7,20 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
 
 import commands.CommandProcessor;
-import fungus.*;
-import insect.*;
 import fungus.FungusBody;
 import fungus.FungusThread;
 import insect.Insect;
 import insect.InsectEffects;
-import sporeTypes.DisableCutSpore;
-import sporeTypes.FastSpore;
-import sporeTypes.MultiplyInsectSpore;
-import sporeTypes.SlowSpore;
 import sporeTypes.Spore;
-import sporeTypes.StunSpore;
-import tektonTypes.DecomposingTekton;
-import tektonTypes.DecreasingTekton;
-import tektonTypes.FeedThreadTekton;
-import tektonTypes.OneThreadTekton;
-import tektonTypes.OnlyThreadTekton;
 import tektonTypes.Tekton;
-import tektonTypes.*;
-import sporeTypes.*;
+import GUI.Views.*;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,9 +39,6 @@ public class FungoriumGamePanel extends JPanel {
     private Set<Point> occupiedCells = new HashSet<>();
     
     // Sizes
-    private static final int TEKTON_SIZE = 80;
-    private static final int BODY_SIZE = 45;
-    private static final int SPORE_SIZE = 10;
     private static final int INSECT_SIZE = 15;
     private static final int THREAD_WIDTH = 3;
     
@@ -80,6 +62,8 @@ public class FungoriumGamePanel extends JPanel {
     private Image feedThreadTektonBgCircular;
     private Image oneThreadTektonBgCircular;
     private Image onlyThreadTektonBgCircular;
+
+    private Image[] tektonImages;
     // Entity images
     private Image defaultSporeImg;
     private Image fastSporeImg;
@@ -87,6 +71,9 @@ public class FungoriumGamePanel extends JPanel {
     private Image stunSporeImg;
     private Image disableCutSporeImg;
     private Image multiplyInsectSporeImg;
+
+    private Image[] sporeImages;
+
     private Image insectImg;
     private Image fungusBodyImg;
 
@@ -97,6 +84,12 @@ public class FungoriumGamePanel extends JPanel {
     private Map<FungusThread, String> threadDirections = new HashMap<>();
 
     private JTextArea statusTextArea;
+    //! View osztályok
+    private TektonView tektonView = new TektonView();
+    private SporeView sporeView = new SporeView();
+    private BodyView bodyView = new BodyView();
+    private InsectView insectView = new InsectView();
+    private ThreadView threadView = new ThreadView();
 
     public FungoriumGamePanel(CommandProcessor commandProcessor) {
         this.commandProcessor = commandProcessor;
@@ -237,7 +230,10 @@ public class FungoriumGamePanel extends JPanel {
         //drawGrid(g2d);
 
         // Draw all objects
-        drawTektons(g2d);
+        tektonImages = new Image[]{defTektonBgCircular, decomposingTektonBgCircular, decreasingTektonBgCircular,
+            feedThreadTektonBgCircular, oneThreadTektonBgCircular, onlyThreadTektonBgCircular};
+        tektonView.drawTektons(g2d, objectPositions, commandProcessor.getCreatedObjects(),
+        getWidth() / renderMap.getCols(), getHeight() / renderMap.getRows(), tektonImages);
 
         calculateTektonCardinalPoints();
         // Égtáji pontok (zöld pontok) rajzolása
@@ -247,10 +243,12 @@ public class FungoriumGamePanel extends JPanel {
                 g2d.fill(new Ellipse2D.Double(p.x - 5, p.y - 5, 10, 10));
             }
         }
-        drawSpores(g2d);
+        sporeImages = new Image[]{defaultSporeImg, fastSporeImg, slowSporeImg, stunSporeImg,
+                disableCutSporeImg, multiplyInsectSporeImg};
+        sporeView.drawSpores(g2d, objectPositions, commandProcessor.getCreatedObjects(), sporeImages);
         drawThreads(g2d);
-        drawInsects(g2d);
-        drawBodies(g2d);
+        insectView.drawInsects(g2d, objectPositions, commandProcessor.getCreatedObjects(), insectImg);
+        bodyView.drawBodies(g2d, objectPositions, commandProcessor.getCreatedObjects(), fungusBodyImg);
     }
 
     // PIROS
@@ -517,65 +515,6 @@ public class FungoriumGamePanel extends JPanel {
     }
 
 
-    private void drawTektons(Graphics2D g2d) {
-        int cellWidth = getWidth() / renderMap.getCols();
-        int cellHeight = getHeight() / renderMap.getRows();
-
-        // Iterate over objectPositions with the correct type
-        for (Map.Entry<String, Point> entry : objectPositions.entrySet()) {
-            String name = entry.getKey(); // The key is a String
-            Object obj = commandProcessor.getCreatedObjects().get(name); // Get the object by name
-            if (obj == null || !(obj instanceof Tekton)) {
-                continue; // Skip if not a Tekton
-            }
-            System.out.println("Drawing object: " + entry.getKey());
-
-            Point topLeft = entry.getValue(); // The value is a Point
-
-            // Calculate the Tekton's area
-            int x = topLeft.y * cellWidth;
-            int y = topLeft.x * cellHeight;
-            int width = cellWidth * TEKTON_CELLS;
-            int height = cellHeight * TEKTON_CELLS;
-
-            // Draw shadow (offset by 5 pixels and with a semi-transparent black color)
-            //g2d.setColor(new Color(139, 69, 19, 100)); // Semi-transparent brown
-            g2d.setColor(new Color(139, 69, 19, 255)); // Fully-visible brown
-            g2d.fill(new Ellipse2D.Double(x + 1, y + 5, width, height));
-
-            // Draw the Tekton image
-            drawTektonImage(g2d, name, x, y, width, height);
-
-            // Draw the Tekton name
-            g2d.setColor(Color.WHITE);
-            g2d.drawString(name, x, y);
-        }
-    }
-
-    private void drawTektonImage(Graphics2D g2d, String name, int x, int y, int width, int height) {
-        Object tekton = commandProcessor.getCreatedObjects().get(name);
-
-        if (tekton instanceof DecomposingTekton && decomposingTektonBgCircular != null) {
-            g2d.drawImage(decomposingTektonBgCircular, x, y, width, height, this);
-        } else if (tekton instanceof DecreasingTekton && decreasingTektonBgCircular != null) {
-            g2d.drawImage(decreasingTektonBgCircular, x, y, width, height, this);
-        } else if (tekton instanceof FeedThreadTekton && feedThreadTektonBgCircular != null) {
-            g2d.drawImage(feedThreadTektonBgCircular, x, y, width, height, this);
-        } else if (tekton instanceof OneThreadTekton && oneThreadTektonBgCircular != null) {
-            g2d.drawImage(oneThreadTektonBgCircular, x, y, width, height, this);
-        } else if (tekton instanceof OnlyThreadTekton && onlyThreadTektonBgCircular != null) {
-            g2d.drawImage(onlyThreadTektonBgCircular, x, y, width, height, this);
-        } else if (tekton instanceof Tekton && defTektonBgCircular != null) {
-            g2d.drawImage(defTektonBgCircular, x, y, width, height, this);
-        } else {
-            // Fallback: Draw a gray circle if no image is available
-            g2d.setColor(Color.LIGHT_GRAY);
-            g2d.fill(new Ellipse2D.Double(x, y, width, height));
-            g2d.setColor(Color.WHITE);
-            g2d.draw(new Ellipse2D.Double(x, y, width, height));
-        }
-    }
-  
     private void drawThreads(Graphics2D g2d) {
         for (Map.Entry<String, Object> entry : commandProcessor.getCreatedObjects().entrySet()) {
             if (entry.getValue() instanceof FungusThread) {
@@ -701,134 +640,6 @@ public class FungoriumGamePanel extends JPanel {
                 g2d.setColor(new Color(150, 75, 0));
                 g2d.setStroke(new BasicStroke(THREAD_WIDTH));
                 g2d.draw(new Line2D.Double(threadPos.x, threadPos.y, nextThreadPos.x, nextThreadPos.y));
-            }
-        }
-    }
-
-    private void drawBodies(Graphics2D g2d) {
-        for (Map.Entry<String, Object> entry : commandProcessor.getCreatedObjects().entrySet()) {
-            if (entry.getValue() instanceof FungusBody) {
-                String name = entry.getKey();
-                Point pos = objectPositions.getOrDefault(name, new Point(100, 100));
-
-                // Draw the fungus body image if available
-                if (fungusBodyImg != null) {
-                    g2d.drawImage(fungusBodyImg, pos.x - BODY_SIZE / 2, pos.y - BODY_SIZE / 2, BODY_SIZE, BODY_SIZE,
-                            this);
-                } else {
-                    // Fallback: Draw an ellipse if the image is not available
-                    g2d.setColor(new Color(100, 50, 0));
-                    g2d.fill(new Ellipse2D.Double(pos.x - BODY_SIZE / 2, pos.y - BODY_SIZE / 2, BODY_SIZE, BODY_SIZE));
-                    g2d.setColor(Color.WHITE);
-                    g2d.draw(new Ellipse2D.Double(pos.x - BODY_SIZE / 2, pos.y - BODY_SIZE / 2, BODY_SIZE, BODY_SIZE));
-                }
-                // Draw body name
-                g2d.drawString(name, pos.x - BODY_SIZE / 2 + 5, pos.y - BODY_SIZE / 2 + 15);
-
-                // Draw spore count if available ONLY DEBUG
-                //FungusBody body = (FungusBody) entry.getValue();
-                //g2d.drawString("Spores: " + body.getSporeCount(), pos.x - BODY_SIZE / 2 + 5, pos.y - BODY_SIZE / 2 + 30);
-            }
-        }
-    }
-
-    private void drawSpores(Graphics2D g2d) {
-        for (Map.Entry<String, Object> entry : commandProcessor.getCreatedObjects().entrySet()) {
-            if (entry.getValue() instanceof Spore) {
-                String name = entry.getKey();
-                Point pos = objectPositions.getOrDefault(name, new Point(150, 150));
-
-                // Different colors for different spore types
-                Color color = Color.WHITE;
-                if (entry.getValue() instanceof FastSpore) {
-                    color = new Color(255, 200, 200); // Light red
-                } else if (entry.getValue() instanceof MultiplyInsectSpore) {
-                    color = new Color(200, 255, 200); // Light green
-                } else if (entry.getValue() instanceof SlowSpore) {
-                    color = new Color(200, 200, 255); // Light blue
-                } else if (entry.getValue() instanceof StunSpore) {
-                    color = new Color(255, 255, 200); // Light yellow
-                } else if (entry.getValue() instanceof DisableCutSpore) {
-                    color = new Color(255, 200, 255); // Light purple
-                }
-
-                g2d.setColor(color);
-                g2d.fill(new Ellipse2D.Double(pos.x - SPORE_SIZE / 2, pos.y - SPORE_SIZE / 2, SPORE_SIZE, SPORE_SIZE));
-                g2d.setColor(Color.WHITE);
-                g2d.draw(new Ellipse2D.Double(pos.x - SPORE_SIZE / 2, pos.y - SPORE_SIZE / 2, SPORE_SIZE, SPORE_SIZE));
-
-                // Draw spore name (small font)
-                Font originalFont = g2d.getFont();
-                g2d.setFont(new Font(originalFont.getName(), originalFont.getStyle(), 8));
-                g2d.drawString(name, pos.x - SPORE_SIZE / 2, pos.y - SPORE_SIZE / 2 - 2);
-                g2d.setFont(originalFont);
-            }
-        }
-    }
-
-    private void drawInsects(Graphics2D g2d) {
-        for (Map.Entry<String, Object> entry : commandProcessor.getCreatedObjects().entrySet()) {
-            if (entry.getValue() instanceof Insect) {
-                String name = entry.getKey();
-                // Point pos = objectPositions.getOrDefault(name, new Point(200, 200));
-                Insect insect = (Insect) entry.getValue();
-                FungusThread thread = insect.getThread();
-
-                Point pos;
-                if (thread != null) {
-                    String threadName = commandProcessor.findByObject(thread);
-                    if (threadName != null && objectPositions.containsKey(threadName)) {
-                        Point threadPos = objectPositions.get(threadName);
-                        // Position insect near the thread
-                        pos = new Point(threadPos.x + 10, threadPos.y + 10);
-                    } else {
-                        // Default position if thread position is not found
-                        pos = new Point(200, 200);
-                    }
-                } else {
-                    // Default position if thread is null
-                    pos = new Point(200, 200);
-                }
-
-                // Base insect color
-                g2d.setColor(new Color(150, 100, 50));
-                g2d.fill(new Ellipse2D.Double(pos.x - INSECT_SIZE / 2, pos.y - INSECT_SIZE / 2, INSECT_SIZE,
-                        INSECT_SIZE));
-                g2d.setColor(Color.WHITE);
-                g2d.draw(new Ellipse2D.Double(pos.x - INSECT_SIZE / 2, pos.y - INSECT_SIZE / 2, INSECT_SIZE,
-                        INSECT_SIZE));
-
-                // Draw effect indicator
-                InsectEffects effect = insect.gEffect();
-                if (effect != null) {
-                    switch (effect) {
-                        case STUN:
-                            g2d.setColor(Color.YELLOW);
-                            break;
-                        case SLOW:
-                            g2d.setColor(Color.BLUE);
-                            break;
-                        case FAST:
-                            g2d.setColor(Color.RED);
-                            break;
-                        case NO_CUT:
-                            g2d.setColor(Color.MAGENTA);
-                            break;
-                        default:
-                            g2d.setColor(Color.WHITE);
-                    }
-                    g2d.fillOval(pos.x - INSECT_SIZE / 4, pos.y - INSECT_SIZE / 4, INSECT_SIZE / 2, INSECT_SIZE / 2);
-                }
-
-                // Draw insect name
-                Font originalFont = g2d.getFont();
-                g2d.setFont(new Font(originalFont.getName(), originalFont.getStyle(), 8));
-                g2d.setColor(Color.WHITE);
-                g2d.drawString(name, pos.x - INSECT_SIZE / 2, pos.y - INSECT_SIZE / 2 - 2);
-                g2d.setFont(originalFont);
-
-                // Position of insect should be based on its getThread() method and it should be
-                // on the thread
             }
         }
     }
