@@ -30,6 +30,15 @@ public class MainMenu extends JFrame {
         titlePanel.setOpaque(false);
 
         JLabel titleLabel = new JLabel("Fungorium") {
+        /**
+         * Custom paintComponent method to draw the title text on the main menu
+         * with a black outline to make it more visible.
+         *
+         * This method is called whenever the component needs to be redrawn.
+         * It draws the title text of the main menu with a black outline to make
+         * it more visible. The outline is drawn with a stroke of 2 pixels and
+         * the text is drawn with the foreground color of the label.
+         */
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2d = (Graphics2D) g.create();
@@ -82,6 +91,12 @@ public class MainMenu extends JFrame {
         exitButton.addActionListener(e -> System.exit(0));
     }
 
+    /**
+     * Creates a styled JButton with the given text.
+     * The button has a SansSerif font, white foreground, no focus painting, white background, 5px margin, and a preferred size of 250x40.
+     * @param text the text to be displayed on the button
+     * @return the created JButton
+     */
     private JButton createStyledButton(String text) {
         JButton button = new JButton(text);
         button.setFont(new Font("SansSerif", Font.PLAIN, 16));
@@ -95,11 +110,22 @@ public class MainMenu extends JFrame {
         return button;
     }
 
+/**
+ * Opens the Choose Species screen and disposes of the current menu.
+ * 
+ * @param commandP The CommandProcessor instance used to handle game commands.
+ */
+
     private void openChooseSpeciesScreen(CommandProcessor commandP) {
         FungoriumGamePanel.createAndShowGUI(commandP);
         dispose();
     }
 
+    /**
+     * Shows the game rules in a dialog box using a JTextArea within a JScrollPane.
+     * The rules are loaded from the "src/GUI/DATA/GameRules.txt" file.
+     * If the file cannot be read, an error message dialog box is shown.
+     */
     private void showRules() {
         String currentWorkingDirectory = System.getProperty("user.dir");
         System.out.println("Current Working Directory: " + currentWorkingDirectory);
@@ -124,6 +150,11 @@ public class MainMenu extends JFrame {
         JOptionPane.showMessageDialog(this, scrollPane, "Játékszabályok", JOptionPane.INFORMATION_MESSAGE);
     }
 
+        /**
+         * The main method of the program.
+         * Creates a new CommandProcessor, creates and shows the MainMenu GUI with it, and starts the game loop.
+         * @param args The command line arguments, currently unused.
+         */
     public static void main(String[] args) {
         CommandProcessor commandProcessor = new CommandProcessor();
         SwingUtilities.invokeLater(() -> new MainMenu(commandProcessor).setVisible(true));
@@ -140,6 +171,15 @@ public class MainMenu extends JFrame {
             }
         }
 
+        /**
+         * Custom paintComponent method to draw the background image on the panel.
+         * 
+         * This method is called whenever the component needs to be redrawn.
+         * It draws the background image of the panel with its current size.
+         * If the background image is null, it does nothing.
+         * 
+         * @param g The Graphics object to draw on.
+         */
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);

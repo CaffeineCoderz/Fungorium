@@ -150,6 +150,9 @@ class ResultScreen extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new ResultScreen());
+        SwingUtilities.invokeLater(() -> {
+            ResultScreen resultScreen = new ResultScreen();
+            resultScreen.setVisible(true);
+        });
     }
 }
