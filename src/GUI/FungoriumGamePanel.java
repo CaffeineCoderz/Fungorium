@@ -37,9 +37,11 @@ public class FungoriumGamePanel extends JPanel {
     // Positions and cells
     private Map<String, Point> objectPositions = new HashMap<>();
     private Set<Point> occupiedCells = new HashSet<>();
+
+    // Flag to indicate if positions need recalculation
+    private boolean shouldRecalculatePositions = true;
     
     // Sizes
-    private static final int INSECT_SIZE = 15;
     private static final int THREAD_WIDTH = 3;
     
     // Number of cells occupied by a Tekton
@@ -47,7 +49,7 @@ public class FungoriumGamePanel extends JPanel {
 
     // Background image
     private Image backgroundImage;
-
+    private Boolean initialPaint = true; // Flag to indicate if it's the first paint
     // Tekton images
     private Image defTektonBg;
     private Image decomposingTektonBg;
@@ -83,33 +85,24 @@ public class FungoriumGamePanel extends JPanel {
     private List<Line2D> possibleGrowthLines = new ArrayList<>(); // Lehetséges növekedési irányok
     private Map<FungusThread, String> threadDirections = new HashMap<>();
 
-    private JTextArea statusTextArea;
     //! View osztályok
     private TektonView tektonView = new TektonView();
     private SporeView sporeView = new SporeView();
     private BodyView bodyView = new BodyView();
     private InsectView insectView = new InsectView();
     private ThreadView threadView = new ThreadView();
+    private StatusView statusView;
 
     public FungoriumGamePanel(CommandProcessor commandProcessor) {
         this.commandProcessor = commandProcessor;
+        setLayout(null); // Absolute positioning for overlay panels
         setPreferredSize(new Dimension(800, 800));
         renderMap = new RenderMap(RenderMap.MapSize.MEDIUM);
 
-        // Initialize the status text area
-        statusTextArea = new JTextArea(5, 20);
-        statusTextArea.setEditable(false);
-        statusTextArea.setLineWrap(true);
-        statusTextArea.setWrapStyleWord(true);
-        statusTextArea.setBackground(new Color(240, 240, 240));
-        //statusTextArea.setBackground(new Color(240, 240, 255, 0));
-        statusTextArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        //statusTextArea.setBorder(BorderFactory.createLineBorder(Color.WHITE));
-        statusTextArea.setFont(new Font("Arial", Font.PLAIN, 12));
-        // statusTextArea.setForeground(Color.WHITE);
-        setLayout(null); // Use absolute positioning
-        add(statusTextArea);
-        statusTextArea.setBounds(600, 10, 180, 100); // Position at the top-right corner
+        // Initialize the status view
+        statusView = new StatusView();
+        statusView.setBounds(0, 0, 800, 800); // Position at the top-right corner
+        add(statusView);
 
         // Add mouse listener to detect clicks on objects
         addMouseListener(new MouseAdapter() {
@@ -117,6 +110,7 @@ public class FungoriumGamePanel extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 Point clickPoint = e.getPoint();
                 String clickedObjectName = getObjectAtPoint(clickPoint);
+
                 if (clickedObjectName != null) {
                     String command = "/status " + clickedObjectName;
 
@@ -127,15 +121,18 @@ public class FungoriumGamePanel extends JPanel {
                         System.setOut(new PrintStream(outputStream));
                         commandProcessor.process(command); // Execute the command
                         System.out.flush();
-                        String status = outputStream.toString(); // Get the captured output
-                        statusTextArea.setText(status); // Display the status in the text area
+                        String status = outputStream.toString().trim(); // Get the captured output
+                        statusView.updateStatus(status); // Update the status view
                     } finally {
                         System.setOut(originalOut); // Restore original System.out
                     }
+                } else {
+                    statusView.clearStatus(); // Clear the status view if no valid object is clicked
                 }
+                statusView.repaint();
             }
         });
-  
+
         // Load the background image
         try {
             backgroundImage = ImageIO.read(new File("src/resources/PanelBg/gamePanel3.jpg"));
@@ -143,6 +140,23 @@ public class FungoriumGamePanel extends JPanel {
             System.err.println("Error loading background image: " + e.getMessage());
         }
 
+        loadResources();
+    }
+
+    private String getObjectAtPoint(Point point) {
+        for (Map.Entry<String, Point> entry : objectPositions.entrySet()) {
+            Point objectPos = entry.getValue();
+            String objectName = entry.getKey();
+
+            // Check if the click is within the bounds of the object
+            if (point.distance(objectPos) <= 20) { // Adjust the radius as needed
+                return objectName;
+            }
+        }
+        return null;
+    }
+
+    private void loadResources() {
         try {
             // * Load SQUARE tekton images
             defTektonBg = ImageIO.read(new File("src/resources/tektons/defaultTekton1.jpg"));
@@ -181,21 +195,8 @@ public class FungoriumGamePanel extends JPanel {
             insectImg = ImageIO.read(new File("src/resources/insect.png"));
 
         } catch (Exception e) {
-            System.err.println("Error loading tekton images: " + e.getMessage());
+            System.err.println("Error loading resources: " + e.getMessage());
         }
-    }
-
-    private String getObjectAtPoint(Point point) {
-        for (Map.Entry<String, Point> entry : objectPositions.entrySet()) {
-            Point objectPos = entry.getValue();
-            String objectName = entry.getKey();
-
-            // Check if the click is within the bounds of the object
-            if (point.distance(objectPos) <= 20) { // Adjust the radius as needed
-                return objectName;
-            }
-        }
-        return null;
     }
 
     private BufferedImage createCircularImage(BufferedImage input) {
@@ -219,12 +220,14 @@ public class FungoriumGamePanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
-
         // Rajzoljuk a térképet
         drawTiledBackground(g2d);
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        calculateObjectPositions();
+        if (shouldRecalculatePositions && !initialPaint) {
+            calculateObjectPositions();
+            shouldRecalculatePositions = false;
+        }
 
         // Draw the grid (optional) RED
         //drawGrid(g2d);
@@ -233,7 +236,7 @@ public class FungoriumGamePanel extends JPanel {
         tektonImages = new Image[]{defTektonBgCircular, decomposingTektonBgCircular, decreasingTektonBgCircular,
             feedThreadTektonBgCircular, oneThreadTektonBgCircular, onlyThreadTektonBgCircular};
         tektonView.drawTektons(g2d, objectPositions, commandProcessor.getCreatedObjects(),
-        getWidth() / renderMap.getCols(), getHeight() / renderMap.getRows(), tektonImages);
+        getWidth() / renderMap.getCols(), getHeight() / renderMap.getRows(), TEKTON_CELLS, tektonImages);
 
         calculateTektonCardinalPoints();
         // Égtáji pontok (zöld pontok) rajzolása
@@ -249,6 +252,11 @@ public class FungoriumGamePanel extends JPanel {
         drawThreads(g2d);
         insectView.drawInsects(g2d, objectPositions, commandProcessor.getCreatedObjects(), insectImg);
         bodyView.drawBodies(g2d, objectPositions, commandProcessor.getCreatedObjects(), fungusBodyImg);
+        
+
+        if (initialPaint) {
+            initialPaint = false;
+        }
     }
 
     // PIROS
@@ -647,6 +655,7 @@ public class FungoriumGamePanel extends JPanel {
     public void updateGameState() {
         objectPositions.clear(); // Force recalculation of positions
         occupiedCells.clear(); // Clear occupied cells as positions are being recalculated
+        shouldRecalculatePositions = true; // Set the flag to recalculate positions
         repaint();
     }
 
