@@ -5,6 +5,8 @@ import java.awt.*;
 
 public class StatusView extends JPanel {
     private JTextArea statusTextArea;
+    private final Point originalPosition = new Point(600, 10); // Original position (right-top corner)
+    private final Point alternatePosition = new Point(10, 10); // Alternate position (left-top corner)
 
     public StatusView() {
         setLayout(null); // Absolute positioning
@@ -35,5 +37,15 @@ public class StatusView extends JPanel {
     public void clearStatus() {
         statusTextArea.setText("");
         statusTextArea.setVisible(false); // Hide the status block
+    }
+
+    public void moveToAlternatePosition() {
+        setBounds(alternatePosition.x, alternatePosition.y, 180, 100);
+        repaint();
+    }
+
+    public void moveToOriginalPosition() {
+        setBounds(originalPosition.x, originalPosition.y, 180, 100);
+        repaint();
     }
 }
