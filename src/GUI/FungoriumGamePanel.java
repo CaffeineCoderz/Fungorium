@@ -108,7 +108,6 @@ public class FungoriumGamePanel extends JPanel {
         add(statusView);
 
         // Add mouse listener to detect clicks on objects
-        addMouseListener(new MouseAdapter() {
         /**
          * Handles mouse clicks on the game panel. If the clicked point corresponds to a valid game object (tekton, fungus, insect, or spore), 
          * a "/status <objectName>" command is executed and the resulting status string is displayed in the status view. If the clicked point does not
@@ -116,33 +115,36 @@ public class FungoriumGamePanel extends JPanel {
          * 
          * @param e the MouseEvent that triggered this method call
          */
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                Point clickPoint = e.getPoint();
-                String clickedObjectName = getObjectAtPoint(clickPoint);
+        addMouseListener(
+            new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    Point clickPoint = e.getPoint();
+                    String clickedObjectName = getObjectAtPoint(clickPoint);
 
-                if (clickedObjectName != null) {
-                    String command = "/status " + clickedObjectName;
+                    if (clickedObjectName != null) {
+                        String command = "/status " + clickedObjectName;
 
-                    // Capture System.out output
-                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                    PrintStream originalOut = System.out;
-                    try {
-                        System.setOut(new PrintStream(outputStream));
-                        commandProcessor.process(command); // Execute the command
-                        System.out.flush();
-                        String status = outputStream.toString().trim(); // Get the captured output
-                        statusView.updateStatus(status); // Update the status view
-                    } finally {
-                        System.setOut(originalOut); // Restore original System.out
+                        // Capture System.out output
+                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                        PrintStream originalOut = System.out;
+                        try {
+                            System.setOut(new PrintStream(outputStream));
+                            commandProcessor.process(command); // Execute the command
+                            System.out.flush();
+                            String status = outputStream.toString().trim(); // Get the captured output
+                            statusView.updateStatus(status); // Update the status view
+                        } finally {
+                            System.setOut(originalOut); // Restore original System.out
+                        }
+                    } else {
+                        statusView.clearStatus(); // Clear the status view if no valid object is clicked
                     }
-                } else {
-                    statusView.clearStatus(); // Clear the status view if no valid object is clicked
+                    statusView.repaint();
                 }
-                statusView.repaint();
             }
-        });       
-        
+        );       
+            
         // Load the background image
         try {
             backgroundImage = ImageIO.read(new File("src/resources/PanelBg/gamePanel3.jpg"));
@@ -153,16 +155,15 @@ public class FungoriumGamePanel extends JPanel {
         loadResources();
     }
 
-/**
- * Retrieves the name of the object located at the specified point.
- *
- * This method checks if the given point is within a certain distance of any
- * object's position and returns the name of the first matching object.
- *
- * @param point The point to check for object presence.
- * @return The name of the object at the specified point, or null if no object is found.
- */
-
+    /**
+     * Retrieves the name of the object located at the specified point.
+     *
+     * This method checks if the given point is within a certain distance of any
+     * object's position and returns the name of the first matching object.
+     *
+     * @param point The point to check for object presence.
+     * @return The name of the object at the specified point, or null if no object is found.
+     */
     private String getObjectAtPoint(Point point) {
         for (Map.Entry<String, Point> entry : objectPositions.entrySet()) {
             Point objectPos = entry.getValue();
@@ -226,18 +227,17 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
-/**
- * Creates a circular cropped version of the input BufferedImage.
- *
- * This method takes an input image and creates a new BufferedImage
- * containing only the circular region of the largest possible size
- * centered within the input image. The resulting image is drawn with
- * anti-aliasing for improved visual quality.
- *
- * @param input the original BufferedImage to be cropped to a circle
- * @return a new BufferedImage containing the circular cropped region
- */
-
+    /**
+     * Creates a circular cropped version of the input BufferedImage.
+     *
+     * This method takes an input image and creates a new BufferedImage
+     * containing only the circular region of the largest possible size
+     * centered within the input image. The resulting image is drawn with
+     * anti-aliasing for improved visual quality.
+     *
+     * @param input the original BufferedImage to be cropped to a circle
+     * @return a new BufferedImage containing the circular cropped region
+     */
     private BufferedImage createCircularImage(BufferedImage input) {
         int size = Math.min(input.getWidth(), input.getHeight());
         BufferedImage circleBuffer = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
@@ -280,7 +280,7 @@ public class FungoriumGamePanel extends JPanel {
         }
 
         // Draw the grid (optional) RED
-        //drawGrid(g2d);
+        drawGrid(g2d);
 
         // Draw all objects
         tektonImages = new Image[]{defTektonBgCircular, decomposingTektonBgCircular, decreasingTektonBgCircular,
@@ -489,7 +489,15 @@ public class FungoriumGamePanel extends JPanel {
                                 tektonCenterX + offsetX,
                                 tektonCenterY + offsetY));
                     }
-            } else if (obj instanceof Insect) {
+            }
+        }
+    
+        // Az insect a threadtől függ, ezért a threaderket számoljuk előbb és utánna megyünk végig az insecteken
+        for (Map.Entry<String, Object> entry : commandProcessor.getCreatedObjects().entrySet()) {
+            String name = entry.getKey();
+            Object obj = entry.getValue();
+
+            if (obj instanceof Insect) {
                 Insect insect = (Insect) obj;
                 FungusThread thread = insect.getThread();
                 if (thread != null) {
