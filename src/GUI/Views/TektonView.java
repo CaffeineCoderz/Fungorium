@@ -15,6 +15,18 @@ import tektonTypes.Tekton;
 public class TektonView {
     private static final int TEKTON_SIZE = 80;
 
+    /**
+     * Draws Tekton objects on the graphics context provided.
+     *
+     * @param g2d The Graphics2D object to draw on.
+     * @param objectPositions A map containing the positions of objects by their names.
+     * @param createdObjects A map of created objects by their names.
+     * @param cellWidth The width of each cell in the grid layout.
+     * @param cellHeight The height of each cell in the grid layout.
+     * @param size The size multiplier for the Tekton.
+     * @param tektonImages An array of images corresponding to different Tekton types.
+     */
+
     public void drawTektons(Graphics2D g2d, Map<String, Point> objectPositions, Map<String, Object> createdObjects,
             int cellWidth, int cellHeight, int size, Image[] tektonImages) {
         for (Map.Entry<String, Point> entry : objectPositions.entrySet()) {
@@ -43,6 +55,17 @@ public class TektonView {
         }
     }
 
+    /**
+     * Draws a Tekton object based on its class and the available images
+     * 
+     * @param g2d   the Graphics2D object to draw the Tekton on
+     * @param tekton the Tekton object to be drawn
+     * @param x     the x position of the Tekton image
+     * @param y     the y position of the Tekton image
+     * @param width the width of the Tekton image
+     * @param height the height of the Tekton image
+     * @param tektonImages the available Tekton images
+     */
     private void drawTektonImage(Graphics2D g2d, Object tekton, int x, int y, int width, int height, Image[] tektonImages) {
         if (tekton instanceof DecomposingTekton && tektonImages[1] != null) {
             g2d.drawImage(tektonImages[1], x, y, width, height, null);
@@ -65,6 +88,10 @@ public class TektonView {
         }
     }
 
+    /**
+     * Returns the size of the Tekton image in pixels.
+     * @return the size of the Tekton image in pixels.
+     */
     public static int getTektonSize() {
         return TEKTON_SIZE;
     }

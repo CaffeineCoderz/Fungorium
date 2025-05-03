@@ -9,6 +9,21 @@ import sporeTypes.*;
 public class SporeView {
     private static final int SPORE_SIZE = 10;
 
+/**
+ * Draws all Spore objects in the game.
+ *
+ * Iterates over the created objects and draws each Spore object based on its
+ * position and available spore images. If a corresponding image is found for
+ * the spore type, it is used; otherwise, a fallback visual representation is
+ * drawn. Additionally, displays the name of each spore above its visual
+ * representation.
+ *
+ * @param g2d the Graphics2D object used for drawing
+ * @param objectPositions a mapping of object names to their positions on the board
+ * @param createdObjects a mapping of object names to their objects
+ * @param sporeImages an array of images representing different spore types
+ */
+
     public void drawSpores(Graphics2D g2d, Map<String, Point> objectPositions, Map<String, Object> createdObjects, Image[] sporeImages) {
         for (Map.Entry<String, Object> entry : createdObjects.entrySet()) {
             if (entry.getValue() instanceof Spore) {
@@ -29,6 +44,17 @@ public class SporeView {
         }
     }
 
+    /**
+     * Draws a spore object based on its class and the available images
+     * 
+     * @param g2d   the Graphics2D object to draw the spore on
+     * @param spore the spore object to be drawn
+     * @param x     the x position of the spore image
+     * @param y     the y position of the spore image
+     * @param width the width of the spore image
+     * @param height the height of the spore image
+     * @param sporeImages the available spore images
+     */
     private void drawSporeImage(Graphics2D g2d, Object spore, int x, int y, int width, int height, Image[] sporeImages) {
         if (spore instanceof FastSpore && sporeImages[0] != null) {
             g2d.drawImage(sporeImages[0], x, y, width, height, null);
@@ -51,6 +77,12 @@ public class SporeView {
         }
     }
 
+    /**
+     * Determines the color of the spore image based on the spore class
+     * 
+     * @param spore the spore object to determine the color for
+     * @return the color of the spore image
+     */
     private Color determineSporeColor(Object spore) {
         if (spore instanceof FastSpore) {
             return new Color(255, 200, 200);

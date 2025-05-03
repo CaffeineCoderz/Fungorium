@@ -9,6 +9,14 @@ import fungus.FungusBody;
 public class BodyView {
     private static final int BODY_SIZE = 45;
 
+    /**
+     * Draws all FungusBody objects in the game.
+     *
+     * @param g2d the Graphics2D object to draw on
+     * @param objectPositions a mapping of object names to their positions on the board
+     * @param createdObjects a mapping of object names to their objects
+     * @param fungusBodyImg the image to use for the bodies, or null if none
+     */
     public void drawBodies(Graphics2D g2d, Map<String, Point> objectPositions, Map<String, Object> createdObjects,
             Image fungusBodyImg) {
         for (Map.Entry<String, Object> entry : createdObjects.entrySet()) {

@@ -109,6 +109,13 @@ public class FungoriumGamePanel extends JPanel {
 
         // Add mouse listener to detect clicks on objects
         addMouseListener(new MouseAdapter() {
+        /**
+         * Handles mouse clicks on the game panel. If the clicked point corresponds to a valid game object (tekton, fungus, insect, or spore), 
+         * a "/status <objectName>" command is executed and the resulting status string is displayed in the status view. If the clicked point does not
+         * correspond to a valid game object, the status view is cleared.
+         * 
+         * @param e the MouseEvent that triggered this method call
+         */
             @Override
             public void mouseClicked(MouseEvent e) {
                 Point clickPoint = e.getPoint();
@@ -146,6 +153,16 @@ public class FungoriumGamePanel extends JPanel {
         loadResources();
     }
 
+/**
+ * Retrieves the name of the object located at the specified point.
+ *
+ * This method checks if the given point is within a certain distance of any
+ * object's position and returns the name of the first matching object.
+ *
+ * @param point The point to check for object presence.
+ * @return The name of the object at the specified point, or null if no object is found.
+ */
+
     private String getObjectAtPoint(Point point) {
         for (Map.Entry<String, Point> entry : objectPositions.entrySet()) {
             Point objectPos = entry.getValue();
@@ -159,6 +176,13 @@ public class FungoriumGamePanel extends JPanel {
         return null;
     }
 
+    /**
+     * Loads all resources needed for the game panel, including background and
+     * foreground images for the different types of Tektons, fungus bodies, spores
+     * and insects.
+     *
+     * @throws IOException if any of the resources cannot be loaded.
+     */
     private void loadResources() {
         try {
             // * Load SQUARE tekton images
@@ -202,6 +226,18 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
+/**
+ * Creates a circular cropped version of the input BufferedImage.
+ *
+ * This method takes an input image and creates a new BufferedImage
+ * containing only the circular region of the largest possible size
+ * centered within the input image. The resulting image is drawn with
+ * anti-aliasing for improved visual quality.
+ *
+ * @param input the original BufferedImage to be cropped to a circle
+ * @return a new BufferedImage containing the circular cropped region
+ */
+
     private BufferedImage createCircularImage(BufferedImage input) {
         int size = Math.min(input.getWidth(), input.getHeight());
         BufferedImage circleBuffer = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
@@ -219,6 +255,17 @@ public class FungoriumGamePanel extends JPanel {
         return circleBuffer;
     }
 
+    /**
+     * Custom paintComponent method to draw the game state on the screen.
+     *
+     * This method is called whenever the component needs to be redrawn.
+     * It is responsible for drawing the background image, the grid, all
+     * objects including tektons, spores, threads, insects and the fungus
+     * body. It also draws the égtáji pontok (green points) for the tektons.
+     * The method is optimized for performance by using a single Graphics2D
+     * object for all drawing operations and by minimizing the number of
+     * objects created during the drawing process.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -263,6 +310,17 @@ public class FungoriumGamePanel extends JPanel {
     }
 
     // PIROS
+    
+    /**
+     * Draws the grid of cells defined by the RenderMap.
+     * 
+     * This method draws a red grid on the screen, where each cell is of size
+     * determined by the RenderMap. The grid is drawn by repeatedly drawing
+     * rectangles of the appropriate size, with their positions determined by
+     * the coordinates of the cells in the RenderMap.
+     * 
+     * @param g2d the Graphics2D object to draw the grid on
+     */
     private void drawGrid(Graphics2D g2d) {
         // A RenderMap által definiált cellák kirajzolása
         g2d.setColor(Color.RED);
@@ -276,6 +334,12 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
+    /**
+     * Draws the background image of the game, scaled down to a smaller size
+     * (e.g., 50% of the original size) and tiled to cover the entire screen.
+     * 
+     * @param g2d the Graphics2D object to draw the background on
+     */
     private void drawTiledBackground(Graphics2D g2d) {
         if (backgroundImage != null) {
             int originalWidth = backgroundImage.getWidth(this);
@@ -295,6 +359,21 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
+    /**
+     * Calculates the positions of all objects in the game world.
+     * 
+     * This method goes through all created objects and assigns them a position
+     * on the screen based on their type and any other relevant information.
+     * Positions are stored in the objectPositions map.
+     * 
+     * For Tektons, it randomly selects a free spot on the board and marks the
+     * cells as occupied.
+     * For FungusBodies, it sets the position to the center of the associated
+     * Tekton.
+     * For FungusThreads, it positions them between their connected objects.
+     * For Spores, it randomly assigns a position around the associated Tekton.
+     * For Insects, it positions them near their associated thread.
+     */
     private void calculateObjectPositions() {
         // Tekton init
         List<Point> tiles = renderMap.getTiles();
@@ -427,6 +506,11 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
+    /**
+     * Calculates the cardinal points of all Tekton objects on the map.
+     * These points are used for drawing the égtáji pontok (green points) for the Tektons.
+     * The points are stored in the tektonCardinalPoints map.
+     */
     private void calculateTektonCardinalPoints() {
         tektonCardinalPoints.clear();
         int cellWidth = getWidth() / renderMap.getCols();
@@ -458,6 +542,14 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
+    /**
+     * Returns the cardinal point of the given Tekton in the given direction.
+     * The direction should be given as a lowercase string ("e", "n", "w", "s").
+     * If the Tekton does not exist or the direction is invalid, returns null.
+     * @param tektonName the name of the Tekton
+     * @param direction the direction of the cardinal point
+     * @return the cardinal point of the given Tekton in the given direction
+     */
     private Point getCardinalPoint(String tektonName, String direction) {
         List<Point> points = tektonCardinalPoints.get(tektonName);
         if (points == null)
@@ -477,10 +569,28 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
+    /**
+     * Checks if the given cell area (top-left corner and size) is within the
+     * bounds of the map (maxCols and maxRows).
+     *
+     * @param topLeft the top-left corner of the cell area
+     * @param size    the size of the cell area
+     * @param maxCols the maximum number of columns of the map
+     * @param maxRows the maximum number of rows of the map
+     * @return true if the cell area is within the bounds of the map, false
+     *         otherwise
+     */
     private boolean isWithinBounds(Point topLeft, int size, int maxCols, int maxRows) {
         return topLeft.x + size <= maxRows && topLeft.y + size <= maxCols;
     }
 
+    /**
+     * Checks if the given cell area (top-left corner and size) is free of
+     * any occupied cells.
+     * @param topLeft the top-left corner of the cell area
+     * @param size    the size of the cell area
+     * @return true if all cells in the area are free, false otherwise
+     */
     private boolean isAreaFree(Point topLeft, int size) {
         for (int row = 0; row < size; row++) {
             for (int col = 0; col < size; col++) {
@@ -493,6 +603,13 @@ public class FungoriumGamePanel extends JPanel {
         return true;
     }
 
+    /**
+     * Adds all cells in the given cell area (top-left corner and size) to
+     * the occupiedCells set. This is used to keep track of which cells are
+     * currently occupied by a Tekton.
+     * @param topLeft the top-left corner of the cell area
+     * @param size    the size of the cell area
+     */
     private void occupyArea(Point topLeft, int size) {
         for (int row = 0; row < size; row++) {
             for (int col = 0; col < size; col++) {
@@ -502,6 +619,12 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
+    /**
+     * Calculates the center point of a Tekton object in pixel coordinates.
+     * @param tekton the Tekton object to calculate the center for
+     * @return the center point of the Tekton in pixel coordinates, or null if
+     *         the Tekton doesn't have a position
+     */
     private Point getTektonCenter(Tekton tekton) {
         Point tektonPos = getTektonPosition(tekton);
         if (tektonPos != null) {
@@ -517,6 +640,13 @@ public class FungoriumGamePanel extends JPanel {
         return null;
     }
 
+    /**
+     * Returns the position of the given Tekton as a Point object in cell
+     * coordinates, or null if the Tekton doesn't have a position.
+     * @param tekton the Tekton object to get the position for
+     * @return the position of the Tekton in cell coordinates, or null if
+     *         it doesn't have a position
+     */
     private Point getTektonPosition(Tekton tekton) {
         String tektonName = commandProcessor.findByObject(tekton);
         if (tektonName != null && objectPositions.containsKey(tektonName)) {
@@ -526,6 +656,12 @@ public class FungoriumGamePanel extends JPanel {
     }
 
 
+    /**
+     * Draws all FungusThreads in the game world, including connections to other
+     * threads and their associated Tekton(s). This method is called by the
+     * paintComponent method.
+     * @param g2d the Graphics2D object to draw the threads on
+     */
     private void drawThreads(Graphics2D g2d) {
         for (Map.Entry<String, Object> entry : commandProcessor.getCreatedObjects().entrySet()) {
             if (entry.getValue() instanceof FungusThread) {
@@ -620,6 +756,14 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
+    /**
+     * Finds the closest cardinal point to the given targetPoint for the given tektonName.
+     * If no cardinal points are found, returns null.
+     *
+     * @param tektonName the name of the tekton
+     * @param targetPoint the target point to find the closest cardinal point to
+     * @return the closest cardinal point, or null if none are found
+     */
     private Point findClosestCardinalPoint(String tektonName, Point targetPoint) {
         List<Point> cardinalPoints = tektonCardinalPoints.get(tektonName);
         if (cardinalPoints == null || cardinalPoints.isEmpty()) {
@@ -640,6 +784,13 @@ public class FungoriumGamePanel extends JPanel {
         return closestPoint;
     }
     
+    /**
+     * Draws a connection between a FungusThread and its next thread.
+     * If the next thread is not found, nothing is drawn.
+     * @param g2d the Graphics2D object to draw on
+     * @param thread the FungusThread to draw the connection for
+     * @param threadKey the name of the current thread, used to get its position
+     */
     private void drawThreadConnections(Graphics2D g2d, FungusThread thread, String threadKey) {
         // Draw connection to next thread
         if (thread.getNext() != null) {
@@ -655,6 +806,13 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
+    /**
+     * Updates the game state by clearing the current object positions and
+     * occupied cells and setting a flag to recalculate the positions of all
+     * objects. Finally, the panel is repainted to reflect the changes.
+     * This method should be called whenever the game state has changed, such as
+     * after a command has been processed.
+     */
     public void updateGameState() {
         objectPositions.clear(); // Force recalculation of positions
         occupiedCells.clear(); // Clear occupied cells as positions are being recalculated
@@ -662,13 +820,42 @@ public class FungoriumGamePanel extends JPanel {
         repaint();
     }
 
+    /**
+     * Sets the positions of all objects in the game world.
+     * 
+     * @param newPositions a map containing the new positions of objects, 
+     *                     where the key is the object name and the value is 
+     *                     its position on the board.
+     */
+
     public void setObjectPositions(Map<String, Point> newPositions) {
         this.objectPositions = newPositions;
     }
 
+    /**
+     * Returns the current positions of all objects in the game world.
+     * 
+     * @return a map containing the positions of objects, where the key is the
+     *         object name and the value is its position on the board.
+     */
     public Map<String, Point> getObjectPositions() {
         return objectPositions;
     }
+
+/**
+ * Initializes and displays the main game window for the Fungorium Game.
+ * This method creates a JFrame containing the game panel and a control panel 
+ * with buttons to update the view, save the game state, and load the game state.
+ * 
+ * The game panel is initialized with the provided command processor and is added 
+ * to the frame. The control panel buttons trigger actions on the game panel, 
+ * such as updating the view, saving the current game state to a file, and 
+ * loading the game state from a file.
+ * 
+ * The frame is set to be visible and centered on the screen.
+ * 
+ * @param commandProcessor the CommandProcessor used to handle game commands and logic.
+ */
 
     public static void createAndShowGUI(CommandProcessor commandProcessor) {
         JFrame frame = new JFrame("Fungorium Game");

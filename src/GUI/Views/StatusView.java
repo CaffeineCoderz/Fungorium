@@ -25,6 +25,12 @@ public class StatusView extends JPanel {
         statusTextArea.setBounds(600, 10, 180, 100); // Position at the top-right corner
     }
 
+    /**
+     * Updates the status view based on the given status string.
+     * If the status is empty or null, the status block is hidden.
+     * Otherwise, the status block is shown and its text is updated to the given status.
+     * @param status the status string to be displayed
+     */
     public void updateStatus(String status) {
         if (status == null || status.isEmpty()) {
             clearStatus(); // Hide the status block
@@ -34,16 +40,32 @@ public class StatusView extends JPanel {
         }
     }
 
+    /**
+     * Clears the status view by hiding the status block and resetting the text area.
+     * Equivalent to calling {@link #updateStatus(String)} with an empty string as argument.
+     */
     public void clearStatus() {
         statusTextArea.setText("");
         statusTextArea.setVisible(false); // Hide the status block
     }
 
+    /**
+     * Moves the status view to the alternate position specified by {@link #alternatePosition}.
+     * The size of the status view remains the same.
+     * This method is usually called when the status view needs to be moved out of the way of the
+     * game panel's buttons.
+     */
     public void moveToAlternatePosition() {
         setBounds(alternatePosition.x, alternatePosition.y, 180, 100);
         repaint();
     }
 
+    /**
+     * Moves the status view to the original position specified by {@link #originalPosition}.
+     * The size of the status view remains the same.
+     * This method is usually called when the status view needs to be moved back to its original
+     * position after being moved out of the way of the game panel's buttons.
+     */
     public void moveToOriginalPosition() {
         setBounds(originalPosition.x, originalPosition.y, 180, 100);
         repaint();

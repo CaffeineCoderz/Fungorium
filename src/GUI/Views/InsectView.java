@@ -10,6 +10,14 @@ import insect.InsectEffects;
 public class InsectView {
     private static final int INSECT_SIZE = 50;
 
+    /**
+     * Draws all Insect objects in the game.
+     *
+     * @param g2d the Graphics2D object to draw on
+     * @param objectPositions a mapping of object names to their positions on the board
+     * @param createdObjects a mapping of object names to their objects
+     * @param insectImg the image to use for the insects, or null if none
+     */
     public void drawInsects(Graphics2D g2d, Map<String, Point> objectPositions, Map<String, Object> createdObjects, Image insectImg) {
         for (Map.Entry<String, Object> entry : createdObjects.entrySet()) {
             if (entry.getValue() instanceof Insect) {

@@ -14,6 +14,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GameStateHandler {
+    /**
+     * Saves the game state to an XML file, given a map of object positions.
+     * The XML file should contain a root element called "GameState" which contains
+     * an element called "ObjectPositions". The ObjectPositions element should contain
+     * a list of "Object" elements, each of which should have the following attributes:
+     * <ul>
+     * <li>name: the name of the object (e.g. "Fungus1", "Insect2", etc.)</li>
+     * <li>x: the x position of the object in the game world</li>
+     * <li>y: the y position of the object in the game world</li>
+     * </ul>
+     * If there is an error writing the file, the function will print an error message.
+     * @param objectPositions a map of object positions
+     * @param filePath the path to the XML file to write
+     */
     public void saveGameState(Map<String, Point> objectPositions, String filePath) {
         try {
             DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
@@ -50,6 +64,22 @@ public class GameStateHandler {
         }
     }
 
+    /**
+     * Loads the game state from an XML file, and returns a map of object positions.
+     * The XML file should contain a root element called "GameState" which contains
+     * an element called "ObjectPositions". The ObjectPositions element should contain
+     * a list of "Object" elements, each of which should have the following attributes:
+     * <ul>
+     * <li>name: the name of the object (e.g. "Fungus1", "Insect2", etc.)</li>
+     * <li>x: the x position of the object in the game world</li>
+     * <li>y: the y position of the object in the game world</li>
+     * </ul>
+     * The function will return a map where the keys are the object names, and the
+     * values are the positions of the objects. If there is an error reading the file,
+     * the function will print an error message and return an empty map.
+     * @param filePath the path to the XML file containing the game state
+     * @return a map of object positions
+     */
     public Map<String, Point> loadGameState(String filePath) {
         Map<String, Point> objectPositions = new HashMap<>();
         try {
