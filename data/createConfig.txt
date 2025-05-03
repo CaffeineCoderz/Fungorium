@@ -11,9 +11,13 @@
 /create insectspecies sp3
 /create insectspecies sp4
 /create thread th1
-/create thread th2 
+/create thread th2
+/create thread th3
+/create thread th4
+/create thread th5
 /create body b1
 /create body b2
+/create body b3
 /create spore s1
 /create disablecutspore s2
 /create fastspore s3

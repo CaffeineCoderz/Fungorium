@@ -38,8 +38,8 @@ import utils.*;
 // TODO /delete <name>   -  befejezni a delete parancsot
 //      /status    az összes állapot lekérdezése
 //      /status <name> állapot lekérdezés
-//      /save játék állását menti fájlba
-//      /log a konzolon lévő kimeneteket menti fáklba
+//  TODO    /save játék állását menti fájlba
+// TODO     /log a konzolon lévő kimeneteket menti fáklba
 //      /trig események triggerelése nr: Következő kör np: Következő játékos
 //      /chance breaktekton && spora milyen fajta
 //
@@ -49,10 +49,8 @@ import utils.*;
 //      exit
 //   *FungusSpecies Commands:
 //      growBody <FungusThread> <Tekton> 
-//    ?MEGJ: Itt kell egy fungusbody neveti is majd beadni különben nem tudja majd a user követni mi lett a body neve
-// TODO growThread <Tekton> <FungusBody> <newFungusThread>(not existing, give a name and will create a new one)                  - ToDo: hiányzó paraméter a fvben
-//     growThread <Tekton> <FungusBody> kéne maradjon
-// TODO growThread <Tekton> <existingFungusThread> <newFungusThread>(not existing, give a name and will create a new one)        - ToDo: hiányzó paraméter a fvben
+//      growThread <Tekton> <FungusBody>
+//      growThread <Tekton> <FungusThread>
 //      sporulate <FungusBody>
 //      eatinsect <Insect> <Thread> 
 //   *InsectSpecies Commands:
@@ -92,7 +90,7 @@ public class CommandProcessor {
     private Set<String> insectCommands = Set.of("move", "cut", "eat");
     private Set<String> commonCommands = Set.of("help", "exit");
     private Set<String> systemCommands = Set.of("/helpsys", "/helpobj", "/load", "/break", "/kill", "/set", "/delete",
-            "/status", "/save", "/log", "/trig");
+            "/status", "/save", "/log", "/trig", "/create");
 
     private GameLogic gameLogic;
 
@@ -189,6 +187,7 @@ public class CommandProcessor {
 
         commands.put("/break", this::processBreakCommand);
         commandDescriptions.put("/break", "/break <Tekton>");
+
         commands.put("/trig", this::processTriggerCommand);
         commandDescriptions.put("/trig", "/trig <event>");
 
@@ -201,8 +200,8 @@ public class CommandProcessor {
         commands.put("eat", this::processEatCommand);
         commandDescriptions.put("eat", "eat <Spore> <Insect>");
 
-        commands.put("kill", this::processKillCommand);
-        commandDescriptions.put("kill", "kill <Insect>");
+        commands.put("/kill", this::processKillCommand);
+        commandDescriptions.put("/kill", "/kill <Insect>");
 
         commands.put("move", this::processMoveCommand);
         commandDescriptions.put("move", "move <Insect> <Thread>");
@@ -333,8 +332,8 @@ public class CommandProcessor {
         System.out.println("eat <Spore> <Insect> \t\t\t\t eats a spore with the selected insect");
         System.out.println("move <Insect> <Thread> \t\t\t\t moves an insect to the selected thread");
         System.out.println("growBody <FungusThread> <Tekton> \t\t grows a body");
-        System.out.println("growThread <Tekton> <FungusBody> <newThread> \t grows a thread from the selected body");
-        System.out.println("growThread <Tekton> <Thread> <newThread> \t grows a thread from an existing thread");
+        System.out.println("growThread <Tekton> <FungusBody> \t\t grows a thread from the selected body");
+        System.out.println("growThread <Tekton> <Thread> \t\t\t grows a thread from an existing thread");
         System.out.println("sporulate <FungusBody> \t\t\t\t sporulates with the selected body");
         System.out.println("exit \t\t\t\t\t\t exits the program");
     }
@@ -356,7 +355,7 @@ public class CommandProcessor {
         System.out.println("/break <Tekton> \t\t\t\t breaks a tekton");
         System.out.println("/kill <Insect> \t\t\t\t\t kills an insect");
         System.out.println("/set <object> <property> <value> \t\t sets the property of the object to the given value");
-        System.out.println("/log <filename> \t\t\t\t saves the console output to a file");
+        // System.out.println("/log <filename> \t\t\t\t saves the console output to a file");
         System.out.println("/trig <event> \t\t\t\t\t triggers an event (next round, next player)");
         System.out.println("/endgame \t\t\t\t\t ends the game and prints the winners");
         System.out.println(" ");
