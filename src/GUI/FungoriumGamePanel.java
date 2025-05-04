@@ -990,20 +990,20 @@ public class FungoriumGamePanel extends JPanel {
         return objectPositions;
     }
 
-/**
- * Initializes and displays the main game window for the Fungorium Game.
- * This method creates a JFrame containing the game panel and a control panel 
- * with buttons to update the view, save the game state, and load the game state.
- * 
- * The game panel is initialized with the provided command processor and is added 
- * to the frame. The control panel buttons trigger actions on the game panel, 
- * such as updating the view, saving the current game state to a file, and 
- * loading the game state from a file.
- * 
- * The frame is set to be visible and centered on the screen.
- * 
- * @param commandProcessor the CommandProcessor used to handle game commands and logic.
- */
+    /**
+     * Initializes and displays the main game window for the Fungorium Game.
+     * This method creates a JFrame containing the game panel and a control panel 
+     * with buttons to update the view, save the game state, and load the game state.
+     * 
+     * The game panel is initialized with the provided command processor and is added 
+     * to the frame. The control panel buttons trigger actions on the game panel, 
+     * such as updating the view, saving the current game state to a file, and 
+     * loading the game state from a file.
+     * 
+     * The frame is set to be visible and centered on the screen.
+     * 
+     * @param commandProcessor the CommandProcessor used to handle game commands and logic.
+     */
 
     public static void createAndShowGUI(CommandProcessor commandProcessor) {
         JFrame frame = new JFrame("Fungorium Game");
