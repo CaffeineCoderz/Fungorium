@@ -4,14 +4,12 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseAdapter;
 
 import commands.CommandProcessor;
 import fungus.FungusBody;
 import fungus.FungusThread;
 import insect.Insect;
-import insect.InsectEffects;
 import sporeTypes.Spore;
 import tektonTypes.Tekton;
 import GUI.Views.*;
@@ -55,13 +53,13 @@ public class FungoriumGamePanel extends JPanel {
     // Background image
     private Image backgroundImage;
     private Boolean initialPaint = true; // Flag to indicate if it's the first paint
-    // Tekton images
-    private Image defTektonBg;
-    private Image decomposingTektonBg;
-    private Image decreasingTektonBg;
-    private Image feedThreadTektonBg;
-    private Image oneThreadTektonBg;
-    private Image onlyThreadTektonBg;
+    // // Tekton images
+    // private Image defTektonBg;
+    // private Image decomposingTektonBg;
+    // private Image decreasingTektonBg;
+    // private Image feedThreadTektonBg;
+    // private Image oneThreadTektonBg;
+    // private Image onlyThreadTektonBg;
     // Circular tekton images
     private Image defTektonBgCircular;
     private Image decomposingTektonBgCircular;
@@ -190,13 +188,13 @@ public class FungoriumGamePanel extends JPanel {
      */
     private void loadResources() {
         try {
-            // * Load SQUARE tekton images
-            defTektonBg = ImageIO.read(new File("src/resources/tektons/defaultTekton1.jpg"));
-            decomposingTektonBg = ImageIO.read(new File("src/resources/tektons/decomposingTekton1.jpg"));
-            decreasingTektonBg = ImageIO.read(new File("src/resources/tektons/decreasingTekton1.jpg"));
-            feedThreadTektonBg = ImageIO.read(new File("src/resources/tektons/feedThreadTekton1.jpg"));
-            oneThreadTektonBg = ImageIO.read(new File("src/resources/tektons/oneThreadTekton1.jpg"));
-            onlyThreadTektonBg = ImageIO.read(new File("src/resources/tektons/onlyThreadTekton1.jpg"));
+            // // * Load SQUARE tekton images
+            // defTektonBg = ImageIO.read(new File("src/resources/tektons/defaultTekton1.jpg"));
+            // decomposingTektonBg = ImageIO.read(new File("src/resources/tektons/decomposingTekton1.jpg"));
+            // decreasingTektonBg = ImageIO.read(new File("src/resources/tektons/decreasingTekton1.jpg"));
+            // feedThreadTektonBg = ImageIO.read(new File("src/resources/tektons/feedThreadTekton1.jpg"));
+            // oneThreadTektonBg = ImageIO.read(new File("src/resources/tektons/oneThreadTekton1.jpg"));
+            // onlyThreadTektonBg = ImageIO.read(new File("src/resources/tektons/onlyThreadTekton1.jpg"));
 
             // * Load CIRCULAR tekton images
             defTektonBgCircular = createCircularImage(
@@ -303,7 +301,7 @@ public class FungoriumGamePanel extends JPanel {
         sporeImages = new Image[]{defaultSporeImg, fastSporeImg, slowSporeImg, stunSporeImg,
                 disableCutSporeImg, multiplyInsectSporeImg};
         sporeView.drawSpores(g2d, objectPositions, commandProcessor.getCreatedObjects(), sporeImages);
-        drawThreads(g2d);
+        threadView.drawThreads(g2d, objectPositions, commandProcessor.getCreatedObjects(), tektonCardinalPoints, commandProcessor);
         insectView.drawInsects(g2d, objectPositions, commandProcessor.getCreatedObjects(), insectImg);
         bodyView.drawBodies(g2d, objectPositions, commandProcessor.getCreatedObjects(), fungusBodyImg);
         
@@ -805,154 +803,6 @@ public class FungoriumGamePanel extends JPanel {
         return null;
     }
 
-
-    /**
-     * Draws all FungusThreads in the game world, including connections to other
-     * threads and their associated Tekton(s). This method is called by the
-     * paintComponent method.
-     * @param g2d the Graphics2D object to draw the threads on
-     */
-    private void drawThreads(Graphics2D g2d) {
-        for (Map.Entry<String, Object> entry : commandProcessor.getCreatedObjects().entrySet()) {
-            if (entry.getValue() instanceof FungusThread) {
-                FungusThread thread = (FungusThread) entry.getValue();
-
-                try {
-                    if (thread.isBridge()) {
-                        // Bridge threads
-                        List<Tekton> tektons = thread.getTektons();
-                        if (tektons.size() >= 2) {
-                            Tekton firstTekton = tektons.get(0);
-                            Tekton secondTekton = tektons.get(1);
-
-                            String firstTektonName = commandProcessor.findByObject(firstTekton);
-                            String secondTektonName = commandProcessor.findByObject(secondTekton);
-
-                            if (firstTektonName != null && secondTektonName != null) {
-                                Point secondTektonCenter = getTektonCenter(secondTekton);
-                                Point firstControlPoint = findClosestCardinalPoint(firstTektonName, secondTektonCenter);
-                                Point secondControlPoint = findClosestCardinalPoint(secondTektonName,
-                                        getTektonCenter(firstTekton));
-
-                                if (firstControlPoint != null && secondControlPoint != null) {
-                                    g2d.setColor(new Color(150, 75, 0));
-                                    g2d.setStroke(new BasicStroke(THREAD_WIDTH));
-                                    g2d.draw(new Line2D.Double(firstControlPoint.x, firstControlPoint.y,
-                                            secondControlPoint.x, secondControlPoint.y));
-                                }
-                            }
-                        }
-                    } else if(thread.getNext() != null){
-                        // Draw connection to next thread if exists
-                        String nextThreadName = commandProcessor.findByObject(thread.getNext());
-                        if (nextThreadName != null && objectPositions.containsKey(nextThreadName)) {
-                            Point nextThreadPos = objectPositions.get(nextThreadName);
-                            Point threadPos = objectPositions.getOrDefault(entry.getKey(), nextThreadPos);
-
-                            g2d.setColor(new Color(150, 75, 0));
-                            g2d.setStroke(new BasicStroke(THREAD_WIDTH));
-                            g2d.draw(new Line2D.Double(
-                                    threadPos.x, threadPos.y,
-                                    nextThreadPos.x, nextThreadPos.y));
-                        }
-                    } else {
-                        // Draw non-bridge threads
-                        Tekton tekton = thread.getTektons().isEmpty() ? null : thread.getTektons().get(0);
-                        if (tekton != null) {
-                            String tektonName = commandProcessor.findByObject(tekton);
-                            if (tektonName != null) {
-                                Point controlPoint = getCardinalPoint(tektonName, "n");
-                                Point bodyPoint = null;
-
-                                if (thread.getMyBody() != null) {
-                                    String bodyName = commandProcessor.findByObject(thread.getMyBody());
-                                    if (bodyName != null) {
-                                        bodyPoint = objectPositions.get(bodyName);
-                                    }
-                                }
-
-                                if (controlPoint != null && bodyPoint != null) {
-                                    g2d.setColor(new Color(150, 75, 0));
-                                    g2d.setStroke(new BasicStroke(THREAD_WIDTH));
-                                    g2d.draw(new Line2D.Double(controlPoint.x, controlPoint.y, bodyPoint.x, bodyPoint.y));
-                                } else if (controlPoint != null) {
-                                    Point anotherControlPoint = getCardinalPoint(tektonName, "s");
-                                    if (anotherControlPoint != null) {
-                                        g2d.setColor(new Color(150, 75, 0));
-                                        g2d.setStroke(new BasicStroke(THREAD_WIDTH));
-                                        g2d.draw(new Line2D.Double(controlPoint.x, controlPoint.y, anotherControlPoint.x,
-                                                anotherControlPoint.y));
-                                    }
-                                }
-                            }
-                        }
-                    }
-        
-                    // Draw connections threads
-                    drawThreadConnections(g2d, thread, entry.getKey());
-
-                    // Draw thread name
-                    Point pos = objectPositions.get(entry.getKey());
-                    if (pos != null) {
-                        g2d.setColor(Color.WHITE);
-                        g2d.drawString(entry.getKey(), pos.x, pos.y);
-                    }
-                } catch (Exception e) {
-                    System.err.println("Error drawing thread: " + entry.getKey() + " - " + e.getMessage());
-                }
-            }
-        }
-    }
-
-    /**
-     * Finds the closest cardinal point to the given targetPoint for the given tektonName.
-     * If no cardinal points are found, returns null.
-     *
-     * @param tektonName the name of the tekton
-     * @param targetPoint the target point to find the closest cardinal point to
-     * @return the closest cardinal point, or null if none are found
-     */
-    private Point findClosestCardinalPoint(String tektonName, Point targetPoint) {
-        List<Point> cardinalPoints = tektonCardinalPoints.get(tektonName);
-        if (cardinalPoints == null || cardinalPoints.isEmpty()) {
-            return null;
-        }
-
-        Point closestPoint = null;
-        double minDistance = Double.MAX_VALUE;
-        
-        for (Point cardinalPoint : cardinalPoints) {
-            double distance = cardinalPoint.distance(targetPoint);
-            if (distance < minDistance) {
-                minDistance = distance;
-                closestPoint = cardinalPoint;
-            }
-        }
-
-        return closestPoint;
-    }
-    
-    /**
-     * Draws a connection between a FungusThread and its next thread.
-     * If the next thread is not found, nothing is drawn.
-     * @param g2d the Graphics2D object to draw on
-     * @param thread the FungusThread to draw the connection for
-     * @param threadKey the name of the current thread, used to get its position
-     */
-    private void drawThreadConnections(Graphics2D g2d, FungusThread thread, String threadKey) {
-        // Draw connection to next thread
-        if (thread.getNext() != null) {
-            String nextThreadName = commandProcessor.findByObject(thread.getNext());
-            if (nextThreadName != null && objectPositions.containsKey(nextThreadName)) {
-                Point nextThreadPos = objectPositions.get(nextThreadName);
-                Point threadPos = objectPositions.getOrDefault(threadKey, nextThreadPos);
-    
-                g2d.setColor(new Color(150, 75, 0));
-                g2d.setStroke(new BasicStroke(THREAD_WIDTH));
-                g2d.draw(new Line2D.Double(threadPos.x, threadPos.y, nextThreadPos.x, nextThreadPos.y));
-            }
-        }
-    }
 
     /**
      * Updates the game state by clearing the current object positions and
