@@ -255,6 +255,11 @@ public class FungoriumGamePanel extends JPanel {
         g2.setClip(circle);
         g2.drawImage(input, 0, 0, size, size, null);
 
+        // Fényerő csökkentése: átlátszó fekete réteg hozzáadása
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.9f)); // 90% átlátszóság
+        g2.setColor(new Color(0, 0, 0, 128)); // Fekete szín, 50% átlátszóság
+        g2.fill(circle);
+
         g2.dispose();
         return circleBuffer;
     }
@@ -520,6 +525,7 @@ public class FungoriumGamePanel extends JPanel {
             }
         }
     }
+    
     private Point calculateGroupedPosition(Tekton tekton, List<Point> tiles) {
         List<Tekton> neighbors = tekton.getNeighbours();
         List<Tekton> allTektons = commandProcessor.getCreatedObjects().values().stream()
