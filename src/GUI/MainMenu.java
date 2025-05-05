@@ -3,6 +3,7 @@ package GUI;
 import javax.swing.*;
 
 import commands.CommandProcessor;
+import logic.GameLogic;
 
 import java.awt.*;
 import java.io.BufferedReader;
@@ -13,9 +14,9 @@ import javax.imageio.ImageIO;
 
 public class MainMenu extends JFrame {
 
-    protected CommandProcessor commandProcessor;
-    public MainMenu(CommandProcessor commandP) {
-        commandProcessor = commandP;
+    protected GameLogic gameLogic;
+    public MainMenu(GameLogic gameLogic) {
+        this.gameLogic = gameLogic;
         setTitle("Fungorium - Főmenü");
         setSize(800, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -82,10 +83,10 @@ public class MainMenu extends JFrame {
 
         add(mainPanel);
 
-        newGameButton.addActionListener(e -> openChooseSpeciesScreen(commandP));
+        newGameButton.addActionListener(e -> openChooseSpeciesScreen(gameLogic));
         rulesButton.addActionListener(e -> showRules());
         settingsButton.addActionListener(e -> {
-            Settings.showSettings(this,commandP); 
+            Settings.showSettings(this,gameLogic); 
             dispose();
         });
         exitButton.addActionListener(e -> System.exit(0));
@@ -116,8 +117,8 @@ public class MainMenu extends JFrame {
  * @param commandP The CommandProcessor instance used to handle game commands.
  */
 
-    private void openChooseSpeciesScreen(CommandProcessor commandP) {
-        FungoriumGamePanel.createAndShowGUI(commandP);
+    private void openChooseSpeciesScreen(GameLogic gameLogic) {
+        FungoriumGamePanel.createAndShowGUI(gameLogic);
         dispose();
     }
 
@@ -156,8 +157,8 @@ public class MainMenu extends JFrame {
          * @param args The command line arguments, currently unused.
          */
     public static void main(String[] args) {
-        CommandProcessor commandProcessor = new CommandProcessor();
-        SwingUtilities.invokeLater(() -> new MainMenu(commandProcessor).setVisible(true));
+        GameLogic gameLogic = new GameLogic();
+        SwingUtilities.invokeLater(() -> new MainMenu(gameLogic).setVisible(true));
     }
 
     private static class BackgroundPanel extends JPanel {
