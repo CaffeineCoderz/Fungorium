@@ -1,5 +1,6 @@
 package GUI;
 
+import javax.swing.JPanel;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.*;
@@ -10,10 +11,43 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.awt.Point;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class GameStateHandler {
+    private Object selectedObject;
+    private Point selectedObjectPosition;
+
+    /**
+     * Gets the currently selected object.
+     * 
+     * @return the selected object
+     */
+    public Object getSelectedObject() {
+        return selectedObject;
+    }
+
+    /**
+     * Sets the currently selected object and triggers any necessary updates.
+     * 
+     * @param selectedObject the object to select
+     */
+    public void setSelectedObject(Object selectedObject) {
+        this.selectedObject = selectedObject;
+        //updateUIBasedOnSelection(); // Frissíti a felhasználói felületet
+    }
+
+    /**
+ * Updates the UI based on the currently selected object.
+    */
+    private void updateUIBasedOnSelection() {
+        // Példa: Frissítse az alsó sávot
+        // JPanel bottomBar = getBottomBar(); // Feltételezve, hogy van egy metódus az alsó sáv lekérésére
+        //updateBottomBar(selectedObject, bottomBar);
+    }
+
     /**
      * Saves the game state to an XML file, given a map of object positions.
      * The XML file should contain a root element called "GameState" which contains

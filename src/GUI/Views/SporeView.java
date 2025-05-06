@@ -9,21 +9,20 @@ import sporeTypes.*;
 public class SporeView {
     private static final int SPORE_SIZE = 10;
 
-/**
- * Draws all Spore objects in the game.
- *
- * Iterates over the created objects and draws each Spore object based on its
- * position and available spore images. If a corresponding image is found for
- * the spore type, it is used; otherwise, a fallback visual representation is
- * drawn. Additionally, displays the name of each spore above its visual
- * representation.
- *
- * @param g2d the Graphics2D object used for drawing
- * @param objectPositions a mapping of object names to their positions on the board
- * @param createdObjects a mapping of object names to their objects
- * @param sporeImages an array of images representing different spore types
- */
-
+    /**
+     * Draws all Spore objects in the game.
+     *
+     * Iterates over the created objects and draws each Spore object based on its
+     * position and available spore images. If a corresponding image is found for
+     * the spore type, it is used; otherwise, a fallback visual representation is
+     * drawn. Additionally, displays the name of each spore above its visual
+     * representation.
+     *
+     * @param g2d the Graphics2D object used for drawing
+     * @param objectPositions a mapping of object names to their positions on the board
+     * @param createdObjects a mapping of object names to their objects
+     * @param sporeImages an array of images representing different spore types
+     */
     public void drawSpores(Graphics2D g2d, Map<String, Point> objectPositions, Map<String, Object> createdObjects, Image[] sporeImages) {
         for (Map.Entry<String, Object> entry : createdObjects.entrySet()) {
             if (entry.getValue() instanceof Spore) {
@@ -70,31 +69,8 @@ public class SporeView {
             g2d.drawImage(sporeImages[5], x, y, width, height, null);
         } else {
             // Fallback: Draw a colored circle if no image is available
-            g2d.setColor(determineSporeColor(spore));
-            g2d.fill(new Ellipse2D.Double(x, y, width, height));
             g2d.setColor(Color.WHITE);
             g2d.draw(new Ellipse2D.Double(x, y, width, height));
         }
-    }
-
-    /**
-     * Determines the color of the spore image based on the spore class
-     * 
-     * @param spore the spore object to determine the color for
-     * @return the color of the spore image
-     */
-    private Color determineSporeColor(Object spore) {
-        if (spore instanceof FastSpore) {
-            return new Color(255, 200, 200);
-        } else if (spore instanceof MultiplyInsectSpore) {
-            return new Color(200, 255, 200);
-        } else if (spore instanceof SlowSpore) {
-            return new Color(200, 200, 255);
-        } else if (spore instanceof StunSpore) {
-            return new Color(255, 255, 200);
-        } else if (spore instanceof DisableCutSpore) {
-            return new Color(255, 200, 255);
-        }
-        return Color.WHITE;
     }
 }

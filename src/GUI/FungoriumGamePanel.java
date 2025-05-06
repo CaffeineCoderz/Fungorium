@@ -689,7 +689,7 @@ public class FungoriumGamePanel extends JPanel {
         Point threadPos = objectPositions.get(threadName);
         System.out.println("Thread position: " + threadPos);
 
-        // Calculate the center of the thread based on its starting point and ending point
+        // Calculate the center of the thread based on its starting point and ending povint
         int x = threadPos.x + (THREAD_WIDTH / 2);
         int y = threadPos.y + (THREAD_WIDTH / 2);
         return new Point(x, y);

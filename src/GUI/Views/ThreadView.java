@@ -13,7 +13,8 @@ import commands.CommandProcessor;
 public class ThreadView {
     private static final int THREAD_WIDTH = 3;
     private static final Color THREAD_COLOR = new Color(150, 75, 0);
-
+    private Color[] colors = {Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.CYAN, Color.MAGENTA};
+    
     /**
      * Draws all FungusThreads in the game world.
      *
