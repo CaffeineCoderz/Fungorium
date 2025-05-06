@@ -16,7 +16,7 @@ public class main {
         // commandProcessor.processConfigText("setConfig");
 
         //FungoriumGamePanel.createAndShowGUI(commandProcessor);
-        SwingUtilities.invokeLater(() -> new MainMenu(commandProcessor).setVisible(true));
+        SwingUtilities.invokeLater(() -> new MainMenu(gameLogic).setVisible(true));
         Scanner scanner = new Scanner(System.in);
         int choice = 0;
 

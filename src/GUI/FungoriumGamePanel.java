@@ -10,6 +10,7 @@ import commands.CommandProcessor;
 import fungus.FungusBody;
 import fungus.FungusThread;
 import insect.Insect;
+import logic.GameLogic;
 import sporeTypes.Spore;
 import tektonTypes.Tekton;
 import GUI.Views.*;
@@ -34,7 +35,7 @@ import java.awt.image.BufferedImage;
 
 public class FungoriumGamePanel extends JPanel {
     // Handlers
-    private CommandProcessor commandProcessor;
+    private GameLogic gameLogic;
     private RenderMap renderMap;
     private static GameStateHandler saver = new GameStateHandler();
     // Positions and cells
@@ -96,8 +97,8 @@ public class FungoriumGamePanel extends JPanel {
     private ThreadView threadView = new ThreadView();
     private StatusView statusView;
 
-    public FungoriumGamePanel(CommandProcessor commandProcessor) {
-        this.commandProcessor = commandProcessor;
+    public FungoriumGamePanel(GameLogic gameLogic) {
+        this.gameLogic = gameLogic;
         setLayout(null); // Absolute positioning for overlay panels
         setPreferredSize(new Dimension(800, 800));
         renderMap = new RenderMap(RenderMap.MapSize.MEDIUM);
@@ -132,7 +133,7 @@ public class FungoriumGamePanel extends JPanel {
                         PrintStream originalOut = System.out;
                         try {
                             System.setOut(new PrintStream(outputStream));
-                            commandProcessor.process(command); // Execute the command
+                            gameLogic.getCommandProcessor().process(command); // Execute the command
                             System.out.flush();
                             String status = outputStream.toString().trim(); // Get the captured output
                             statusView.updateStatus(status); // Update the status view
@@ -292,7 +293,7 @@ public class FungoriumGamePanel extends JPanel {
         // Draw all objects
         tektonImages = new Image[]{defTektonBgCircular, decomposingTektonBgCircular, decreasingTektonBgCircular,
             feedThreadTektonBgCircular, oneThreadTektonBgCircular, onlyThreadTektonBgCircular};
-        tektonView.drawTektons(g2d, objectPositions, commandProcessor.getCreatedObjects(),
+        tektonView.drawTektons(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(),
         getWidth() / renderMap.getCols(), getHeight() / renderMap.getRows(), TEKTON_CELLS, tektonImages);
 
         calculateTektonCardinalPoints();
@@ -305,10 +306,10 @@ public class FungoriumGamePanel extends JPanel {
         }
         sporeImages = new Image[]{defaultSporeImg, fastSporeImg, slowSporeImg, stunSporeImg,
                 disableCutSporeImg, multiplyInsectSporeImg};
-        sporeView.drawSpores(g2d, objectPositions, commandProcessor.getCreatedObjects(), sporeImages);
-        threadView.drawThreads(g2d, objectPositions, commandProcessor.getCreatedObjects(), tektonCardinalPoints, commandProcessor);
-        insectView.drawInsects(g2d, objectPositions, commandProcessor.getCreatedObjects(), insectImg);
-        bodyView.drawBodies(g2d, objectPositions, commandProcessor.getCreatedObjects(), fungusBodyImg);
+        sporeView.drawSpores(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(), sporeImages);
+        threadView.drawThreads(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(), tektonCardinalPoints, gameLogic.getCommandProcessor());
+        insectView.drawInsects(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(), insectImg);
+        bodyView.drawBodies(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(), fungusBodyImg);
         
 
         if (initialPaint) {
@@ -386,7 +387,7 @@ public class FungoriumGamePanel extends JPanel {
         int maxRetries = 100; // Maximum number of retries to find a free spot
         occupiedCells.clear(); // Initialize the set of occupied cells
 
-        for (Map.Entry<String, Object> entry : commandProcessor.getCreatedObjects().entrySet()) {
+        for (Map.Entry<String, Object> entry : gameLogic.getCommandProcessor().getCreatedObjects().entrySet()) {
             if (entry.getValue() instanceof Tekton) {
                 boolean placed = false;
                 int retries = 0;
@@ -418,7 +419,7 @@ public class FungoriumGamePanel extends JPanel {
         }
 
         // Position other objects relative to their tektons
-        for (Map.Entry<String, Object> entry : commandProcessor.getCreatedObjects().entrySet()) {
+        for (Map.Entry<String, Object> entry : gameLogic.getCommandProcessor().getCreatedObjects().entrySet()) {
             String name = entry.getKey();
             Object obj = entry.getValue();
 
@@ -437,10 +438,10 @@ public class FungoriumGamePanel extends JPanel {
                 // Position threads between their connected objects
                 if (!thread.getTektons().isEmpty()) {
                     Tekton firstTekton = thread.getTektons().get(0);
-                    String firstTektonName = commandProcessor.findByObject(firstTekton);
+                    String firstTektonName = gameLogic.getCommandProcessor().findByObject(firstTekton);
 
                     if (thread.getNextBody() != null) {
-                        String nextBodyName = commandProcessor.findByObject(thread.getNextBody());
+                        String nextBodyName = gameLogic.getCommandProcessor().findByObject(thread.getNextBody());
                         if (firstTektonName != null && nextBodyName != null &&
                                 objectPositions.containsKey(firstTektonName) &&
                                 objectPositions.containsKey(nextBodyName)) {
@@ -453,7 +454,7 @@ public class FungoriumGamePanel extends JPanel {
                                     (start.y + end.y) / 2));
                         }
                     } else if (thread.getNext() != null) {
-                        String nextThreadName = commandProcessor.findByObject(thread.getNext());
+                        String nextThreadName = gameLogic.getCommandProcessor().findByObject(thread.getNext());
                         if (firstTektonName != null && nextThreadName != null &&
                                 objectPositions.containsKey(firstTektonName) &&
                                 objectPositions.containsKey(nextThreadName)) {
@@ -503,7 +504,7 @@ public class FungoriumGamePanel extends JPanel {
         }
     
         // Az insect a threadtől függ, ezért a threaderket számoljuk előbb és utánna megyünk végig az insecteken
-        for (Map.Entry<String, Object> entry : commandProcessor.getCreatedObjects().entrySet()) {
+        for (Map.Entry<String, Object> entry : gameLogic.getCommandProcessor().getCreatedObjects().entrySet()) {
             String name = entry.getKey();
             Object obj = entry.getValue();
 
@@ -511,7 +512,7 @@ public class FungoriumGamePanel extends JPanel {
                 Insect insect = (Insect) obj;
                 FungusThread thread = insect.getThread();
                 if (thread != null) {
-                    String threadName = commandProcessor.findByObject(thread);
+                    String threadName = gameLogic.getCommandProcessor().findByObject(thread);
                     if (threadName != null && objectPositions.containsKey(threadName)) {
                         Point threadPos = objectPositions.get(threadName);
                         // Position insect near the thread
@@ -526,7 +527,7 @@ public class FungoriumGamePanel extends JPanel {
     
     private Point calculateGroupedPosition(Tekton tekton, List<Point> tiles) {
         List<Tekton> neighbors = tekton.getNeighbours();
-        List<Tekton> allTektons = commandProcessor.getCreatedObjects().values().stream()
+        List<Tekton> allTektons = gameLogic.getCommandProcessor().getCreatedObjects().values().stream()
                 .filter(obj -> obj instanceof Tekton)
                 .map(obj -> (Tekton) obj)
                 .filter(t -> t != tekton)
@@ -539,7 +540,7 @@ public class FungoriumGamePanel extends JPanel {
 
         // Minden szomszédot sorban megpróbálunk
         for (Tekton neighbor : neighbors) {
-            String neighborName = commandProcessor.findByObject(neighbor);
+            String neighborName = gameLogic.getCommandProcessor().findByObject(neighbor);
             if (neighborName == null || !objectPositions.containsKey(neighborName)) {
                 continue;
             }
@@ -561,7 +562,7 @@ public class FungoriumGamePanel extends JPanel {
 
         // Ha nem találtunk ideális helyet, próbáljunk olyat ami csak valid
         for (Tekton neighbor : neighbors) {
-            String neighborName = commandProcessor.findByObject(neighbor);
+            String neighborName = gameLogic.getCommandProcessor().findByObject(neighbor);
             if (neighborName == null || !objectPositions.containsKey(neighborName)) {
                 continue;
             }
@@ -612,7 +613,7 @@ public class FungoriumGamePanel extends JPanel {
 
     private boolean isAdjacentToOtherTekton(Point pos, List<Tekton> otherTektons) {
         for (Tekton tekton : otherTektons) {
-            String tektonName = commandProcessor.findByObject(tekton);
+            String tektonName = gameLogic.getCommandProcessor().findByObject(tekton);
             if (tektonName != null && objectPositions.containsKey(tektonName)) {
                 Point tektonPos = objectPositions.get(tektonName);
                 
@@ -645,7 +646,7 @@ public class FungoriumGamePanel extends JPanel {
 
         for (Map.Entry<String, Point> entry : objectPositions.entrySet()) {
             String name = entry.getKey();
-            Object obj = commandProcessor.getCreatedObjects().get(name);
+            Object obj = gameLogic.getCommandProcessor().getCreatedObjects().get(name);
 
             if (obj instanceof Tekton) {
                 Point topLeft = entry.getValue();
@@ -675,7 +676,7 @@ public class FungoriumGamePanel extends JPanel {
             return null;
         }
 
-        String threadName = commandProcessor.findByObject(thread);
+        String threadName = gameLogic.getCommandProcessor().findByObject(thread);
         if (threadName == null) {
             System.out.println("Thread name not found");
             return null;
@@ -802,7 +803,7 @@ public class FungoriumGamePanel extends JPanel {
      *         it doesn't have a position
      */
     private Point getTektonPosition(Tekton tekton) {
-        String tektonName = commandProcessor.findByObject(tekton);
+        String tektonName = gameLogic.getCommandProcessor().findByObject(tekton);
         if (tektonName != null && objectPositions.containsKey(tektonName)) {
             return objectPositions.get(tektonName);
         }
@@ -861,11 +862,11 @@ public class FungoriumGamePanel extends JPanel {
      * @param commandProcessor the CommandProcessor used to handle game commands and logic.
      */
 
-    public static void createAndShowGUI(CommandProcessor commandProcessor) {
+    public static void createAndShowGUI(GameLogic gameLogic) {
         JFrame frame = new JFrame("Fungorium Game");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        FungoriumGamePanel gamePanel = new FungoriumGamePanel(commandProcessor);
+        FungoriumGamePanel gamePanel = new FungoriumGamePanel(gameLogic);
         frame.add(gamePanel);
         frame.pack();
         frame.setLocationRelativeTo(null);
