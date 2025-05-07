@@ -27,8 +27,15 @@ public class TektonView {
      * @param tektonImages An array of images corresponding to different Tekton types.
      */
 
-    public void drawTektons(Graphics2D g2d, Map<String, Point> objectPositions, Map<String, Object> createdObjects,
-            int cellWidth, int cellHeight, int size, Image[] tektonImages) {
+    public void drawTektons(
+            Graphics2D g2d, 
+            Map<String, Point> objectPositions, 
+            Map<String, Object> createdObjects,
+            int cellWidth, 
+            int cellHeight, 
+            int size, 
+            Image[] tektonImages
+    ) {
         for (Map.Entry<String, Point> entry : objectPositions.entrySet()) {
             String name = entry.getKey();
             Object obj = createdObjects.get(name);
@@ -66,7 +73,15 @@ public class TektonView {
      * @param height the height of the Tekton image
      * @param tektonImages the available Tekton images
      */
-    private void drawTektonImage(Graphics2D g2d, Object tekton, int x, int y, int width, int height, Image[] tektonImages) {
+    private void drawTektonImage(
+        Graphics2D g2d, 
+        Object tekton, 
+        int x, 
+        int y, 
+        int width, 
+        int height, 
+        Image[] tektonImages
+    ) {
         if (tekton instanceof DecomposingTekton && tektonImages[1] != null) {
             g2d.drawImage(tektonImages[1], x, y, width, height, null);
         } else if (tekton instanceof DecreasingTekton && tektonImages[2] != null) {

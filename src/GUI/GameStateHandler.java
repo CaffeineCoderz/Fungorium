@@ -1,8 +1,13 @@
 package GUI;
 
+import javax.swing.JPanel;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.*;
+
+import commands.CommandProcessor;
+import logic.GameLogic;
+
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -10,10 +15,29 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.awt.Point;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class GameStateHandler {
+
+    private GameLogic gameLogic; // Assuming you have a GameLogic class to handle game logic
+
+    public GameStateHandler(GameLogic gameLogic) {
+        this.gameLogic = gameLogic;
+    }
+
+
+    /**
+        * Updates the UI based on the currently selected object.
+    */
+    private void updateUIBasedOnSelection() {
+        // Példa: Frissítse az alsó sávot
+        // JPanel bottomBar = getBottomBar(); // Feltételezve, hogy van egy metódus az alsó sáv lekérésére
+        //updateBottomBar(selectedObject, bottomBar);
+    }
+
     /**
      * Saves the game state to an XML file, given a map of object positions.
      * The XML file should contain a root element called "GameState" which contains

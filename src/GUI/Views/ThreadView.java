@@ -1,5 +1,6 @@
 package GUI.Views;
 
+import fungus.FungusBody;
 import fungus.FungusThread;
 import tektonTypes.Tekton;
 
@@ -13,7 +14,8 @@ import commands.CommandProcessor;
 public class ThreadView {
     private static final int THREAD_WIDTH = 3;
     private static final Color THREAD_COLOR = new Color(150, 75, 0);
-
+    private Color[] colors = {Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.CYAN, Color.MAGENTA};
+    
     /**
      * Draws all FungusThreads in the game world.
      *
@@ -54,14 +56,6 @@ public class ThreadView {
         }
     }
 
-    /**
-     * Draws a line between the two closest cardinal points of the two Tektons that a bridge thread connects.
-     * @param g2d the Graphics2D object to draw on
-     * @param thread the FungusThread to draw
-     * @param objectPositions a map of object names to their positions
-     * @param tektonCardinalPoints a map of Tekton names to their cardinal points
-     * @param commandProcessor the CommandProcessor instance to find the associated body
-     */
     private void drawBridgeThread(Graphics2D g2d, FungusThread thread, Map<String, Point> objectPositions,
                                   Map<String, List<Point>> tektonCardinalPoints, CommandProcessor commandProcessor) {
         List<Tekton> tektons = thread.getTektons();
@@ -76,14 +70,6 @@ public class ThreadView {
         }
     }
 
-    /**
-     * Draws a line between this thread and the next thread in the list. If the next thread is not found, nothing is drawn.
-     * @param g2d the Graphics2D object to draw on
-     * @param thread the FungusThread to draw
-     * @param threadName the name of the thread
-     * @param objectPositions the mapping of object names to their positions
-     * @param commandProcessor the CommandProcessor instance to find the next thread
-     */
     private void drawConnectionToNextThread(Graphics2D g2d, FungusThread thread, String threadName,
                                             Map<String, Point> objectPositions, CommandProcessor commandProcessor) {
         String nextThreadName = commandProcessor.findByObject(thread.getNext());
@@ -94,67 +80,79 @@ public class ThreadView {
         }
     }
 
-    /**
-     * Draws a line between this thread and its associated body. If the body is not found, nothing is drawn.
-     * @param g2d the Graphics2D object to draw on
-     * @param thread the FungusThread to draw
-     * @param threadName the name of the thread
-     * @param objectPositions the mapping of object names to their positions
-     * @param tektonCardinalPoints the mapping of Tekton names to their cardinal points
-     * @param commandProcessor the CommandProcessor instance to find the associated body
-     */
-    private void drawNonBridgeThread(Graphics2D g2d, FungusThread thread, String threadName,
-                                     Map<String, Point> objectPositions,
-                                     Map<String, List<Point>> tektonCardinalPoints, CommandProcessor commandProcessor) {
-        Tekton tekton = thread.getTektons().isEmpty() ? null : thread.getTektons().get(0);
-        if (tekton != null) {
-            Point controlPoint = findClosestCardinalPoint(
-                tekton, tektonCardinalPoints, objectPositions.get(threadName), commandProcessor
-            );
-            Point bodyPoint = objectPositions.get(commandProcessor.findByObject(thread.getMyBody()));
-            drawLine(g2d, controlPoint, bodyPoint);
+    private void drawNonBridgeThread(
+        Graphics2D g2d, 
+        FungusThread thread, 
+        String threadName,
+        Map<String, Point> objectPositions,
+        Map<String, List<Point>> tektonCardinalPoints, 
+        CommandProcessor commandProcessor
+    ) {
+        if (thread.getTektons().isEmpty()) return;
+        Tekton tekton = thread.getTektons().get(0);
+        
+        FungusBody body = thread.getMyBody();
+        if (body == null) return;
+        
+        String bodyName = commandProcessor.findByObject(body);
+        if (bodyName == null || !objectPositions.containsKey(bodyName)) return;
+        
+        Point bodyPos = objectPositions.get(bodyName);
+        
+        Point controlPoint = findClosestCardinalPoint(
+            tekton, 
+            tektonCardinalPoints, 
+            bodyPos,
+            commandProcessor
+        );
+        
+        if (controlPoint != null) {
+            drawLine(g2d, controlPoint, bodyPos);
         }
     }
 
-/**
- * Finds the closest cardinal point of a given Tekton to a target point.
- *
- * This method retrieves the list of cardinal points associated with the specified
- * Tekton and calculates which point is nearest to the given target point.
- *
- * @param tekton The Tekton whose cardinal points are being considered.
- * @param tektonCardinalPoints A map of Tekton names to their cardinal points.
- * @param targetPoint The point to which the nearest cardinal point is to be found.
- * @param commandProcessor The CommandProcessor instance used to find the Tekton's object name.
- * @return The closest cardinal point to the target point, or null if no cardinal points are found.
- */
+    private Point findClosestCardinalPoint(
+        Tekton tekton, 
+        Map<String, List<Point>> tektonCardinalPoints,
+        Point targetPoint, 
+        CommandProcessor commandProcessor
+    ) {
+        String tektonName = commandProcessor.findByObject(tekton);
+        if (tektonName == null || targetPoint == null) {
+            return null;
+        }
 
-    private Point findClosestCardinalPoint(Tekton tekton, Map<String, List<Point>> tektonCardinalPoints,
-                                           Point targetPoint, CommandProcessor commandProcessor) {
-        List<Point> cardinalPoints = tektonCardinalPoints.get(commandProcessor.findByObject(tekton));
+        List<Point> cardinalPoints = tektonCardinalPoints.get(tektonName);
         if (cardinalPoints == null || cardinalPoints.isEmpty()) {
             return null;
         }
 
-        return cardinalPoints.stream()
-                .min((p1, p2) -> Double.compare(p1.distance(targetPoint), p2.distance(targetPoint)))
-                .orElse(null);
-    }
+        // Convert targetPoint from grid coordinates to pixel coordinates
+        int cellWidth = 800 / 25;
+        int cellHeight = 800 / 25;
+        Point pixelTarget = new Point(
+            targetPoint.y * cellWidth + (cellWidth / 2),
+            targetPoint.x * cellHeight + (cellHeight / 2)
+        );
 
-/**
- * Draws a line between two points using the specified Graphics2D context.
- * 
- * This method sets the color and stroke for the line before drawing it.
- * If either the start or end point is null, the line will not be drawn.
- * 
- * @param g2d the Graphics2D object used for drawing
- * @param start the starting point of the line
- * @param end the ending point of the line
- */
+        Point closest = cardinalPoints.get(0);
+        double minDistance = closest.distance(pixelTarget);
+        
+        for (int i = 1; i < cardinalPoints.size(); i++) {
+            double distance = cardinalPoints.get(i).distance(pixelTarget);
+            if (distance < minDistance) {
+                minDistance = distance;
+                closest = cardinalPoints.get(i);
+            }
+        }
+
+        return closest;
+    }
 
     private void drawLine(Graphics2D g2d, Point start, Point end) {
         if (start != null && end != null) {
-            g2d.setColor(THREAD_COLOR);
+            int randomIndex = (int) (Math.random() * colors.length);
+            g2d.setColor(colors[randomIndex]);
             g2d.setStroke(new BasicStroke(THREAD_WIDTH));
             g2d.draw(new Line2D.Double(start.x, start.y, end.x, end.y));
         }
