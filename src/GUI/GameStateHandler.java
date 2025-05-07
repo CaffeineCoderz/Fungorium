@@ -4,6 +4,10 @@ import javax.swing.JPanel;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.*;
+
+import commands.CommandProcessor;
+import logic.GameLogic;
+
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -17,30 +21,16 @@ import java.util.List;
 import java.util.Map;
 
 public class GameStateHandler {
-    private Object selectedObject;
-    private Point selectedObjectPosition;
 
-    /**
-     * Gets the currently selected object.
-     * 
-     * @return the selected object
-     */
-    public Object getSelectedObject() {
-        return selectedObject;
+    private GameLogic gameLogic; // Assuming you have a GameLogic class to handle game logic
+
+    public GameStateHandler(GameLogic gameLogic) {
+        this.gameLogic = gameLogic;
     }
 
-    /**
-     * Sets the currently selected object and triggers any necessary updates.
-     * 
-     * @param selectedObject the object to select
-     */
-    public void setSelectedObject(Object selectedObject) {
-        this.selectedObject = selectedObject;
-        //updateUIBasedOnSelection(); // Frissíti a felhasználói felületet
-    }
 
     /**
- * Updates the UI based on the currently selected object.
+        * Updates the UI based on the currently selected object.
     */
     private void updateUIBasedOnSelection() {
         // Példa: Frissítse az alsó sávot

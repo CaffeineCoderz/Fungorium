@@ -76,4 +76,6 @@
 /set th3 next th4
 /set th4 addtekton t3
 /set th4 mybody b3
+/set th5 addtekton t1
+/set th5 addtekton t3
 /set b3 tekton t3

@@ -37,7 +37,7 @@ public class FungoriumGamePanel extends JPanel {
     // Handlers
     private GameLogic gameLogic;
     private RenderMap renderMap;
-    private static GameStateHandler saver = new GameStateHandler();
+    private static GameStateHandler saver;
     // Positions and cells
     private Map<String, Point> objectPositions = new HashMap<>();
     private Set<Point> occupiedCells = new HashSet<>();
@@ -54,14 +54,7 @@ public class FungoriumGamePanel extends JPanel {
     // Background image
     private Image backgroundImage;
     private Boolean initialPaint = true; // Flag to indicate if it's the first paint
-    // // Tekton images
-    // private Image defTektonBg;
-    // private Image decomposingTektonBg;
-    // private Image decreasingTektonBg;
-    // private Image feedThreadTektonBg;
-    // private Image oneThreadTektonBg;
-    // private Image onlyThreadTektonBg;
-    // Circular tekton images
+
     private Image defTektonBgCircular;
     private Image decomposingTektonBgCircular;
     private Image decreasingTektonBgCircular;
@@ -84,8 +77,8 @@ public class FungoriumGamePanel extends JPanel {
     private Image fungusBodyImg;
 
     // Thread grow
-    private Map<String, Point> threadEndpoints = new HashMap<>(); // Thread végpontok tárolása
     private Map<String, List<Point>> tektonCardinalPoints = new HashMap<>(); // Tekton égtáji pontjai
+    private Map<String, Point> threadEndpoints = new HashMap<>(); // Thread végpontok tárolása
     private List<Line2D> possibleGrowthLines = new ArrayList<>(); // Lehetséges növekedési irányok
     private Map<FungusThread, String> threadDirections = new HashMap<>();
 
@@ -99,6 +92,7 @@ public class FungoriumGamePanel extends JPanel {
 
     public FungoriumGamePanel(GameLogic gameLogic) {
         this.gameLogic = gameLogic;
+        saver = new GameStateHandler(gameLogic);
         setLayout(null); // Absolute positioning for overlay panels
         setPreferredSize(new Dimension(800, 800));
         renderMap = new RenderMap(RenderMap.MapSize.MEDIUM);
@@ -147,7 +141,7 @@ public class FungoriumGamePanel extends JPanel {
                 }
             }
         );       
-            
+
         // Load the background image
         try {
             backgroundImage = ImageIO.read(new File("src/resources/PanelBg/gamePanel3.jpg"));
@@ -189,14 +183,6 @@ public class FungoriumGamePanel extends JPanel {
      */
     private void loadResources() {
         try {
-            // // * Load SQUARE tekton images
-            // defTektonBg = ImageIO.read(new File("src/resources/tektons/defaultTekton1.jpg"));
-            // decomposingTektonBg = ImageIO.read(new File("src/resources/tektons/decomposingTekton1.jpg"));
-            // decreasingTektonBg = ImageIO.read(new File("src/resources/tektons/decreasingTekton1.jpg"));
-            // feedThreadTektonBg = ImageIO.read(new File("src/resources/tektons/feedThreadTekton1.jpg"));
-            // oneThreadTektonBg = ImageIO.read(new File("src/resources/tektons/oneThreadTekton1.jpg"));
-            // onlyThreadTektonBg = ImageIO.read(new File("src/resources/tektons/onlyThreadTekton1.jpg"));
-
             // * Load CIRCULAR tekton images
             defTektonBgCircular = createCircularImage(
                     ImageIO.read(new File("src/resources/tektons/defaultTekton1.jpg")));
@@ -224,7 +210,6 @@ public class FungoriumGamePanel extends JPanel {
 
             // Load insect image
             insectImg = ImageIO.read(new File("src/resources/insect.png"));
-
         } catch (Exception e) {
             System.err.println("Error loading resources: " + e.getMessage());
         }
@@ -311,6 +296,16 @@ public class FungoriumGamePanel extends JPanel {
         insectView.drawInsects(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(), insectImg);
         bodyView.drawBodies(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(), fungusBodyImg);
         
+        // Jelenleg semmilyen objektum nincs, amit rajzolni lehetne mivel az objectPositions-be nem kerülnek bele a threadek
+        g2d.setColor(Color.YELLOW);
+        for (Map.Entry<String, Point> entry : objectPositions.entrySet()) {
+            System.out.println("Object: " + entry.getKey() + " at " + entry.getValue());
+            if (entry.getKey().startsWith("th")) { // threads
+                Point p = entry.getValue();
+                System.out.println("Thread: " + entry.getKey() + " at " + p);
+                g2d.fillOval(p.x - 3, p.y - 3, 6, 6);
+            }
+        }
 
         if (initialPaint) {
             initialPaint = false;
@@ -525,6 +520,38 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
     
+    private void verifyThreadConnections() {
+        System.out.println("\n=== THREAD CONNECTION VERIFICATION ===");
+        for (Map.Entry<String, Object> entry : gameLogic.getCommandProcessor().getCreatedObjects().entrySet()) {
+            if (entry.getValue() instanceof FungusThread) {
+                FungusThread thread = (FungusThread) entry.getValue();
+                System.out.println("\nThread: " + entry.getKey());
+
+                // Verify tekton connections
+                System.out.println("Connected to tektons:");
+                for (Tekton tekton : thread.getTektons()) {
+                    String tektonName = gameLogic.getCommandProcessor().findByObject(tekton);
+                    System.out.println("- " + tektonName + " (exists: " +
+                            objectPositions.containsKey(tektonName) + ")");
+                }
+
+                // Verify body connection
+                if (thread.getNextBody() != null) {
+                    String bodyName = gameLogic.getCommandProcessor().findByObject(thread.getNextBody());
+                    System.out.println("Connects to body: " + bodyName + " (exists: " +
+                            objectPositions.containsKey(bodyName) + ")");
+                }
+
+                // Verify thread connection
+                if (thread.getNext() != null) {
+                    String nextThreadName = gameLogic.getCommandProcessor().findByObject(thread.getNext());
+                    System.out.println("Connects to thread: " + nextThreadName + " (exists: " +
+                            objectPositions.containsKey(nextThreadName) + ")");
+                }
+            }
+        }
+    }
+
     private Point calculateGroupedPosition(Tekton tekton, List<Point> tiles) {
         List<Tekton> neighbors = tekton.getNeighbours();
         List<Tekton> allTektons = gameLogic.getCommandProcessor().getCreatedObjects().values().stream()
@@ -553,7 +580,6 @@ public class FungoriumGamePanel extends JPanel {
             
             for (int[] dir : directions) {
                 Point newPos = new Point(neighborPos.x + dir[0]*3, neighborPos.y + dir[1]*3);
-                
                 if (isPositionValid(newPos) && !isAdjacentToOtherTekton(newPos, allTektons)) {
                     return newPos;
                 }
@@ -569,7 +595,8 @@ public class FungoriumGamePanel extends JPanel {
 
             Point neighborPos = objectPositions.get(neighborName);
             int[][] directions = {{1,0}, {0,1}, {-1,0}, {0,-1}};
-            
+            Collections.shuffle(Arrays.asList(directions));
+
             for (int[] dir : directions) {
                 Point newPos = new Point(neighborPos.x + dir[0]*4, neighborPos.y + dir[1]*4);
                 if (isPositionValid(newPos)) {
@@ -618,7 +645,7 @@ public class FungoriumGamePanel extends JPanel {
                 Point tektonPos = objectPositions.get(tektonName);
                 
                 // Ellenőrizzük, hogy a két Tekton nem érintkezik-e (3 cella távolság + 3 cella méret = 1 cella rés)
-                if (Math.abs(pos.x - tektonPos.x) < 6 && Math.abs(pos.y - tektonPos.y) < 6) {
+                if (Math.abs(pos.x - tektonPos.x) < 5 && Math.abs(pos.y - tektonPos.y) < 5) {
                     return true;
                 }
             }
