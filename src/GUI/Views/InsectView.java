@@ -8,7 +8,7 @@ import insect.Insect;
 import insect.InsectEffects;
 
 public class InsectView {
-    private static final int INSECT_SIZE = 50;
+    private static final int INSECT_SIZE = 34;
 
     /**
      * Draws all Insect objects in the game.

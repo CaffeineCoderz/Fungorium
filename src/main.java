@@ -12,11 +12,13 @@ public class main {
     public static void main(String[] args) {
         GameLogic gameLogic = new GameLogic();
         CommandProcessor commandProcessor = gameLogic.getCommandProcessor();
-        commandProcessor.processConfigText("config");
+        commandProcessor.processConfigText("configWithoutStatus");
         // commandProcessor.processConfigText("setConfig");
 
         //FungoriumGamePanel.createAndShowGUI(commandProcessor);
-        SwingUtilities.invokeLater(() -> new MainMenu(commandProcessor).setVisible(true));
+        SwingUtilities.invokeLater(() -> new MainMenu(gameLogic).setVisible(true));
+
+        /* Curr we only need the GUI
         Scanner scanner = new Scanner(System.in);
         int choice = 0;
 
@@ -36,13 +38,6 @@ public class main {
             choice = scanner.nextInt();
 
             switch (choice) {
-                /*
-                case 1:
-                    CommandProcessor processor = new CommandProcessor();
-                    // processor.processConfigText("config");
-                    processor.start();
-                    break;
-                 */
                 case 1:
                     tester.checkTestResults(gameLogic);
                     break;
@@ -68,16 +63,20 @@ public class main {
                 case 4:
                     System.out.println("Exiting the program. Goodbye!");
                     break;
-                /*
                 case 6:
                     tester.clearOutputFiles();
                     break;
-                 */
+                case 7:
+                    CommandProcessor processor = new CommandProcessor();
+                    processor.processConfigText("config");
+                    processor.start();
+                    break;
                 default:
                     System.out.println("Invalid choice. Please try again.");
             }
         }
 
         scanner.close();
+         */
     }
 }
