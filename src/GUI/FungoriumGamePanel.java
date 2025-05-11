@@ -55,27 +55,6 @@ public class FungoriumGamePanel extends JPanel {
     private Image backgroundImage;
     private Boolean initialPaint = true; // Flag to indicate if it's the first paint
 
-    private Image defTektonBgCircular;
-    private Image decomposingTektonBgCircular;
-    private Image decreasingTektonBgCircular;
-    private Image feedThreadTektonBgCircular;
-    private Image oneThreadTektonBgCircular;
-    private Image onlyThreadTektonBgCircular;
-
-    private Image[] tektonImages;
-    // Entity images
-    private Image defaultSporeImg;
-    private Image fastSporeImg;
-    private Image slowSporeImg;
-    private Image stunSporeImg;
-    private Image disableCutSporeImg;
-    private Image multiplyInsectSporeImg;
-
-    private Image[] sporeImages;
-
-    private Image insectImg;
-    private Image fungusBodyImg;
-
     // Thread grow
     private Map<String, List<Point>> tektonCardinalPoints = new HashMap<>(); // Tekton égtáji pontjai
     private Map<String, Point> threadEndpoints = new HashMap<>(); // Thread végpontok tárolása
@@ -130,6 +109,12 @@ public class FungoriumGamePanel extends JPanel {
                             gameLogic.getCommandProcessor().process(command); // Execute the command
                             System.out.flush();
                             String status = outputStream.toString().trim(); // Get the captured output
+                            
+                            if(clickPoint.x < 400){
+                                statusView.moveToRightPosition();
+                            }else{
+                                statusView.moveToLeftPosition();
+                            }
                             statusView.updateStatus(status); // Update the status view
                         } finally {
                             System.setOut(originalOut); // Restore original System.out
@@ -137,6 +122,7 @@ public class FungoriumGamePanel extends JPanel {
                     } else {
                         statusView.clearStatus(); // Clear the status view if no valid object is clicked
                     }
+                    
                     statusView.repaint();
                 }
             }
@@ -148,8 +134,6 @@ public class FungoriumGamePanel extends JPanel {
         } catch (Exception e) {
             System.err.println("Error loading background image: " + e.getMessage());
         }
-        
-        loadResources();
     }
 
     /**
@@ -207,80 +191,6 @@ public class FungoriumGamePanel extends JPanel {
     }
 
     /**
-     * Loads all resources needed for the game panel, including background and
-     * foreground images for the different types of Tektons, fungus bodies, spores
-     * and insects.
-     *
-     * @throws IOException if any of the resources cannot be loaded.
-     */
-    private void loadResources() {
-        try {
-            // * Load CIRCULAR tekton images
-            defTektonBgCircular = createCircularImage(
-                    ImageIO.read(new File("src/resources/tektons/defaultTekton1.jpg")));
-            decomposingTektonBgCircular = createCircularImage(
-                    ImageIO.read(new File("src/resources/tektons/decomposingTekton1.jpg")));
-            decreasingTektonBgCircular = createCircularImage(
-                    ImageIO.read(new File("src/resources/tektons/decreasingTekton1.jpg")));
-            feedThreadTektonBgCircular = createCircularImage(
-                    ImageIO.read(new File("src/resources/tektons/feedThreadTekton1.jpg")));
-            oneThreadTektonBgCircular = createCircularImage(
-                    ImageIO.read(new File("src/resources/tektons/oneThreadTekton1.jpg")));
-            onlyThreadTektonBgCircular = createCircularImage(
-                    ImageIO.read(new File("src/resources/tektons/onlyThreadTekton1.jpg")));
-
-            // Load fungus body image
-            fungusBodyImg = ImageIO.read(new File("src/resources/fungusBody.png"));
-
-            // Load spore images
-            defaultSporeImg = ImageIO.read(new File("src/resources/spores/spore.png"));
-            fastSporeImg = ImageIO.read(new File("src/resources/spores/fastSpore.png"));
-            slowSporeImg = ImageIO.read(new File("src/resources/spores/slowSpore.png"));
-            stunSporeImg = ImageIO.read(new File("src/resources/spores/stunSpore.png"));
-            disableCutSporeImg = ImageIO.read(new File("src/resources/spores/disableCutSpore.png"));
-            multiplyInsectSporeImg = ImageIO.read(new File("src/resources/spores/multiplyInsectSpore.png"));
-
-            // Load insect image
-            insectImg = ImageIO.read(new File("src/resources/insect.png"));
-        } catch (Exception e) {
-            System.err.println("Error loading resources: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Creates a circular cropped version of the input BufferedImage.
-     *
-     * This method takes an input image and creates a new BufferedImage
-     * containing only the circular region of the largest possible size
-     * centered within the input image. The resulting image is drawn with
-     * anti-aliasing for improved visual quality.
-     *
-     * @param input the original BufferedImage to be cropped to a circle
-     * @return a new BufferedImage containing the circular cropped region
-     */
-    private BufferedImage createCircularImage(BufferedImage input) {
-        int size = Math.min(input.getWidth(), input.getHeight());
-        BufferedImage circleBuffer = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = circleBuffer.createGraphics();
-
-        // Minőség javítása
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        // Kör maszkolás
-        Ellipse2D.Double circle = new Ellipse2D.Double(0, 0, size, size);
-        g2.setClip(circle);
-        g2.drawImage(input, 0, 0, size, size, null);
-
-        // Fényerő csökkentése: átlátszó fekete réteg hozzáadása
-        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.9f)); // 90% átlátszóság
-        g2.setColor(new Color(0, 0, 0, 128)); // Fekete szín, 50% átlátszóság
-        g2.fill(circle);
-
-        g2.dispose();
-        return circleBuffer;
-    }
-
-    /**
      * Custom paintComponent method to draw the game state on the screen.
      *
      * This method is called whenever the component needs to be redrawn.
@@ -311,10 +221,8 @@ public class FungoriumGamePanel extends JPanel {
         drawGrid(g2d);
 
         // Draw all objects
-        tektonImages = new Image[]{defTektonBgCircular, decomposingTektonBgCircular, decreasingTektonBgCircular,
-            feedThreadTektonBgCircular, oneThreadTektonBgCircular, onlyThreadTektonBgCircular};
         tektonView.drawTektons(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(),
-        getWidth() / renderMap.getCols(), getHeight() / renderMap.getRows(), TEKTON_CELLS, tektonImages);
+        getWidth() / renderMap.getCols(), getHeight() / renderMap.getRows(), TEKTON_CELLS);
 
         // Égtáji pontok (zöld pontok) rajzolása
         g2d.setColor(Color.GREEN);
@@ -323,14 +231,12 @@ public class FungoriumGamePanel extends JPanel {
                 g2d.fill(new Ellipse2D.Double(p.x - 5, p.y - 5, 10, 10));
             }
         }
-        sporeImages = new Image[]{defaultSporeImg, fastSporeImg, slowSporeImg, stunSporeImg,
-                disableCutSporeImg, multiplyInsectSporeImg};
-        sporeView.drawSpores(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(), sporeImages);
+        sporeView.drawSpores(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects());
         System.out.println("objectPositions size: " + objectPositions.size());
 
         threadView.drawThreads(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(), tektonCardinalPoints, gameLogic.getCommandProcessor(), threadEndpoints);
-        insectView.drawInsects(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(), insectImg);
-        bodyView.drawBodies(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(), fungusBodyImg);
+        insectView.drawInsects(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects());
+        bodyView.drawBodies(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects());
         
         g2d.setColor(Color.RED);
         for (Map.Entry<String, Point> entry : objectPositions.entrySet()) {

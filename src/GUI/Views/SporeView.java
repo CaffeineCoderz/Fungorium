@@ -2,13 +2,23 @@ package GUI.Views;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
+import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
+
+import javax.imageio.ImageIO;
 
 import sporeTypes.*;
 
 public class SporeView {
     private static final int SPORE_SIZE = 10;
 
+    private Map<String, Image> images;
+
+    public SporeView(){
+        images = new HashMap<>();
+        loadImages();
+    }
     /**
      * Draws all Spore objects in the game.
      *
@@ -23,7 +33,7 @@ public class SporeView {
      * @param createdObjects a mapping of object names to their objects
      * @param sporeImages an array of images representing different spore types
      */
-    public void drawSpores(Graphics2D g2d, Map<String, Point> objectPositions, Map<String, Object> createdObjects, Image[] sporeImages) {
+    public void drawSpores(Graphics2D g2d, Map<String, Point> objectPositions, Map<String, Object> createdObjects) {
         for (Map.Entry<String, Object> entry : createdObjects.entrySet()) {
             if (entry.getValue() instanceof Spore) {
                 String name = entry.getKey();
@@ -31,7 +41,7 @@ public class SporeView {
                 Object spore = entry.getValue();
 
                 // Draw spore image
-                drawSporeImage(g2d, spore, pos.x - SPORE_SIZE / 2, pos.y - SPORE_SIZE / 2, SPORE_SIZE, SPORE_SIZE, sporeImages);
+                drawSporeImage(g2d, spore, pos.x - SPORE_SIZE / 2, pos.y - SPORE_SIZE / 2, SPORE_SIZE, SPORE_SIZE);
 
                 // Draw spore name
                 g2d.setColor(Color.WHITE);
@@ -54,23 +64,39 @@ public class SporeView {
      * @param height the height of the spore image
      * @param sporeImages the available spore images
      */
-    private void drawSporeImage(Graphics2D g2d, Object spore, int x, int y, int width, int height, Image[] sporeImages) {
-        if (spore instanceof FastSpore && sporeImages[0] != null) {
-            g2d.drawImage(sporeImages[0], x, y, width, height, null);
-        } else if (spore instanceof SlowSpore && sporeImages[1] != null) {
-            g2d.drawImage(sporeImages[1], x, y, width, height, null);
-        } else if (spore instanceof DisableCutSpore && sporeImages[2] != null) {
-            g2d.drawImage(sporeImages[2], x, y, width, height, null);
-        } else if (spore instanceof MultiplyInsectSpore && sporeImages[3] != null) {
-            g2d.drawImage(sporeImages[3], x, y, width, height, null);
-        } else if (spore instanceof StunSpore && sporeImages[4] != null) {
-            g2d.drawImage(sporeImages[4], x, y, width, height, null);
-        } else if (sporeImages[5] != null) { // Default spore image
-            g2d.drawImage(sporeImages[5], x, y, width, height, null);
+    private void drawSporeImage(Graphics2D g2d, Object spore, int x, int y, int width, int height) {
+        if (spore instanceof FastSpore && images.get("fastSpore") != null) {
+            g2d.drawImage(images.get("fastSpore"), x, y, width, height, null);
+        } else if (spore instanceof SlowSpore && images.get("slowSpore") != null) {
+            g2d.drawImage(images.get("slowSpore"), x, y, width, height, null);
+        } else if (spore instanceof DisableCutSpore && images.get("disableCutSpore") != null) {
+            g2d.drawImage(images.get("disableCutSpore"), x, y, width, height, null);
+        } else if (spore instanceof MultiplyInsectSpore && images.get("multiplyInsectSpore") != null) {
+            g2d.drawImage(images.get("multiplyInsectSpore"), x, y, width, height, null);
+        } else if (spore instanceof StunSpore && images.get("stunSpore") != null) {
+            g2d.drawImage(images.get("stunSpore"), x, y, width, height, null);
+        } else if (images.get("defaultSpore") != null) { // Default spore image
+            g2d.drawImage(images.get("defaultSpore"), x, y, width, height, null);
         } else {
             // Fallback: Draw a colored circle if no image is available
             g2d.setColor(Color.WHITE);
             g2d.draw(new Ellipse2D.Double(x, y, width, height));
         }
     }
+    private void loadImages() {
+        try {
+            // Load spore images
+            images.put("defaultSpore" , ImageIO.read(new File("src/resources/spores/spore.png")));
+            images.put("fastSpore" , ImageIO.read(new File("src/resources/spores/fastSpore.png")));
+            images.put("slowSpore", ImageIO.read(new File("src/resources/spores/slowSpore.png")));
+            images.put("stunSpore", ImageIO.read(new File("src/resources/spores/stunSpore.png")));
+            images.put("disableCutSpore", ImageIO.read(new File("src/resources/spores/disableCutSpore.png")));
+            images.put("multiplyInsectSpore", ImageIO.read(new File("src/resources/spores/multiplyInsectSpore.png")));
+
+            
+        } catch (Exception e) {
+            System.err.println("Error loading resources: " + e.getMessage());
+        }
+    }
+
 }
