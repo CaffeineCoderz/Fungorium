@@ -148,7 +148,7 @@ public class FungoriumGamePanel extends JPanel {
         } catch (Exception e) {
             System.err.println("Error loading background image: " + e.getMessage());
         }
-
+        
         loadResources();
     }
 
@@ -303,9 +303,12 @@ public class FungoriumGamePanel extends JPanel {
             calculateObjectPositions();
             shouldRecalculatePositions = false;
         }
+        if(objectPositions.isEmpty()){
+            calculateObjectPositions();
+        }
 
         // Draw the grid (optional) RED
-        //drawGrid(g2d);
+        drawGrid(g2d);
 
         // Draw all objects
         tektonImages = new Image[]{defTektonBgCircular, decomposingTektonBgCircular, decreasingTektonBgCircular,
@@ -323,7 +326,9 @@ public class FungoriumGamePanel extends JPanel {
         sporeImages = new Image[]{defaultSporeImg, fastSporeImg, slowSporeImg, stunSporeImg,
                 disableCutSporeImg, multiplyInsectSporeImg};
         sporeView.drawSpores(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(), sporeImages);
-        threadView.drawThreads(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(), tektonCardinalPoints, gameLogic.getCommandProcessor());
+        System.out.println("objectPositions size: " + objectPositions.size());
+
+        threadView.drawThreads(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(), tektonCardinalPoints, gameLogic.getCommandProcessor(), threadEndpoints);
         insectView.drawInsects(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(), insectImg);
         bodyView.drawBodies(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(), fungusBodyImg);
         
@@ -332,7 +337,7 @@ public class FungoriumGamePanel extends JPanel {
             //System.out.println("Object: " + entry.getKey() + " at " + entry.getValue());
             if (entry.getKey().startsWith("th")) { // threads
                 Point p = entry.getValue();
-                System.out.println("Thread: " + entry.getKey() + " at " + p);
+                // System.out.println("Thread: " + entry.getKey() + " at " + p);
                 g2d.fillOval(p.x - 3, p.y - 3, 6, 6);
             }
         }
@@ -463,16 +468,15 @@ public class FungoriumGamePanel extends JPanel {
             } else if (obj instanceof FungusThread) {
                 FungusThread thread = (FungusThread) obj;
                 // Position threads between their connected objects
-                System.out.println("its a fungus thread: " + name);
                 if (!thread.getTektons().isEmpty()) {
                     Tekton firstTekton = thread.getTektons().get(0);
                     String firstTektonName = gameLogic.getCommandProcessor().findByObject(firstTekton);
+                    String threadName = gameLogic.getCommandProcessor().findByObject(thread);
+                    List<Tekton> tektons = thread.getTektons();
 
                     // ! Bridge thread
+                    // TODO Check if the line between the two endoint going over a tekton, if yes recalulate tekton pos(not sure if it is right like this, think it through)
                     if(thread.isBridge()){
-                        String threadName = gameLogic.getCommandProcessor().findByObject(thread);
-                        List<Tekton> tektons = thread.getTektons();
-
                         if (tektons.size() >= 2) {
                             Point firstControlPoint = findClosestCardinalPoint(
                                 tektons.get(0), 
@@ -492,12 +496,8 @@ public class FungoriumGamePanel extends JPanel {
                             }
                         }
                     } 
-                    // ! Normal connected thread
-                    else if(thread.getNext() != null){
 
-                    }
-
-                    // ! Cardinal point and fungusbody
+                    // ! Non bridge thread
                     else{
                         if (thread.getTektons().isEmpty())
                             return;
@@ -591,8 +591,11 @@ public class FungoriumGamePanel extends JPanel {
         }
 
         // Convert targetPoint from grid coordinates to pixel coordinates
-        int cellWidth = getWidth() / renderMap.getCols();
-        int cellHeight = getHeight() / renderMap.getRows();
+        //int cellWidth = getWidth() / renderMap.getCols();
+        // Mivel a grid 800x800-as ekkor fog csak jól kiszámolódni
+        int cellWidth = 800 / renderMap.getCols();
+        //int cellHeight = getHeight() / renderMap.getRows();
+        int cellHeight = 800 / renderMap.getRows();
         Point pixelTarget = new Point(
                 targetPoint.y * cellWidth + (cellWidth / 2),
                 targetPoint.x * cellHeight + (cellHeight / 2));

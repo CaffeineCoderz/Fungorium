@@ -25,10 +25,12 @@ public class ThreadView {
      * @param tektonCardinalPoints a map of Tekton names to their cardinal points
      * @param commandProcessor    the CommandProcessor to resolve object names
      */
-    public void drawThreads(Graphics2D g2d, Map<String, Point> objectPositions,
+    public void drawThreads(Graphics2D g2d, 
+                            Map<String, Point> objectPositions,
                             Map<String, Object> createdObjects,
                             Map<String, List<Point>> tektonCardinalPoints,
-                            CommandProcessor commandProcessor) {
+                            CommandProcessor commandProcessor,
+                            Map<String, Point> threadEndpoints) {
         for (Map.Entry<String, Object> entry : createdObjects.entrySet()) {
             if (entry.getValue() instanceof FungusThread) {
                 FungusThread thread = (FungusThread) entry.getValue();
@@ -36,11 +38,12 @@ public class ThreadView {
 
                 try {
                     if (thread.isBridge()) {
-                        drawBridgeThread(g2d, thread, objectPositions, tektonCardinalPoints, commandProcessor);
-                    } else if (thread.getNext() != null) {
-                        drawConnectionToNextThread(g2d, thread, threadName, objectPositions, commandProcessor);
+                        System.out.println("Drawing bridge: " + threadName);
+                        drawBridgeThread(g2d, thread, objectPositions, tektonCardinalPoints, commandProcessor, 
+                                threadEndpoints);
                     } else {
-                        drawNonBridgeThread(g2d, thread, threadName, objectPositions, tektonCardinalPoints, commandProcessor);
+                        System.out.println("Drawing NON-bridge: " + threadName);
+                        drawNonBridgeThread(g2d, thread, objectPositions, tektonCardinalPoints, commandProcessor, threadEndpoints);
                     }
 
                     // Draw thread name
@@ -56,58 +59,68 @@ public class ThreadView {
         }
     }
 
-    private void drawBridgeThread(Graphics2D g2d, FungusThread thread, Map<String, Point> objectPositions,
-                                  Map<String, List<Point>> tektonCardinalPoints, CommandProcessor commandProcessor) {
+    private void drawBridgeThread(
+        Graphics2D g2d, 
+        FungusThread thread, 
+        Map<String, Point> objectPositions,
+        Map<String, List<Point>> tektonCardinalPoints, 
+        CommandProcessor commandProcessor, 
+        Map<String, Point> threadEndpoints
+    ) {
         List<Tekton> tektons = thread.getTektons();
         if (tektons.size() >= 2) {
-            Point firstControlPoint = findClosestCardinalPoint(
-                tektons.get(0), tektonCardinalPoints, objectPositions.get(commandProcessor.findByObject(tektons.get(1))), commandProcessor
-            );
-            Point secondControlPoint = findClosestCardinalPoint(
-                tektons.get(1), tektonCardinalPoints, objectPositions.get(commandProcessor.findByObject(tektons.get(0))), commandProcessor
-            );
-            drawLine(g2d, firstControlPoint, secondControlPoint);
-        }
-    }
-
-    private void drawConnectionToNextThread(Graphics2D g2d, FungusThread thread, String threadName,
-                                            Map<String, Point> objectPositions, CommandProcessor commandProcessor) {
-        String nextThreadName = commandProcessor.findByObject(thread.getNext());
-        if (nextThreadName != null && objectPositions.containsKey(nextThreadName)) {
-            Point threadPos = objectPositions.getOrDefault(threadName, objectPositions.get(nextThreadName));
-            Point nextThreadPos = objectPositions.get(nextThreadName);
-            drawLine(g2d, threadPos, nextThreadPos);
+            // Point firstControlPoint = findClosestCardinalPoint(
+            //     tektons.get(0), tektonCardinalPoints, objectPositions.get(commandProcessor.findByObject(tektons.get(1))), commandProcessor
+            // );
+            // Point secondControlPoint = findClosestCardinalPoint(
+            //     tektons.get(1), tektonCardinalPoints, objectPositions.get(commandProcessor.findByObject(tektons.get(0))), commandProcessor
+            // );
+            String threadName = commandProcessor.findByObject(thread);
+            Point startPoint = threadEndpoints.get(threadName+"_start");
+            Point endPoint = threadEndpoints.get(threadName+"_end");
+            drawLine(g2d, startPoint, endPoint);
         }
     }
 
     private void drawNonBridgeThread(
         Graphics2D g2d, 
         FungusThread thread, 
-        String threadName,
         Map<String, Point> objectPositions,
         Map<String, List<Point>> tektonCardinalPoints, 
-        CommandProcessor commandProcessor
+        CommandProcessor commandProcessor,
+        Map<String, Point> threadEndpoints
     ) {
         if (thread.getTektons().isEmpty()) return;
         Tekton tekton = thread.getTektons().get(0);
         
-        FungusBody body = thread.getMyBody();
-        if (body == null) return;
+        String tektonName = commandProcessor.findByObject(tekton);
         
-        String bodyName = commandProcessor.findByObject(body);
-        if (bodyName == null || !objectPositions.containsKey(bodyName)) return;
+        if(tektonName == null || !objectPositions.containsKey(tektonName + "_center")){ 
+            System.out.println(tektonName + "_center");
+            System.out.println(!objectPositions.containsKey(tektonName + "_center"));
+            for (Map.Entry<String, Point> entry : objectPositions.entrySet()) {
+                Point objectPos = entry.getValue();
+                String objectName = entry.getKey();
+                // if(objectName.contains("_center"))
+                System.out.println(objectName + " at: " + objectPos);
+            }
+            System.out.println("TektonName or Tekton center is missing in drawNonBridgeThread");
+            return;
+        }
+
+        Point tektonPos = objectPositions.get(tektonName+ "_center");
         
-        Point bodyPos = objectPositions.get(bodyName);
-        
+        // TODO try to find another control point if a non bridge thread is here, and try to put it to another controlpoint(Not sure if its neccessary cos the player will choose direction on growthread but would be nice on init)
+        //! soon would be nice to check which species has a thread there and would decline growth if species not equal
         Point controlPoint = findClosestCardinalPoint(
             tekton, 
             tektonCardinalPoints, 
-            bodyPos,
+            tektonPos,
             commandProcessor
         );
         
         if (controlPoint != null) {
-            drawLine(g2d, controlPoint, bodyPos);
+            drawLine(g2d, controlPoint, tektonPos);
         }
     }
 
