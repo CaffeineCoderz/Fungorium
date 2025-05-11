@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.awt.image.BufferedImage;
 
@@ -39,7 +40,7 @@ public class FungoriumGamePanel extends JPanel {
     private RenderMap renderMap;
     private static GameStateHandler saver;
     // Positions and cells
-    private Map<String, Point> objectPositions = new HashMap<>();
+    private Map<String, Point> objectPositions = new TreeMap<>();
     private Set<Point> occupiedCells = new HashSet<>();
 
     // Flag to indicate if positions need recalculation
@@ -51,6 +52,14 @@ public class FungoriumGamePanel extends JPanel {
     // Number of cells occupied by a Tekton
     private static final int TEKTON_CELLS = 3; // 3x3 cella (9 cella)
 
+    /* 
+    private static int[][] directions = {
+        {3,0}, {2,1}, {1,2}, {0,3}, {-1,2}, {-2,1}, {-3,0}, {-2,-1}, {-1,-2}, {0,-3}, {1,-2},  {2,-1},// Alap irányok
+    };*/
+    private static int[][] directions = {
+        {3,0}, {0,3}, {-3,0}, {0,-3},  // Fő irányok nagyobb távolságra
+        {2,1}, {2,-1}, {-2,1}, {-2,-1}, {1,2}, {1,-2}, {-1,2}, {-1,-2}  // Átlós irányok
+    };
     // Background image
     private Image backgroundImage;
     private Boolean initialPaint = true; // Flag to indicate if it's the first paint
@@ -191,7 +200,7 @@ public class FungoriumGamePanel extends JPanel {
     }
 
     /**
-     * Custom paintComponent method to draw the game state on the screen.
+     * Custom component method to draw the game state on the screen.
      *
      * This method is called whenever the component needs to be redrawn.
      * It is responsible for drawing the background image, the grid, all
@@ -322,7 +331,7 @@ public class FungoriumGamePanel extends JPanel {
         List<Point> tiles = renderMap.getTiles();
         int maxRetries = 100; // Maximum number of retries to find a free spot
         occupiedCells.clear(); // Initialize the set of occupied cells
-
+        
         for (Map.Entry<String, Object> entry : gameLogic.getCommandProcessor().getCreatedObjects().entrySet()) {
             if (entry.getValue() instanceof Tekton) {
                 boolean placed = false;
@@ -406,11 +415,11 @@ public class FungoriumGamePanel extends JPanel {
                     // ! Non bridge thread
                     else{
                         if (thread.getTektons().isEmpty())
-                            return;
+                            continue;
                         Tekton tekton = thread.getTektons().get(0);
                         FungusBody body = thread.getMyBody();
 
-                        if (body == null) return;
+                        if (body == null) continue;
                         Point TektonCenter = getTektonCenter(tekton);
                         Point controlPoint = findClosestCardinalPoint(tekton, TektonCenter);
                         
@@ -551,7 +560,7 @@ public class FungoriumGamePanel extends JPanel {
             }
         }
     }
-
+    /* 
     private Point calculateGroupedPosition(Tekton tekton, List<Point> tiles) {
         List<Tekton> neighbors = tekton.getNeighbours();
         List<Tekton> allTektons = gameLogic.getCommandProcessor().getCreatedObjects().values().stream()
@@ -559,7 +568,6 @@ public class FungoriumGamePanel extends JPanel {
                 .map(obj -> (Tekton) obj)
                 .filter(t -> t != tekton)
                 .collect(Collectors.toList());
-
         // Ha nincsenek szomszédok, véletlenszerű pozíciót választunk
         if (neighbors.isEmpty()) {
             return findOptimalRandomPosition(tiles, allTektons);
@@ -575,7 +583,12 @@ public class FungoriumGamePanel extends JPanel {
             Point neighborPos = objectPositions.get(neighborName);
             
             // Irányok véletlenszerű sorrendben
-            int[][] directions = {{1,0}, {0,1}, {-1,0}, {0,-1}};
+            int[][] directions = {
+                {1,0}, {0,1}, {-1,0}, {0,-1},   // Alap irányok
+                {1,1}, {1,-1}, {-1,1}, {-1,-1},  // Átlós irányok
+                {2,1}, {2,-1}, {-2,1}, {-2,-1},  // Távolabbi pozíciók
+                {1,2}, {1,-2}, {-1,2}, {-1,-2}
+            };
             Collections.shuffle(Arrays.asList(directions));
             
             for (int[] dir : directions) {
@@ -608,7 +621,175 @@ public class FungoriumGamePanel extends JPanel {
         // Végső esetben véletlenszerű érvényes pozíció
         return findOptimalRandomPosition(tiles, allTektons);
     }
-
+    */
+    
+    /* 
+    private Point calculateGroupedPosition(Tekton tekton, List<Point> tiles) {
+        List<Tekton> neighbors = tekton.getNeighbours();
+        int placementDistance = calculatePlacementDistance(tekton);
+        // calculateGroupedPosition metódusb
+        // Ha nincsenek szomszédok, véletlenszerű pozíció
+        if (neighbors.isEmpty()) {
+            return findOptimalRandomPosition(tiles, gameLogic.getCommandProcessor().getCreatedObjects().values().stream()
+            .filter(obj -> obj instanceof Tekton)
+            .map(obj -> (Tekton) obj)
+            .filter(t -> t != tekton)
+            .collect(Collectors.toList()));
+        }
+    
+        // Próbáljuk meg elhelyezni valamelyik szomszéd közelében
+        for (Tekton neighbor : neighbors) {
+            Point neighborPos = getTektonPosition(neighbor);
+            if (neighborPos == null) continue;
+            
+            // Próbálkozzunk minden irányban
+            for (int[] dir : directions) {
+                Point newPos = new Point(
+                    neighborPos.x + dir[0] * placementDistance,
+                    neighborPos.y + dir[1] * placementDistance
+                );
+                
+                if (isPositionValid(newPos) && !isAdjacentToOtherTekton(newPos, neighbors)) {
+                    return newPos;
+                }
+            }
+        }
+    
+        // Ha nem találtunk helyet, próbáljunk távolabb
+        return findFallbackPosition(tekton, neighbors, placementDistance + 1);
+    }
+    *///?
+    //?
+    private Point calculateGroupedPosition(Tekton tekton, List<Point> tiles) {
+        List<Tekton> neighbors = tekton.getNeighbours();
+        int placementDistance = calculatePlacementDistance(tekton);
+        
+        // Ha nincsenek szomszédok, véletlenszerű pozíció
+        if (neighbors.isEmpty()) {
+            return findOptimalRandomPosition(tiles, gameLogic.getCommandProcessor().getCreatedObjects().values().stream()
+            .filter(obj -> obj instanceof Tekton)
+            .map(obj -> (Tekton) obj)
+            .filter(t -> t != tekton)
+            .collect(Collectors.toList()));
+        }
+    
+        // Külön kezeljük a lineárisan elhelyezkedő szomszédokat
+        Point linearPos = findLinearPosition(tekton, neighbors);
+        if (linearPos != null) {
+            return linearPos;
+        }
+    
+        // Normál elhelyezési logika
+        for (Tekton neighbor : neighbors) {
+            Point neighborPos = getTektonPosition(neighbor);
+            if (neighborPos == null) continue;
+    
+            // Próbálkozzunk minden irányban
+            for (int[] dir : directions) {
+                Point newPos = new Point(
+                    neighborPos.x + dir[0] * placementDistance,
+                    neighborPos.y + dir[1] * placementDistance
+                );
+                
+                if (isPositionValid(newPos) && !isAdjacentToOtherTekton(newPos, neighbors)) {
+                    return newPos;
+                }
+            }
+        }
+    
+        // Tartalék megoldás
+        return findFallbackPosition(tekton, neighbors, placementDistance + 1);
+    }
+    
+    private Point findLinearPosition(Tekton tekton, List<Tekton> neighbors) {
+        // Csak akkor próbálkozzunk, ha legalább 2 szomszéd van
+        if (neighbors.size() < 2) return null;
+        
+        // Csoportosítsuk a szomszédokat X és Y tengely mentén
+        Map<Integer, List<Tekton>> xGroups = new HashMap<>();
+        Map<Integer, List<Tekton>> yGroups = new HashMap<>();
+        
+        for (Tekton neighbor : neighbors) {
+            Point pos = getTektonPosition(neighbor);
+            if (pos != null) {
+                xGroups.computeIfAbsent(pos.x, k -> new ArrayList<>()).add(neighbor);
+                yGroups.computeIfAbsent(pos.y, k -> new ArrayList<>()).add(neighbor);
+            }
+        }
+        
+        // Keressünk lineáris csoportot X tengely mentén (vízszintes sor)
+        for (List<Tekton> group : xGroups.values()) {
+            if (group.size() >= 2) {
+                // Számoljuk ki a középső pozíciót
+                int minY = group.stream().mapToInt(t -> getTektonPosition(t).y).min().orElse(0);
+                int maxY = group.stream().mapToInt(t -> getTektonPosition(t).y).max().orElse(0);
+                int avgX = group.stream().mapToInt(t -> getTektonPosition(t).x).sum() / group.size();
+                
+                // Próbáljunk meg elhelyezni a sor bal vagy jobb oldalán
+                int[] xOffsets = {-3, 3};
+                for (int xOffset : xOffsets) {
+                    Point candidate = new Point(avgX + xOffset, (minY + maxY) / 2);
+                    if (isPositionValid(candidate)) {
+                        return candidate;
+                    }
+                }
+            }
+        }
+        
+        // Keressünk lineáris csoportot Y tengely mentén (függőleges oszlop)
+        for (List<Tekton> group : yGroups.values()) {
+            if (group.size() >= 2) {
+                // Számoljuk ki a középső pozíciót
+                int minX = group.stream().mapToInt(t -> getTektonPosition(t).x).min().orElse(0);
+                int maxX = group.stream().mapToInt(t -> getTektonPosition(t).x).max().orElse(0);
+                int avgY = group.stream().mapToInt(t -> getTektonPosition(t).y).sum() / group.size();
+                
+                // Próbáljunk meg elhelyezni az oszlop tetején vagy alján
+                int[] yOffsets = {-3, 3};
+                for (int yOffset : yOffsets) {
+                    Point candidate = new Point((minX + maxX) / 2, avgY + yOffset);
+                    if (isPositionValid(candidate)) {
+                        return candidate;
+                    }
+                }
+            }
+        }
+        
+        return null;
+    }
+    //?
+    private int calculatePlacementDistance(Tekton tekton) {
+        int neighborCount = tekton.getNeighbours().size();
+        if (neighborCount <= 3) return 1;
+        if (neighborCount <= 5) return 3;
+        return 5; // 9-12 szomszéd esetén
+    }
+    //?
+    private Point findFallbackPosition(Tekton tekton, List<Tekton> neighbors, int minDistance) {
+        for (int distance = minDistance; distance < 6; distance++) {
+            for (Tekton neighbor : neighbors) {
+                Point neighborPos = getTektonPosition(neighbor);
+                if (neighborPos == null) continue;
+    
+                for (int[] dir : directions) {
+                    Point newPos = new Point(
+                        neighborPos.x + dir[0] * distance,
+                        neighborPos.y + dir[1] * distance
+                    );
+                    
+                    if (isPositionValid(newPos)) {
+                        return newPos;
+                    }
+                }
+            }
+        }
+        return findOptimalRandomPosition(renderMap.getTiles(), gameLogic.getCommandProcessor().getCreatedObjects().values().stream()
+        .filter(obj -> obj instanceof Tekton)
+        .map(obj -> (Tekton) obj)
+        .filter(t -> t != tekton)
+        .collect(Collectors.toList()));
+    }
+    //?
     private Point findOptimalRandomPosition(List<Point> tiles, List<Tekton> otherTektons) {
         int maxAttempts = 100;
         List<Point> validPositions = new ArrayList<>();
@@ -637,8 +818,20 @@ public class FungoriumGamePanel extends JPanel {
         
         return tiles.get(0); // Fallback
     }
-
-    private boolean isAdjacentToOtherTekton(Point pos, List<Tekton> otherTektons) {
+    //?
+    private boolean isAdjacentToOtherTekton(Point pos, List<Tekton> tektonsToCheck) {
+        for (Tekton tekton : tektonsToCheck) {
+            Point tektonPos = getTektonPosition(tekton);
+            if (tektonPos != null && 
+                Math.abs(pos.x - tektonPos.x) < TEKTON_CELLS + 1 && 
+                Math.abs(pos.y - tektonPos.y) < TEKTON_CELLS + 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+    //?
+    /*private boolean isAdjacentToOtherTekton(Point pos, List<Tekton> otherTektons) {
         for (Tekton tekton : otherTektons) {
             String tektonName = gameLogic.getCommandProcessor().findByObject(tekton);
             if (tektonName != null && objectPositions.containsKey(tektonName)) {
@@ -651,7 +844,7 @@ public class FungoriumGamePanel extends JPanel {
             }
         }
         return false;
-    }
+    } */     
 
     private boolean isPositionValid(Point pos) {
         int maxCol = renderMap.getCols() - TEKTON_CELLS;
@@ -870,6 +1063,7 @@ public class FungoriumGamePanel extends JPanel {
         objectPositions.clear(); // Force recalculation of positions
         occupiedCells.clear(); // Clear occupied cells as positions are being recalculated
         shouldRecalculatePositions = true; // Set the flag to recalculate positions
+        
         repaint();
     }
 
@@ -907,7 +1101,6 @@ public class FungoriumGamePanel extends JPanel {
      * 
      * The frame is set to be visible and centered on the screen.
      * 
-     * @param commandProcessor the CommandProcessor used to handle game commands and logic.
      */
 
     public static void createAndShowGUI(GameLogic gameLogic) {

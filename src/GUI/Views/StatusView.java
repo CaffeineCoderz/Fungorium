@@ -22,7 +22,7 @@ public class StatusView extends JPanel {
         statusTextArea.setVisible(false); // Initially hidden
 
         add(statusTextArea);
-        statusTextArea.setBounds(600, 10, 180, 100); // Position at the top-right corner
+        statusTextArea.setBounds(600, 10, 180, 200); // Position at the top-right corner
     }
 
     /**
@@ -56,7 +56,7 @@ public class StatusView extends JPanel {
      * game panel's buttons.
      */
     public void moveToLeftPosition() {
-        statusTextArea.setBounds(leftPosition.x, leftPosition.y, 180, 100);
+        statusTextArea.setBounds(leftPosition.x, leftPosition.y, 180, 200);
         repaint();
     }
 
@@ -67,7 +67,7 @@ public class StatusView extends JPanel {
      * position after being moved out of the way of the game panel's buttons.
      */
     public void moveToRightPosition() {
-        statusTextArea.setBounds(rightPosition.x, rightPosition.y, 180, 100);
+        statusTextArea.setBounds(rightPosition.x, rightPosition.y, 180, 200);
         repaint();
     }
 }
