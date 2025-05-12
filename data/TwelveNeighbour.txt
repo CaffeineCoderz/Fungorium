@@ -1,0 +1,39 @@
+/create tekton t1
+/create tekton t2
+/create tekton t3
+/create tekton t4
+/create tekton t5
+/create tekton t6
+/create tekton t7
+/create tekton t8
+/create tekton t9
+/create tekton t10
+/create tekton t11
+/create tekton t12
+/create feedthreadtekton t14
+/create feedthreadtekton t15
+/create decreasetekton t13
+/set t13 addneighbour t1
+/set t13 addneighbour t2
+/set t13 addneighbour t3
+/set t13 addneighbour t4
+/set t13 addneighbour t5
+/set t13 addneighbour t6
+/set t13 addneighbour t7
+/set t13 addneighbour t8
+/set t13 addneighbour t9
+/set t13 addneighbour t10
+/set t13 addneighbour t11
+/set t13 addneighbour t12
+/set t1 addneighbour t2
+/set t2 addneighbour t3
+/set t3 addneighbour t4
+/set t4 addneighbour t5
+/set t5 addneighbour t6
+/set t6 addneighbour t7
+/set t7 addneighbour t8
+/set t8 addneighbour t9
+/set t9 addneighbour t10
+/set t10 addneighbour t11
+/set t11 addneighbour t12
+/set t12 addneighbour t1
