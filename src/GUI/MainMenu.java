@@ -83,7 +83,7 @@ public class MainMenu extends JFrame {
 
         add(mainPanel);
 
-        newGameButton.addActionListener(e -> openChooseSpeciesScreen(gameLogic));
+        newGameButton.addActionListener(e -> startGameScreen(gameLogic));
         rulesButton.addActionListener(e -> showRules());
         settingsButton.addActionListener(e -> {
             Settings.showSettings(this,gameLogic); 
@@ -117,7 +117,7 @@ public class MainMenu extends JFrame {
  * @param commandP The CommandProcessor instance used to handle game commands.
  */
 
-    private void openChooseSpeciesScreen(GameLogic gameLogic) {
+    private void startGameScreen(GameLogic gameLogic) {
         FungoriumGamePanel.createAndShowGUI(gameLogic);
         dispose();
     }
