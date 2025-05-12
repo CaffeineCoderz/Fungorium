@@ -148,8 +148,4 @@ class ResultScreen extends JFrame {
         }
         label.setHorizontalAlignment(SwingConstants.CENTER);
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new ResultScreen());
-    }
 }

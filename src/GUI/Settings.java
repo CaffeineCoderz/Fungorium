@@ -27,9 +27,9 @@ public class Settings {
         gbc.anchor = GridBagConstraints.CENTER; // Középre igazítás
 
         // Gombok létrehozása
-        JButton PlayerCountButton = createStyledButton("Jatekosok szama: ");
-        JButton SetTypeAndNameButton = createStyledButton("Jatekosok tipusa es neve: ");
-        JButton LoadButton = createStyledButton("Load");
+        JButton PlayerCountButton = createStyledButton("Jatékosok száma: 4");
+        JButton SetTypeAndNameButton = createStyledButton("Játekosok típusa és neve");
+        JButton LoadButton = createStyledButton("Load Game");
         JButton button4 = createStyledButton("Gomb 4");
         JButton button5 = createStyledButton("Gomb 5");
         JButton button6 = createStyledButton("Gomb 6");
@@ -47,17 +47,17 @@ public class Settings {
         gbc.gridy = 1;
         buttonPanel.add(LoadButton, gbc);
 
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        buttonPanel.add(button4, gbc);
+        // gbc.gridx = 1;
+        // gbc.gridy = 1;
+        // buttonPanel.add(button4, gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        buttonPanel.add(button5, gbc);
+        // gbc.gridx = 0;
+        // gbc.gridy = 2;
+        // buttonPanel.add(button5, gbc);
 
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        buttonPanel.add(button6, gbc);
+        // gbc.gridx = 1;
+        // gbc.gridy = 2;
+        // buttonPanel.add(button6, gbc);
 
         // Gombok panel hozzáadása a fő panel közepéhez
         mainPanel.add(buttonPanel, BorderLayout.CENTER);

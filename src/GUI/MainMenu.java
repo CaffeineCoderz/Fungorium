@@ -124,11 +124,6 @@ public class MainMenu extends JFrame {
         JOptionPane.showMessageDialog(this, scrollPane, "Játékszabályok", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    public static void main(String[] args) {
-        CommandProcessor commandProcessor = new CommandProcessor();
-        SwingUtilities.invokeLater(() -> new MainMenu(commandProcessor).setVisible(true));
-    }
-
     private static class BackgroundPanel extends JPanel {
         private Image backgroundImage;
 
