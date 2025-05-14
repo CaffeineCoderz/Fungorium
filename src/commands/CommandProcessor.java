@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.function.Consumer;
 
 // Model
@@ -82,7 +81,7 @@ import utils.*;
 //      onlythreadtekton: tektonTypes.OnlyThreadTekton
 
 public class CommandProcessor {
-    private Map<String, Object> createdObjects = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    private Map<String, Object> createdObjects = new HashMap<>();
     private Map<String, Consumer<String[]>> commands = new HashMap<>();
     private Map<String, String> commandDescriptions = new HashMap<>();
     private Map<String, String> objectTypeMap = new HashMap<>();
@@ -381,8 +380,8 @@ public class CommandProcessor {
     /*
      * Vissaadja a létrehozott objektumokat
      */
-    public TreeMap<String, Object> getCreatedObjects() {
-        return (TreeMap<String, Object>) createdObjects;
+    public HashMap<String, Object> getCreatedObjects() {
+        return (HashMap<String, Object>) createdObjects;
     }
 
     /**

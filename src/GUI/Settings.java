@@ -1,13 +1,11 @@
 package GUI;
 import javax.swing.*;
 import commands.CommandProcessor;
-import logic.GameLogic;
-
 import java.awt.*;
 
 public class Settings {
 
-    public static void showSettings(JFrame parent, GameLogic gameLogic) {
+    public static void showSettings(JFrame parent, CommandProcessor commandProc) {
         // Új ablak létrehozása
         JFrame settingsFrame = new JFrame("Beállítások");
         settingsFrame.setSize(800, 800);
@@ -68,7 +66,7 @@ public class Settings {
         JButton saveAndCloseButton = createStyledButton("Mentés és vissza a főmenübe");
         saveAndCloseButton.addActionListener(e -> {
             settingsFrame.dispose(); // Bezárja a Settings ablakot
-            new MainMenu(gameLogic).setVisible(true); // Visszatér a MainMenu-hoz
+            new MainMenu(commandProc).setVisible(true); // Visszatér a MainMenu-hoz
         });
 
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));

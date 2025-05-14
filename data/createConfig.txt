@@ -24,6 +24,3 @@
 /create slowspore s4
 /create stunspore s5
 /create multiplyinsectspore s6
-/create thread th9
-/create thread th10
-/create body b5
