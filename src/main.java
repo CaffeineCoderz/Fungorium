@@ -13,7 +13,7 @@ public class main {
         GameLogic gameLogic = new GameLogic();
         CommandProcessor commandProcessor = gameLogic.getCommandProcessor();
         //commandProcessor.processConfigText("configWithoutStatus");
-        commandProcessor.processConfigText("TwelveNeighbour");
+        commandProcessor.processConfigText("config");
         // commandProcessor.processConfigText("setConfig");
 
         //FungoriumGamePanel.createAndShowGUI(commandProcessor);
