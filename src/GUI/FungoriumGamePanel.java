@@ -228,7 +228,7 @@ public class FungoriumGamePanel extends JPanel {
         }
 
         // Draw the grid (optional) RED
-        drawGrid(g2d);
+        //drawGrid(g2d);
 
         // Draw all objects
         tektonView.drawTektons(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(),
@@ -971,16 +971,34 @@ public class FungoriumGamePanel extends JPanel {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
+        // Get the default ToolTipManager
+        ToolTipManager ttm = ToolTipManager.sharedInstance();
+
+        // Set the initial delay (in milliseconds)
+        ttm.setInitialDelay(100); 
+
         // Add a simple control panel
         JPanel controlPanel = new JPanel();
-
+        controlPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         // Update View button
         JButton updateButton = new JButton("Update View");
         updateButton.addActionListener(e -> gamePanel.updateGameState());
         controlPanel.add(updateButton);
 
         // Save Game button
-        JButton saveButton = new JButton("Save Game");
+        JButton saveButton = new JButton();
+        saveButton.setPreferredSize(new Dimension(64, 64));
+        try {
+            Image img = ImageIO.read(new File("src/resources/buttons/save1.png"));
+            saveButton.setIcon(new ImageIcon(img.getScaledInstance(110, 230, Image.SCALE_SMOOTH)));
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+        // to remote the spacing between the image and button's borders
+        saveButton.setMargin(new Insets(0, 0, 0, 0));
+        // to add a different background
+        saveButton.setBackground( Color.LIGHT_GRAY);
+        saveButton.setToolTipText("Save Game");
         saveButton.addActionListener(e -> {
             saver.saveGameState(gamePanel.getObjectPositions(), "gameState.xml");
             JOptionPane.showMessageDialog(frame, "Game state saved to gameState.xml");
@@ -988,7 +1006,19 @@ public class FungoriumGamePanel extends JPanel {
         controlPanel.add(saveButton);
 
         // Load Game button
-        JButton loadButton = new JButton("Load Game");
+        JButton loadButton = new JButton();
+        loadButton.setPreferredSize(new Dimension(64, 64));
+        try {
+            Image img = ImageIO.read(new File("src/resources/buttons/load.png"));
+            loadButton.setIcon(new ImageIcon(img.getScaledInstance(64, 64, Image.SCALE_SMOOTH)));
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+        // to remote the spacing between the image and button's borders
+        loadButton.setMargin(new Insets(0, 0, 0, 0));
+        // to add a different background
+        loadButton.setBackground( Color.LIGHT_GRAY);
+        loadButton.setToolTipText("Load Game");
         loadButton.addActionListener(e -> {
             Map<String, Point> loadedPositions = saver.loadGameState("gameState.xml");
             gamePanel.setObjectPositions(loadedPositions);
@@ -996,6 +1026,51 @@ public class FungoriumGamePanel extends JPanel {
             JOptionPane.showMessageDialog(frame, "Game state loaded from gameState.xml");
         });
         controlPanel.add(loadButton);
+
+        JButton growThreadButton = new JButton();
+        growThreadButton.setPreferredSize(new Dimension(64, 64));
+        try {
+            Image img = ImageIO.read(new File("src/resources/buttons/growThread1.png"));
+            growThreadButton.setIcon(new ImageIcon(img.getScaledInstance(140, 260, Image.SCALE_SMOOTH)));
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+        // to remote the spacing between the image and button's borders
+        growThreadButton.setMargin(new Insets(0, 0, 0, 0));
+        // to add a different background
+        growThreadButton.setBackground( Color.LIGHT_GRAY);
+        growThreadButton.setToolTipText("Grow Thread");
+        controlPanel.add(growThreadButton);
+
+        JButton growBodyButton = new JButton();
+        growBodyButton.setPreferredSize(new Dimension(64, 64));
+        try {
+            Image img = ImageIO.read(new File("src/resources/buttons/growBody1.png"));
+            growBodyButton.setIcon(new ImageIcon(img.getScaledInstance(130, 260, Image.SCALE_SMOOTH)));
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+        // to remote the spacing between the image and button's borders
+        growBodyButton.setMargin(new Insets(0, 0, 0, 0));
+        // to add a different background
+        growBodyButton.setBackground( Color.LIGHT_GRAY);
+        growBodyButton.setToolTipText("Grow Body");
+        controlPanel.add(growBodyButton);
+
+        JButton sporulateButton = new JButton();
+        sporulateButton.setPreferredSize(new Dimension(64, 64));
+        try {
+            Image img = ImageIO.read(new File("src/resources/buttons/sporulate1.png"));
+            sporulateButton.setIcon(new ImageIcon(img.getScaledInstance(130, 260, Image.SCALE_SMOOTH)));
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+        // to remote the spacing between the image and button's borders
+        sporulateButton.setMargin(new Insets(0, 0, 0, 0));
+        // to add a different background
+        sporulateButton.setBackground( Color.LIGHT_GRAY);
+        sporulateButton.setToolTipText("Sporulate");
+        controlPanel.add(sporulateButton);
 
         frame.add(controlPanel, BorderLayout.SOUTH);
     }
