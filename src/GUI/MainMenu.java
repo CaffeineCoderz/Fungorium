@@ -1,8 +1,6 @@
 package GUI;
 
 import javax.swing.*;
-
-import commands.CommandProcessor;
 import logic.GameLogic;
 
 import java.awt.*;
@@ -14,9 +12,7 @@ import javax.imageio.ImageIO;
 
 public class MainMenu extends JFrame {
 
-    protected GameLogic gameLogic;
     public MainMenu(GameLogic gameLogic) {
-        this.gameLogic = gameLogic;
         setTitle("Fungorium - Főmenü");
         setSize(800, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
