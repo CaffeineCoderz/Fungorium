@@ -12,8 +12,8 @@ public class main {
     public static void main(String[] args) {
         GameLogic gameLogic = new GameLogic();
         CommandProcessor commandProcessor = gameLogic.getCommandProcessor();
-        commandProcessor.processConfigText("configWithoutStatus");
-        //commandProcessor.processConfigText("TwelveNeighbour");
+        //commandProcessor.processConfigText("configWithoutStatus");
+        commandProcessor.processConfigText("TwelveNeighbour");
         // commandProcessor.processConfigText("setConfig");
 
         //FungoriumGamePanel.createAndShowGUI(commandProcessor);
