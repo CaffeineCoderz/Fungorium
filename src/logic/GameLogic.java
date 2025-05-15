@@ -49,6 +49,14 @@ public class GameLogic {
     }
 
     /**
+     * Gets the map of players.
+     * 
+     * @return The map of players.
+     */
+    public Map<String, Object> getPlayers() {
+        return players;
+    }
+    /**
      * Gets the game time.
      * 
      * @return The current game time.

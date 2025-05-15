@@ -4,10 +4,17 @@ import commands.CommandProcessor;
 import logic.GameLogic;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Settings {
+    public class Player {
+        String type;
+        String name;
+    }
 
     public static void showSettings(JFrame parent, GameLogic gameLogic) {
+        List<Player> players = new ArrayList<>();
         // Új ablak létrehozása
         JFrame settingsFrame = new JFrame("Beállítások");
         settingsFrame.setSize(800, 800);
@@ -29,7 +36,7 @@ public class Settings {
         gbc.anchor = GridBagConstraints.CENTER; // Középre igazítás
 
         // Gombok létrehozása
-        JButton PlayerCountButton = createStyledButton("Jatékosok száma: 4");
+        JButton PlayerCountButton = createStyledButton("Jatékosok száma: " + players.size());
         JButton SetTypeAndNameButton = createStyledButton("Játekosok típusa és neve");
         JButton LoadButton = createStyledButton("Load Game");
         JButton button4 = createStyledButton("Gomb 4");
@@ -86,14 +93,87 @@ public class Settings {
         PlayerCountButton.addActionListener(e -> {
             new ResultScreen().setVisible(true); // Megnyitja a ResultScreen ablakot
         });
+        
         SetTypeAndNameButton.addActionListener(e -> {
-            // Felugró ablak létrehozása
-            JOptionPane.showMessageDialog(
-                settingsFrame, // Szülő ablak
-                "A Player 2 köre következik.", // Üzenet
-                "Kör információ", // Ablak címe
-                JOptionPane.INFORMATION_MESSAGE // Információs ikon
-            );
+            // getter kell hozzá!
+            java.util.Map<String, Object> playerMap = gameLogic.getPlayers(); 
+            DefaultListModel<String> model = new DefaultListModel<>();
+            for (String name : playerMap.keySet()) {
+                Object obj = playerMap.get(name);
+                String type = obj.getClass().getSimpleName().toUpperCase().contains("FUNGUS") ? "FUNGUS" : "INSECT";
+                model.addElement(name + " (" + type + ")");
+            }
+
+            JList<String> playerList = new JList<>(model);
+
+            JButton addButton = new JButton("Új játékos");
+            addButton.addActionListener(ev -> {
+                JTextField nameField = new JTextField();
+                String[] types = {"FUNGUS", "INSECT"};
+                JComboBox<String> typeBox = new JComboBox<>(types);
+                int res = JOptionPane.showConfirmDialog(settingsFrame, new Object[]{
+                    "Név:", nameField, "Típus:", typeBox
+                }, "Játékos hozzáadása", JOptionPane.OK_CANCEL_OPTION);
+                if (res == JOptionPane.OK_OPTION) {
+                    String name = nameField.getText().trim();
+                    String type = (String) typeBox.getSelectedItem();
+                    if (!playerMap.containsKey(name) && !name.isEmpty()) {
+                        if (type.equals("FUNGUS")) {
+                            gameLogic.getCommandProcessor().process("/create fungusspecies " + name);
+                        } else {
+                            gameLogic.getCommandProcessor().process("/create insectspecies " + name);
+                        }
+                        gameLogic.addSpecies(name, gameLogic.getCommandProcessor().getCreatedObjects().get(name));
+                        model.addElement(name + " (" + type + ")");
+                        PlayerCountButton.setText("Játékosok száma: " + gameLogic.getPlayers().size());
+                    } else {
+                        JOptionPane.showMessageDialog(settingsFrame, "Ez a név már foglalt vagy üres!", "Hiba", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            });
+
+            JButton removeButton = new JButton("Törlés");
+            removeButton.addActionListener(ev -> {
+                int idx = playerList.getSelectedIndex();
+                if (idx >= 0) {
+                    String selected = model.get(idx);
+                    String name = selected.split(" ")[0];
+                    gameLogic.removeSpecies(name);
+                    model.remove(idx);
+                    PlayerCountButton.setText("Játékosok száma: " + gameLogic.getPlayers().size());
+                }
+            });
+
+            JButton saveButton = new JButton("Mentés és bezárás");
+                saveButton.addActionListener(ev -> {
+                    int fungusCount = 0;
+                    int insectCount = 0;
+                    for (int i = 0; i < model.size(); i++) {
+                        String entry = model.get(i);
+                        if (entry.contains("(FUNGUS)")) fungusCount++;
+                        if (entry.contains("(INSECT)")) insectCount++;
+                    }
+                    if (fungusCount < 2 || insectCount < 2) {
+                        JOptionPane.showMessageDialog(settingsFrame,
+                            "Legalább 2 FUNGUS és 2 INSECT játékos szükséges!",
+                            "Hiba", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    ((JDialog)SwingUtilities.getWindowAncestor(playerList)).dispose();
+                });
+
+            JPanel btnPanel = new JPanel();
+            btnPanel.add(addButton);
+            btnPanel.add(removeButton);
+            btnPanel.add(saveButton);
+
+            JDialog dialog = new JDialog(settingsFrame, "Játékosok szerkesztése", true);
+            dialog.setSize(350, 400);
+            dialog.setLayout(new BorderLayout());
+            dialog.add(new JScrollPane(playerList), BorderLayout.CENTER);
+            dialog.add(btnPanel, BorderLayout.SOUTH);
+            dialog.setLocationRelativeTo(settingsFrame);
+            dialog.setVisible(true);
         });
     }
 
