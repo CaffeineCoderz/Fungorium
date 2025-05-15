@@ -5,13 +5,10 @@ import javax.swing.*;
 import logic.GameLogic;
 
 import java.awt.*;
-import java.awt.event.*;
 import java.awt.image.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.Flow;
-
 import javax.imageio.ImageIO;
 
 public class FungoriumGUIBuilder {
@@ -100,7 +97,8 @@ public class FungoriumGUIBuilder {
     }
 
     private JButton createUpdateButton(FungoriumGamePanel gamePanel) {
-        JButton button = new JButton("Update View");
+        JButton button = createImageButton("src/resources/buttons/endTurn1.png", 110, 230);
+        button.setToolTipText("End Turn");
         button.addActionListener(e -> gamePanel.updateGameState());
         return button;
     }
