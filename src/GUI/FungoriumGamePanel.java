@@ -228,7 +228,7 @@ public class FungoriumGamePanel extends JPanel {
         }
 
         // Draw the grid (optional) RED
-        drawGrid(g2d);
+        //drawGrid(g2d);
 
         // Draw all objects
         tektonView.drawTektons(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(),
@@ -241,12 +241,13 @@ public class FungoriumGamePanel extends JPanel {
                 g2d.fill(new Ellipse2D.Double(p.x - 5, p.y - 5, 10, 10));
             }
         }
-        sporeView.drawSpores(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects());
+        
         System.out.println("objectPositions size: " + objectPositions.size());
 
         threadView.drawThreads(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(), tektonCardinalPoints, gameLogic.getCommandProcessor(), threadEndpoints);
         insectView.drawInsects(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects());
         bodyView.drawBodies(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects());
+        sporeView.drawSpores(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects());
         
         g2d.setColor(Color.RED);
         for (Map.Entry<String, Point> entry : objectPositions.entrySet()) {
@@ -328,184 +329,162 @@ public class FungoriumGamePanel extends JPanel {
      * For Insects, it positions them near their associated thread.
      */
     private void calculateObjectPositions() {
-        // Tekton init
+        initializeTektonPlacement();
+        calculateTektonCardinalPoints(); // Maradhat külön, ha nem igényel változtatást
+        positionDependentObjects();
+        positionInsects();
+    }
+
+    private void initializeTektonPlacement() {
         List<Point> tiles = renderMap.getTiles();
-        int maxRetries = 100; // Maximum number of retries to find a free spot
-        occupiedCells.clear(); // Initialize the set of occupied cells
+        occupiedCells.clear();
         boolean first = true;
+
         List<Map.Entry<String, Object>> sortedTektons = gameLogic.getCommandProcessor().getCreatedObjects()
-        .entrySet().stream()
-        .filter(entry -> entry.getValue() instanceof Tekton)
-        .sorted((e1, e2) -> {
-            int n1 = ((Tekton) e1.getValue()).getNeighbours().size();
-            int n2 = ((Tekton) e2.getValue()).getNeighbours().size();
-            return Integer.compare(n2, n1); // Csökkenő sorrend
-        })
-        .collect(Collectors.toList());
+            .entrySet().stream()
+            .filter(entry -> entry.getValue() instanceof Tekton)
+            .sorted((e1, e2) -> Integer.compare(
+                ((Tekton) e2.getValue()).getNeighbours().size(),
+                ((Tekton) e1.getValue()).getNeighbours().size()))
+            .collect(Collectors.toList());
 
         for (Map.Entry<String, Object> entry : sortedTektons) {
             if (entry.getValue() instanceof Tekton) {
-                boolean placed = false;
-                int retries = 0;
+                placeTekton(entry, tiles, first);
+                first = false;
+            }
+        }
+    }
 
-                while (!placed && retries < maxRetries) {
-                    // Point topLeft = tiles.get(randomIndex);
+    private void placeTekton(Map.Entry<String, Object> entry, List<Point> tiles, boolean first) {
+        boolean placed = false;
+        int retries = 0;
+        int maxRetries = 100;
 
-                    Point topLeft;
-                    Tekton tekton = (Tekton) entry.getValue();
-                    if (first) {
-                        topLeft = new Point(
-                            renderMap.getCols()/2 - TEKTON_CELLS/2, 
-                            renderMap.getRows()/2 - TEKTON_CELLS/2
-                        );
-                        first = false;
-                    }else{
-                        topLeft = calculateGroupedPosition(tekton, tiles);
-                    }
-                    
+        while (!placed && retries < maxRetries) {
+            Point topLeft;
+            Tekton tekton = (Tekton) entry.getValue();
 
-                    if (isWithinBounds(topLeft, TEKTON_CELLS, renderMap.getCols(), renderMap.getRows()) && isAreaFree(topLeft, TEKTON_CELLS)) {
-                        objectPositions.put(entry.getKey(), topLeft);
-                        
-                            occupyArea(topLeft, 0,TEKTON_CELLS); // Mark cells as occupied
-                        
-                        placed = true;
-                    } else {
-                        retries++;
-                    }
-                }
+            if (first) {
+                topLeft = new Point(renderMap.getCols()/2 - TEKTON_CELLS/2,
+                                    renderMap.getRows()/2 - TEKTON_CELLS/2);
+            } else {
+                topLeft = calculateGroupedPosition(tekton, tiles);
+            }
 
-                if (!placed) {
-                    System.err.println(
-                            "Could not place Tekton: " + entry.getKey() + " after " + maxRetries + " retries.");
-                    // Optionally handle this situation (e.g., skip placing the Tekton)
-                }
+            if (isWithinBounds(topLeft, TEKTON_CELLS, renderMap.getCols(), renderMap.getRows()) 
+                && isAreaFree(topLeft, TEKTON_CELLS)) {
+
+                objectPositions.put(entry.getKey(), topLeft);
+                occupyArea(topLeft, 0, TEKTON_CELLS);
+                placed = true;
+
+            } else {
+                retries++;
             }
         }
 
-        calculateTektonCardinalPoints();
+        if (!placed) {
+            System.err.println("Could not place Tekton: " + entry.getKey() + " after " + maxRetries + " retries.");
+        }
+    }
 
-        // Position other objects relative to their tektons
+    private void positionDependentObjects() {
         for (Map.Entry<String, Object> entry : gameLogic.getCommandProcessor().getCreatedObjects().entrySet()) {
-            String name = entry.getKey();
             Object obj = entry.getValue();
+            String name = entry.getKey();
 
-            if (obj instanceof FungusBody) {
-                FungusBody body = (FungusBody) obj;
-                Tekton tekton = body.getTekton();
-                if (tekton != null) {
-                    Point tektonCenter = getTektonCenter(tekton);
-                    if (tektonCenter != null) {
-                        // Set the FungusBody position to the center of the Tekton
-                        objectPositions.put(name, tektonCenter);
-                    }
-                }
+            if (obj instanceof Spore) {
+                positionSpore(name, (Spore) obj);
             } else if (obj instanceof FungusThread) {
-                FungusThread thread = (FungusThread) obj;
-                // Position threads between their connected objects
-                if (!thread.getTektons().isEmpty()) {
-                    Tekton firstTekton = thread.getTektons().get(0);
-                    String firstTektonName = gameLogic.getCommandProcessor().findByObject(firstTekton);
-                    String threadName = gameLogic.getCommandProcessor().findByObject(thread);
-                    List<Tekton> tektons = thread.getTektons();
-
-                    // ! Bridge thread
-                    // TODO Check if the line between the two endoint going over a tekton, if yes recalulate tekton pos(not sure if it is right like this, think it through)
-                    if(thread.isBridge()){
-                        if (tektons.size() >= 2) {
-                            Point firstControlPoint = findClosestCardinalPoint(
-                                tektons.get(0), 
-                                objectPositions.get(gameLogic.getCommandProcessor().findByObject(tektons.get(1)))
-                            );
-                            Point secondControlPoint = findClosestCardinalPoint(
-                                tektons.get(1), objectPositions.get(gameLogic.getCommandProcessor().findByObject(tektons.get(0)))
-                            );
-                            if (firstControlPoint != null && secondControlPoint != null) {
-                                objectPositions.put(threadName, new Point(
-                                        (firstControlPoint.x + secondControlPoint.x) / 2,
-                                        (firstControlPoint.y + secondControlPoint.y) / 2));
-                                threadEndpoints.put(threadName + "_start", firstControlPoint);
-                                threadEndpoints.put(threadName + "_end", secondControlPoint);
-                            } else {
-                                System.err.println("Control points could not be calculated for thread: " + threadName);
-                            }
-                        }
-                    } 
-
-                    // ! Non bridge thread
-                    else{
-                        if (thread.getTektons().isEmpty())
-                            continue;
-                        Tekton tekton = thread.getTektons().get(0);
-                        FungusBody body = thread.getMyBody();
-
-                        if (body == null) continue;
-                        Point TektonCenter = getTektonCenter(tekton);
-                        Point controlPoint = findClosestCardinalPoint(tekton, TektonCenter);
-                        
-                        if(TektonCenter != null && controlPoint != null){
-                            objectPositions.put(name, new Point(
-                                    (TektonCenter.x + controlPoint.x) / 2,
-                                    (TektonCenter.y + controlPoint.y) / 2));
-                            threadEndpoints.put(name + "_start", TektonCenter);
-                            threadEndpoints.put(name + "_end", controlPoint);
-                        } else {
-                            System.err.println("Control points could not be calculated for thread: " + name);
-                        }
-                    }
-                   
-                }
-            } else if (obj instanceof Spore) {
-                Spore spore = (Spore) obj;
-                Tekton tekton = spore.getTekton();
-                Point tektonPos = getTektonPosition(tekton);
-                if (tektonPos != null) {
-
-                        // Get cell dimensions
-                        int cellWidth = getWidth() / renderMap.getCols();
-                        int cellHeight = getHeight() / renderMap.getRows();
-
-                        // Calculate Tekton's center coordinates
-                        int tektonCenterX = tektonPos.y * cellWidth + (cellWidth * TEKTON_CELLS / 2);
-                        int tektonCenterY = tektonPos.x * cellHeight + (cellHeight * TEKTON_CELLS / 2);
-
-                        // Calculate Tekton's radius (use min to handle non-square cells)
-                        int radius = Math.min(cellWidth, cellHeight) * TEKTON_CELLS / 2;
-
-                        // Add 10% margin so spores don't touch the edge
-                        int margin = (int) (radius * 0.1);
-                        radius -= margin;
-
-                        int offsetX, offsetY;
-                        do {
-                            offsetX = (int) (Math.random() * radius * 2 - radius);
-                            offsetY = (int) (Math.random() * radius * 2 - radius);
-                        } while (offsetX * offsetX + offsetY * offsetY > radius * radius);
-
-                        // Set final spore position
-                        objectPositions.put(name, new Point(
-                                tektonCenterX + offsetX,
-                                tektonCenterY + offsetY));
-                    }
+                positionFungusThread(name, (FungusThread) obj);
+            } else if (obj instanceof FungusBody) {
+                positionFungusBody(name, (FungusBody) obj);
             }
         }
-    
-        // Az insect a threadtől függ, ezért a threaderket számoljuk előbb és utánna megyünk végig az insecteken
-        for (Map.Entry<String, Object> entry : gameLogic.getCommandProcessor().getCreatedObjects().entrySet()) {
-            String name = entry.getKey();
-            Object obj = entry.getValue();
+    }
 
-            if (obj instanceof Insect) {
-                Insect insect = (Insect) obj;
+    private void positionFungusBody(String name, FungusBody body) {
+        Tekton tekton = body.getTekton();
+        if (tekton != null) {
+            Point center = getTektonCenter(tekton);
+            if (center != null) {
+                objectPositions.put(name, center);
+            }
+        }
+    }
+
+    private void positionFungusThread(String name, FungusThread thread) {
+        List<Tekton> tektons = thread.getTektons();
+        if (tektons.isEmpty()) return;
+
+        if (thread.isBridge()) {
+            if (tektons.size() >= 2) {
+                Tekton t1 = tektons.get(0);
+                Tekton t2 = tektons.get(1);
+                Point p1 = findClosestCardinalPoint(t1, objectPositions.get(gameLogic.getCommandProcessor().findByObject(t2)));
+                Point p2 = findClosestCardinalPoint(t2, objectPositions.get(gameLogic.getCommandProcessor().findByObject(t1)));
+
+                if (p1 != null && p2 != null) {
+                    objectPositions.put(name, new Point((p1.x + p2.x) / 2, (p1.y + p2.y) / 2));
+                    threadEndpoints.put(name + "_start", p1);
+                    threadEndpoints.put(name + "_end", p2);
+                } else {
+                    System.err.println("Control points could not be calculated for thread: " + name);
+                }
+            }
+        } else {
+            Tekton tekton = tektons.get(0);
+            FungusBody body = thread.getMyBody();
+            if (body == null) return;
+
+            Point center = getTektonCenter(tekton);
+            Point control = findClosestCardinalPoint(tekton, center);
+
+            if (center != null && control != null) {
+                objectPositions.put(name, new Point((center.x + control.x) / 2, (center.y + control.y) / 2));
+                threadEndpoints.put(name + "_start", center);
+                threadEndpoints.put(name + "_end", control);
+            } else {
+                System.err.println("Control points could not be calculated for thread: " + name);
+            }
+        }
+    }
+
+    private void positionSpore(String name, Spore spore) {
+        Tekton tekton = spore.getTekton();
+        Point pos = getTektonPosition(tekton);
+        if (pos == null) return;
+
+        int cellWidth = getWidth() / renderMap.getCols();
+        int cellHeight = getHeight() / renderMap.getRows();
+
+        int centerX = pos.y * cellWidth + (cellWidth * TEKTON_CELLS / 2);
+        int centerY = pos.x * cellHeight + (cellHeight * TEKTON_CELLS / 2);
+
+        int radius = Math.min(cellWidth, cellHeight)* TEKTON_CELLS/2;
+        radius -= radius * 0.2;
+
+        int offsetX, offsetY;
+        do {
+            offsetX = (int) (Math.random() * radius * 2 - radius);
+            offsetY = (int) (Math.random() * radius * 2 - radius);
+        } while (offsetX * offsetX + offsetY * offsetY < radius * radius);
+
+        objectPositions.put(name, new Point(centerX + offsetX, centerY + offsetY));
+    }
+
+    private void positionInsects() {
+        for (Map.Entry<String, Object> entry : gameLogic.getCommandProcessor().getCreatedObjects().entrySet()) {
+            if (entry.getValue() instanceof Insect) {
+                Insect insect = (Insect) entry.getValue();
                 FungusThread thread = insect.getThread();
+
                 if (thread != null) {
                     String threadName = gameLogic.getCommandProcessor().findByObject(thread);
                     if (threadName != null && objectPositions.containsKey(threadName)) {
                         Point threadPos = objectPositions.get(threadName);
-                        // Position insect near the thread
-                        objectPositions.put(name, new Point(
-                                threadPos.x,
-                                threadPos.y-13));
+                        objectPositions.put(entry.getKey(), new Point(threadPos.x, threadPos.y - 13));
                     }
                 }
             }
@@ -966,58 +945,5 @@ public class FungoriumGamePanel extends JPanel {
      */
     public Map<String, Point> getObjectPositions() {
         return objectPositions;
-    }
-
-    /**
-     * Initializes and displays the main game window for the Fungorium Game.
-     * This method creates a JFrame containing the game panel and a control panel 
-     * with buttons to update the view, save the game state, and load the game state.
-     * 
-     * The game panel is initialized with the provided command processor and is added 
-     * to the frame. The control panel buttons trigger actions on the game panel, 
-     * such as updating the view, saving the current game state to a file, and 
-     * loading the game state from a file.
-     * 
-     * The frame is set to be visible and centered on the screen.
-     * 
-     */
-
-    public static void createAndShowGUI(GameLogic gameLogic) {
-        JFrame frame = new JFrame("Fungorium Game");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        FungoriumGamePanel gamePanel = new FungoriumGamePanel(gameLogic);
-        frame.add(gamePanel);
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-
-        // Add a simple control panel
-        JPanel controlPanel = new JPanel();
-
-        // Update View button
-        JButton updateButton = new JButton("Update View");
-        updateButton.addActionListener(e -> gamePanel.updateGameState());
-        controlPanel.add(updateButton);
-
-        // Save Game button
-        JButton saveButton = new JButton("Save Game");
-        saveButton.addActionListener(e -> {
-            saver.saveGameState(gamePanel.getObjectPositions(), "gameState.xml");
-            JOptionPane.showMessageDialog(frame, "Game state saved to gameState.xml");
-        });
-        controlPanel.add(saveButton);
-
-        // Load Game button
-        JButton loadButton = new JButton("Load Game");
-        loadButton.addActionListener(e -> {
-            Map<String, Point> loadedPositions = saver.loadGameState("gameState.xml");
-            gamePanel.setObjectPositions(loadedPositions);
-            gamePanel.updateGameState();
-            JOptionPane.showMessageDialog(frame, "Game state loaded from gameState.xml");
-        });
-        controlPanel.add(loadButton);
-
-        frame.add(controlPanel, BorderLayout.SOUTH);
     }
 }
