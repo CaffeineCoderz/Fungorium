@@ -56,14 +56,6 @@ public class GameLogic {
         return commandProcessor;
     }
 
-    /**
-     * Gets the map of players.
-     * 
-     * @return The map of players.
-     */
-    public Map<String, Object> getPlayers() {
-        return players;
-    }
 
     /**
      * Gets the game time.

@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.awt.image.BufferedImage;
 
@@ -274,7 +275,7 @@ public class FungoriumGamePanel extends JPanel {
         }
 
         // Draw the grid (optional) RED
-        //drawGrid(g2d);
+        drawGrid(g2d);
 
         // Draw all objects
         tektonView.drawTektons(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(),
@@ -388,15 +389,20 @@ public class FungoriumGamePanel extends JPanel {
         List<Map.Entry<String, Object>> sortedTektons = gameLogic.getCommandProcessor().getCreatedObjects()
             .entrySet().stream()
             .filter(entry -> entry.getValue() instanceof Tekton)
-            /*.sorted((e1, e2) -> Integer.compare(
+            .sorted((e1, e2) -> Integer.compare(
                 ((Tekton) e2.getValue()).getNeighbours().size(),
                 ((Tekton) e1.getValue()).getNeighbours().size()))
-            */.collect(Collectors.toList());
+            .collect(Collectors.toList());
 
         for (Map.Entry<String, Object> entry : sortedTektons) {
             if (entry.getValue() instanceof Tekton) {
                 placeTekton(entry, tiles);
             }
+        }
+        if (!isAllDistancesCorrect()) {
+             System.out.println("Wrong calculation, so redraw");
+             objectPositions.clear(); // Force recalculation of positions
+             initializeTektonPlacement();
         }
     }
 
@@ -633,10 +639,13 @@ public class FungoriumGamePanel extends JPanel {
         int[][] dynamicDirections = isSpecialCase(neighbors.get(0).getNeighbours().size()) ?  directions :// Használjuk a fix mátrixot 4,8,12 esetén
         generatePolygonDirections(neighbors.get(0).getNeighbours().size());
         // Normál elhelyezési logika
+        dynamicDirections = Arrays.stream(dynamicDirections)
+            .sorted((a, b) -> ThreadLocalRandom.current().nextInt(-1, 2))
+            .toArray(int[][]::new);
         for (Tekton neighbor : neighbors) {
             Point neighborPos = getTektonPosition(neighbor);
             if (neighborPos == null) continue;
-
+            
             // Próbálkozás minden dinamikus irányban
             for (int[] dir : dynamicDirections) {
                 Point newPos = new Point(
@@ -654,6 +663,62 @@ public class FungoriumGamePanel extends JPanel {
         return findFallbackPosition(tekton, neighbors, placementDistance+1);
     }
     
+    private Boolean isAllDistancesCorrect() {
+        Map<String, Object> objects = gameLogic.getCommandProcessor().getCreatedObjects();
+        List<Tekton> allTektons = new ArrayList<>();
+
+        // 1. Összes Tekton gyűjtése
+        for (Object obj : objects.values()) {
+            if (obj instanceof Tekton) {
+                allTektons.add((Tekton) obj);
+            }
+        }
+
+        // 2. Páronkénti ellenőrzés
+        for (int i = 0; i < allTektons.size(); i++) {
+            Tekton t1 = allTektons.get(i);
+            Point p1 = getTektonPosition(t1);
+            if (p1 == null) continue;
+
+            for (int j = i + 1; j < allTektons.size(); j++) {
+                Tekton t2 = allTektons.get(j);
+                Point p2 = getTektonPosition(t2);
+                if (p2 == null) continue;
+
+                // 3. Szomszéd viszony ellenőrzése
+                boolean areNeighbours = t1.getNeighbours().contains(t2) || t2.getNeighbours().contains(t1);
+                
+                // 4. Középpontok számítása
+                Point c1 = new Point(p1.x + TEKTON_CELLS/2, p1.y + TEKTON_CELLS/2);
+                Point c2 = new Point(p2.x + TEKTON_CELLS/2, p2.y + TEKTON_CELLS/2);
+                double centerDistance = Math.hypot(c1.x - c2.x, c1.y - c2.y);
+                String tekt1 = gameLogic.getCommandProcessor().findByObject(t1);
+                String tekt2 = gameLogic.getCommandProcessor().findByObject(t2);
+                // 5. Távolság szabályok alkalmazása
+                if (areNeighbours) {
+                    // Szomszédokra: 4-6 cella (9+ szomszédnál 5-6)
+                    int min = (t1.getNeighbours().size() >=9 || t2.getNeighbours().size() >=9) ? 5 : 4;
+                    if (centerDistance < min || centerDistance > 6) {
+                       
+                        System.err.println("Szomszéd távolsági hiba: " 
+                            + tekt1 + " - " + tekt2 
+                            + " (" + centerDistance + " cella)");
+                        return false;
+                    }
+                } else {
+                    // Nem szomszédokra: minimum 7 cella (top-left pozíciók)
+                    double edgeDistance = Math.hypot(p1.x - p2.x, p1.y - p2.y);
+                    if (edgeDistance < 7) {
+                        System.err.println("Nem szomszéd távolsági hiba: " 
+                            + tekt1 + " - " + tekt2 
+                            + " (" + edgeDistance + " cella)");
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
     private int calculatePlacementDistance(Tekton tekton) {
         int neighborCount = tekton.getNeighbours().size();
         // Erősebb skálázás több szomszédnál
