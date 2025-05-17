@@ -1532,7 +1532,7 @@ public class CommandProcessor {
         if (objInsect instanceof Insect && objThread instanceof FungusThread) {
             Insect insect = (Insect) objInsect;
             FungusThread thread = (FungusThread) objThread;
-            insect.deadInsect(this);
+            insect.deadInsect(this);        
             if (thread.getTekton().canGrowBody() && thread.getTekton() != null) {
                 FungusBody b = new FungusBody();
                 thread.getSpecies().addBody(b);
