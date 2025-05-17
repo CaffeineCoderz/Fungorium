@@ -178,9 +178,10 @@ public class FungoriumGamePanel extends JPanel {
                         try{
                             if(gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName) instanceof Insect){
 
-                            String command = "eatinsect "+clickedObjectName+ " "+origin;
-                            gameLogic.getInputQueue().put(command);
-                            repaint();}
+                                String command = "eatinsect "+clickedObjectName+ " "+origin;
+                                gameLogic.getInputQueue().put(command);
+                                
+                            }
                             else{
                                 System.out.println("Invalid target for insect eating.");
                             }
@@ -188,10 +189,20 @@ public class FungoriumGamePanel extends JPanel {
                             er.printStackTrace();
                         }
                         waitingForTarget = false;
-                        growthThreadCalled = false;
+                        eatInsectCalled = false;
                         SwingUtilities.invokeLater(() -> {
                             guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
                         });
+                        revalidate();
+                        repaint();
+                                System.out.println(gameLogic.getCommandProcessor().getCreatedObjects().containsKey(clickedObjectName));
+                                if(!gameLogic.getCommandProcessor().getCreatedObjects().containsKey(clickedObjectName)){
+                                    System.out.println("Insect eaten.");
+                                    objectPositions.remove(clickedObjectName);
+                                }
+                                else{
+                                    System.out.println("Insect not eaten.");
+                                }
                         return;
                     }
                     if(waitingForTarget&& cutThreadCalled){

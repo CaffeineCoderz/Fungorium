@@ -198,7 +198,8 @@ public class FungoriumGUIBuilder {
         }
 
         if (gamePanel.pickedObject != null) {
-            if (gamePanel.pickedObject.contains("Thread:")) {
+            String firstLine = gamePanel.pickedObject.split("\\R", 2)[0].trim(); // első sor, whitespace nélkül
+            if (firstLine.contains("Thread:")) {
                 threadPicked = true;
             } else if (gamePanel.pickedObject.contains("Body:")) {
                 bodyPicked = true;
@@ -248,6 +249,7 @@ public class FungoriumGUIBuilder {
             growBodyButton.setVisible(false);
             eatInsectButton.setVisible(false);
             sporulateButton.setVisible(false);
+            System.out.println(insectPicked);
             if(insectPicked) {
                 cutThreadButton.setEnabled(true);
                 moveButton.setEnabled(true);
