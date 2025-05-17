@@ -1,8 +1,6 @@
 package GUI;
 
 import javax.swing.*;
-
-import commands.CommandProcessor;
 import logic.GameLogic;
 
 import java.awt.*;
@@ -87,7 +85,7 @@ public class MainMenu extends JFrame {
 
         add(mainPanel);
 
-        newGameButton.addActionListener(e -> openChooseSpeciesScreen());
+        newGameButton.addActionListener(e -> startGameScreen());
         rulesButton.addActionListener(e -> showRules());
         settingsButton.addActionListener(e -> {
             Settings.showSettings(this,gameLogic); 
@@ -121,7 +119,7 @@ public class MainMenu extends JFrame {
  * @param commandP The CommandProcessor instance used to handle game commands.
  */
 
-    private void openChooseSpeciesScreen() {
+    private void startGameScreen() {
         gameGUIBuilder.createAndShowGUI();
         dispose();
     }
@@ -153,16 +151,6 @@ public class MainMenu extends JFrame {
         scrollPane.setPreferredSize(new Dimension(350, 250));
 
         JOptionPane.showMessageDialog(this, scrollPane, "Játékszabályok", JOptionPane.INFORMATION_MESSAGE);
-    }
-
-        /**
-         * The main method of the program.
-         * Creates a new CommandProcessor, creates and shows the MainMenu GUI with it, and starts the game loop.
-         * @param args The command line arguments, currently unused.
-         */
-    public static void main(String[] args) {
-        GameLogic gameLogic = new GameLogic();
-        SwingUtilities.invokeLater(() -> new MainMenu(gameLogic).setVisible(true));
     }
 
     private static class BackgroundPanel extends JPanel {

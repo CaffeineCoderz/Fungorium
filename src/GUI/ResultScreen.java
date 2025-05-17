@@ -1,5 +1,10 @@
 package GUI;
 import javax.swing.*;
+
+import commands.CommandProcessor;
+import fungus.FungusSpecies;
+import insect.InsectSpecies;
+
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -8,13 +13,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 class ResultScreen extends JFrame {
+    public ResultScreen(CommandProcessor commandProcessor) {
+        List<FungusSpecies> fungusList = new ArrayList<>();
+        List<InsectSpecies> insectList = new ArrayList<>();
 
-    private List<String> fungusWinners;
-    private List<String> insectWinners;
+        // Szétválogatás és gyűjtés
+        for (Object obj : commandProcessor.getCreatedObjects().values()) {
+            if (obj instanceof FungusSpecies) {
+                fungusList.add((FungusSpecies) obj);
+                System.out.println("Fungus bekerült: " + commandProcessor.findByObject(obj) + " pont: " + ((FungusSpecies)obj).getScore());
+            }
+            if (obj instanceof InsectSpecies) {
+                insectList.add((InsectSpecies) obj);
+                System.out.println("Insect bekerült: " + commandProcessor.findByObject(obj) + " pont: " + ((InsectSpecies)obj).getScore());
+            }
+        }
 
-    public ResultScreen() {
-        loadWinnersFromFile("src/GUI/DATA/winners.txt");
-
+        // Rendezzük pontszám szerint csökkenőbe
+        fungusList.sort((a, b) -> Integer.compare(b.getScore(), a.getScore()));
+        insectList.sort((a, b) -> Integer.compare(b.getScore(), a.getScore()));
+        
         setTitle("Fungorium - Eredmények");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
@@ -57,13 +75,24 @@ class ResultScreen extends JFrame {
         fungusTitle.setFont(new Font("Arial", Font.BOLD, 24));
         fungusTitle.setForeground(Color.lightGray);
         fungusPanel.add(fungusTitle, BorderLayout.NORTH);
-        JPanel fungusWinnersSubPanel = new JPanel(new GridLayout(0, 1)); // GridLayout a nevek függőlegesen
+
+        JPanel fungusWinnersSubPanel = new JPanel();
+        fungusWinnersSubPanel.setLayout(new BoxLayout(fungusWinnersSubPanel, BoxLayout.Y_AXIS));
         fungusWinnersSubPanel.setOpaque(false);
-        for (int i = 0; i < fungusWinners.size(); i++) {
-            JLabel winnerLabel = new JLabel((i + 1) + ". " + fungusWinners.get(i), SwingConstants.CENTER);
+
+        // --- Fungus nyertesek panel ---
+        for (int i = 0; i < fungusList.size(); i++) {
+            FungusSpecies fs = fungusList.get(i);
+            String name = commandProcessor.findByObject(fs);
+            JLabel winnerLabel = new JLabel((i+1) + ". " + name + " (" + fs.getScore() + " pont)");
             styleWinnerLabel(winnerLabel, i);
+            winnerLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // Középre igazítás
             fungusWinnersSubPanel.add(winnerLabel);
+            if (i < fungusList.size() - 1) {
+                fungusWinnersSubPanel.add(Box.createVerticalStrut(18));
+            }
         }
+        
         fungusPanel.add(fungusWinnersSubPanel, BorderLayout.CENTER);
         winnersPanel.add(fungusPanel);
 
@@ -74,13 +103,24 @@ class ResultScreen extends JFrame {
         insectTitle.setFont(new Font("Arial", Font.BOLD, 24));
         insectTitle.setForeground(Color.lightGray);
         insectPanel.add(insectTitle, BorderLayout.NORTH);
-        JPanel insectWinnersSubPanel = new JPanel(new GridLayout(0, 1)); 
+
+        JPanel insectWinnersSubPanel = new JPanel();
+        insectWinnersSubPanel.setLayout(new BoxLayout(insectWinnersSubPanel, BoxLayout.Y_AXIS));
         insectWinnersSubPanel.setOpaque(false);
-        for (int i = 0; i < insectWinners.size(); i++) {
-            JLabel winnerLabel = new JLabel((i + 1) + ". " + insectWinners.get(i), SwingConstants.CENTER);
+
+        // --- Insect nyertesek panel ---
+        for (int i = 0; i < insectList.size(); i++) {
+            InsectSpecies is = insectList.get(i);
+            String name = commandProcessor.findByObject(is);
+            JLabel winnerLabel = new JLabel((i+1) + ". " + name + " (" + is.getScore() + " pont)");
             styleWinnerLabel(winnerLabel, i);
+            winnerLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // Középre igazítás
             insectWinnersSubPanel.add(winnerLabel);
+            if (i < insectList.size() - 1) {
+                insectWinnersSubPanel.add(Box.createVerticalStrut(18));
+            }
         }
+
         insectPanel.add(insectWinnersSubPanel, BorderLayout.CENTER);
         winnersPanel.add(insectPanel);
 
@@ -103,33 +143,6 @@ class ResultScreen extends JFrame {
         add(mainPanel);
     }
 
-    private void loadWinnersFromFile(String filePath) {
-        fungusWinners = new ArrayList<>();
-        insectWinners = new ArrayList<>();
-        boolean readingFungus = false;
-        boolean readingInsect = false;
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                line = line.trim();
-                if (line.equalsIgnoreCase("<fungusspecies>")) {
-                    readingFungus = true;
-                    readingInsect = false;
-                } else if (line.equalsIgnoreCase("<insectspecies>")) {
-                    readingInsect = true;
-                    readingFungus = false;
-                } else if (readingFungus && !line.isEmpty()) {
-                    fungusWinners.add(line);
-                } else if (readingInsect && !line.isEmpty()) {
-                    insectWinners.add(line);
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("Hiba a nyertesek fájl beolvasása közben: " + e.getMessage());
-        }
-    }
-
     private void styleButton(JButton button) {
         button.setFont(new Font("SansSerif", Font.BOLD, 18));
         button.setBackground(new Color(30, 144, 255));
@@ -147,12 +160,5 @@ class ResultScreen extends JFrame {
             label.setForeground(Color.LIGHT_GRAY);
         }
         label.setHorizontalAlignment(SwingConstants.CENTER);
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            ResultScreen resultScreen = new ResultScreen();
-            resultScreen.setVisible(true);
-        });
     }
 }
