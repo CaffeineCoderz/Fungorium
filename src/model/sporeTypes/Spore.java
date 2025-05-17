@@ -2,7 +2,6 @@ package sporeTypes;
 
 import insect.Insect;
 import tektonTypes.Tekton;
-import utils.*;
 
 /**
  * Spore class. This represents a spore, which has been dispersed to the tekton. This spore can be consumed by insects

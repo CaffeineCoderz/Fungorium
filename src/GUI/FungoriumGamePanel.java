@@ -6,7 +6,6 @@ import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
 
-import commands.CommandProcessor;
 import fungus.FungusBody;
 import fungus.FungusThread;
 import insect.Insect;
@@ -20,10 +19,8 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,7 +30,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
-import java.awt.image.BufferedImage;
 
 public class FungoriumGamePanel extends JPanel {
     // Handlers

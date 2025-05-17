@@ -6,11 +6,9 @@ import insect.Insect;
 
 import sporeTypes.Spore;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import commands.CommandProcessor;
-import utils.Logger;
 
 public class Tekton {
     private Boolean canGrowBody;
