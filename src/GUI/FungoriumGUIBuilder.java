@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.util.Map;
 import javax.imageio.ImageIO;
 
-import java.util.logging.Logger;
 
 public class FungoriumGUIBuilder {
 
