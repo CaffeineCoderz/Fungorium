@@ -11,10 +11,18 @@ import java.io.IOException;
 import java.util.Map;
 import javax.imageio.ImageIO;
 
+
 public class FungoriumGUIBuilder {
 
     private final GameLogic gameLogic;
     private static GameStateHandler saver;
+    private JButton growThreadButton;
+    private JButton growBodyButton;
+    private JButton sporulateButton;
+    private JButton eatInsectButton;
+    private JButton cutThreadButton;
+    private JButton moveButton;
+    private JButton eatSporeButton;
 
     public FungoriumGUIBuilder(GameLogic gameLogic, GameStateHandler saver) {
         this.gameLogic = gameLogic;
@@ -60,8 +68,10 @@ public class FungoriumGUIBuilder {
 
         // Háttérszál a betöltéshez
         new Thread(() -> {
-            FungoriumGamePanel gamePanel = new FungoriumGamePanel(gameLogic);
+            FungoriumGamePanel gamePanel = new FungoriumGamePanel(gameLogic, this);
             JPanel controlPanel = createControlPanel(frame, gamePanel);
+
+            gamePanel.setControlPanel(controlPanel);
 
             SwingUtilities.invokeLater(() -> {
                 frame.getContentPane().removeAll();
@@ -84,17 +94,31 @@ public class FungoriumGUIBuilder {
     }
 
     private JPanel createControlPanel(JFrame frame, FungoriumGamePanel gamePanel) {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        panel.setBackground(Color.LIGHT_GRAY);
+            JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            panel.setBackground(Color.LIGHT_GRAY);
 
-        panel.add(createUpdateButton(gamePanel));
-        panel.add(createSaveButton(frame, gamePanel));
-        panel.add(createLoadButton(frame, gamePanel));
+            growThreadButton = createImageButton("src/resources/buttons/growThread1.png", 140, 260);
+            growThreadButton.setToolTipText("Grow Thread");
+            growBodyButton = createImageButton("src/resources/buttons/growBody1.png", 130, 260);
+            growBodyButton.setToolTipText("Grow Body");
+            sporulateButton = createImageButton("src/resources/buttons/sporulate1.png", 130, 260);
+            sporulateButton.setToolTipText("Sporulate");
+            eatInsectButton = createImageButton("src/resources/buttons/eatInsect1.png", 110, 240);
+            eatInsectButton.setToolTipText("Eat Insect");
+            cutThreadButton = createImageButton("src/resources/buttons/cutThread1.png", 110, 220);
+            cutThreadButton.setToolTipText("Cut Thread");
+            moveButton = createImageButton("src/resources/buttons/move1.png", 110, 220);
+            moveButton.setToolTipText("Move");
+            eatSporeButton = createImageButton("src/resources/buttons/eat1.png", 110, 220);
+            eatSporeButton.setToolTipText("Eat Spore");
 
-        addActionButtons(panel, gamePanel);
+            panel.add(createUpdateButton(gamePanel));
+            panel.add(createSaveButton(gamePanel));
+            panel.add(createLoadButton(gamePanel));
 
-        return panel;
+            return panel;
     }
+
 
     private JButton createUpdateButton(FungoriumGamePanel gamePanel) {
         JButton button = createImageButton("src/resources/buttons/endTurn1.png", 110, 230);
@@ -103,24 +127,24 @@ public class FungoriumGUIBuilder {
         return button;
     }
 
-    private JButton createSaveButton(JFrame frame, FungoriumGamePanel gamePanel) {
+    private JButton createSaveButton(FungoriumGamePanel gamePanel) {
         JButton button = createImageButton("src/resources/buttons/save1.png", 110, 230);
         button.setToolTipText("Save Game");
         button.addActionListener(e -> {
             saver.saveGameState(gamePanel.getObjectPositions(), "gameState.xml");
-            JOptionPane.showMessageDialog(frame, "Game state saved to gameState.xml");
+            JOptionPane.showMessageDialog(gamePanel, "Game state saved to gameState.xml");
         });
         return button;
     }
 
-    private JButton createLoadButton(JFrame frame, FungoriumGamePanel gamePanel) {
+    private JButton createLoadButton(FungoriumGamePanel gamePanel) {
         JButton button = createImageButton("src/resources/buttons/load.png", 64, 64);
         button.setToolTipText("Load Game");
         button.addActionListener(e -> {
             Map<String, Point> loadedPositions = saver.loadGameState("gameState.xml");
             gamePanel.setObjectPositions(loadedPositions);
             gamePanel.updateGameState();
-            JOptionPane.showMessageDialog(frame, "Game state loaded from gameState.xml");
+            JOptionPane.showMessageDialog(gamePanel, "Game state loaded from gameState.xml");
         });
         return button;
     }
@@ -139,73 +163,103 @@ public class FungoriumGUIBuilder {
         return button;
     }
 
-    private void addActionButtons(JPanel panel, FungoriumGamePanel gamePanel) {
-        // Itt ideiglenes logika van (fixen insectPicked = true), de ezt a logikát érdemes kiszervezni
+    public void updateActionButtons(JPanel panel, FungoriumGamePanel gamePanel) {
+        // Töröljük a régi gombokat
+        panel.removeAll();
+        panel.add(createUpdateButton(gamePanel));
+        panel.add(createSaveButton(gamePanel));
+        panel.add(createLoadButton(gamePanel));
+        // Itt a gombok létrehozásának és hozzáadásának logikája
         boolean threadPicked = false;
         boolean bodyPicked = false;
         boolean sporePicked = false;
         boolean tektonPicked = false;
         boolean insectPicked = false;
-        boolean fungusTurn = true;
-        boolean insectsTurn = false;
+        boolean fungusTurn = false; // Tesztelés
+        boolean insectsTurn = true; // Tesztelés
 
-        JButton growThreadButton = createImageButton("src/resources/buttons/growThread1.png", 140, 260);
-        growThreadButton.setToolTipText("Grow Thread");
-        panel.add(growThreadButton);
-
-        JButton growBodyButton = createImageButton("src/resources/buttons/growBody1.png", 130, 260);
-        growBodyButton.setToolTipText("Grow Body");
-        panel.add(growBodyButton);
-
-        JButton sporulateButton = createImageButton("src/resources/buttons/sporulate1.png", 130, 260);
-        sporulateButton.setToolTipText("Sporulate");
-        panel.add(sporulateButton);
-
-        JButton eatInsectButton = createImageButton("src/resources/buttons/eatInsect1.png", 110, 240);
-        eatInsectButton.setToolTipText("Eat Insect");
-        panel.add(eatInsectButton);
-
-        JButton cutThreadButton = createImageButton("src/resources/buttons/cutThread1.png", 110, 220);
-        cutThreadButton.setToolTipText("Cut Thread");
-        panel.add(cutThreadButton);
-
-        JButton moveButton = createImageButton("src/resources/buttons/move1.png", 110, 220);
-        moveButton.setToolTipText("Move");
-        panel.add(moveButton);
-
-        JButton eatSporeButton = createImageButton("src/resources/buttons/eat1.png", 110, 220);
-        eatSporeButton.setToolTipText("Eat Spore");
-        panel.add(eatSporeButton);
-
+        if (gamePanel.pickedObject != null) {
+            if (gamePanel.pickedObject.contains("Thread:")) {
+                threadPicked = true;
+            } else if (gamePanel.pickedObject.contains("Body:")) {
+                bodyPicked = true;
+            } else if (gamePanel.pickedObject.contains("Spore:")) {
+                sporePicked = true;
+            } else if (gamePanel.pickedObject.contains("Tekton:")) {
+                tektonPicked = true;
+            } else if (gamePanel.pickedObject.contains("Insect:")) {
+                insectPicked = true;
+            }
+        }
         // Láthatósági logika – ide mehet külön osztály vagy állapotkezelő
-        growThreadButton.setVisible(false);
-        growBodyButton.setVisible(false);
-        sporulateButton.setVisible(false);
-        eatInsectButton.setVisible(false);
+        growThreadButton.setEnabled(false);
+        growBodyButton.setEnabled(false);
+        sporulateButton.setEnabled(false);
+        eatInsectButton.setEnabled(false);
+        cutThreadButton.setEnabled(false);
+        moveButton.setEnabled(false);
+        eatSporeButton.setEnabled(false);
+
+        cutThreadButton.setVisible(true);
+        moveButton.setVisible(true);
+        eatSporeButton.setVisible(true);
+        growThreadButton.setVisible(true);
+        growBodyButton.setVisible(true);
+        eatInsectButton.setVisible(true);
+        sporulateButton.setVisible(true);
 
         if (fungusTurn) {
-            if (threadPicked) {
-                growThreadButton.setVisible(true);
-                growBodyButton.setVisible(true);
-                eatInsectButton.setVisible(true);
-            } else if (bodyPicked) {
-                growThreadButton.setVisible(true);
-                sporulateButton.setVisible(true);
-            } else if (sporePicked || tektonPicked) {
-                growThreadButton.setVisible(true);
-                growBodyButton.setVisible(true);
-                eatInsectButton.setVisible(tektonPicked);
-            } else if (insectPicked) {
-                eatInsectButton.setVisible(true);
+            cutThreadButton.setVisible(false);
+            moveButton.setVisible(false);
+            eatSporeButton.setVisible(false);
+            if (threadPicked || tektonPicked) {
+                growThreadButton.setEnabled(true);
+                growBodyButton.setEnabled(true);
+                eatInsectButton.setEnabled(true);
             }
-        } else if (insectsTurn) {
-            cutThreadButton.setVisible(true);
-            moveButton.setVisible(true);
-            eatSporeButton.setVisible(sporePicked || tektonPicked || insectPicked);
+            if (bodyPicked) {
+                growThreadButton.setEnabled(true);
+                sporulateButton.setEnabled(true);
+            }
+            if (sporePicked) {
+                growThreadButton.setEnabled(true);
+                growBodyButton.setEnabled(true);
+            }
+            if (insectPicked) {
+                eatInsectButton.setEnabled(true);
+            }
+        }
+        if (insectsTurn) {
+            growThreadButton.setVisible(false);
+            growBodyButton.setVisible(false);
+            eatInsectButton.setVisible(false);
+            sporulateButton.setVisible(false);
+            if(insectPicked || tektonPicked) {
+                cutThreadButton.setEnabled(true);
+                moveButton.setEnabled(true);
+                eatSporeButton.setEnabled(true);
+            }
+            if (sporePicked) {
+                eatSporeButton.setEnabled(true);
+            }
+            if (bodyPicked) {
+                moveButton.setEnabled(true);
+            }
+            if (threadPicked) {
+                cutThreadButton.setEnabled(true);
+                moveButton.setEnabled(true);
+            }
         }
 
+        panel.add(growThreadButton);
+        panel.add(growBodyButton);
+        panel.add(sporulateButton);
+        panel.add(eatInsectButton);
         panel.add(cutThreadButton);
         panel.add(moveButton);
         panel.add(eatSporeButton);
+
+        panel.revalidate();
+        panel.repaint();
     }
 }
