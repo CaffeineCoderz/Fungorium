@@ -1,6 +1,7 @@
 package GUI;
 
 import javax.swing.*;
+
 import logic.GameLogic;
 
 import java.awt.*;

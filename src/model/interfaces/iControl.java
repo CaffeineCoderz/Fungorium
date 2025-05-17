@@ -1,7 +1,5 @@
 package interfaces;
 
-import commands.CommandProcessor;
-
 public interface iControl {
     /**
      * Adds the specified amount to the score.

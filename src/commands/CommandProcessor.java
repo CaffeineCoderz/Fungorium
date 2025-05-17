@@ -1,14 +1,10 @@
 package commands;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,11 +17,9 @@ import java.util.function.Consumer;
 import fungus.*;
 import insect.InsectSpecies;
 import insect.Insect;
-import insect.InsectEffects;
 import logic.GameLogic;
 import sporeTypes.*;
 import tektonTypes.*;
-import utils.*;
 
 // ! Commands:
 // ? System Commands:

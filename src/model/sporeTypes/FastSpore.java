@@ -1,7 +1,6 @@
 package sporeTypes;
 
 import insect.Insect;
-import utils.*;
 import tektonTypes.*;
 
 public class FastSpore extends Spore {

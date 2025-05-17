@@ -1,6 +1,5 @@
 package GUI.Views;
 
-import fungus.FungusBody;
 import fungus.FungusThread;
 import tektonTypes.Tekton;
 
