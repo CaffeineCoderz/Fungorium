@@ -517,6 +517,15 @@ public class GameLogic {
         return false;
     }
 
+       /**
+     * Gets the map of players.
+     * 
+     * @return The map of players.
+     */
+    public Map<String, Object> getPlayers() {
+        return players;
+    }
+
     private Boolean canReachFromBody(FungusThread toThread, FungusThread temp, Integer distance) {
         if(temp.getMyBody()!= null){
             for (FungusThread bodyThreads : temp.getMyBody().getThreads()) {

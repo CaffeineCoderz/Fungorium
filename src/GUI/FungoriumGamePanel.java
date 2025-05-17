@@ -21,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,7 +43,6 @@ public class FungoriumGamePanel extends JPanel {
     // Positions and cells
     private Map<String, Point> objectPositions = new TreeMap<>();
     private Set<Point> occupiedCells = new HashSet<>();
-    public String pickedObject; // Currently selected object
     // Flag to indicate if positions need recalculation
     private boolean shouldRecalculatePositions = true;
     private boolean growthThreadCalled = false;
@@ -82,7 +82,6 @@ public class FungoriumGamePanel extends JPanel {
     private BodyView bodyView = new BodyView();
     private InsectView insectView = new InsectView();
     private ThreadView threadView = new ThreadView();
-    private StatusView statusView;
 
     private List<String> selectedObjects = new ArrayList<>();
     private StatusView statusView1;
@@ -97,11 +96,6 @@ public class FungoriumGamePanel extends JPanel {
         renderMap = new RenderMap(RenderMap.MapSize.MEDIUM);
 
         // Initialize the status view
-        statusView = new StatusView();
-        //statusView.setBounds(600, 10, 180, 100);
-
-        //statusView.setBounds(0, 0, 800, 800); // Position at the top-right corner
-        //add(statusView);
 
         statusView1 = new StatusView();
         statusView2 = new StatusView();
@@ -232,161 +226,6 @@ public class FungoriumGamePanel extends JPanel {
                 }
             }
         );
-
-        
-        // Add mouse listener to detect clicks on objects
-        /**
-         * Handles mouse clicks on the game panel. If the clicked point corresponds to a valid game object (tekton, fungus, insect, or spore), 
-         * a "/status <objectName>" command is executed and the resulting status string is displayed in the status view. If the clicked point does not
-         * correspond to a valid game object, the status view is cleared.
-         * 
-         * @param e the MouseEvent that triggered this method call
-         */
-        addMouseListener(
-            new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    Point clickPoint = e.getPoint();
-                    String clickedObjectName = getObjectAtPoint(clickPoint);
-
-                    pickedObject = null; 
-
-                    if(waitingForTarget&& growthThreadCalled){
-                        try{
-                            if(gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName) instanceof Tekton){
-
-                            
-                            String command = "growthread "+clickedObjectName+ " "+origin;
-                            gameLogic.getInputQueue().put(command);}
-                            else{
-                                System.out.println("Invalid target for thread growth.");
-                            }
-                        } catch (InterruptedException er) {
-                            er.printStackTrace();
-                        }
-                        waitingForTarget = false;
-                        growthThreadCalled = false;
-                        SwingUtilities.invokeLater(() -> {
-                            guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
-                        });
-                        return;
-                    }
-                    if(waitingForTarget&& eatInsectCalled){
-                        try{
-                            if(gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName) instanceof Insect){
-
-                                String command = "eatinsect "+clickedObjectName+ " "+origin;
-                                gameLogic.getInputQueue().put(command);
-                                
-                            }
-                            else{
-                                System.out.println("Invalid target for insect eating.");
-                            }
-                        } catch (InterruptedException er) {
-                            er.printStackTrace();
-                        }
-                        waitingForTarget = false;
-                        eatInsectCalled = false;
-                        SwingUtilities.invokeLater(() -> {
-                            guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
-                        });
-                        revalidate();
-                        repaint();
-                                System.out.println(gameLogic.getCommandProcessor().getCreatedObjects().containsKey(clickedObjectName));
-                                if(!gameLogic.getCommandProcessor().getCreatedObjects().containsKey(clickedObjectName)){
-                                    System.out.println("Insect eaten.");
-                                    objectPositions.remove(clickedObjectName);
-                                }
-                                else{
-                                    System.out.println("Insect not eaten.");
-                                }
-                        return;
-                    }
-                    if(waitingForTarget&& cutThreadCalled){
-                        try{
-                            if(gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName) instanceof FungusThread){
-
-                            String command = "cutthread "+clickedObjectName+ " "+origin;
-                            gameLogic.getInputQueue().put(command);}
-                            else{
-                                System.out.println("Invalid target for thread cutting.");
-                            }
-                        } catch (InterruptedException er) {
-                            er.printStackTrace();
-                        }
-                        waitingForTarget = false;
-                        cutThreadCalled = false;
-                        SwingUtilities.invokeLater(() -> {
-                            guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
-                        });
-                        return;
-                        }
-                    if(waitingForTarget&& moveCalled){
-                        try{
-                            if(gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName) instanceof FungusThread){
-
-                            String command = "move "+origin+ " "+clickedObjectName;
-                            gameLogic.getInputQueue().put(command);}
-                            else{
-                                System.out.println("Invalid target for moving.");
-                            }
-                        } catch (InterruptedException er) {
-                            er.printStackTrace();
-                        }
-                        waitingForTarget = false;
-                        moveCalled = false;
-                        SwingUtilities.invokeLater(() -> {
-                            guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
-                        });
-                        return;
-                    } 
-                    if (clickedObjectName != null) {
-                        String command = "/status " + clickedObjectName;
-
-                        // Capture System.out output
-                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                        PrintStream originalOut = System.out;
-                        try {
-                            System.setOut(new PrintStream(outputStream));
-                            gameLogic.getCommandProcessor().process(command); // Execute the command
-                            System.out.flush();
-                            String status = outputStream.toString().trim(); // Get the captured output
-                            
-                            String[] lines = status.split(System.lineSeparator()); // Sorokra bontjuk a kimenetet
-                            if (lines.length >= 2) {
-                                pickedObject = lines[1].trim(); // A második sor a típus (index 1)
-                            }
-                            if(clickPoint.x < 400){
-                                statusView.moveToRightPosition();
-                            }else{
-                                statusView.moveToLeftPosition();
-                            }
-                            statusView.updateStatus(status); // Update the status view
-                            // Frissítjük a gombokat a vezérlőpanelen
-                            if (controlPanel != null && guiBuilder != null) {
-                                // Itt kellene meghívni egy metódust, ami frissíti a gombokat
-                                // Ehhez az addActionButtons metódus logikáját ki kell szervezni
-                                SwingUtilities.invokeLater(() -> {
-                                    guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
-                                });
-                            }
-                            origin = clickedObjectName;
-                        } catch (Exception ex) {
-                            System.err.println("Error executing command: " + ex.getMessage());
-                        } finally {
-                            System.setOut(originalOut); // Restore original System.out
-                        }
-                    } else {
-                        statusView.clearStatus(); // Clear the status view if no valid object is clicked
-                        if (controlPanel != null) {
-                            resetActionButtons();
-                        }
-                    }
-                    
-                    statusView.repaint();
-                }
-            }
-        );       
 
         // Load the background image
         try {
