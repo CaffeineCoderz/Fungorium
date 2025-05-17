@@ -197,7 +197,6 @@ public class FungoriumGUIBuilder {
             insectsTurn = true; // Tesztelés
         }
 
-
         if (gamePanel.getSelectedObjects() != null && !gamePanel.getSelectedObjects().isEmpty()) {
             String objName = gamePanel.getSelectedObjects().get(0);
             String status = gamePanel.getStatusText(objName);
