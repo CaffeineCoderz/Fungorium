@@ -49,7 +49,13 @@ public class FungoriumGamePanel extends JPanel {
     public String pickedObject; // Currently selected object
     // Flag to indicate if positions need recalculation
     private boolean shouldRecalculatePositions = true;
-    
+    private boolean growthThreadCalled = false;
+    private boolean eatInsectCalled = false;
+    private boolean waitingForTarget = false;
+    private boolean cutThreadCalled = false;
+    private boolean moveCalled = false;
+    private String origin;
+
     // Sizes
     private static final int THREAD_WIDTH = 3;
     
@@ -145,8 +151,87 @@ public class FungoriumGamePanel extends JPanel {
                 public void mouseClicked(MouseEvent e) {
                     Point clickPoint = e.getPoint();
                     String clickedObjectName = getObjectAtPoint(clickPoint);
+
                     pickedObject = null; 
 
+                    if(waitingForTarget&& growthThreadCalled){
+                        try{
+                            if(gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName) instanceof Tekton){
+
+                            
+                            String command = "growthread "+clickedObjectName+ " "+origin;
+                            gameLogic.getInputQueue().put(command);}
+                            else{
+                                System.out.println("Invalid target for thread growth.");
+                            }
+                        } catch (InterruptedException er) {
+                            er.printStackTrace();
+                        }
+                        waitingForTarget = false;
+                        growthThreadCalled = false;
+                        SwingUtilities.invokeLater(() -> {
+                            guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+                        });
+                        return;
+                    }
+                    if(waitingForTarget&& eatInsectCalled){
+                        try{
+                            if(gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName) instanceof Insect){
+
+                            String command = "eatinsect "+clickedObjectName+ " "+origin;
+                            gameLogic.getInputQueue().put(command);
+                            repaint();}
+                            else{
+                                System.out.println("Invalid target for insect eating.");
+                            }
+                        } catch (InterruptedException er) {
+                            er.printStackTrace();
+                        }
+                        waitingForTarget = false;
+                        growthThreadCalled = false;
+                        SwingUtilities.invokeLater(() -> {
+                            guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+                        });
+                        return;
+                    }
+                    if(waitingForTarget&& cutThreadCalled){
+                        try{
+                            if(gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName) instanceof FungusThread){
+
+                            String command = "cutthread "+clickedObjectName+ " "+origin;
+                            gameLogic.getInputQueue().put(command);}
+                            else{
+                                System.out.println("Invalid target for thread cutting.");
+                            }
+                        } catch (InterruptedException er) {
+                            er.printStackTrace();
+                        }
+                        waitingForTarget = false;
+                        cutThreadCalled = false;
+                        SwingUtilities.invokeLater(() -> {
+                            guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+                        });
+                        return;
+                        }
+                    if(waitingForTarget&& moveCalled){
+                        try{
+                            if(gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName) instanceof FungusThread){
+
+                            String command = "move "+origin+ " "+clickedObjectName;
+                            gameLogic.getInputQueue().put(command);}
+                            else{
+                                System.out.println("Invalid target for moving.");
+                            }
+                        } catch (InterruptedException er) {
+                            er.printStackTrace();
+                        }
+                        waitingForTarget = false;
+                        moveCalled = false;
+                        SwingUtilities.invokeLater(() -> {
+                            guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+                        });
+                        return;
+                    } 
                     if (clickedObjectName != null) {
                         String command = "/status " + clickedObjectName;
 
@@ -177,6 +262,7 @@ public class FungoriumGamePanel extends JPanel {
                                     guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
                                 });
                             }
+                            origin = clickedObjectName;
                         } catch (Exception ex) {
                             System.err.println("Error executing command: " + ex.getMessage());
                         } finally {
@@ -1289,5 +1375,51 @@ public class FungoriumGamePanel extends JPanel {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+    public void growThreadLogic(){ // Ezt az objektumot választotta ki kiindulásnak
+        waitingForTarget = true; // Most várunk egy célkijelölést
+        growthThreadCalled=true;
+        // Esetleg üzenet a felhasználónak:
+        JOptionPane.showMessageDialog(this, "Válassz ki egy cél objektumot a térképen!");
+    }
+    public void growBodyLogic(){ // Ezt az objektumot választotta ki kiindulásnak
+        try {
+        gameLogic.getInputQueue().put("growbody "+ origin);
+        SwingUtilities.invokeLater(() -> {
+            guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+        });
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+    public void sporulateLogic(){ // Ezt az objektumot választotta ki kiindulásnak
+        try {
+            gameLogic.getInputQueue().put("sporulate "+ origin);
+            SwingUtilities.invokeLater(() -> {
+                guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+            });
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void eatInsectLogic(){
+        waitingForTarget = true; // Most várunk egy célkijelölést
+        eatInsectCalled=true;
+        // Esetleg üzenet a felhasználónak:
+        JOptionPane.showMessageDialog(this, "Válaszd ki a megevendő rovart a térképen!");
+    }
+    public void cutThreadLogic(){
+        waitingForTarget = true; // Most várunk egy célkijelölést
+        cutThreadCalled=true;
+        // Esetleg üzenet a felhasználónak:
+        JOptionPane.showMessageDialog(this, "Válaszd ki a elvágandó fonalat a térképen!");
+    }
+
+    public void moveLogic(){
+        waitingForTarget = true; // Most várunk egy célkijelölést
+        moveCalled=true;
+        // Esetleg üzenet a felhasználónak:
+        JOptionPane.showMessageDialog(this, "Válaszd ki a célhelyet a térképen!");
     }
 }

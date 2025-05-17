@@ -87,7 +87,7 @@ public class CommandProcessor {
     private Map<String, String> commandDescriptions = new HashMap<>();
     private Map<String, String> objectTypeMap = new HashMap<>();
 
-    private Set<String> fungusCommands = Set.of("growBody", "growThread", "sporulate", "eatinsect");
+    private Set<String> fungusCommands = Set.of("growbody", "growthread", "sporulate", "eatinsect");
     private Set<String> insectCommands = Set.of("move", "cut", "eat");
     private Set<String> commonCommands = Set.of("help", "exit");
     private Set<String> systemCommands = Set.of("/helpsys", "/helpobj", "/load", "/break", "/kill", "/set", "/delete",
@@ -283,7 +283,9 @@ public class CommandProcessor {
     public void process(String input, Object player) {
         String[] parts = input.split(" ");
         String command = parts[0];
-
+        if(commonCommands.contains(command)) {
+            System.out.println("FungusSpecies: " + player);
+        }
         if (player instanceof FungusSpecies && !fungusCommands.contains(command) && !commonCommands.contains(command)
                 && !systemCommands.contains(command)) {
             System.out.println("Hiba: FungusSpecies nem használhatja ezt a parancsot: " + command);
@@ -865,6 +867,7 @@ public class CommandProcessor {
                     return;
                 }
                 createdObjects.put(newThreadName, nThread);
+                System.out.println("Új fonal jött létre: " + newThreadName);
             } else {
                 System.out.println("Hiba: Valamelyik paraméter nem megfelelő típusú.");
             }
