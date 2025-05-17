@@ -123,7 +123,7 @@ public class FungoriumGUIBuilder {
     private JButton createUpdateButton(FungoriumGamePanel gamePanel) {
         JButton button = createImageButton("src/resources/buttons/endTurn1.png", 110, 230);
         button.setToolTipText("End Turn");
-        button.addActionListener(e -> gamePanel.updateGameState());
+        button.addActionListener(e -> gamePanel.endTurnLogic());
         return button;
     }
 
@@ -175,8 +175,21 @@ public class FungoriumGUIBuilder {
         boolean sporePicked = false;
         boolean tektonPicked = false;
         boolean insectPicked = false;
-        boolean fungusTurn = false; // Tesztelés
+        boolean fungusTurn = true; // Tesztelés
         boolean insectsTurn = true; // Tesztelés
+        if(gameLogic.getCurrentSpecies()!= null) {
+            if(gameLogic.getCurrentSpecies().equals("Fungus")) {
+                fungusTurn = true;
+                insectsTurn = false;
+            }
+            else if(gameLogic.getCurrentSpecies().equals("Insect")) {
+                insectsTurn = true;
+                fungusTurn = false;
+            }
+        }else {
+            fungusTurn = true; // Tesztelés
+            insectsTurn = true; // Tesztelés
+        }
 
         if (gamePanel.pickedObject != null) {
             if (gamePanel.pickedObject.contains("Thread:")) {

@@ -86,7 +86,6 @@ public class MainMenu extends JFrame {
         mainPanel.add(centerPanel, BorderLayout.CENTER);
 
         add(mainPanel);
-
         newGameButton.addActionListener(e -> openChooseSpeciesScreen());
         rulesButton.addActionListener(e -> showRules());
         settingsButton.addActionListener(e -> {
@@ -123,6 +122,8 @@ public class MainMenu extends JFrame {
 
     private void openChooseSpeciesScreen() {
         gameGUIBuilder.createAndShowGUI();
+        Thread gameThread = new Thread(() -> gameLogic.startGame());
+        gameThread.start();
         dispose();
     }
 

@@ -3,6 +3,8 @@ package logic;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import commands.CommandProcessor;
 import fungus.FungusSpecies;
@@ -17,7 +19,8 @@ public class GameLogic {
     private int insectPlayers = 2; // Minimum insect játékos
     private int gameTime = 10; // A játék időtartama
     private int round = 0; // Az eltelt idő
-
+    private String currentSpecies; // Az aktuális játékos
+    private BlockingQueue<String> inputQueue = new LinkedBlockingQueue<>();
     // Map
     private Map<String, Tekton> tektons = new HashMap<>();
 
@@ -29,7 +32,9 @@ public class GameLogic {
         // Initialize the command processor
         this.commandProcessor = new CommandProcessor(this);
     }
-
+    public String getCurrentSpecies() {
+        return currentSpecies;
+    }
     /**
      * Sets the command processor for the game logic.
      * 
@@ -39,6 +44,9 @@ public class GameLogic {
         this.commandProcessor = commandProcessor;
     }
 
+    public BlockingQueue<String> getInputQueue() {
+        return inputQueue;
+    }
     /**
      * Gets the command processor.
      * 
@@ -88,6 +96,9 @@ public class GameLogic {
     public void removeSpecies(String id) {
         players.remove(id);
     }
+    public Map<String, Object> getPlayers() {
+        return players;
+    }
 
     /**
      * Gets a species by its ID.
@@ -110,8 +121,11 @@ public class GameLogic {
     public void startGame() {
         this.scanner = new Scanner(System.in);
         // First, we need to select the players
-        selectPlayers(scanner);
-
+        //selectPlayers(scanner);
+        handleSpeciesCreation("Fungus", "Fungus1");
+        handleSpeciesCreation("Insect", "Insect1");
+        handleSpeciesCreation("Fungus", "Fungus2");
+        handleSpeciesCreation("Insect", "Insect2");
         // Second, take turns
         while (gameTime > 0) {
             takeTurn(scanner);
@@ -329,9 +343,14 @@ public class GameLogic {
         while (gameTime > 0) {
             System.out.println("---------> Round: " + (round + 1) + " <---------");
             boolean skipRound = false;
-
             // Iterate through each player and prompt for commands
             for (String playerName : players.keySet()) {
+                Object species = commandProcessor.getCreatedObjects().get(playerName);
+                if(species instanceof FungusSpecies) {
+                    currentSpecies = "Fungus";
+                } else if (species instanceof InsectSpecies) {
+                    currentSpecies = "Insect";
+                }
                 if (skipRound) {
                     break; // Ha a kört át kell ugrani, kilépünk a játékosok ciklusából
                 }
@@ -339,7 +358,14 @@ public class GameLogic {
                 System.out.println("It's " + playerName + "'s turn. Enter a command:");
                 while (true) {
                     System.out.print("> ");
-                    String command = scanner.nextLine().trim().toLowerCase();
+                    String command;
+                    try {
+                        command = inputQueue.take(); // Ez blokkol, amíg nincs új parancs
+                    } catch (InterruptedException e) {
+                        System.out.println("A játék megszakadt.");
+                        Thread.currentThread().interrupt();
+                        return;
+                    }
 
                     // Check for skip commands
                     if (command.equals("/trig skipround")) {
