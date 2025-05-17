@@ -86,6 +86,9 @@ public class FungoriumGamePanel extends JPanel {
     private StatusView statusView1;
     private StatusView statusView2;
 
+
+    private String currentPlayerName = "";
+
     public FungoriumGamePanel(GameLogic gameLogic, FungoriumGUIBuilder guiBuilder) {
         this.gameLogic = gameLogic;
         saver = new GameStateHandler(gameLogic);
@@ -211,6 +214,11 @@ public class FungoriumGamePanel extends JPanel {
                 guiBuilder.updateActionButtons(controlPanel, this);
             });
         }
+    }
+
+    public void setCurrentPlayerName(String name) {
+        this.currentPlayerName = name;
+        repaint();
     }
 
     private void updateStatusPanels() {
@@ -429,6 +437,15 @@ public class FungoriumGamePanel extends JPanel {
 
         if (initialPaint) {
             initialPaint = false;
+        }
+
+        if (currentPlayerName != null && !currentPlayerName.isEmpty()) {
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setFont(new Font("Arial", Font.BOLD, 15));
+            Color borderColor = (getGuiBuilder() != null) ? getGuiBuilder().getPlayerColor(currentPlayerName)
+                    : Color.GRAY;
+            g2.setColor(borderColor);
+            g2.drawString(currentPlayerName, 10, 790);
         }
     }
 
@@ -1223,6 +1240,7 @@ public class FungoriumGamePanel extends JPanel {
     public Map<String, Point> getObjectPositions() {
         return objectPositions;
     }
+
     public void endTurnLogic(){
         try {
         gameLogic.getInputQueue().put("next");
@@ -1232,5 +1250,14 @@ public class FungoriumGamePanel extends JPanel {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setPlayerBorderColor(Color color) {
+        setBorder(BorderFactory.createLineBorder(color, 6));
+        repaint();
+    }
+
+    public FungoriumGUIBuilder getGuiBuilder() {
+        return guiBuilder;
     }
 }

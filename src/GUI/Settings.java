@@ -27,7 +27,7 @@ public class Settings {
         gbc.anchor = GridBagConstraints.CENTER; // Középre igazítás
 
         // Gombok létrehozása
-        JButton PlayerCountButton = createStyledButton("Jatékosok száma: " + gameLogic.getPlayers().size());
+        JButton PlayerCountButton = createStyledButton("Jatékosok száma: " + gameLogic.getPlayersCount());
         JButton SetTypeAndNameButton = createStyledButton("Játekosok típusa és neve");
         JButton LoadButton = createStyledButton("Load Game");
         JButton Rounds = createStyledButton("Körök száma: " + gameLogic.getGameTime());
@@ -82,7 +82,15 @@ public class Settings {
         settingsFrame.setVisible(true);
         
         PlayerCountButton.addActionListener(e -> {
-            new ResultScreen(gameLogic.getCommandProcessor()).setVisible(true);        
+            
+            String input = JOptionPane.showInputDialog(settingsFrame, "Add meg a játékosok számát(4-8):", gameLogic.getPlayersCount());
+            int playersCount = Integer.parseInt(input.trim());
+            if(playersCount < 4 || playersCount > 8) {
+                JOptionPane.showMessageDialog(settingsFrame, "A játékosok száma legyen 4 és 8 között!", "Hiba", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            gameLogic.setPlayersCount(playersCount);
+            PlayerCountButton.setText("Játékosok száma: " + playersCount);
         });
 
         Rounds.addActionListener(e -> {
@@ -90,11 +98,11 @@ public class Settings {
             if (input != null) {
                 try {
                     int newRounds = Integer.parseInt(input.trim());
-                    if (newRounds > 0) {
+                    if (newRounds > 0 && newRounds <= 40) {
                         gameLogic.setGameTime(newRounds);
                         Rounds.setText("Körök száma: " + newRounds);
                     } else {
-                        JOptionPane.showMessageDialog(settingsFrame, "A körök száma legyen pozitív egész szám!", "Hiba", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(settingsFrame, "A körök száma legyen pozitív egész szám 0 és 40 között!", "Hiba", JOptionPane.ERROR_MESSAGE);
                     }
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(settingsFrame, "Érvénytelen szám!", "Hiba", JOptionPane.ERROR_MESSAGE);
