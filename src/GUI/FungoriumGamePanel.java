@@ -6,7 +6,6 @@ import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
 
-import commands.CommandProcessor;
 import fungus.FungusBody;
 import fungus.FungusThread;
 import insect.Insect;
@@ -20,10 +19,8 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-import java.awt.image.BufferedImage;
 
 public class FungoriumGamePanel extends JPanel {
     // Handlers
@@ -88,6 +84,10 @@ public class FungoriumGamePanel extends JPanel {
     private ThreadView threadView = new ThreadView();
     private StatusView statusView;
 
+    private List<String> selectedObjects = new ArrayList<>();
+    private StatusView statusView1;
+    private StatusView statusView2;
+
     public FungoriumGamePanel(GameLogic gameLogic, FungoriumGUIBuilder guiBuilder) {
         this.gameLogic = gameLogic;
         saver = new GameStateHandler(gameLogic);
@@ -100,9 +100,48 @@ public class FungoriumGamePanel extends JPanel {
         statusView = new StatusView();
         //statusView.setBounds(600, 10, 180, 100);
 
-        statusView.setBounds(0, 0, 800, 800); // Position at the top-right corner
-        add(statusView);
+        //statusView.setBounds(0, 0, 800, 800); // Position at the top-right corner
+        //add(statusView);
 
+        statusView1 = new StatusView();
+        statusView2 = new StatusView();
+        statusView1.setBounds(0, 0, 800, 800); // Bal oldal
+        statusView2.setBounds(-200, 0, 800, 800); // Jobb oldal
+        add(statusView1);
+        add(statusView2);
+
+        addMouseListener(
+                new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        Point clickPoint = e.getPoint();
+                        String clickedObjectName = getObjectAtPoint(clickPoint);
+
+                        if (clickedObjectName != null) {
+                            // Csak akkor add hozzá, ha még nincs benne
+                            if (!selectedObjects.contains(clickedObjectName)) {
+                                selectedObjects.add(clickedObjectName);
+                            }
+
+                            // Mindkét panel frissítése
+                            updateStatusPanels();
+                        } else {
+                            selectedObjects.clear();
+                            updateStatusPanels(); // This will clear the panels if nothing is selected
+                        }
+                        if (controlPanel != null && guiBuilder != null) {
+                            SwingUtilities.invokeLater(() -> {
+                                guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+                            });
+                        }
+                        // Ha nincs kiválasztott objektum, alaphelyzetbe állítjuk a gombokat
+                        if (controlPanel != null && clickedObjectName == null) {
+                            resetActionButtons();
+                        }
+                    }
+        });
+
+        
         // Add mouse listener to detect clicks on objects
         /**
          * Handles mouse clicks on the game panel. If the clicked point corresponds to a valid game object (tekton, fungus, insect, or spore), 
@@ -265,6 +304,10 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
+    public List<String> getSelectedObjects() {
+        return selectedObjects;
+    }
+
         // Setter a controlPanel beállításához
     public void setControlPanel(JPanel controlPanel) {
         this.controlPanel = controlPanel;
@@ -276,6 +319,54 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
+    private void updateStatusPanels() {
+        // System.out.println("updateStatusPanels called. selectedObjects: " +
+        // selectedObjects);
+        if (selectedObjects.isEmpty()) {
+            statusView1.clearStatus();
+            statusView2.clearStatus();
+            statusView1.setVisible(false);
+            statusView2.setVisible(false);
+            return;
+        }
+
+        if (selectedObjects.size() == 1) {
+            String status1 = getStatusText(selectedObjects.get(0));
+            statusView1.setVisible(true);
+            statusView1.updateStatus(status1);
+        }
+        if (selectedObjects.size() == 2) {
+            String status2 = getStatusText(selectedObjects.get(1));
+            statusView2.setVisible(true);
+            statusView2.updateStatus(status2);
+        }
+
+        if (selectedObjects.size() > 2) {
+            String status1 = getStatusText(selectedObjects.get(2));
+            selectedObjects.remove(0);
+            selectedObjects.remove(0);
+            statusView1.clearStatus();
+            statusView2.clearStatus();
+            statusView2.setVisible(false);
+            statusView1.updateStatus(status1);
+        }
+        statusView1.repaint();
+        statusView2.repaint();
+    }
+
+    protected String getStatusText(String objectName) {
+        String command = "/status " + objectName;
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream originalOut = System.out;
+        try {
+            System.setOut(new PrintStream(outputStream));
+            gameLogic.getCommandProcessor().process(command);
+            System.out.flush();
+            return outputStream.toString().trim();
+        } finally {
+            System.setOut(originalOut);
+        }
+    }
     
 
     // Metódus a gombok alaphelyzetbe állításához (pl. ha nincs kiválasztott objektum)
@@ -300,50 +391,89 @@ public class FungoriumGamePanel extends JPanel {
      * @return The name of the object at the specified point, or null if no object is found.
      */
     private String getObjectAtPoint(Point point) {
+        // Először nézzük a threadeket, mert ezek mennek minden felett
         for (Map.Entry<String, Point> entry : objectPositions.entrySet()) {
-            Point objectPos = entry.getValue();
             String objectName = entry.getKey();
+            Point objectPos = entry.getValue();
 
-            // Check if the object is a Tekton center
-            if (objectName.endsWith("_center")) {
-                String tektonName = objectName.replace("_center", ""); // Get the Tekton name
-                Object obj = gameLogic.getCommandProcessor().getCreatedObjects().get(tektonName);
-
-                if (obj instanceof Tekton) {
-                    // Calculate the Tekton's circle
-                    int cellWidth = getWidth() / renderMap.getCols();
-                    int cellHeight = getHeight() / renderMap.getRows();
-                    int radius = Math.min(cellWidth, cellHeight) * TEKTON_CELLS / 2;
-
-                    // Check if the click is within the Tekton's circle
-                    if (point.distance(objectPos) <= radius) {
-                        return tektonName; // Return the Tekton name
-                    }
-                }
+            // Alapértelmezett ellenőrzés
+            if (point.distance(objectPos) <= 20) {
+                return objectName;
             }
-
-            if(objectName.startsWith("th")){
+            // Thread kezelés
+            if (objectName.startsWith("th")) {
                 Object obj = gameLogic.getCommandProcessor().getCreatedObjects().get(objectName);
-                if(obj instanceof Thread){
+                if (obj instanceof FungusThread) {
                     Point start = threadEndpoints.get(objectName + "_start");
                     Point end = threadEndpoints.get(objectName + "_end");
+
                     if (start != null && end != null) {
-                        Line2D line = new Line2D.Double(start, end);
-                        if (line.ptSegDist(point) <= THREAD_WIDTH) {
-                            return objectName; // Return the thread name
+                        // Extrém rövid thread speciális kezelése
+                        if (start.distance(end) < 10) {
+                            // Közel van-e bármelyik végponthoz
+                            if (point.distance(start) <= THREAD_WIDTH * 2 ||
+                                    point.distance(end) <= THREAD_WIDTH * 2) {
+                                return objectName;
+                            }
+                            // Vagy a középponthoz
+                            Point mid = new Point(
+                                    (start.x + end.x) / 2,
+                                    (start.y + end.y) / 2);
+                            if (point.distance(mid) <= THREAD_WIDTH) {
+                                return objectName;
+                            }
+                            continue;
+                        }
+
+                        // Normál threadek detektálása
+                        double lineLength = start.distance(end);
+                        double distanceToLine;
+
+                        // Ha a thread túl rövid a szokásos módszerhez
+                        if (lineLength < 20) {
+                            distanceToLine = Math.min(
+                                    point.distance(start),
+                                    point.distance(end));
+                        } else {
+                            // Standard távolság számítás a vonaltól
+                            distanceToLine = Line2D.ptSegDist(
+                                    start.x, start.y, end.x, end.y,
+                                    point.x, point.y);
+                        }
+
+                        if (distanceToLine <= THREAD_WIDTH * 1.5) {
+                            return objectName;
                         }
                     }
                 }
-            }
-
-            // Check if the click is within the bounds of the object
-            if (point.distance(objectPos) <= 20) { // Adjust the radius as needed
-                return objectName;
+                continue;
             }
         }
+
+        // A többi objektum kezelése (tekton, body stb.)
+        for (Map.Entry<String, Point> entry : objectPositions.entrySet()) {
+            String objectName = entry.getKey();
+            Point objectPos = entry.getValue();
+
+            if (objectName.endsWith("_center")) {
+                // Tekton kezelése (ugyanaz marad)
+                String tektonName = objectName.replace("_center", "");
+                Object obj = gameLogic.getCommandProcessor().getCreatedObjects().get(tektonName);
+                if (obj instanceof Tekton) {
+                    int cellWidth = getWidth() / renderMap.getCols();
+                    int cellHeight = getHeight() / renderMap.getRows();
+                    int radius = Math.min(cellWidth, cellHeight) * TEKTON_CELLS / 2;
+                    if (point.distance(objectPos) <= radius) {
+                        return tektonName;
+                    }
+                }
+                continue;
+            }
+
+        }
+
         return null;
     }
-
     /**
      * Custom component method to draw the game state on the screen.
      *
@@ -386,7 +516,7 @@ public class FungoriumGamePanel extends JPanel {
             }
         }
         
-        System.out.println("objectPositions size: " + objectPositions.size());
+        // System.out.println("objectPositions size: " + objectPositions.size());
 
         threadView.drawThreads(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(), tektonCardinalPoints, gameLogic.getCommandProcessor(), threadEndpoints);
         insectView.drawInsects(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects());
@@ -580,7 +710,9 @@ public class FungoriumGamePanel extends JPanel {
         } else {
             Tekton tekton = tektons.get(0);
             FungusBody body = thread.getMyBody();
-            if (body == null) return;
+
+            // NEM FELTÉTLEN VAN OTT BODY
+            //if (body == null) return;
 
             Point center = getTektonCenter(tekton);
             Point control = findClosestCardinalPoint(tekton, center);
@@ -591,6 +723,113 @@ public class FungoriumGamePanel extends JPanel {
                 threadEndpoints.put(name + "_end", control);
             } else {
                 System.err.println("Control points could not be calculated for thread: " + name);
+            }
+        }
+    }
+
+    // ehhez képi illusztráció #269 pullban
+    public void calculateGrownThreadPositions(String name, FungusThread thread){
+        if (thread.getPrev() != null) {
+            String prevThreadName = gameLogic.getCommandProcessor().findByObject(thread.getPrev());
+            FungusThread prevThread = thread.getPrev();
+            boolean prevIsBridge = prevThread.isBridge();
+
+            // Céltekton meghatározása
+            List<Tekton> currTektons = thread.getTektons();
+            List<Tekton> prevTektons = prevThread.getTektons();
+            // 1 eshetőség
+            // prevthread bridge és tekton közepe felé növesztettünk
+            // megkeressük a threadendpointsban melyik van közelebb a céltektonhoz és a
+            // thread endpointból a tekton közepéhez növesztünk
+            if (prevIsBridge) {
+                // Megkeressük, melyik végpont van közelebb a céltektonhoz
+                Tekton targetTekton = null;
+                for (Tekton t : currTektons) {
+                    if (!prevTektons.contains(t)) {
+                        targetTekton = t;
+                        break;
+                    }
+                }
+                // ! Ezt még nem biztos hogy így kéne Ha nem találtunk céltekton-t, akkor a
+                // legelső tektonhoz növesztünk
+                if (targetTekton == null && !currTektons.isEmpty()) {
+                    targetTekton = currTektons.get(0);
+                }
+                Point prevStart = threadEndpoints.get(prevThreadName + "_start");
+                Point prevEnd = threadEndpoints.get(prevThreadName + "_end");
+                Point targetCenter = getTektonCenter(targetTekton);
+
+                // Válaszd ki a közelebbi végpontot
+                Point closer = (prevStart.distance(targetCenter) < prevEnd.distance(targetCenter)) ? prevStart
+                        : prevEnd;
+                // Itt closer-től targetCenter-ig lehet növeszteni
+                // Például:
+                objectPositions.put(name, new Point((closer.x + targetCenter.x) / 2, (closer.y + targetCenter.y) / 2));
+                threadEndpoints.put(name + "_start", closer);
+                threadEndpoints.put(name + "_end", targetCenter);
+            }
+            // 2. eshetőség
+            // prevthread nem bridge és egy másik tektonhoz növesztettünk, ekkor megkeressük
+            // a thread endpointból meliyk vége a prevthreadnek van közelebb a céltektonhoz
+            // és a kardinális pontból céltekton legközelebbi kardinális pontjához
+            // növesztünk
+            else if (!prevIsBridge && prevTektons.size() == 1 && currTektons.size() == 2) {
+                // Megkeressük, melyik végpont van közelebb a céltektonhoz
+                Tekton targetTekton = null;
+                for (Tekton t : currTektons) {
+                    if (!prevTektons.contains(t)) {
+                        targetTekton = t;
+                        break;
+                    }
+                }
+                // ! Ezt még nem biztos hogy így kéne Ha nem találtunk céltekton-t, akkor a
+                // legelső tektonhoz növesztünk
+                if (targetTekton == null && !currTektons.isEmpty()) {
+                    targetTekton = currTektons.get(0);
+                }
+                Point prevStart = threadEndpoints.get(prevThreadName + "_start");
+                Point prevEnd = threadEndpoints.get(prevThreadName + "_end");
+                Point targetCardinal = findClosestCardinalPoint(targetTekton,
+                        objectPositions.get(gameLogic.getCommandProcessor().findByObject(prevTektons.get(0))));
+
+                // Válaszd ki a közelebbi végpontot
+                Point closer = (prevStart.distance(targetCardinal) < prevEnd.distance(targetCardinal)) ? prevStart
+                        : prevEnd;
+                // closer-től targetCardinal-ig lehet növeszteni
+                // Például:
+                objectPositions.put(name,
+                        new Point((closer.x + targetCardinal.x) / 2, (closer.y + targetCardinal.y) / 2));
+                threadEndpoints.put(name + "_start", closer);
+                threadEndpoints.put(name + "_end", targetCardinal);
+            }
+            // 3. eshetőség
+            // prevthread nem bridge és a céltekton a saját tektonja, ekkor a tekton
+            // közepéből a jelenlegi tekton valamelyik kardinális pontjához növesztünk
+            // lehetőleg nem ahhoz amiből növesztünk azaz kell melyik a másik vége a
+            // prevthreadnek ami nem a tekton közepe
+            else if (!prevIsBridge && prevTektons.size() == 1 && currTektons.size() == 1) {
+                Tekton tekton = currTektons.get(0);
+                Point tektonCenter = getTektonCenter(tekton);
+                Point prevStart = threadEndpoints.get(prevThreadName + "_start");
+                Point prevEnd = threadEndpoints.get(prevThreadName + "_end");
+
+                // Megkeressük, melyik végpont NEM a tekton közepe
+                Point notCenter = (prevStart.equals(tektonCenter)) ? prevEnd : prevStart;
+                // tektonCenter-től valamelyik kardinális pontig növesztünk, de ne ahhoz, amiből
+                // jöttünk
+                List<Point> cardinals = tektonCardinalPoints.get(gameLogic.getCommandProcessor().findByObject(tekton));
+                Point growTo = null;
+                for (Point p : cardinals) {
+                    if (!p.equals(notCenter)) {
+                        growTo = p;
+                        break;
+                    }
+                }
+                // tektonCenter-től growTo-ig lehet növeszteni
+                // Például:
+                objectPositions.put(name, new Point((tektonCenter.x + growTo.x) / 2, (tektonCenter.y + growTo.y) / 2));
+                threadEndpoints.put(name + "_start", tektonCenter);
+                threadEndpoints.put(name + "_end", growTo);
             }
         }
     }
@@ -766,7 +1005,7 @@ public class FungoriumGamePanel extends JPanel {
     }
     //?
     private Point findFallbackPosition(Tekton tekton, List<Tekton> neighbors, int minDistance) {
-        System.out.println("FallBack");
+        // System.out.println("FallBack");
         // Dinamikus irányok generálása
         int[][] dynamicDirections = isSpecialCase(neighbors.get(0).getNeighbours().size()) ?  directions : // Használjuk a fix mátrixot 4,8,12 esetén
         generatePolygonDirections(neighbors.get(0).getNeighbours().size());
@@ -795,7 +1034,7 @@ public class FungoriumGamePanel extends JPanel {
     }
     //?
     private Point findOptimalRandomPosition(List<Point> tiles, List<Tekton> otherTektons) {
-        System.out.println("FallBack");
+        // System.out.println("FallBack");
         int maxAttempts = 100;
         List<Point> validPositions = new ArrayList<>();
         int minDistance = TEKTON_CELLS + 1; // 3+1=4 cella minimális távolság

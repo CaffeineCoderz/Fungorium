@@ -1,6 +1,5 @@
 package sporeTypes;
 
-import utils.*;
 import insect.Insect;
 import tektonTypes.*;
 

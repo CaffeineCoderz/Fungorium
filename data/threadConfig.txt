@@ -1,0 +1,20 @@
+/create tekton t1
+/create tekton t2
+/create tekton t3
+/create thread th1
+/create thread th2
+/create thread th3
+/set th1 bridge true
+/set th1 addtekton t1
+/set th1 addtekton t2
+/set th2 bridge false
+/set th2 addtekton t2
+/set th2 prev th1
+/set th3 bridge false
+/set th3 addtekton t2
+/set th3 addtekton t3
+/set th3 prev th2
+/create thread th4
+/set th4 bridge false
+/set th4 addtekton t3
+/set th4 prev th3
