@@ -105,9 +105,6 @@ public class GameLogic {
     public void removeSpecies(String id) {
         players.remove(id);
     }
-    public Map<String, Object> getPlayers() {
-        return players;
-    }
 
     /**
      * Gets a species by its ID.
