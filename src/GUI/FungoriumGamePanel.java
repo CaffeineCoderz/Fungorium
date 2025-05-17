@@ -621,6 +621,7 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
+    // ehhez képi illusztráció #269 pullban
     public void calculateGrownThreadPositions(String name, FungusThread thread){
         if (thread.getPrev() != null) {
             String prevThreadName = gameLogic.getCommandProcessor().findByObject(thread.getPrev());
