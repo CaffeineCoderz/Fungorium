@@ -112,35 +112,127 @@ public class FungoriumGamePanel extends JPanel {
         add(statusView2);
 
         addMouseListener(
-                new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        Point clickPoint = e.getPoint();
-                        String clickedObjectName = getObjectAtPoint(clickPoint);
+            new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    Point clickPoint = e.getPoint();
+                    String clickedObjectName = getObjectAtPoint(clickPoint);
 
-                        if (clickedObjectName != null) {
-                            // Csak akkor add hozzá, ha még nincs benne
-                            if (!selectedObjects.contains(clickedObjectName)) {
-                                selectedObjects.add(clickedObjectName);
+                    // --- Handle "waiting for target" actions first ---
+                    if (waitingForTarget && growthThreadCalled) {
+                        try {
+                            if (gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName) instanceof Tekton) {
+                                String command = "growthread " + clickedObjectName + " " + origin;
+                                gameLogic.getInputQueue().put(command);
+                            } else {
+                                System.out.println("Invalid target for thread growth.");
                             }
-
-                            // Mindkét panel frissítése
-                            updateStatusPanels();
-                        } else {
-                            selectedObjects.clear();
-                            updateStatusPanels(); // This will clear the panels if nothing is selected
+                        } catch (InterruptedException er) {
+                            er.printStackTrace();
                         }
-                        if (controlPanel != null && guiBuilder != null) {
-                            SwingUtilities.invokeLater(() -> {
-                                guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
-                            });
-                        }
-                        // Ha nincs kiválasztott objektum, alaphelyzetbe állítjuk a gombokat
-                        if (controlPanel != null && clickedObjectName == null) {
-                            resetActionButtons();
-                        }
+                        waitingForTarget = false;
+                        growthThreadCalled = false;
+                        SwingUtilities.invokeLater(() -> {
+                            guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+                        });
+                        return;
                     }
-        });
+                    if (waitingForTarget && eatInsectCalled) {
+                        try {
+                            if (gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName) instanceof Insect) {
+                                String command = "eatinsect " + clickedObjectName + " " + origin;
+                                gameLogic.getInputQueue().put(command);
+                            } else {
+                                System.out.println("Invalid target for insect eating.");
+                            }
+                        } catch (InterruptedException er) {
+                            er.printStackTrace();
+                        }
+                        waitingForTarget = false;
+                        eatInsectCalled = false;
+                        SwingUtilities.invokeLater(() -> {
+                            guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+                            updateStatusPanels();
+                        });
+                        revalidate();
+                        repaint();
+                        if (!gameLogic.getCommandProcessor().getCreatedObjects().containsKey(clickedObjectName)) {
+                            System.out.println("Insect eaten.");
+                            objectPositions.remove(clickedObjectName);
+                        } else {
+                            System.out.println("Insect not eaten.");
+                        }
+                        return;
+                    }
+                    if (waitingForTarget && cutThreadCalled) {
+                        try {
+                            if (gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName) instanceof FungusThread) {
+                                String command = "cutthread " + clickedObjectName + " " + origin;
+                                gameLogic.getInputQueue().put(command);
+                            } else {
+                                System.out.println("Invalid target for thread cutting.");
+                            }
+                        } catch (InterruptedException er) {
+                            er.printStackTrace();
+                        }
+                        waitingForTarget = false;
+                        cutThreadCalled = false;
+                        SwingUtilities.invokeLater(() -> {
+                            guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+                            updateStatusPanels();
+                        });
+                        return;
+                    }
+                    if (waitingForTarget && moveCalled) {
+                        try {
+                            if (gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName) instanceof FungusThread) {
+                                String command = "move " + origin + " " + clickedObjectName;
+                                gameLogic.getInputQueue().put(command);
+                            } else {
+                                System.out.println("Invalid target for moving.");
+                            }
+                        } catch (InterruptedException er) {
+                            er.printStackTrace();
+                        }
+                        waitingForTarget = false;
+                        moveCalled = false;
+                        SwingUtilities.invokeLater(() -> {
+                            guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+                            updateStatusPanels();
+                        });
+                        return;
+                    }
+
+                    // --- Selection logic for status panels ---
+                    if (clickedObjectName != null) {
+                        // Add to selection if not already present, max 2
+                        if (!selectedObjects.contains(clickedObjectName)) {
+                            if (selectedObjects.size() == 2) {
+                                selectedObjects.remove(0); // Keep only last two
+                            }
+                            selectedObjects.add(clickedObjectName);
+                        }
+                        updateStatusPanels();
+                        origin = clickedObjectName;
+                    } else {
+                        selectedObjects.clear();
+                        updateStatusPanels();
+                    }
+
+                    // --- GUI gombok frissítése ---
+                    if (controlPanel != null && guiBuilder != null) {
+                        SwingUtilities.invokeLater(() -> {
+                            guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+                            updateStatusPanels();
+                        });
+                    }
+                    // Ha nincs kiválasztott objektum, alaphelyzetbe állítjuk a gombokat
+                    if (controlPanel != null && clickedObjectName == null) {
+                        resetActionButtons();
+                    }
+                }
+            }
+        );
 
         
         // Add mouse listener to detect clicks on objects
