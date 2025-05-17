@@ -39,10 +39,13 @@ public class FungoriumGamePanel extends JPanel {
     private GameLogic gameLogic;
     private RenderMap renderMap;
     private static GameStateHandler saver;
+    private JPanel controlPanel;
+    private FungoriumGUIBuilder guiBuilder;
+
     // Positions and cells
     private Map<String, Point> objectPositions = new TreeMap<>();
     private Set<Point> occupiedCells = new HashSet<>();
-
+    public String pickedObject; // Currently selected object
     // Flag to indicate if positions need recalculation
     private boolean shouldRecalculatePositions = true;
     
@@ -77,18 +80,26 @@ public class FungoriumGamePanel extends JPanel {
     private BodyView bodyView = new BodyView();
     private InsectView insectView = new InsectView();
     private ThreadView threadView = new ThreadView();
-
+    private StatusView statusView;
 
     private List<String> selectedObjects = new ArrayList<>();
     private StatusView statusView1;
     private StatusView statusView2;
 
-    public FungoriumGamePanel(GameLogic gameLogic) {
+    public FungoriumGamePanel(GameLogic gameLogic, FungoriumGUIBuilder guiBuilder) {
         this.gameLogic = gameLogic;
         saver = new GameStateHandler(gameLogic);
+        this.guiBuilder = guiBuilder;
         setLayout(null); // Absolute positioning for overlay panels
         setPreferredSize(new Dimension(800, 800));
         renderMap = new RenderMap(RenderMap.MapSize.MEDIUM);
+
+        // Initialize the status view
+        statusView = new StatusView();
+        //statusView.setBounds(600, 10, 180, 100);
+
+        statusView.setBounds(0, 0, 800, 800); // Position at the top-right corner
+        add(statusView);
 
         statusView1 = new StatusView();
         statusView2 = new StatusView();
@@ -117,7 +128,71 @@ public class FungoriumGamePanel extends JPanel {
                             updateStatusPanels(); // This will clear the panels if nothing is selected
                         }
                     }
-                });    
+                });
+
+        
+        // Add mouse listener to detect clicks on objects
+        /**
+         * Handles mouse clicks on the game panel. If the clicked point corresponds to a valid game object (tekton, fungus, insect, or spore), 
+         * a "/status <objectName>" command is executed and the resulting status string is displayed in the status view. If the clicked point does not
+         * correspond to a valid game object, the status view is cleared.
+         * 
+         * @param e the MouseEvent that triggered this method call
+         */
+        addMouseListener(
+            new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    Point clickPoint = e.getPoint();
+                    String clickedObjectName = getObjectAtPoint(clickPoint);
+                    pickedObject = null; 
+
+                    if (clickedObjectName != null) {
+                        String command = "/status " + clickedObjectName;
+
+                        // Capture System.out output
+                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                        PrintStream originalOut = System.out;
+                        try {
+                            System.setOut(new PrintStream(outputStream));
+                            gameLogic.getCommandProcessor().process(command); // Execute the command
+                            System.out.flush();
+                            String status = outputStream.toString().trim(); // Get the captured output
+                            
+                            String[] lines = status.split(System.lineSeparator()); // Sorokra bontjuk a kimenetet
+                            if (lines.length >= 2) {
+                                pickedObject = lines[1].trim(); // A második sor a típus (index 1)
+                            }
+                            if(clickPoint.x < 400){
+                                statusView.moveToRightPosition();
+                            }else{
+                                statusView.moveToLeftPosition();
+                            }
+                            statusView.updateStatus(status); // Update the status view
+                            // Frissítjük a gombokat a vezérlőpanelen
+                            if (controlPanel != null && guiBuilder != null) {
+                                // Itt kellene meghívni egy metódust, ami frissíti a gombokat
+                                // Ehhez az addActionButtons metódus logikáját ki kell szervezni
+                                SwingUtilities.invokeLater(() -> {
+                                    guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+                                });
+                            }
+                        } catch (Exception ex) {
+                            System.err.println("Error executing command: " + ex.getMessage());
+                        } finally {
+                            System.setOut(originalOut); // Restore original System.out
+                        }
+                    } else {
+                        statusView.clearStatus(); // Clear the status view if no valid object is clicked
+                        if (controlPanel != null) {
+                            resetActionButtons();
+                        }
+                    }
+                    
+                    statusView.repaint();
+                }
+            }
+        );       
 
         // Load the background image
         try {
@@ -127,9 +202,21 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
+        // Setter a controlPanel beállításához
+    public void setControlPanel(JPanel controlPanel) {
+        this.controlPanel = controlPanel;
+        // Azonnal frissíthetjük a gombokat az első megjelenítéskor, ha szükséges
+        if (guiBuilder != null) {
+            SwingUtilities.invokeLater(() -> {
+                guiBuilder.updateActionButtons(controlPanel, this);
+            });
+        }
+    }
+
     private void updateStatusPanels() {
-        //System.out.println("updateStatusPanels called. selectedObjects: " + selectedObjects);
-        if(selectedObjects.isEmpty()) {
+        // System.out.println("updateStatusPanels called. selectedObjects: " +
+        // selectedObjects);
+        if (selectedObjects.isEmpty()) {
             statusView1.clearStatus();
             statusView2.clearStatus();
             statusView1.setVisible(false);
@@ -148,7 +235,7 @@ public class FungoriumGamePanel extends JPanel {
             statusView2.updateStatus(status2);
         }
 
-        if(selectedObjects.size() > 2){
+        if (selectedObjects.size() > 2) {
             String status1 = getStatusText(selectedObjects.get(2));
             selectedObjects.remove(0);
             selectedObjects.remove(0);
@@ -159,7 +246,7 @@ public class FungoriumGamePanel extends JPanel {
         }
         statusView1.repaint();
         statusView2.repaint();
-    }    
+    }
 
     private String getStatusText(String objectName) {
         String command = "/status " + objectName;
@@ -172,6 +259,19 @@ public class FungoriumGamePanel extends JPanel {
             return outputStream.toString().trim();
         } finally {
             System.setOut(originalOut);
+        }
+    }
+    
+
+    // Metódus a gombok alaphelyzetbe állításához (pl. ha nincs kiválasztott objektum)
+    private void resetActionButtons() {
+        if (controlPanel != null && guiBuilder != null) {
+            controlPanel.removeAll();
+            SwingUtilities.invokeLater(() -> {
+                guiBuilder.updateActionButtons(controlPanel, this);
+            }); // A builder metódusát hívjuk
+            controlPanel.revalidate();
+            controlPanel.repaint();
         }
     }
 
@@ -264,7 +364,6 @@ public class FungoriumGamePanel extends JPanel {
                 continue;
             }
 
-            
         }
 
         return null;
@@ -1122,5 +1221,15 @@ public class FungoriumGamePanel extends JPanel {
      */
     public Map<String, Point> getObjectPositions() {
         return objectPositions;
+    }
+    public void endTurnLogic(){
+        try {
+        gameLogic.getInputQueue().put("next");
+        SwingUtilities.invokeLater(() -> {
+            guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+        });
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
