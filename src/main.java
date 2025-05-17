@@ -1,11 +1,7 @@
-import java.util.Scanner;
-
 import javax.swing.SwingUtilities;
 
-import GUI.FungoriumGamePanel;
 import GUI.MainMenu;
 import commands.CommandProcessor;
-import commands.Tester;
 import logic.GameLogic;
 
 public class main {
