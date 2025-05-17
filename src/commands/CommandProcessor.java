@@ -1,14 +1,10 @@
 package commands;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,11 +17,9 @@ import java.util.function.Consumer;
 import fungus.*;
 import insect.InsectSpecies;
 import insect.Insect;
-import insect.InsectEffects;
 import logic.GameLogic;
 import sporeTypes.*;
 import tektonTypes.*;
-import utils.*;
 
 // ! Commands:
 // ? System Commands:
@@ -87,7 +81,7 @@ public class CommandProcessor {
     private Map<String, String> commandDescriptions = new HashMap<>();
     private Map<String, String> objectTypeMap = new HashMap<>();
 
-    private Set<String> fungusCommands = Set.of("growBody", "growThread", "sporulate", "eatinsect");
+    private Set<String> fungusCommands = Set.of("growbody", "growthread", "sporulate", "eatinsect");
     private Set<String> insectCommands = Set.of("move", "cut", "eat");
     private Set<String> commonCommands = Set.of("help", "exit");
     private Set<String> systemCommands = Set.of("/helpsys", "/helpobj", "/load", "/break", "/kill", "/set", "/delete",
@@ -283,7 +277,9 @@ public class CommandProcessor {
     public void process(String input, Object player) {
         String[] parts = input.split(" ");
         String command = parts[0];
-
+        if(commonCommands.contains(command)) {
+            System.out.println("FungusSpecies: " + player);
+        }
         if (player instanceof FungusSpecies && !fungusCommands.contains(command) && !commonCommands.contains(command)
                 && !systemCommands.contains(command)) {
             System.out.println("Hiba: FungusSpecies nem használhatja ezt a parancsot: " + command);
@@ -865,6 +861,7 @@ public class CommandProcessor {
                     return;
                 }
                 createdObjects.put(newThreadName, nThread);
+                System.out.println("Új fonal jött létre: " + newThreadName);
             } else {
                 System.out.println("Hiba: Valamelyik paraméter nem megfelelő típusú.");
             }
@@ -1529,7 +1526,7 @@ public class CommandProcessor {
         if (objInsect instanceof Insect && objThread instanceof FungusThread) {
             Insect insect = (Insect) objInsect;
             FungusThread thread = (FungusThread) objThread;
-            insect.deadInsect(this);
+            insect.deadInsect(this);        
             if (thread.getTekton().canGrowBody() && thread.getTekton() != null) {
                 FungusBody b = new FungusBody();
                 thread.getSpecies().addBody(b);

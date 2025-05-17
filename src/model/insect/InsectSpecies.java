@@ -3,13 +3,9 @@ package insect;
 import java.util.ArrayList;
 import java.util.List;
 
-import commands.CommandProcessor;
-import fungus.FungusSpecies;
 import fungus.FungusThread;
 import interfaces.iControl;
 import sporeTypes.Spore;
-import logic.*;
-import utils.*;
 
 public class InsectSpecies implements iControl{
     // Game Logic
