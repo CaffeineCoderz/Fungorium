@@ -139,7 +139,9 @@ public class FungoriumGamePanel extends JPanel {
                             if (controlPanel != null && guiBuilder != null) {
                                 // Itt kellene meghívni egy metódust, ami frissíti a gombokat
                                 // Ehhez az addActionButtons metódus logikáját ki kell szervezni
-                                guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+                                SwingUtilities.invokeLater(() -> {
+                                    guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+                                });
                             }
                         } catch (Exception ex) {
                             System.err.println("Error executing command: " + ex.getMessage());
@@ -171,7 +173,9 @@ public class FungoriumGamePanel extends JPanel {
         this.controlPanel = controlPanel;
         // Azonnal frissíthetjük a gombokat az első megjelenítéskor, ha szükséges
         if (guiBuilder != null) {
-            guiBuilder.updateActionButtons(controlPanel, this); // Első frissítés
+            SwingUtilities.invokeLater(() -> {
+                guiBuilder.updateActionButtons(controlPanel, this);
+            });
         }
     }
 
@@ -181,7 +185,9 @@ public class FungoriumGamePanel extends JPanel {
     private void resetActionButtons() {
         if (controlPanel != null && guiBuilder != null) {
             controlPanel.removeAll();
-            guiBuilder.updateActionButtons(controlPanel, this); // A builder metódusát hívjuk
+            SwingUtilities.invokeLater(() -> {
+                guiBuilder.updateActionButtons(controlPanel, this);
+            }); // A builder metódusát hívjuk
             controlPanel.revalidate();
             controlPanel.repaint();
         }
@@ -986,5 +992,15 @@ public class FungoriumGamePanel extends JPanel {
      */
     public Map<String, Point> getObjectPositions() {
         return objectPositions;
+    }
+    public void endTurnLogic(){
+        try {
+        gameLogic.getInputQueue().put("next");
+        SwingUtilities.invokeLater(() -> {
+            guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+        });
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

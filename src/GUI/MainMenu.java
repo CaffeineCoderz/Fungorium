@@ -85,6 +85,7 @@ public class MainMenu extends JFrame {
 
         add(mainPanel);
 
+
         newGameButton.addActionListener(e -> startGameScreen());
         rulesButton.addActionListener(e -> showRules());
         settingsButton.addActionListener(e -> {
@@ -121,6 +122,8 @@ public class MainMenu extends JFrame {
 
     private void startGameScreen() {
         gameGUIBuilder.createAndShowGUI();
+        Thread gameThread = new Thread(() -> gameLogic.startGame());
+        gameThread.start();
         dispose();
     }
 
