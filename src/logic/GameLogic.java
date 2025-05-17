@@ -56,6 +56,7 @@ public class GameLogic {
     public Map<String, Object> getPlayers() {
         return players;
     }
+
     /**
      * Gets the game time.
      * 
@@ -294,7 +295,7 @@ public class GameLogic {
      * @param type The type of species to create (Fungus or Insect).
      * @param name The name of the species to create.
      */
-    private void handleSpeciesCreation(String type, String name) {
+    public void handleSpeciesCreation(String type, String name) {
         try {
             if (type.equals("Fungus")) {
                 String create = "/create fungusspecies " + name;

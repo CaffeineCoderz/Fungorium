@@ -1,20 +1,11 @@
 package GUI;
 import javax.swing.*;
-import commands.CommandProcessor;
 import logic.GameLogic;
-
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Settings {
-    public class Player {
-        String type;
-        String name;
-    }
 
     public static void showSettings(JFrame parent, GameLogic gameLogic) {
-        List<Player> players = new ArrayList<>();
         // Új ablak létrehozása
         JFrame settingsFrame = new JFrame("Beállítások");
         settingsFrame.setSize(800, 800);
@@ -36,12 +27,12 @@ public class Settings {
         gbc.anchor = GridBagConstraints.CENTER; // Középre igazítás
 
         // Gombok létrehozása
-        JButton PlayerCountButton = createStyledButton("Jatékosok száma: " + players.size());
+        JButton PlayerCountButton = createStyledButton("Jatékosok száma: " + gameLogic.getPlayers().size());
         JButton SetTypeAndNameButton = createStyledButton("Játekosok típusa és neve");
         JButton LoadButton = createStyledButton("Load Game");
-        JButton button4 = createStyledButton("Gomb 4");
-        JButton button5 = createStyledButton("Gomb 5");
-        JButton button6 = createStyledButton("Gomb 6");
+        JButton Rounds = createStyledButton("Körök száma: " + gameLogic.getGameTime());
+        // JButton button5 = createStyledButton("Gomb 5");
+        // JButton button6 = createStyledButton("Gomb 6");
 
         // Gombok elhelyezése
         gbc.gridx = 0;
@@ -56,9 +47,9 @@ public class Settings {
         gbc.gridy = 1;
         buttonPanel.add(LoadButton, gbc);
 
-        // gbc.gridx = 1;
-        // gbc.gridy = 1;
-        // buttonPanel.add(button4, gbc);
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        buttonPanel.add(Rounds, gbc);
 
         // gbc.gridx = 0;
         // gbc.gridy = 2;
@@ -91,7 +82,24 @@ public class Settings {
         settingsFrame.setVisible(true);
         
         PlayerCountButton.addActionListener(e -> {
-            new ResultScreen().setVisible(true); // Megnyitja a ResultScreen ablakot
+            new ResultScreen(gameLogic.getCommandProcessor()).setVisible(true);        
+        });
+
+        Rounds.addActionListener(e -> {
+            String input = JOptionPane.showInputDialog(settingsFrame, "Add meg a körök számát:", gameLogic.getGameTime());
+            if (input != null) {
+                try {
+                    int newRounds = Integer.parseInt(input.trim());
+                    if (newRounds > 0) {
+                        gameLogic.setGameTime(newRounds);
+                        Rounds.setText("Körök száma: " + newRounds);
+                    } else {
+                        JOptionPane.showMessageDialog(settingsFrame, "A körök száma legyen pozitív egész szám!", "Hiba", JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(settingsFrame, "Érvénytelen szám!", "Hiba", JOptionPane.ERROR_MESSAGE);
+                }
+            }
         });
         
         SetTypeAndNameButton.addActionListener(e -> {
@@ -118,12 +126,7 @@ public class Settings {
                     String name = nameField.getText().trim();
                     String type = (String) typeBox.getSelectedItem();
                     if (!playerMap.containsKey(name) && !name.isEmpty()) {
-                        if (type.equals("FUNGUS")) {
-                            gameLogic.getCommandProcessor().process("/create fungusspecies " + name);
-                        } else {
-                            gameLogic.getCommandProcessor().process("/create insectspecies " + name);
-                        }
-                        gameLogic.addSpecies(name, gameLogic.getCommandProcessor().getCreatedObjects().get(name));
+                        gameLogic.handleSpeciesCreation(type.equals("FUNGUS") ? "Fungus" : "Insect", name);
                         model.addElement(name + " (" + type + ")");
                         PlayerCountButton.setText("Játékosok száma: " + gameLogic.getPlayers().size());
                     } else {
