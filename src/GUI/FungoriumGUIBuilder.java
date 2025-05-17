@@ -191,16 +191,19 @@ public class FungoriumGUIBuilder {
             insectsTurn = true; // Tesztelés
         }
 
-        if (gamePanel.pickedObject != null) {
-            if (gamePanel.pickedObject.contains("Thread:")) {
+
+        if (gamePanel.getSelectedObjects() != null && !gamePanel.getSelectedObjects().isEmpty()) {
+            String objName = gamePanel.getSelectedObjects().get(0);
+            String status = gamePanel.getStatusText(objName);
+            if (status.contains("Thread:")) {
                 threadPicked = true;
-            } else if (gamePanel.pickedObject.contains("Body:")) {
+            } else if (status.contains("Body:")) {
                 bodyPicked = true;
-            } else if (gamePanel.pickedObject.contains("Spore:")) {
+            } else if (status.contains("Spore:")) {
                 sporePicked = true;
-            } else if (gamePanel.pickedObject.contains("Tekton:")) {
+            } else if (status.contains("Tekton:")) {
                 tektonPicked = true;
-            } else if (gamePanel.pickedObject.contains("Insect:")) {
+            } else if (status.contains("Insect:")) {
                 insectPicked = true;
             }
         }

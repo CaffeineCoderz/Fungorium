@@ -94,8 +94,8 @@ public class FungoriumGamePanel extends JPanel {
         statusView = new StatusView();
         //statusView.setBounds(600, 10, 180, 100);
 
-        statusView.setBounds(0, 0, 800, 800); // Position at the top-right corner
-        add(statusView);
+        //statusView.setBounds(0, 0, 800, 800); // Position at the top-right corner
+        //add(statusView);
 
         statusView1 = new StatusView();
         statusView2 = new StatusView();
@@ -123,8 +123,17 @@ public class FungoriumGamePanel extends JPanel {
                             selectedObjects.clear();
                             updateStatusPanels(); // This will clear the panels if nothing is selected
                         }
+                        if (controlPanel != null && guiBuilder != null) {
+                            SwingUtilities.invokeLater(() -> {
+                                guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+                            });
+                        }
+                        // Ha nincs kiválasztott objektum, alaphelyzetbe állítjuk a gombokat
+                        if (controlPanel != null && clickedObjectName == null) {
+                            resetActionButtons();
+                        }
                     }
-                });
+        });
 
         
         // Add mouse listener to detect clicks on objects
@@ -198,6 +207,10 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
+    public List<String> getSelectedObjects() {
+        return selectedObjects;
+    }
+
         // Setter a controlPanel beállításához
     public void setControlPanel(JPanel controlPanel) {
         this.controlPanel = controlPanel;
@@ -244,7 +257,7 @@ public class FungoriumGamePanel extends JPanel {
         statusView2.repaint();
     }
 
-    private String getStatusText(String objectName) {
+    protected String getStatusText(String objectName) {
         String command = "/status " + objectName;
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintStream originalOut = System.out;
