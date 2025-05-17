@@ -54,9 +54,8 @@ public class FungoriumGamePanel extends JPanel {
 
     private static int[][] directions = {
         // Cardinal directions (4-way)
-        {4,0}, {0,4}, {-4,0}, {0,-4},
+        {3,0}, {2,2},{0,3}, {-2,2}, {-3,0}, {-2,-2},{0,-3},{2,-2},
         // Diagonal directions (8-way)
-        {3,3}, {3,-3}, {-3,3}, {-3,-3},
         // 12-way directions for polygon support
         {4,2}, {4,-2}, {-4,2}, {-4,-2},
         {2,4}, {2,-4}, {-2,4}, {-2,-4}
@@ -338,25 +337,23 @@ public class FungoriumGamePanel extends JPanel {
     private void initializeTektonPlacement() {
         List<Point> tiles = renderMap.getTiles();
         occupiedCells.clear();
-        boolean first = true;
 
         List<Map.Entry<String, Object>> sortedTektons = gameLogic.getCommandProcessor().getCreatedObjects()
             .entrySet().stream()
             .filter(entry -> entry.getValue() instanceof Tekton)
-            .sorted((e1, e2) -> Integer.compare(
+            /*.sorted((e1, e2) -> Integer.compare(
                 ((Tekton) e2.getValue()).getNeighbours().size(),
                 ((Tekton) e1.getValue()).getNeighbours().size()))
-            .collect(Collectors.toList());
+            */.collect(Collectors.toList());
 
         for (Map.Entry<String, Object> entry : sortedTektons) {
             if (entry.getValue() instanceof Tekton) {
-                placeTekton(entry, tiles, first);
-                first = false;
+                placeTekton(entry, tiles);
             }
         }
     }
 
-    private void placeTekton(Map.Entry<String, Object> entry, List<Point> tiles, boolean first) {
+    private void placeTekton(Map.Entry<String, Object> entry, List<Point> tiles) {
         boolean placed = false;
         int retries = 0;
         int maxRetries = 100;
@@ -364,13 +361,8 @@ public class FungoriumGamePanel extends JPanel {
         while (!placed && retries < maxRetries) {
             Point topLeft;
             Tekton tekton = (Tekton) entry.getValue();
-
-            if (first) {
-                topLeft = new Point(renderMap.getCols()/2 - TEKTON_CELLS/2,
-                                    renderMap.getRows()/2 - TEKTON_CELLS/2);
-            } else {
                 topLeft = calculateGroupedPosition(tekton, tiles);
-            }
+            
 
             if (isWithinBounds(topLeft, TEKTON_CELLS, renderMap.getCols(), renderMap.getRows()) 
                 && isAreaFree(topLeft, TEKTON_CELLS)) {
@@ -584,12 +576,12 @@ public class FungoriumGamePanel extends JPanel {
             .map(obj -> (Tekton) obj)
             .filter(t -> t != tekton)
             .collect(Collectors.toList()));
-        }
+        }/*
         Collections.sort(neighbors, (e1, e2) -> {
             int n1 =  e1.getNeighbours().size();
             int n2 =  e2.getNeighbours().size();
             return Integer.compare(n2, n1); // Csökkenő sorrend
-        });
+        });*/
         // Dinamikus irányok generálása
         int[][] dynamicDirections = isSpecialCase(neighbors.get(0).getNeighbours().size()) ?  directions :// Használjuk a fix mátrixot 4,8,12 esetén
         generatePolygonDirections(neighbors.get(0).getNeighbours().size());
@@ -618,7 +610,7 @@ public class FungoriumGamePanel extends JPanel {
     private int calculatePlacementDistance(Tekton tekton) {
         int neighborCount = tekton.getNeighbours().size();
         // Erősebb skálázás több szomszédnál
-        return 2 + (int)(neighborCount * 0.05);
+        return 2 + (int)(neighborCount * 0.2);
     }
     //?
     private Point findFallbackPosition(Tekton tekton, List<Tekton> neighbors, int minDistance) {
