@@ -16,6 +16,7 @@ public class MainMenu extends JFrame {
     protected GameLogic gameLogic;
     protected GameStateHandler saver;
     protected FungoriumGUIBuilder gameGUIBuilder;
+
     public MainMenu(GameLogic gameLogic) {
         this.gameLogic = gameLogic;
         this.saver = new GameStateHandler(gameLogic);
@@ -123,6 +124,8 @@ public class MainMenu extends JFrame {
 
     private void startGameScreen() {
         gameGUIBuilder.createAndShowGUI();
+        gameLogic.initializePlayers();
+        gameGUIBuilder.assignPlayerColors();
         Thread gameThread = new Thread(() -> gameLogic.startGame());
         gameThread.start();
         dispose();

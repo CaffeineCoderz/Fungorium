@@ -1,22 +1,26 @@
 package logic;
 
+import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import GUI.FungoriumGamePanel;
 import commands.CommandProcessor;
 import fungus.FungusSpecies;
 import fungus.FungusThread;
 import insect.Insect;
 import insect.InsectSpecies;
 import tektonTypes.Tekton;
+import GUI.ResultScreen;
 
 public class GameLogic {
     private Map<String, Object> players = new HashMap<>(); // Egyetlen HashMap az összes fajhoz
     private int fungusPlayers = 2; // Minimum fungus játékos
     private int insectPlayers = 2; // Minimum insect játékos
+    private int playerCount = 4; // A játékosok száma
     private int gameTime = 10; // A játék időtartama
     private int round = 0; // Az eltelt idő
     private String currentSpecies; // Az aktuális játékos
@@ -27,11 +31,30 @@ public class GameLogic {
     private CommandProcessor commandProcessor;
 
     private Scanner scanner;
+    private FungoriumGamePanel gamePanel;
 
+    
     public GameLogic() {
         // Initialize the command processor
         this.commandProcessor = new CommandProcessor(this);
     }
+
+    public void setGamePanel(FungoriumGamePanel panel) {
+        this.gamePanel = panel;
+    }
+
+    public FungoriumGamePanel getGamePanel() {
+        return gamePanel;
+    }
+
+    public int getPlayersCount() {
+        return playerCount;
+    }
+
+    public void setPlayersCount(int size) {
+        this.playerCount = size;
+    }
+
     public String getCurrentSpecies() {
         return currentSpecies;
     }
@@ -112,6 +135,18 @@ public class GameLogic {
         return scanner;
     }
 
+    public void initializePlayers() {
+        for (int i = 0; i < playerCount; i++) {
+            if (i % 2 == 0) {
+                handleSpeciesCreation("Fungus", "Fungus" + (i + 1));
+                System.out.println("Created Fungus player: Fungus" + (i + 1));
+            } else {
+                handleSpeciesCreation("Insect", "Insect" + (i + 1));
+                System.out.println("Created Insect player: Insect" + (i + 1));
+            }
+        }
+    }
+
     /**
      * Starts the game, handles player type selection,
      * then takes turns until the game time runs out.
@@ -120,14 +155,11 @@ public class GameLogic {
         this.scanner = new Scanner(System.in);
         // First, we need to select the players
         //selectPlayers(scanner);
-        handleSpeciesCreation("Fungus", "Fungus1");
-        handleSpeciesCreation("Insect", "Insect1");
-        handleSpeciesCreation("Fungus", "Fungus2");
-        handleSpeciesCreation("Insect", "Insect2");
-        // Second, take turns
+
         while (gameTime > 0) {
             takeTurn(scanner);
         }
+        new ResultScreen(commandProcessor).setVisible(true);
     }
 
     public void printGuide() {
@@ -351,6 +383,11 @@ public class GameLogic {
                 }
                 if (skipRound) {
                     break; // Ha a kört át kell ugrani, kilépünk a játékosok ciklusából
+                }
+                if (gamePanel != null && gamePanel.getGuiBuilder() != null) {
+                    Color playerColor = gamePanel.getGuiBuilder().getPlayerColor(playerName);
+                    gamePanel.setPlayerBorderColor(playerColor);
+                    gamePanel.setCurrentPlayerName(playerName);
                 }
                 Object player = players.get(playerName);
                 System.out.println("It's " + playerName + "'s turn. Enter a command:");
