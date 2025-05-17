@@ -79,14 +79,6 @@ public class GameLogic {
         return commandProcessor;
     }
 
-    /**
-     * Gets the map of players.
-     * 
-     * @return The map of players.
-     */
-    public Map<String, Object> getPlayers() {
-        return players;
-    }
 
     /**
      * Gets the game time.
@@ -560,6 +552,15 @@ public class GameLogic {
             temp = temp.getNext();
         }
         return false;
+    }
+
+       /**
+     * Gets the map of players.
+     * 
+     * @return The map of players.
+     */
+    public Map<String, Object> getPlayers() {
+        return players;
     }
 
     private Boolean canReachFromBody(FungusThread toThread, FungusThread temp, Integer distance) {

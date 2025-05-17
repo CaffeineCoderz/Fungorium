@@ -6,7 +6,6 @@ import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
 
-import commands.CommandProcessor;
 import fungus.FungusBody;
 import fungus.FungusThread;
 import insect.Insect;
@@ -20,7 +19,6 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,8 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
-import java.awt.image.BufferedImage;
 
 public class FungoriumGamePanel extends JPanel {
     // Handlers
@@ -45,10 +43,15 @@ public class FungoriumGamePanel extends JPanel {
     // Positions and cells
     private Map<String, Point> objectPositions = new TreeMap<>();
     private Set<Point> occupiedCells = new HashSet<>();
-    public String pickedObject; // Currently selected object
     // Flag to indicate if positions need recalculation
     private boolean shouldRecalculatePositions = true;
-    
+    private boolean growthThreadCalled = false;
+    private boolean eatInsectCalled = false;
+    private boolean waitingForTarget = false;
+    private boolean cutThreadCalled = false;
+    private boolean moveCalled = false;
+    private String origin;
+
     // Sizes
     private static final int THREAD_WIDTH = 3;
     
@@ -57,9 +60,8 @@ public class FungoriumGamePanel extends JPanel {
 
     private static int[][] directions = {
         // Cardinal directions (4-way)
-        {4,0}, {0,4}, {-4,0}, {0,-4},
+        {3,0}, {2,2},{0,3}, {-2,2}, {-3,0}, {-2,-2},{0,-3},{2,-2},
         // Diagonal directions (8-way)
-        {3,3}, {3,-3}, {-3,3}, {-3,-3},
         // 12-way directions for polygon support
         {4,2}, {4,-2}, {-4,2}, {-4,-2},
         {2,4}, {2,-4}, {-2,4}, {-2,-4}
@@ -80,7 +82,6 @@ public class FungoriumGamePanel extends JPanel {
     private BodyView bodyView = new BodyView();
     private InsectView insectView = new InsectView();
     private ThreadView threadView = new ThreadView();
-    private StatusView statusView;
 
     private List<String> selectedObjects = new ArrayList<>();
     private StatusView statusView1;
@@ -98,11 +99,6 @@ public class FungoriumGamePanel extends JPanel {
         renderMap = new RenderMap(RenderMap.MapSize.MEDIUM);
 
         // Initialize the status view
-        statusView = new StatusView();
-        //statusView.setBounds(600, 10, 180, 100);
-
-        statusView.setBounds(0, 0, 800, 800); // Position at the top-right corner
-        add(statusView);
 
         statusView1 = new StatusView();
         statusView2 = new StatusView();
@@ -112,90 +108,127 @@ public class FungoriumGamePanel extends JPanel {
         add(statusView2);
 
         addMouseListener(
-                new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        Point clickPoint = e.getPoint();
-                        String clickedObjectName = getObjectAtPoint(clickPoint);
-
-                        if (clickedObjectName != null) {
-                            // Csak akkor add hozzá, ha még nincs benne
-                            if (!selectedObjects.contains(clickedObjectName)) {
-                                selectedObjects.add(clickedObjectName);
-                            }
-
-                            // Mindkét panel frissítése
-                            updateStatusPanels();
-                        } else {
-                            selectedObjects.clear();
-                            updateStatusPanels(); // This will clear the panels if nothing is selected
-                        }
-                    }
-                });
-
-        
-        // Add mouse listener to detect clicks on objects
-        /**
-         * Handles mouse clicks on the game panel. If the clicked point corresponds to a valid game object (tekton, fungus, insect, or spore), 
-         * a "/status <objectName>" command is executed and the resulting status string is displayed in the status view. If the clicked point does not
-         * correspond to a valid game object, the status view is cleared.
-         * 
-         * @param e the MouseEvent that triggered this method call
-         */
-        addMouseListener(
             new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     Point clickPoint = e.getPoint();
                     String clickedObjectName = getObjectAtPoint(clickPoint);
-                    pickedObject = null; 
 
-                    if (clickedObjectName != null) {
-                        String command = "/status " + clickedObjectName;
-
-                        // Capture System.out output
-                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                        PrintStream originalOut = System.out;
+                    // --- Handle "waiting for target" actions first ---
+                    if (waitingForTarget && growthThreadCalled) {
                         try {
-                            System.setOut(new PrintStream(outputStream));
-                            gameLogic.getCommandProcessor().process(command); // Execute the command
-                            System.out.flush();
-                            String status = outputStream.toString().trim(); // Get the captured output
-                            
-                            String[] lines = status.split(System.lineSeparator()); // Sorokra bontjuk a kimenetet
-                            if (lines.length >= 2) {
-                                pickedObject = lines[1].trim(); // A második sor a típus (index 1)
+                            if (gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName) instanceof Tekton) {
+                                String command = "growthread " + clickedObjectName + " " + origin;
+                                gameLogic.getInputQueue().put(command);
+                            } else {
+                                System.out.println("Invalid target for thread growth.");
                             }
-                            if(clickPoint.x < 400){
-                                statusView.moveToRightPosition();
-                            }else{
-                                statusView.moveToLeftPosition();
-                            }
-                            statusView.updateStatus(status); // Update the status view
-                            // Frissítjük a gombokat a vezérlőpanelen
-                            if (controlPanel != null && guiBuilder != null) {
-                                // Itt kellene meghívni egy metódust, ami frissíti a gombokat
-                                // Ehhez az addActionButtons metódus logikáját ki kell szervezni
-                                SwingUtilities.invokeLater(() -> {
-                                    guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
-                                });
-                            }
-                        } catch (Exception ex) {
-                            System.err.println("Error executing command: " + ex.getMessage());
-                        } finally {
-                            System.setOut(originalOut); // Restore original System.out
+                        } catch (InterruptedException er) {
+                            er.printStackTrace();
                         }
-                    } else {
-                        statusView.clearStatus(); // Clear the status view if no valid object is clicked
-                        if (controlPanel != null) {
-                            resetActionButtons();
-                        }
+                        waitingForTarget = false;
+                        growthThreadCalled = false;
+                        SwingUtilities.invokeLater(() -> {
+                            guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+                        });
+                        return;
                     }
-                    
-                    statusView.repaint();
+                    if (waitingForTarget && eatInsectCalled) {
+                        try {
+                            if (gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName) instanceof Insect) {
+                                String command = "eatinsect " + clickedObjectName + " " + origin;
+                                gameLogic.getInputQueue().put(command);
+                            } else {
+                                System.out.println("Invalid target for insect eating.");
+                            }
+                        } catch (InterruptedException er) {
+                            er.printStackTrace();
+                        }
+                        waitingForTarget = false;
+                        eatInsectCalled = false;
+                        SwingUtilities.invokeLater(() -> {
+                            guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+                            updateStatusPanels();
+                        });
+                        revalidate();
+                        repaint();
+                        if (!gameLogic.getCommandProcessor().getCreatedObjects().containsKey(clickedObjectName)) {
+                            System.out.println("Insect eaten.");
+                            objectPositions.remove(clickedObjectName);
+                        } else {
+                            System.out.println("Insect not eaten.");
+                        }
+                        return;
+                    }
+                    if (waitingForTarget && cutThreadCalled) {
+                        try {
+                            if (gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName) instanceof FungusThread) {
+                                String command = "cutthread " + clickedObjectName + " " + origin;
+                                gameLogic.getInputQueue().put(command);
+                            } else {
+                                System.out.println("Invalid target for thread cutting.");
+                            }
+                        } catch (InterruptedException er) {
+                            er.printStackTrace();
+                        }
+                        waitingForTarget = false;
+                        cutThreadCalled = false;
+                        SwingUtilities.invokeLater(() -> {
+                            guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+                            updateStatusPanels();
+                        });
+                        return;
+                    }
+                    if (waitingForTarget && moveCalled) {
+                        try {
+                            if (gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName) instanceof FungusThread) {
+                                String command = "move " + origin + " " + clickedObjectName;
+                                gameLogic.getInputQueue().put(command);
+                            } else {
+                                System.out.println("Invalid target for moving.");
+                            }
+                        } catch (InterruptedException er) {
+                            er.printStackTrace();
+                        }
+                        waitingForTarget = false;
+                        moveCalled = false;
+                        SwingUtilities.invokeLater(() -> {
+                            guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+                            updateStatusPanels();
+                        });
+                        return;
+                    }
+
+                    // --- Selection logic for status panels ---
+                    if (clickedObjectName != null) {
+                        // Add to selection if not already present, max 2
+                        if (!selectedObjects.contains(clickedObjectName)) {
+                            if (selectedObjects.size() == 2) {
+                                selectedObjects.remove(0); // Keep only last two
+                            }
+                            selectedObjects.add(clickedObjectName);
+                        }
+                        updateStatusPanels();
+                        origin = clickedObjectName;
+                    } else {
+                        selectedObjects.clear();
+                        updateStatusPanels();
+                    }
+
+                    // --- GUI gombok frissítése ---
+                    if (controlPanel != null && guiBuilder != null) {
+                        SwingUtilities.invokeLater(() -> {
+                            guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+                            updateStatusPanels();
+                        });
+                    }
+                    // Ha nincs kiválasztott objektum, alaphelyzetbe állítjuk a gombokat
+                    if (controlPanel != null && clickedObjectName == null) {
+                        resetActionButtons();
+                    }
                 }
             }
-        );       
+        );
 
         // Load the background image
         try {
@@ -203,6 +236,10 @@ public class FungoriumGamePanel extends JPanel {
         } catch (Exception e) {
             System.err.println("Error loading background image: " + e.getMessage());
         }
+    }
+
+    public List<String> getSelectedObjects() {
+        return selectedObjects;
     }
 
         // Setter a controlPanel beállításához
@@ -256,7 +293,7 @@ public class FungoriumGamePanel extends JPanel {
         statusView2.repaint();
     }
 
-    private String getStatusText(String objectName) {
+    protected String getStatusText(String objectName) {
         String command = "/status " + objectName;
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintStream originalOut = System.out;
@@ -523,7 +560,6 @@ public class FungoriumGamePanel extends JPanel {
     private void initializeTektonPlacement() {
         List<Point> tiles = renderMap.getTiles();
         occupiedCells.clear();
-        boolean first = true;
 
         List<Map.Entry<String, Object>> sortedTektons = gameLogic.getCommandProcessor().getCreatedObjects()
             .entrySet().stream()
@@ -535,13 +571,17 @@ public class FungoriumGamePanel extends JPanel {
 
         for (Map.Entry<String, Object> entry : sortedTektons) {
             if (entry.getValue() instanceof Tekton) {
-                placeTekton(entry, tiles, first);
-                first = false;
+                placeTekton(entry, tiles);
             }
+        }
+        if (!isAllDistancesCorrect()) {
+             System.out.println("Wrong calculation, so redraw");
+             objectPositions.clear(); // Force recalculation of positions
+             initializeTektonPlacement();
         }
     }
 
-    private void placeTekton(Map.Entry<String, Object> entry, List<Point> tiles, boolean first) {
+    private void placeTekton(Map.Entry<String, Object> entry, List<Point> tiles) {
         boolean placed = false;
         int retries = 0;
         int maxRetries = 100;
@@ -549,13 +589,8 @@ public class FungoriumGamePanel extends JPanel {
         while (!placed && retries < maxRetries) {
             Point topLeft;
             Tekton tekton = (Tekton) entry.getValue();
-
-            if (first) {
-                topLeft = new Point(renderMap.getCols()/2 - TEKTON_CELLS/2,
-                                    renderMap.getRows()/2 - TEKTON_CELLS/2);
-            } else {
                 topLeft = calculateGroupedPosition(tekton, tiles);
-            }
+            
 
             if (isWithinBounds(topLeft, TEKTON_CELLS, renderMap.getCols(), renderMap.getRows()) 
                 && isAreaFree(topLeft, TEKTON_CELLS)) {
@@ -878,20 +913,23 @@ public class FungoriumGamePanel extends JPanel {
             .map(obj -> (Tekton) obj)
             .filter(t -> t != tekton)
             .collect(Collectors.toList()));
-        }
+        }/*
         Collections.sort(neighbors, (e1, e2) -> {
             int n1 =  e1.getNeighbours().size();
             int n2 =  e2.getNeighbours().size();
             return Integer.compare(n2, n1); // Csökkenő sorrend
-        });
+        });*/
         // Dinamikus irányok generálása
         int[][] dynamicDirections = isSpecialCase(neighbors.get(0).getNeighbours().size()) ?  directions :// Használjuk a fix mátrixot 4,8,12 esetén
         generatePolygonDirections(neighbors.get(0).getNeighbours().size());
         // Normál elhelyezési logika
+        List<int[]> dynamicDirectionsList = Arrays.asList(dynamicDirections);
+        Collections.shuffle(dynamicDirectionsList);
+        dynamicDirections = dynamicDirectionsList.toArray(new int[0][]);
         for (Tekton neighbor : neighbors) {
             Point neighborPos = getTektonPosition(neighbor);
             if (neighborPos == null) continue;
-
+            
             // Próbálkozás minden dinamikus irányban
             for (int[] dir : dynamicDirections) {
                 Point newPos = new Point(
@@ -909,10 +947,66 @@ public class FungoriumGamePanel extends JPanel {
         return findFallbackPosition(tekton, neighbors, placementDistance+1);
     }
     
+    private Boolean isAllDistancesCorrect() {
+        Map<String, Object> objects = gameLogic.getCommandProcessor().getCreatedObjects();
+        List<Tekton> allTektons = new ArrayList<>();
+
+        // 1. Összes Tekton gyűjtése
+        for (Object obj : objects.values()) {
+            if (obj instanceof Tekton) {
+                allTektons.add((Tekton) obj);
+            }
+        }
+
+        // 2. Páronkénti ellenőrzés
+        for (int i = 0; i < allTektons.size(); i++) {
+            Tekton t1 = allTektons.get(i);
+            Point p1 = getTektonPosition(t1);
+            if (p1 == null) continue;
+
+            for (int j = i + 1; j < allTektons.size(); j++) {
+                Tekton t2 = allTektons.get(j);
+                Point p2 = getTektonPosition(t2);
+                if (p2 == null) continue;
+
+                // 3. Szomszéd viszony ellenőrzése
+                boolean areNeighbours = t1.getNeighbours().contains(t2) || t2.getNeighbours().contains(t1);
+                
+                // 4. Középpontok számítása
+                Point c1 = new Point(p1.x + TEKTON_CELLS/2, p1.y + TEKTON_CELLS/2);
+                Point c2 = new Point(p2.x + TEKTON_CELLS/2, p2.y + TEKTON_CELLS/2);
+                double centerDistance = Math.hypot(c1.x - c2.x, c1.y - c2.y);
+                String tekt1 = gameLogic.getCommandProcessor().findByObject(t1);
+                String tekt2 = gameLogic.getCommandProcessor().findByObject(t2);
+                // 5. Távolság szabályok alkalmazása
+                if (areNeighbours) {
+                    // Szomszédokra: 4-6 cella (9+ szomszédnál 5-6)
+                    int min = (t1.getNeighbours().size() >=9 || t2.getNeighbours().size() >=9) ? 5 : 4;
+                    if (centerDistance < min || centerDistance > 6) {
+                       
+                        System.err.println("Szomszéd távolsági hiba: " 
+                            + tekt1 + " - " + tekt2 
+                            + " (" + centerDistance + " cella)");
+                        return false;
+                    }
+                } else {
+                    // Nem szomszédokra: minimum 7 cella (top-left pozíciók)
+                    double edgeDistance = Math.hypot(p1.x - p2.x, p1.y - p2.y);
+                    if (edgeDistance < 7) {
+                        System.err.println("Nem szomszéd távolsági hiba: " 
+                            + tekt1 + " - " + tekt2 
+                            + " (" + edgeDistance + " cella)");
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
     private int calculatePlacementDistance(Tekton tekton) {
         int neighborCount = tekton.getNeighbours().size();
         // Erősebb skálázás több szomszédnál
-        return 2 + (int)(neighborCount * 0.05);
+        return 2 + (int)(neighborCount * 0.2);
     }
     //?
     private Point findFallbackPosition(Tekton tekton, List<Tekton> neighbors, int minDistance) {
@@ -1250,6 +1344,52 @@ public class FungoriumGamePanel extends JPanel {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+    public void growThreadLogic(){ // Ezt az objektumot választotta ki kiindulásnak
+        waitingForTarget = true; // Most várunk egy célkijelölést
+        growthThreadCalled=true;
+        // Esetleg üzenet a felhasználónak:
+        JOptionPane.showMessageDialog(this, "Válassz ki egy cél objektumot a térképen!");
+    }
+    public void growBodyLogic(){ // Ezt az objektumot választotta ki kiindulásnak
+        try {
+        gameLogic.getInputQueue().put("growbody "+ origin);
+        SwingUtilities.invokeLater(() -> {
+            guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+        });
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+    public void sporulateLogic(){ // Ezt az objektumot választotta ki kiindulásnak
+        try {
+            gameLogic.getInputQueue().put("sporulate "+ origin);
+            SwingUtilities.invokeLater(() -> {
+                guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+            });
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void eatInsectLogic(){
+        waitingForTarget = true; // Most várunk egy célkijelölést
+        eatInsectCalled=true;
+        // Esetleg üzenet a felhasználónak:
+        JOptionPane.showMessageDialog(this, "Válaszd ki a megevendő rovart a térképen!");
+    }
+    public void cutThreadLogic(){
+        waitingForTarget = true; // Most várunk egy célkijelölést
+        cutThreadCalled=true;
+        // Esetleg üzenet a felhasználónak:
+        JOptionPane.showMessageDialog(this, "Válaszd ki a elvágandó fonalat a térképen!");
+    }
+
+    public void moveLogic(){
+        waitingForTarget = true; // Most várunk egy célkijelölést
+        moveCalled=true;
+        // Esetleg üzenet a felhasználónak:
+        JOptionPane.showMessageDialog(this, "Válaszd ki a célhelyet a térképen!");
     }
 
     public void setPlayerBorderColor(Color color) {
