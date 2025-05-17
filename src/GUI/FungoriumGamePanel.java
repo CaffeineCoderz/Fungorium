@@ -639,9 +639,9 @@ public class FungoriumGamePanel extends JPanel {
         int[][] dynamicDirections = isSpecialCase(neighbors.get(0).getNeighbours().size()) ?  directions :// Használjuk a fix mátrixot 4,8,12 esetén
         generatePolygonDirections(neighbors.get(0).getNeighbours().size());
         // Normál elhelyezési logika
-        dynamicDirections = Arrays.stream(dynamicDirections)
-            .sorted((a, b) -> ThreadLocalRandom.current().nextInt(-1, 2))
-            .toArray(int[][]::new);
+        List<int[]> dynamicDirectionsList = Arrays.asList(dynamicDirections);
+        Collections.shuffle(dynamicDirectionsList);
+        dynamicDirections = dynamicDirectionsList.toArray(new int[0][]);
         for (Tekton neighbor : neighbors) {
             Point neighborPos = getTektonPosition(neighbor);
             if (neighborPos == null) continue;
