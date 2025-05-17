@@ -5,8 +5,8 @@ import java.awt.*;
 
 public class StatusView extends JPanel {
     private JTextArea statusTextArea;
-    private final Point originalPosition = new Point(600, 10); // Original position (right-top corner)
-    private final Point alternatePosition = new Point(10, 10); // Alternate position (left-top corner)
+    private final Point rightPosition = new Point(600, 10); // Original position (right-top corner)
+    private final Point leftPosition = new Point(10, 10); // Alternate position (left-top corner)
 
     public StatusView() {
         setLayout(null); // Absolute positioning
@@ -22,7 +22,7 @@ public class StatusView extends JPanel {
         statusTextArea.setVisible(false); // Initially hidden
 
         add(statusTextArea);
-        statusTextArea.setBounds(600, 10, 180, 100); // Position at the top-right corner
+        statusTextArea.setBounds(600, 10, 180, 200); // Position at the top-right corner
     }
 
     /**
@@ -50,24 +50,24 @@ public class StatusView extends JPanel {
     }
 
     /**
-     * Moves the status view to the alternate position specified by {@link #alternatePosition}.
+     * Moves the status view to the alternate position specified by {@link #leftPosition}.
      * The size of the status view remains the same.
      * This method is usually called when the status view needs to be moved out of the way of the
      * game panel's buttons.
      */
-    public void moveToAlternatePosition() {
-        setBounds(alternatePosition.x, alternatePosition.y, 180, 100);
+    public void moveToLeftPosition() {
+        statusTextArea.setBounds(leftPosition.x, leftPosition.y, 180, 200);
         repaint();
     }
 
     /**
-     * Moves the status view to the original position specified by {@link #originalPosition}.
+     * Moves the status view to the original position specified by {@link #rightPosition}.
      * The size of the status view remains the same.
      * This method is usually called when the status view needs to be moved back to its original
      * position after being moved out of the way of the game panel's buttons.
      */
-    public void moveToOriginalPosition() {
-        setBounds(originalPosition.x, originalPosition.y, 180, 100);
+    public void moveToRightPosition() {
+        statusTextArea.setBounds(rightPosition.x, rightPosition.y, 180, 200);
         repaint();
     }
 }

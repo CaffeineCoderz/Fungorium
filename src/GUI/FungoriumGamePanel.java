@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.awt.image.BufferedImage;
 
@@ -38,10 +39,13 @@ public class FungoriumGamePanel extends JPanel {
     private GameLogic gameLogic;
     private RenderMap renderMap;
     private static GameStateHandler saver;
-    // Positions and cells
-    private Map<String, Point> objectPositions = new HashMap<>();
-    private Set<Point> occupiedCells = new HashSet<>();
+    private JPanel controlPanel;
+    private FungoriumGUIBuilder guiBuilder;
 
+    // Positions and cells
+    private Map<String, Point> objectPositions = new TreeMap<>();
+    private Set<Point> occupiedCells = new HashSet<>();
+    public String pickedObject; // Currently selected object
     // Flag to indicate if positions need recalculation
     private boolean shouldRecalculatePositions = true;
     
@@ -51,30 +55,18 @@ public class FungoriumGamePanel extends JPanel {
     // Number of cells occupied by a Tekton
     private static final int TEKTON_CELLS = 3; // 3x3 cella (9 cella)
 
+    private static int[][] directions = {
+        // Cardinal directions (4-way)
+        {4,0}, {0,4}, {-4,0}, {0,-4},
+        // Diagonal directions (8-way)
+        {3,3}, {3,-3}, {-3,3}, {-3,-3},
+        // 12-way directions for polygon support
+        {4,2}, {4,-2}, {-4,2}, {-4,-2},
+        {2,4}, {2,-4}, {-2,4}, {-2,-4}
+    };
     // Background image
     private Image backgroundImage;
     private Boolean initialPaint = true; // Flag to indicate if it's the first paint
-
-    private Image defTektonBgCircular;
-    private Image decomposingTektonBgCircular;
-    private Image decreasingTektonBgCircular;
-    private Image feedThreadTektonBgCircular;
-    private Image oneThreadTektonBgCircular;
-    private Image onlyThreadTektonBgCircular;
-
-    private Image[] tektonImages;
-    // Entity images
-    private Image defaultSporeImg;
-    private Image fastSporeImg;
-    private Image slowSporeImg;
-    private Image stunSporeImg;
-    private Image disableCutSporeImg;
-    private Image multiplyInsectSporeImg;
-
-    private Image[] sporeImages;
-
-    private Image insectImg;
-    private Image fungusBodyImg;
 
     // Thread grow
     private Map<String, List<Point>> tektonCardinalPoints = new HashMap<>(); // Tekton égtáji pontjai
@@ -90,9 +82,10 @@ public class FungoriumGamePanel extends JPanel {
     private ThreadView threadView = new ThreadView();
     private StatusView statusView;
 
-    public FungoriumGamePanel(GameLogic gameLogic) {
+    public FungoriumGamePanel(GameLogic gameLogic, FungoriumGUIBuilder guiBuilder) {
         this.gameLogic = gameLogic;
         saver = new GameStateHandler(gameLogic);
+        this.guiBuilder = guiBuilder;
         setLayout(null); // Absolute positioning for overlay panels
         setPreferredSize(new Dimension(800, 800));
         renderMap = new RenderMap(RenderMap.MapSize.MEDIUM);
@@ -118,6 +111,7 @@ public class FungoriumGamePanel extends JPanel {
                 public void mouseClicked(MouseEvent e) {
                     Point clickPoint = e.getPoint();
                     String clickedObjectName = getObjectAtPoint(clickPoint);
+                    pickedObject = null; 
 
                     if (clickedObjectName != null) {
                         String command = "/status " + clickedObjectName;
@@ -130,13 +124,35 @@ public class FungoriumGamePanel extends JPanel {
                             gameLogic.getCommandProcessor().process(command); // Execute the command
                             System.out.flush();
                             String status = outputStream.toString().trim(); // Get the captured output
+                            
+                            String[] lines = status.split(System.lineSeparator()); // Sorokra bontjuk a kimenetet
+                            if (lines.length >= 2) {
+                                pickedObject = lines[1].trim(); // A második sor a típus (index 1)
+                            }
+                            if(clickPoint.x < 400){
+                                statusView.moveToRightPosition();
+                            }else{
+                                statusView.moveToLeftPosition();
+                            }
                             statusView.updateStatus(status); // Update the status view
+                            // Frissítjük a gombokat a vezérlőpanelen
+                            if (controlPanel != null && guiBuilder != null) {
+                                // Itt kellene meghívni egy metódust, ami frissíti a gombokat
+                                // Ehhez az addActionButtons metódus logikáját ki kell szervezni
+                                guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+                            }
+                        } catch (Exception ex) {
+                            System.err.println("Error executing command: " + ex.getMessage());
                         } finally {
                             System.setOut(originalOut); // Restore original System.out
                         }
                     } else {
                         statusView.clearStatus(); // Clear the status view if no valid object is clicked
+                        if (controlPanel != null) {
+                            resetActionButtons();
+                        }
                     }
+                    
                     statusView.repaint();
                 }
             }
@@ -148,8 +164,27 @@ public class FungoriumGamePanel extends JPanel {
         } catch (Exception e) {
             System.err.println("Error loading background image: " + e.getMessage());
         }
-        
-        loadResources();
+    }
+
+        // Setter a controlPanel beállításához
+    public void setControlPanel(JPanel controlPanel) {
+        this.controlPanel = controlPanel;
+        // Azonnal frissíthetjük a gombokat az első megjelenítéskor, ha szükséges
+        if (guiBuilder != null) {
+            guiBuilder.updateActionButtons(controlPanel, this); // Első frissítés
+        }
+    }
+
+    
+
+    // Metódus a gombok alaphelyzetbe állításához (pl. ha nincs kiválasztott objektum)
+    private void resetActionButtons() {
+        if (controlPanel != null && guiBuilder != null) {
+            controlPanel.removeAll();
+            guiBuilder.updateActionButtons(controlPanel, this); // A builder metódusát hívjuk
+            controlPanel.revalidate();
+            controlPanel.repaint();
+        }
     }
 
     /**
@@ -207,81 +242,7 @@ public class FungoriumGamePanel extends JPanel {
     }
 
     /**
-     * Loads all resources needed for the game panel, including background and
-     * foreground images for the different types of Tektons, fungus bodies, spores
-     * and insects.
-     *
-     * @throws IOException if any of the resources cannot be loaded.
-     */
-    private void loadResources() {
-        try {
-            // * Load CIRCULAR tekton images
-            defTektonBgCircular = createCircularImage(
-                    ImageIO.read(new File("src/resources/tektons/defaultTekton1.jpg")));
-            decomposingTektonBgCircular = createCircularImage(
-                    ImageIO.read(new File("src/resources/tektons/decomposingTekton1.jpg")));
-            decreasingTektonBgCircular = createCircularImage(
-                    ImageIO.read(new File("src/resources/tektons/decreasingTekton1.jpg")));
-            feedThreadTektonBgCircular = createCircularImage(
-                    ImageIO.read(new File("src/resources/tektons/feedThreadTekton1.jpg")));
-            oneThreadTektonBgCircular = createCircularImage(
-                    ImageIO.read(new File("src/resources/tektons/oneThreadTekton1.jpg")));
-            onlyThreadTektonBgCircular = createCircularImage(
-                    ImageIO.read(new File("src/resources/tektons/onlyThreadTekton1.jpg")));
-
-            // Load fungus body image
-            fungusBodyImg = ImageIO.read(new File("src/resources/fungusBody.png"));
-
-            // Load spore images
-            defaultSporeImg = ImageIO.read(new File("src/resources/spores/spore.png"));
-            fastSporeImg = ImageIO.read(new File("src/resources/spores/fastSpore.png"));
-            slowSporeImg = ImageIO.read(new File("src/resources/spores/slowSpore.png"));
-            stunSporeImg = ImageIO.read(new File("src/resources/spores/stunSpore.png"));
-            disableCutSporeImg = ImageIO.read(new File("src/resources/spores/disableCutSpore.png"));
-            multiplyInsectSporeImg = ImageIO.read(new File("src/resources/spores/multiplyInsectSpore.png"));
-
-            // Load insect image
-            insectImg = ImageIO.read(new File("src/resources/insect.png"));
-        } catch (Exception e) {
-            System.err.println("Error loading resources: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Creates a circular cropped version of the input BufferedImage.
-     *
-     * This method takes an input image and creates a new BufferedImage
-     * containing only the circular region of the largest possible size
-     * centered within the input image. The resulting image is drawn with
-     * anti-aliasing for improved visual quality.
-     *
-     * @param input the original BufferedImage to be cropped to a circle
-     * @return a new BufferedImage containing the circular cropped region
-     */
-    private BufferedImage createCircularImage(BufferedImage input) {
-        int size = Math.min(input.getWidth(), input.getHeight());
-        BufferedImage circleBuffer = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = circleBuffer.createGraphics();
-
-        // Minőség javítása
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        // Kör maszkolás
-        Ellipse2D.Double circle = new Ellipse2D.Double(0, 0, size, size);
-        g2.setClip(circle);
-        g2.drawImage(input, 0, 0, size, size, null);
-
-        // Fényerő csökkentése: átlátszó fekete réteg hozzáadása
-        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.9f)); // 90% átlátszóság
-        g2.setColor(new Color(0, 0, 0, 128)); // Fekete szín, 50% átlátszóság
-        g2.fill(circle);
-
-        g2.dispose();
-        return circleBuffer;
-    }
-
-    /**
-     * Custom paintComponent method to draw the game state on the screen.
+     * Custom component method to draw the game state on the screen.
      *
      * This method is called whenever the component needs to be redrawn.
      * It is responsible for drawing the background image, the grid, all
@@ -308,13 +269,11 @@ public class FungoriumGamePanel extends JPanel {
         }
 
         // Draw the grid (optional) RED
-        drawGrid(g2d);
+        //drawGrid(g2d);
 
         // Draw all objects
-        tektonImages = new Image[]{defTektonBgCircular, decomposingTektonBgCircular, decreasingTektonBgCircular,
-            feedThreadTektonBgCircular, oneThreadTektonBgCircular, onlyThreadTektonBgCircular};
         tektonView.drawTektons(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(),
-        getWidth() / renderMap.getCols(), getHeight() / renderMap.getRows(), TEKTON_CELLS, tektonImages);
+        getWidth() / renderMap.getCols(), getHeight() / renderMap.getRows(), TEKTON_CELLS);
 
         // Égtáji pontok (zöld pontok) rajzolása
         g2d.setColor(Color.GREEN);
@@ -323,14 +282,13 @@ public class FungoriumGamePanel extends JPanel {
                 g2d.fill(new Ellipse2D.Double(p.x - 5, p.y - 5, 10, 10));
             }
         }
-        sporeImages = new Image[]{defaultSporeImg, fastSporeImg, slowSporeImg, stunSporeImg,
-                disableCutSporeImg, multiplyInsectSporeImg};
-        sporeView.drawSpores(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(), sporeImages);
+        
         System.out.println("objectPositions size: " + objectPositions.size());
 
         threadView.drawThreads(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(), tektonCardinalPoints, gameLogic.getCommandProcessor(), threadEndpoints);
-        insectView.drawInsects(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(), insectImg);
-        bodyView.drawBodies(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(), fungusBodyImg);
+        insectView.drawInsects(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects());
+        bodyView.drawBodies(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects());
+        sporeView.drawSpores(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects());
         
         g2d.setColor(Color.RED);
         for (Map.Entry<String, Point> entry : objectPositions.entrySet()) {
@@ -412,165 +370,162 @@ public class FungoriumGamePanel extends JPanel {
      * For Insects, it positions them near their associated thread.
      */
     private void calculateObjectPositions() {
-        // Tekton init
+        initializeTektonPlacement();
+        calculateTektonCardinalPoints(); // Maradhat külön, ha nem igényel változtatást
+        positionDependentObjects();
+        positionInsects();
+    }
+
+    private void initializeTektonPlacement() {
         List<Point> tiles = renderMap.getTiles();
-        int maxRetries = 100; // Maximum number of retries to find a free spot
-        occupiedCells.clear(); // Initialize the set of occupied cells
+        occupiedCells.clear();
+        boolean first = true;
 
-        for (Map.Entry<String, Object> entry : gameLogic.getCommandProcessor().getCreatedObjects().entrySet()) {
+        List<Map.Entry<String, Object>> sortedTektons = gameLogic.getCommandProcessor().getCreatedObjects()
+            .entrySet().stream()
+            .filter(entry -> entry.getValue() instanceof Tekton)
+            .sorted((e1, e2) -> Integer.compare(
+                ((Tekton) e2.getValue()).getNeighbours().size(),
+                ((Tekton) e1.getValue()).getNeighbours().size()))
+            .collect(Collectors.toList());
+
+        for (Map.Entry<String, Object> entry : sortedTektons) {
             if (entry.getValue() instanceof Tekton) {
-                boolean placed = false;
-                int retries = 0;
+                placeTekton(entry, tiles, first);
+                first = false;
+            }
+        }
+    }
 
-                while (!placed && retries < maxRetries) {
-                    // Point topLeft = tiles.get(randomIndex);
+    private void placeTekton(Map.Entry<String, Object> entry, List<Point> tiles, boolean first) {
+        boolean placed = false;
+        int retries = 0;
+        int maxRetries = 100;
 
-                    Point topLeft;
-                    Tekton tekton = (Tekton) entry.getValue();
-                    
-                    // Ha van szomszédja, kiszámítjuk a csoportosított pozíciót
-                    topLeft = calculateGroupedPosition(tekton, tiles);
+        while (!placed && retries < maxRetries) {
+            Point topLeft;
+            Tekton tekton = (Tekton) entry.getValue();
 
-                    if (isWithinBounds(topLeft, TEKTON_CELLS, renderMap.getCols(), renderMap.getRows()) && isAreaFree(topLeft, TEKTON_CELLS)) {
-                        objectPositions.put(entry.getKey(), topLeft);
-                        occupyArea(topLeft, TEKTON_CELLS); // Mark cells as occupied
-                        placed = true;
-                    } else {
-                        retries++;
-                    }
-                }
+            if (first) {
+                topLeft = new Point(renderMap.getCols()/2 - TEKTON_CELLS/2,
+                                    renderMap.getRows()/2 - TEKTON_CELLS/2);
+            } else {
+                topLeft = calculateGroupedPosition(tekton, tiles);
+            }
 
-                if (!placed) {
-                    System.err.println(
-                            "Could not place Tekton: " + entry.getKey() + " after " + maxRetries + " retries.");
-                    // Optionally handle this situation (e.g., skip placing the Tekton)
-                }
+            if (isWithinBounds(topLeft, TEKTON_CELLS, renderMap.getCols(), renderMap.getRows()) 
+                && isAreaFree(topLeft, TEKTON_CELLS)) {
+
+                objectPositions.put(entry.getKey(), topLeft);
+                occupyArea(topLeft, 0, TEKTON_CELLS);
+                placed = true;
+
+            } else {
+                retries++;
             }
         }
 
-        calculateTektonCardinalPoints();
+        if (!placed) {
+            System.err.println("Could not place Tekton: " + entry.getKey() + " after " + maxRetries + " retries.");
+        }
+    }
 
-        // Position other objects relative to their tektons
+    private void positionDependentObjects() {
         for (Map.Entry<String, Object> entry : gameLogic.getCommandProcessor().getCreatedObjects().entrySet()) {
-            String name = entry.getKey();
             Object obj = entry.getValue();
+            String name = entry.getKey();
 
-            if (obj instanceof FungusBody) {
-                FungusBody body = (FungusBody) obj;
-                Tekton tekton = body.getTekton();
-                if (tekton != null) {
-                    Point tektonCenter = getTektonCenter(tekton);
-                    if (tektonCenter != null) {
-                        // Set the FungusBody position to the center of the Tekton
-                        objectPositions.put(name, tektonCenter);
-                    }
-                }
+            if (obj instanceof Spore) {
+                positionSpore(name, (Spore) obj);
             } else if (obj instanceof FungusThread) {
-                FungusThread thread = (FungusThread) obj;
-                // Position threads between their connected objects
-                if (!thread.getTektons().isEmpty()) {
-                    Tekton firstTekton = thread.getTektons().get(0);
-                    String firstTektonName = gameLogic.getCommandProcessor().findByObject(firstTekton);
-                    String threadName = gameLogic.getCommandProcessor().findByObject(thread);
-                    List<Tekton> tektons = thread.getTektons();
-
-                    // ! Bridge thread
-                    // TODO Check if the line between the two endoint going over a tekton, if yes recalulate tekton pos(not sure if it is right like this, think it through)
-                    if(thread.isBridge()){
-                        if (tektons.size() >= 2) {
-                            Point firstControlPoint = findClosestCardinalPoint(
-                                tektons.get(0), 
-                                objectPositions.get(gameLogic.getCommandProcessor().findByObject(tektons.get(1)))
-                            );
-                            Point secondControlPoint = findClosestCardinalPoint(
-                                tektons.get(1), objectPositions.get(gameLogic.getCommandProcessor().findByObject(tektons.get(0)))
-                            );
-                            if (firstControlPoint != null && secondControlPoint != null) {
-                                objectPositions.put(threadName, new Point(
-                                        (firstControlPoint.x + secondControlPoint.x) / 2,
-                                        (firstControlPoint.y + secondControlPoint.y) / 2));
-                                threadEndpoints.put(threadName + "_start", firstControlPoint);
-                                threadEndpoints.put(threadName + "_end", secondControlPoint);
-                            } else {
-                                System.err.println("Control points could not be calculated for thread: " + threadName);
-                            }
-                        }
-                    } 
-
-                    // ! Non bridge thread
-                    else{
-                        if (thread.getTektons().isEmpty())
-                            return;
-                        Tekton tekton = thread.getTektons().get(0);
-                        FungusBody body = thread.getMyBody();
-
-                        if (body == null) return;
-                        Point TektonCenter = getTektonCenter(tekton);
-                        Point controlPoint = findClosestCardinalPoint(tekton, TektonCenter);
-                        
-                        if(TektonCenter != null && controlPoint != null){
-                            objectPositions.put(name, new Point(
-                                    (TektonCenter.x + controlPoint.x) / 2,
-                                    (TektonCenter.y + controlPoint.y) / 2));
-                            threadEndpoints.put(name + "_start", TektonCenter);
-                            threadEndpoints.put(name + "_end", controlPoint);
-                        } else {
-                            System.err.println("Control points could not be calculated for thread: " + name);
-                        }
-                    }
-                   
-                }
-            } else if (obj instanceof Spore) {
-                Spore spore = (Spore) obj;
-                Tekton tekton = spore.getTekton();
-                Point tektonPos = getTektonPosition(tekton);
-                if (tektonPos != null) {
-
-                        // Get cell dimensions
-                        int cellWidth = getWidth() / renderMap.getCols();
-                        int cellHeight = getHeight() / renderMap.getRows();
-
-                        // Calculate Tekton's center coordinates
-                        int tektonCenterX = tektonPos.y * cellWidth + (cellWidth * TEKTON_CELLS / 2);
-                        int tektonCenterY = tektonPos.x * cellHeight + (cellHeight * TEKTON_CELLS / 2);
-
-                        // Calculate Tekton's radius (use min to handle non-square cells)
-                        int radius = Math.min(cellWidth, cellHeight) * TEKTON_CELLS / 2;
-
-                        // Add 10% margin so spores don't touch the edge
-                        int margin = (int) (radius * 0.1);
-                        radius -= margin;
-
-                        int offsetX, offsetY;
-                        do {
-                            offsetX = (int) (Math.random() * radius * 2 - radius);
-                            offsetY = (int) (Math.random() * radius * 2 - radius);
-                        } while (offsetX * offsetX + offsetY * offsetY > radius * radius);
-
-                        // Set final spore position
-                        objectPositions.put(name, new Point(
-                                tektonCenterX + offsetX,
-                                tektonCenterY + offsetY));
-                    }
+                positionFungusThread(name, (FungusThread) obj);
+            } else if (obj instanceof FungusBody) {
+                positionFungusBody(name, (FungusBody) obj);
             }
         }
-    
-        // Az insect a threadtől függ, ezért a threaderket számoljuk előbb és utánna megyünk végig az insecteken
-        for (Map.Entry<String, Object> entry : gameLogic.getCommandProcessor().getCreatedObjects().entrySet()) {
-            String name = entry.getKey();
-            Object obj = entry.getValue();
+    }
 
-            if (obj instanceof Insect) {
-                Insect insect = (Insect) obj;
+    private void positionFungusBody(String name, FungusBody body) {
+        Tekton tekton = body.getTekton();
+        if (tekton != null) {
+            Point center = getTektonCenter(tekton);
+            if (center != null) {
+                objectPositions.put(name, center);
+            }
+        }
+    }
+
+    private void positionFungusThread(String name, FungusThread thread) {
+        List<Tekton> tektons = thread.getTektons();
+        if (tektons.isEmpty()) return;
+
+        if (thread.isBridge()) {
+            if (tektons.size() >= 2) {
+                Tekton t1 = tektons.get(0);
+                Tekton t2 = tektons.get(1);
+                Point p1 = findClosestCardinalPoint(t1, objectPositions.get(gameLogic.getCommandProcessor().findByObject(t2)));
+                Point p2 = findClosestCardinalPoint(t2, objectPositions.get(gameLogic.getCommandProcessor().findByObject(t1)));
+
+                if (p1 != null && p2 != null) {
+                    objectPositions.put(name, new Point((p1.x + p2.x) / 2, (p1.y + p2.y) / 2));
+                    threadEndpoints.put(name + "_start", p1);
+                    threadEndpoints.put(name + "_end", p2);
+                } else {
+                    System.err.println("Control points could not be calculated for thread: " + name);
+                }
+            }
+        } else {
+            Tekton tekton = tektons.get(0);
+            FungusBody body = thread.getMyBody();
+            if (body == null) return;
+
+            Point center = getTektonCenter(tekton);
+            Point control = findClosestCardinalPoint(tekton, center);
+
+            if (center != null && control != null) {
+                objectPositions.put(name, new Point((center.x + control.x) / 2, (center.y + control.y) / 2));
+                threadEndpoints.put(name + "_start", center);
+                threadEndpoints.put(name + "_end", control);
+            } else {
+                System.err.println("Control points could not be calculated for thread: " + name);
+            }
+        }
+    }
+
+    private void positionSpore(String name, Spore spore) {
+        Tekton tekton = spore.getTekton();
+        Point pos = getTektonPosition(tekton);
+        if (pos == null) return;
+
+        int cellWidth = getWidth() / renderMap.getCols();
+        int cellHeight = getHeight() / renderMap.getRows();
+
+        int centerX = pos.y * cellWidth + (cellWidth * TEKTON_CELLS / 2);
+        int centerY = pos.x * cellHeight + (cellHeight * TEKTON_CELLS / 2);
+
+        int radius = Math.min(cellWidth, cellHeight)* TEKTON_CELLS/2;
+        radius -= radius * 0.2;
+
+        int offsetX, offsetY;
+        do {
+            offsetX = (int) (Math.random() * radius * 2 - radius);
+            offsetY = (int) (Math.random() * radius * 2 - radius);
+        } while (offsetX * offsetX + offsetY * offsetY < radius * radius);
+
+        objectPositions.put(name, new Point(centerX + offsetX, centerY + offsetY));
+    }
+
+    private void positionInsects() {
+        for (Map.Entry<String, Object> entry : gameLogic.getCommandProcessor().getCreatedObjects().entrySet()) {
+            if (entry.getValue() instanceof Insect) {
+                Insect insect = (Insect) entry.getValue();
                 FungusThread thread = insect.getThread();
+
                 if (thread != null) {
                     String threadName = gameLogic.getCommandProcessor().findByObject(thread);
                     if (threadName != null && objectPositions.containsKey(threadName)) {
                         Point threadPos = objectPositions.get(threadName);
-                        // Position insect near the thread
-                        objectPositions.put(name, new Point(
-                                threadPos.x,
-                                threadPos.y-13));
+                        objectPositions.put(entry.getKey(), new Point(threadPos.x, threadPos.y - 13));
                     }
                 }
             }
@@ -590,9 +545,6 @@ public class FungoriumGamePanel extends JPanel {
             return null;
         }
 
-        // Convert targetPoint from grid coordinates to pixel coordinates
-        //int cellWidth = getWidth() / renderMap.getCols();
-        // Mivel a grid 800x800-as ekkor fog csak jól kiszámolódni
         int cellWidth = 800 / renderMap.getCols();
         //int cellHeight = getHeight() / renderMap.getRows();
         int cellHeight = 800 / renderMap.getRows();
@@ -645,73 +597,111 @@ public class FungoriumGamePanel extends JPanel {
             }
         }
     }
-
-    private Point calculateGroupedPosition(Tekton tekton, List<Point> tiles) {
-        List<Tekton> neighbors = tekton.getNeighbours();
-        List<Tekton> allTektons = gameLogic.getCommandProcessor().getCreatedObjects().values().stream()
-                .filter(obj -> obj instanceof Tekton)
-                .map(obj -> (Tekton) obj)
-                .filter(t -> t != tekton)
-                .collect(Collectors.toList());
-
-        // Ha nincsenek szomszédok, véletlenszerű pozíciót választunk
-        if (neighbors.isEmpty()) {
-            return findOptimalRandomPosition(tiles, allTektons);
+    private static int[][] generatePolygonDirections(int sides) {
+        int[][] dirs = new int[sides][2];
+        double angleStep = 2 * Math.PI / sides;
+        double radius = 2.5 + sides * 0.15; // Alap sugár
+        
+        for (int i = 0; i < sides; i++) {
+            double angle = i * angleStep + Math.PI/2;
+            dirs[i][0] = (int) Math.round(radius * Math.cos(angle));
+            dirs[i][1] = (int) Math.round(radius * Math.sin(angle));
         }
-
-        // Minden szomszédot sorban megpróbálunk
-        for (Tekton neighbor : neighbors) {
-            String neighborName = gameLogic.getCommandProcessor().findByObject(neighbor);
-            if (neighborName == null || !objectPositions.containsKey(neighborName)) {
-                continue;
-            }
-
-            Point neighborPos = objectPositions.get(neighborName);
-            
-            // Irányok véletlenszerű sorrendben
-            int[][] directions = {{1,0}, {0,1}, {-1,0}, {0,-1}};
-            Collections.shuffle(Arrays.asList(directions));
-            
-            for (int[] dir : directions) {
-                Point newPos = new Point(neighborPos.x + dir[0]*3, neighborPos.y + dir[1]*3);
-                if (isPositionValid(newPos) && !isAdjacentToOtherTekton(newPos, allTektons)) {
-                    return newPos;
-                }
-            }
-        }
-
-        // Ha nem találtunk ideális helyet, próbáljunk olyat ami csak valid
-        for (Tekton neighbor : neighbors) {
-            String neighborName = gameLogic.getCommandProcessor().findByObject(neighbor);
-            if (neighborName == null || !objectPositions.containsKey(neighborName)) {
-                continue;
-            }
-
-            Point neighborPos = objectPositions.get(neighborName);
-            int[][] directions = {{1,0}, {0,1}, {-1,0}, {0,-1}};
-            Collections.shuffle(Arrays.asList(directions));
-
-            for (int[] dir : directions) {
-                Point newPos = new Point(neighborPos.x + dir[0]*4, neighborPos.y + dir[1]*4);
-                if (isPositionValid(newPos)) {
-                    return newPos;
-                }
-            }
-        }
-
-        // Végső esetben véletlenszerű érvényes pozíció
-        return findOptimalRandomPosition(tiles, allTektons);
+        return dirs;
     }
 
+    private static boolean isSpecialCase(int sides) {
+        return sides <= 4 || sides == 8;
+    }
+    //?
+    private Point calculateGroupedPosition(Tekton tekton, List<Point> tiles) {
+        List<Tekton> neighbors = tekton.getNeighbours();
+        
+        int placementDistance = calculatePlacementDistance(tekton);
+        // Ha nincsenek szomszédok, véletlenszerű pozíció
+        if (neighbors.isEmpty()) {
+            return findOptimalRandomPosition(tiles, gameLogic.getCommandProcessor().getCreatedObjects().values().stream()
+            .filter(obj -> obj instanceof Tekton)
+            .map(obj -> (Tekton) obj)
+            .filter(t -> t != tekton)
+            .collect(Collectors.toList()));
+        }
+        Collections.sort(neighbors, (e1, e2) -> {
+            int n1 =  e1.getNeighbours().size();
+            int n2 =  e2.getNeighbours().size();
+            return Integer.compare(n2, n1); // Csökkenő sorrend
+        });
+        // Dinamikus irányok generálása
+        int[][] dynamicDirections = isSpecialCase(neighbors.get(0).getNeighbours().size()) ?  directions :// Használjuk a fix mátrixot 4,8,12 esetén
+        generatePolygonDirections(neighbors.get(0).getNeighbours().size());
+        // Normál elhelyezési logika
+        for (Tekton neighbor : neighbors) {
+            Point neighborPos = getTektonPosition(neighbor);
+            if (neighborPos == null) continue;
+
+            // Próbálkozás minden dinamikus irányban
+            for (int[] dir : dynamicDirections) {
+                Point newPos = new Point(
+                    neighborPos.x + dir[0] * placementDistance,
+                    neighborPos.y + dir[1] * placementDistance
+                );
+                
+                if (isPositionValid(newPos) && !isAdjacentToOtherTekton(newPos, neighbors)) {
+                    return newPos;
+                }
+            }
+        }
+    
+        // Tartalék megoldás
+        return findFallbackPosition(tekton, neighbors, placementDistance+1);
+    }
+    
+    private int calculatePlacementDistance(Tekton tekton) {
+        int neighborCount = tekton.getNeighbours().size();
+        // Erősebb skálázás több szomszédnál
+        return 2 + (int)(neighborCount * 0.05);
+    }
+    //?
+    private Point findFallbackPosition(Tekton tekton, List<Tekton> neighbors, int minDistance) {
+        System.out.println("FallBack");
+        // Dinamikus irányok generálása
+        int[][] dynamicDirections = isSpecialCase(neighbors.get(0).getNeighbours().size()) ?  directions : // Használjuk a fix mátrixot 4,8,12 esetén
+        generatePolygonDirections(neighbors.get(0).getNeighbours().size());
+        for (int distance = minDistance; distance < 8; distance++) {
+            for (Tekton neighbor : neighbors) {
+                Point neighborPos = getTektonPosition(neighbor);
+                if (neighborPos == null) continue;
+    
+                for (int[] dir : dynamicDirections) {
+                    Point newPos = new Point(
+                        neighborPos.x + dir[0] * distance,
+                        neighborPos.y + dir[1] * distance
+                    );
+                    
+                    if (isPositionValid(newPos)) {
+                        return newPos;
+                    }
+                }
+            }
+        }
+        return findOptimalRandomPosition(renderMap.getTiles(), gameLogic.getCommandProcessor().getCreatedObjects().values().stream()
+        .filter(obj -> obj instanceof Tekton)
+        .map(obj -> (Tekton) obj)
+        .filter(t -> t != tekton)
+        .collect(Collectors.toList()));
+    }
+    //?
     private Point findOptimalRandomPosition(List<Point> tiles, List<Tekton> otherTektons) {
+        System.out.println("FallBack");
         int maxAttempts = 100;
         List<Point> validPositions = new ArrayList<>();
+        int minDistance = TEKTON_CELLS + 1; // 3+1=4 cella minimális távolság
         
-        // Első körben csak olyan pozíciók amik nem szomszédosak más Tektonekkel
+        // Első körben olyan pozíciók amik elég távol vannak más Tektonektől
         for (int i = 0; i < maxAttempts; i++) {
             int randomIndex = (int) (Math.random() * tiles.size());
             Point candidate = tiles.get(randomIndex);
-            if (isPositionValid(candidate) && !isAdjacentToOtherTekton(candidate, otherTektons)) {
+            if (isPositionValid(candidate) && !isWithinDistance(candidate, otherTektons, minDistance)) {
                 validPositions.add(candidate);
             }
         }
@@ -720,7 +710,7 @@ public class FungoriumGamePanel extends JPanel {
             return validPositions.get((int)(Math.random() * validPositions.size()));
         }
         
-        // Ha nem találtunk ilyet, akkor bármilyen érvényes pozíció
+        // Tartalék: bármilyen érvényes pozíció
         for (int i = 0; i < maxAttempts; i++) {
             int randomIndex = (int) (Math.random() * tiles.size());
             Point candidate = tiles.get(randomIndex);
@@ -729,30 +719,36 @@ public class FungoriumGamePanel extends JPanel {
             }
         }
         
-        return tiles.get(0); // Fallback
+        return tiles.get(0); // Vésztartalék
     }
-
-    private boolean isAdjacentToOtherTekton(Point pos, List<Tekton> otherTektons) {
-        for (Tekton tekton : otherTektons) {
-            String tektonName = gameLogic.getCommandProcessor().findByObject(tekton);
-            if (tektonName != null && objectPositions.containsKey(tektonName)) {
-                Point tektonPos = objectPositions.get(tektonName);
-                
-                // Ellenőrizzük, hogy a két Tekton nem érintkezik-e (3 cella távolság + 3 cella méret = 1 cella rés)
-                if (Math.abs(pos.x - tektonPos.x) < 5 && Math.abs(pos.y - tektonPos.y) < 5) {
+    //?
+    private boolean isAdjacentToOtherTekton(Point pos, List<Tekton> tektonsToCheck) {
+        return isWithinDistance(pos, tektonsToCheck, TEKTON_CELLS + 1);
+    }
+    private boolean isWithinDistance(Point pos, List<Tekton> tektonsToCheck, int minDistance) {
+        for (Tekton tekton : tektonsToCheck) {
+            Point tektonPos = getTektonPosition(tekton);
+            if (tektonPos != null) {
+                int dx = Math.abs(pos.x - tektonPos.x);
+                int dy = Math.abs(pos.y - tektonPos.y);
+                if (dx < minDistance && dy < minDistance) {
                     return true;
                 }
             }
         }
         return false;
-    }
+    } 
+
 
     private boolean isPositionValid(Point pos) {
-        int maxCol = renderMap.getCols() - TEKTON_CELLS;
-        int maxRow = renderMap.getRows() - TEKTON_CELLS;
+        // Szigorúbb távolságellenőrzés
+        int buffer = 1; // Dinamikus buffer
+        int effectiveSize = TEKTON_CELLS + buffer;
         
-        return pos.x >= 0 && pos.y >= 0 && pos.x <= maxCol && pos.y <= maxRow && 
-            isAreaFree(pos, TEKTON_CELLS);
+        return pos.x >= 0 && pos.y >= 0 
+            && pos.x + effectiveSize <= renderMap.getCols()
+            && pos.y + effectiveSize <= renderMap.getRows()
+            && isAreaFree(pos, effectiveSize);
     }
     
     /**
@@ -907,9 +903,11 @@ public class FungoriumGamePanel extends JPanel {
      * @param topLeft the top-left corner of the cell area
      * @param size    the size of the cell area
      */
-    private void occupyArea(Point topLeft, int size) {
-        for (int row = 0; row < size; row++) {
-            for (int col = 0; col < size; col++) {
+    private void occupyArea(Point topLeft, int start,int size) {
+        // Pontosabb területfoglalás
+        int expansion = size > 6 ? 1 : 0; // Csak nagy struktúrákhoz adjunk hozzá
+        for (int row = -expansion; row < size + expansion; row++) {
+            for (int col = -expansion; col < size + expansion; col++) {
                 Point cell = new Point(topLeft.x + row, topLeft.y + col);
                 occupiedCells.add(cell);
             }
@@ -964,6 +962,7 @@ public class FungoriumGamePanel extends JPanel {
         objectPositions.clear(); // Force recalculation of positions
         occupiedCells.clear(); // Clear occupied cells as positions are being recalculated
         shouldRecalculatePositions = true; // Set the flag to recalculate positions
+        
         repaint();
     }
 
@@ -987,59 +986,5 @@ public class FungoriumGamePanel extends JPanel {
      */
     public Map<String, Point> getObjectPositions() {
         return objectPositions;
-    }
-
-    /**
-     * Initializes and displays the main game window for the Fungorium Game.
-     * This method creates a JFrame containing the game panel and a control panel 
-     * with buttons to update the view, save the game state, and load the game state.
-     * 
-     * The game panel is initialized with the provided command processor and is added 
-     * to the frame. The control panel buttons trigger actions on the game panel, 
-     * such as updating the view, saving the current game state to a file, and 
-     * loading the game state from a file.
-     * 
-     * The frame is set to be visible and centered on the screen.
-     * 
-     * @param commandProcessor the CommandProcessor used to handle game commands and logic.
-     */
-
-    public static void createAndShowGUI(GameLogic gameLogic) {
-        JFrame frame = new JFrame("Fungorium Game");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        FungoriumGamePanel gamePanel = new FungoriumGamePanel(gameLogic);
-        frame.add(gamePanel);
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-
-        // Add a simple control panel
-        JPanel controlPanel = new JPanel();
-
-        // Update View button
-        JButton updateButton = new JButton("Update View");
-        updateButton.addActionListener(e -> gamePanel.updateGameState());
-        controlPanel.add(updateButton);
-
-        // Save Game button
-        JButton saveButton = new JButton("Save Game");
-        saveButton.addActionListener(e -> {
-            saver.saveGameState(gamePanel.getObjectPositions(), "gameState.xml");
-            JOptionPane.showMessageDialog(frame, "Game state saved to gameState.xml");
-        });
-        controlPanel.add(saveButton);
-
-        // Load Game button
-        JButton loadButton = new JButton("Load Game");
-        loadButton.addActionListener(e -> {
-            Map<String, Point> loadedPositions = saver.loadGameState("gameState.xml");
-            gamePanel.setObjectPositions(loadedPositions);
-            gamePanel.updateGameState();
-            JOptionPane.showMessageDialog(frame, "Game state loaded from gameState.xml");
-        });
-        controlPanel.add(loadButton);
-
-        frame.add(controlPanel, BorderLayout.SOUTH);
     }
 }

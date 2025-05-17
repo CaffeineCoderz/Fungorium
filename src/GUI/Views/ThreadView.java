@@ -68,7 +68,7 @@ public class ThreadView {
         Map<String, Point> threadEndpoints
     ) {
         List<Tekton> tektons = thread.getTektons();
-        if (tektons.size() >= 2) {
+        if (tektons.size() == 2) {
             // Point firstControlPoint = findClosestCardinalPoint(
             //     tektons.get(0), tektonCardinalPoints, objectPositions.get(commandProcessor.findByObject(tektons.get(1))), commandProcessor
             // );

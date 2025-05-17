@@ -12,7 +12,13 @@ import javax.imageio.ImageIO;
 
 public class MainMenu extends JFrame {
 
+    protected GameLogic gameLogic;
+    protected GameStateHandler saver;
+    protected FungoriumGUIBuilder gameGUIBuilder;
     public MainMenu(GameLogic gameLogic) {
+        this.gameLogic = gameLogic;
+        this.saver = new GameStateHandler(gameLogic);
+        this.gameGUIBuilder = new FungoriumGUIBuilder(gameLogic, saver);
         setTitle("Fungorium - Főmenü");
         setSize(800, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -79,7 +85,7 @@ public class MainMenu extends JFrame {
 
         add(mainPanel);
 
-        newGameButton.addActionListener(e -> startGameScreen(gameLogic));
+        newGameButton.addActionListener(e -> startGameScreen());
         rulesButton.addActionListener(e -> showRules());
         settingsButton.addActionListener(e -> {
             Settings.showSettings(this,gameLogic); 
@@ -113,8 +119,8 @@ public class MainMenu extends JFrame {
  * @param commandP The CommandProcessor instance used to handle game commands.
  */
 
-    private void startGameScreen(GameLogic gameLogic) {
-        FungoriumGamePanel.createAndShowGUI(gameLogic);
+    private void startGameScreen() {
+        gameGUIBuilder.createAndShowGUI();
         dispose();
     }
 

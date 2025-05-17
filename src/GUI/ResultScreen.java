@@ -32,11 +32,7 @@ class ResultScreen extends JFrame {
         // Rendezzük pontszám szerint csökkenőbe
         fungusList.sort((a, b) -> Integer.compare(b.getScore(), a.getScore()));
         insectList.sort((a, b) -> Integer.compare(b.getScore(), a.getScore()));
-
-        // Csak az első 3-at vesszük (ha van annyi)
-        List<FungusSpecies> topFungus = fungusList.subList(0, Math.min(3, fungusList.size()));
-        List<InsectSpecies> topInsect = insectList.subList(0, Math.min(3, insectList.size()));
-
+        
         setTitle("Fungorium - Eredmények");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
