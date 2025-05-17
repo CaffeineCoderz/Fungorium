@@ -1,9 +1,7 @@
 package sporeTypes;
 
 import insect.Insect;
-import sporeTypes.Spore;
 import tektonTypes.Tekton;
-import utils.*;
 
 public class MultiplyInsectSpore extends Spore{
     public MultiplyInsectSpore(){
