@@ -19,7 +19,7 @@ public class main {
         //FungoriumGamePanel.createAndShowGUI(commandProcessor);
         SwingUtilities.invokeLater(() -> new MainMenu(gameLogic).setVisible(true));
 
-        /* Curr we only need the GUI
+        /*
         Scanner scanner = new Scanner(System.in);
         int choice = 0;
 
