@@ -1,6 +1,7 @@
 package sporeTypes;
 
 import insect.Insect;
+import utils.Logger;
 import tektonTypes.*;
 
 public class StunSpore extends Spore{
