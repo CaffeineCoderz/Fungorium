@@ -96,7 +96,7 @@ public class FungoriumGamePanel extends JPanel {
         this.guiBuilder = guiBuilder;
         setLayout(null); // Absolute positioning for overlay panels
         setPreferredSize(new Dimension(800, 800));
-        renderMap = new RenderMap(RenderMap.MapSize.MEDIUM);
+        renderMap = new RenderMap(gameLogic.getMapSize());
 
         // Initialize the status view
 
