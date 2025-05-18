@@ -228,12 +228,13 @@ public class FungoriumGUIBuilder {
         boolean insectPicked = false;
         boolean fungusTurn = true; // Tesztelés
         boolean insectsTurn = true; // Tesztelés
+        boolean myTurn = false;
         if(gameLogic.getCurrentSpecies()!= null) {
-            if(gameLogic.getCurrentSpecies().equals("Fungus")) {
+            if(gameLogic.getCurrentSpecies().contains("Fungus")) {
                 fungusTurn = true;
                 insectsTurn = false;
             }
-            else if(gameLogic.getCurrentSpecies().equals("Insect")) {
+            else if(gameLogic.getCurrentSpecies().contains("Insect")) {
                 insectsTurn = true;
                 fungusTurn = false;
             }
@@ -244,19 +245,30 @@ public class FungoriumGUIBuilder {
 
         if (gamePanel.getSelectedObjects() != null && !gamePanel.getSelectedObjects().isEmpty()) {
             String objName = gamePanel.getSelectedObjects().get(0);
+            if(gamePanel.getSelectedObjects().size() > 1) {
+                objName = gamePanel.getSelectedObjects().get(1);
+            }
             String status = gamePanel.getStatusText(objName);
-            if (status.contains("Thread:")) {
+            String[] lines = status.split("\\R"); // \R mindenféle sortörést kezel
+            String secondLine = lines.length > 1 ? lines[1].trim() : "";
+            if (secondLine.contains("Thread:")) {
                 threadPicked = true;
-            } else if (status.contains("Body:")) {
+            } else if (secondLine.contains("Body:")) {
                 bodyPicked = true;
-            } else if (status.contains("Spore:")) {
+            } else if (secondLine.contains("Spore:")) {
                 sporePicked = true;
-            } else if (status.contains("Tekton:")) {
+            } else if (secondLine.contains("Tekton:")) {
                 tektonPicked = true;
-            } else if (status.contains("Insect:")) {
+            } else if (secondLine.contains("Insect:")) {
                 insectPicked = true;
             }
+            if(status.contains(gameLogic.getCurrentSpecies())) {
+                myTurn = true;
+            }else {
+                myTurn = false;
+            }
         }
+        
         // Láthatósági logika – ide mehet külön osztály vagy állapotkezelő
         growThreadButton.setEnabled(false);
         growBodyButton.setEnabled(false);
@@ -278,20 +290,23 @@ public class FungoriumGUIBuilder {
             cutThreadButton.setVisible(false);
             moveButton.setVisible(false);
             eatSporeButton.setVisible(false);
-            if (threadPicked) {
-                growThreadButton.setEnabled(true);
-                growBodyButton.setEnabled(true);
-                eatInsectButton.setEnabled(true);
-            }
-            if (bodyPicked) {
-                growThreadButton.setEnabled(true);
-                sporulateButton.setEnabled(true);
-            }
-            else if(!bodyPicked && !threadPicked) {
-                growThreadButton.setEnabled(false);
-                sporulateButton.setEnabled(false);
-                growBodyButton.setEnabled(false);
-                eatInsectButton.setEnabled(false);
+            System.out.println(myTurn);
+            if(myTurn){
+                if (threadPicked) {
+                    growThreadButton.setEnabled(true);
+                    growBodyButton.setEnabled(true);
+                    eatInsectButton.setEnabled(true);
+                }
+                if (bodyPicked) {
+                    growThreadButton.setEnabled(true);
+                    sporulateButton.setEnabled(true);
+                }
+                else if(!bodyPicked && !threadPicked) {
+                    growThreadButton.setEnabled(false);
+                    sporulateButton.setEnabled(false);
+                    growBodyButton.setEnabled(false);
+                    eatInsectButton.setEnabled(false);
+                }
             }
         }
         if (insectsTurn) {
@@ -299,11 +314,12 @@ public class FungoriumGUIBuilder {
             growBodyButton.setVisible(false);
             eatInsectButton.setVisible(false);
             sporulateButton.setVisible(false);
-            System.out.println(insectPicked);
-            if(insectPicked) {
-                cutThreadButton.setEnabled(true);
-                moveButton.setEnabled(true);
-                eatSporeButton.setEnabled(true);
+            if(myTurn){
+                if(insectPicked) {
+                    cutThreadButton.setEnabled(true);
+                    moveButton.setEnabled(true);
+                    eatSporeButton.setEnabled(true);
+                }
             }
         }
 
