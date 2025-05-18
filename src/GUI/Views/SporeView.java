@@ -116,4 +116,8 @@ public class SporeView {
     public void setMapSize(MapSize mapSize) {
         this.mapSize = mapSize;
     }
+
+    public int getSporeSize() {
+        return SPORE_SIZE;
+    }
 }
