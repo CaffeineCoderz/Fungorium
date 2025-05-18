@@ -37,7 +37,17 @@ public class FungoriumGUIBuilder {
         new Color(221, 160, 221), // ! Light Purple
         new Color(224, 255, 255), // ? Light Cyan INSECT
     };
-    
+
+    private final Color LIGHT_PINK = colors[0];
+    private final Color LIGHT_BEIGE = colors[1];
+    private final Color LIGHT_GREEN = colors[2];
+    private final Color LIGHT_RED = colors[3];
+    private final Color LIGHT_BLUE = colors[4];
+    private final Color LIGHT_ORANGE = colors[5];
+    private final Color LIGHT_PURPLE = colors[6];
+    private final Color LIGHT_CYAN = colors[7]; 
+
+
     private HashMap<String, Color> playerColors = new HashMap<>();
 
     public FungoriumGUIBuilder(GameLogic gameLogic, GameStateHandler saver) {
@@ -293,7 +303,7 @@ public class FungoriumGUIBuilder {
             cutThreadButton.setVisible(false);
             moveButton.setVisible(false);
             eatSporeButton.setVisible(false);
-            System.out.println(myTurn);
+            //System.out.println(myTurn);
             if(myTurn){
                 if (threadPicked) {
                     growThreadButton.setEnabled(true);
@@ -336,5 +346,49 @@ public class FungoriumGUIBuilder {
 
         panel.revalidate();
         panel.repaint();
+    }
+
+
+    public String getSpeciesStringColor(String species) {
+        Color playerColor = playerColors.get(species);
+
+        // Determine group
+        String group = "Other";
+        if(species != null){
+            if (species.contains("Fungus")) {
+                group = "Fungus";
+            } else if (species.contains("Insect") && species != null) {
+                group = "Insect";
+            } 
+        }else{
+            System.out.println("Állítsd be a species-t, mert a getSpeciesStringColor-ban null: " + species);
+        }
+
+        // Map color to string for each group
+        switch (group) {
+            case "Fungus":
+                if (playerColor.equals(LIGHT_PINK))
+                    return "LightPink";
+                if (playerColor.equals(LIGHT_GREEN))
+                    return "LightGreen";
+                if (playerColor.equals(LIGHT_BLUE))
+                    return "LightBlue";
+                if (playerColor.equals(LIGHT_PURPLE))
+                    return "LightPurple";
+                return "Fungus1";
+            case "Insect":
+                if (playerColor.equals(LIGHT_BEIGE))
+                    return "LightBeige";
+                if (playerColor.equals(LIGHT_CYAN))
+                    return "LightCyan";
+                if (playerColor.equals(LIGHT_ORANGE))
+                    return "LightOrange";
+                if (playerColor.equals(LIGHT_RED))
+                    return "LightRed";
+                return "Insect1";
+            default:
+                System.out.println("Unknown species: " + species);
+                return "DID NOT MATCH";
+        }
     }
 }
