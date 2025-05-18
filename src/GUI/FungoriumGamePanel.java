@@ -11,7 +11,7 @@ import fungus.FungusThread;
 import insect.Insect;
 import logic.GameLogic;
 import sporeTypes.Spore;
-import tektonTypes.Tekton;
+import tektonTypes.*;
 import GUI.Views.*;
 
 import java.awt.*;
@@ -50,7 +50,7 @@ public class FungoriumGamePanel extends JPanel {
     private boolean waitingForTarget = false;
     private boolean cutThreadCalled = false;
     private boolean moveCalled = false;
-    private String origin;
+    public String origin;
 
     // Sizes
     private static final int THREAD_WIDTH = 3;
@@ -122,7 +122,8 @@ public class FungoriumGamePanel extends JPanel {
                     // --- Handle "waiting for target" actions first ---
                     if (waitingForTarget && growthThreadCalled) {
                         try {
-                            if (gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName) instanceof Tekton) {
+                            Object target = gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName);
+                            if (target instanceof Tekton|| target instanceof OneThreadTekton || target instanceof DecomposingTekton || target instanceof DecreasingTekton|| target instanceof FeedThreadTekton|| target instanceof OnlyThreadTekton) {
                                 String command = "growthread " + clickedObjectName + " " + origin;
                                 gameLogic.getInputQueue().put(command);
                             } else {
@@ -157,6 +158,11 @@ public class FungoriumGamePanel extends JPanel {
                         });
                         revalidate();
                         repaint();
+                        try {
+                            Thread.sleep(200); // Wait for 0.2 seconds (200 milliseconds)
+                        } catch (InterruptedException ev) {
+                            ev.printStackTrace();
+                        }
                         if (!gameLogic.getCommandProcessor().getCreatedObjects().containsKey(clickedObjectName)) {
                             System.out.println("Insect eaten.");
                             objectPositions.remove(clickedObjectName);
@@ -580,7 +586,7 @@ public class FungoriumGamePanel extends JPanel {
             }
         }
         if (!isAllDistancesCorrect()) {
-             System.out.println("Wrong calculation, so redraw");
+             //System.out.println("Wrong calculation, so redraw");
              objectPositions.clear(); // Force recalculation of positions
              initializeTektonPlacement();
         }
@@ -989,18 +995,18 @@ public class FungoriumGamePanel extends JPanel {
                     int min = (t1.getNeighbours().size() >=9 || t2.getNeighbours().size() >=9) ? 5 : 4;
                     if (centerDistance < min || centerDistance > 6) {
                        
-                        System.err.println("Szomszéd távolsági hiba: " 
-                            + tekt1 + " - " + tekt2 
-                            + " (" + centerDistance + " cella)");
+                        // System.err.println("Szomszéd távolsági hiba: " 
+                        //     + tekt1 + " - " + tekt2 
+                        //     + " (" + centerDistance + " cella)");
                         return false;
                     }
                 } else {
                     // Nem szomszédokra: minimum 7 cella (top-left pozíciók)
                     double edgeDistance = Math.hypot(p1.x - p2.x, p1.y - p2.y);
                     if (edgeDistance < 7) {
-                        System.err.println("Nem szomszéd távolsági hiba: " 
-                            + tekt1 + " - " + tekt2 
-                            + " (" + edgeDistance + " cella)");
+                        // System.err.println("Nem szomszéd távolsági hiba: " 
+                        //     + tekt1 + " - " + tekt2 
+                        //     + " (" + edgeDistance + " cella)");
                         return false;
                     }
                 }
