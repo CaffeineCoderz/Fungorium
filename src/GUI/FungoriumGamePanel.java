@@ -1402,17 +1402,19 @@ public class FungoriumGamePanel extends JPanel {
 
     public void endTurnLogic(){
         try {
-        gameLogic.getInputQueue().put("next");
-        SwingUtilities.invokeLater(() -> {
-            guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
-        });
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         if (gameLogic.getBreaking()) {
             breakTektonEvent();
             gameLogic.setBreak(false);
         }
+        gameLogic.getInputQueue().put("next");
+        SwingUtilities.invokeLater(() -> {
+            guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+        });
+        
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
     }
     private void breakTektonEvent(){
         List<Map.Entry<String, Object>> listOfTektons = gameLogic.getCommandProcessor().getCreatedObjects()
