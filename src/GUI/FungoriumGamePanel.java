@@ -521,7 +521,7 @@ public class FungoriumGamePanel extends JPanel {
 
         // ! IDEIGLENES DE LEHET VÉGLEGES, mivel a speciesek dinamikusan vannak generálva ezért a Mainben hívott setterek előbb futnak le mint a player generálás, addig ez kelleni fog ide
         if (initialPaint) {
-            gameLogic.getCommandProcessor().processConfigText("setInsectSpecies");
+            gameLogic.getCommandProcessor().processConfigText("configWithoutStatus");
 
         }
 
