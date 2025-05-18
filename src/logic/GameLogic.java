@@ -8,6 +8,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import GUI.FungoriumGamePanel;
+import GUI.RenderMap;
 import commands.CommandProcessor;
 import fungus.FungusSpecies;
 import fungus.FungusThread;
@@ -32,7 +33,15 @@ public class GameLogic {
 
     private Scanner scanner;
     private FungoriumGamePanel gamePanel;
+    private RenderMap.MapSize mapSize = RenderMap.MapSize.MEDIUM;
 
+    public RenderMap.MapSize getMapSize() {
+        return mapSize;
+    }
+
+    public void setMapSize(RenderMap.MapSize mapSize) {
+        this.mapSize = mapSize;
+    }
     
     public GameLogic() {
         // Initialize the command processor
