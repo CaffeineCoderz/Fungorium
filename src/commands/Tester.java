@@ -2,8 +2,6 @@ package commands;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-
 import logic.GameLogic;
 
 public class Tester {

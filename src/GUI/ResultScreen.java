@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-class ResultScreen extends JFrame {
+public class ResultScreen extends JFrame {
     public ResultScreen(CommandProcessor commandProcessor) {
         List<FungusSpecies> fungusList = new ArrayList<>();
         List<InsectSpecies> insectList = new ArrayList<>();
