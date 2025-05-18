@@ -1,4 +1,7 @@
 /create tekton t1
+/create tekton t7
+/create tekton t8
+/create tekton t9
 /create decomptekton t2
 /create decreasetekton t3
 /create feedthreadtekton t4

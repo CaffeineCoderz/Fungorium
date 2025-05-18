@@ -34,16 +34,16 @@ public class RenderMap extends JPanel {
         // beállítani
         switch (size) {
             case SMALL:
-                rows = 90;
-                cols = 90;
-                break;
-            case MEDIUM:
                 rows = 25;
                 cols = 25;
                 break;
+            case MEDIUM:
+                rows = 35;
+                cols = 35;
+                break;
             case LARGE:
-                rows = 150;
-                cols = 150;
+                rows = 40;
+                cols = 40;
                 break;
             default:
                 throw new IllegalArgumentException("Invalid map size");
