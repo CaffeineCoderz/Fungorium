@@ -146,7 +146,7 @@ public class FungoriumGamePanel extends JPanel {
                     }
                     if (waitingForTarget && eatInsectCalled) {
                         try {
-                            if (gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName) instanceof Insect) {
+                            if (clickedObjectName != null && gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName) instanceof Insect) {
                                 String command = "eatinsect " + clickedObjectName + " " + origin;
                                 gameLogic.getInputQueue().put(command);
                             } else {
@@ -570,13 +570,17 @@ public class FungoriumGamePanel extends JPanel {
      * For Insects, it positions them near their associated thread.
      */
     private void calculateObjectPositions() {
-        initializeTektonPlacement();
+        int tries = 0;
+        while (initializeTektonPlacement() == false && tries < 1500) {
+            objectPositions.clear(); // Force recalculation of positions
+            tries++;
+        }
         calculateTektonCardinalPoints(); // Maradhat külön, ha nem igényel változtatást
         positionDependentObjects();
         positionInsects();
     }
 
-    private void initializeTektonPlacement() {
+    private boolean initializeTektonPlacement() {
         List<Point> tiles = renderMap.getTiles();
         occupiedCells.clear();
 
@@ -594,10 +598,10 @@ public class FungoriumGamePanel extends JPanel {
             }
         }
         if (!isAllDistancesCorrect()) {
-             //System.out.println("Wrong calculation, so redraw");
-             objectPositions.clear(); // Force recalculation of positions
-             initializeTektonPlacement();
+             System.out.println("Wrong calculation, so redraw");
+             return false;
         }
+        return true;
     }
 
     private void placeTekton(Map.Entry<String, Object> entry, List<Point> tiles) {

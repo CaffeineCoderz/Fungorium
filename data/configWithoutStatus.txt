@@ -1,2 +1,1 @@
-/load createConfig
-/load setConfig
+/load 4playerconfig
