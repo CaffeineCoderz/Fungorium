@@ -27,10 +27,11 @@ public class Settings {
         gbc.anchor = GridBagConstraints.CENTER; // Középre igazítás
 
         // Gombok létrehozása
-        JButton PlayerCountButton = createStyledButton("Jatékosok száma: " + gameLogic.getPlayers().size());
+        JButton PlayerCountButton = createStyledButton("Jatékosok száma: " + gameLogic.getPlayersCount());
         JButton SetTypeAndNameButton = createStyledButton("Játekosok típusa és neve");
         JButton LoadButton = createStyledButton("Load Game");
         JButton Rounds = createStyledButton("Körök száma: " + gameLogic.getGameTime());
+        JButton MapSize = createStyledButton("Pálya mérete: " + gameLogic.getMapSize());
         // JButton button5 = createStyledButton("Gomb 5");
         // JButton button6 = createStyledButton("Gomb 6");
 
@@ -51,9 +52,9 @@ public class Settings {
         gbc.gridy = 1;
         buttonPanel.add(Rounds, gbc);
 
-        // gbc.gridx = 0;
-        // gbc.gridy = 2;
-        // buttonPanel.add(button5, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        buttonPanel.add(MapSize, gbc);
 
         // gbc.gridx = 1;
         // gbc.gridy = 2;
@@ -82,7 +83,15 @@ public class Settings {
         settingsFrame.setVisible(true);
         
         PlayerCountButton.addActionListener(e -> {
-            new ResultScreen(gameLogic.getCommandProcessor()).setVisible(true);        
+            
+            String input = JOptionPane.showInputDialog(settingsFrame, "Add meg a játékosok számát(4-8):", gameLogic.getPlayersCount());
+            int playersCount = Integer.parseInt(input.trim());
+            if(playersCount < 4 || playersCount > 8) {
+                JOptionPane.showMessageDialog(settingsFrame, "A játékosok száma legyen 4 és 8 között!", "Hiba", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            gameLogic.setPlayersCount(playersCount);
+            PlayerCountButton.setText("Játékosok száma: " + playersCount);
         });
 
         Rounds.addActionListener(e -> {
@@ -90,11 +99,11 @@ public class Settings {
             if (input != null) {
                 try {
                     int newRounds = Integer.parseInt(input.trim());
-                    if (newRounds > 0) {
+                    if (newRounds > 0 && newRounds <= 40) {
                         gameLogic.setGameTime(newRounds);
                         Rounds.setText("Körök száma: " + newRounds);
                     } else {
-                        JOptionPane.showMessageDialog(settingsFrame, "A körök száma legyen pozitív egész szám!", "Hiba", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(settingsFrame, "A körök száma legyen pozitív egész szám 0 és 40 között!", "Hiba", JOptionPane.ERROR_MESSAGE);
                     }
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(settingsFrame, "Érvénytelen szám!", "Hiba", JOptionPane.ERROR_MESSAGE);
@@ -102,6 +111,25 @@ public class Settings {
             }
         });
         
+        MapSize.addActionListener(e -> {
+            String[] options = {"small", "medium", "large"};
+            String current = gameLogic.getMapSize().name().toLowerCase();
+            String selected = (String) JOptionPane.showInputDialog(
+                settingsFrame,
+                "Válaszd ki a pályaméretet:",
+                "Pályaméret",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                current
+            );
+            if (selected != null) {
+                RenderMap.MapSize chosen = RenderMap.MapSize.valueOf(selected.toUpperCase());
+                gameLogic.setMapSize(chosen);
+                MapSize.setText("Pályaméret: " + selected);
+            }
+        });
+
         SetTypeAndNameButton.addActionListener(e -> {
             // getter kell hozzá!
             java.util.Map<String, Object> playerMap = gameLogic.getPlayers(); 
@@ -159,6 +187,12 @@ public class Settings {
                     if (fungusCount < 2 || insectCount < 2) {
                         JOptionPane.showMessageDialog(settingsFrame,
                             "Legalább 2 FUNGUS és 2 INSECT játékos szükséges!",
+                            "Hiba", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    if (fungusCount+insectCount > 8) {
+                        JOptionPane.showMessageDialog(settingsFrame,
+                            "Maximum 8 játékos engedélyezett!",
                             "Hiba", JOptionPane.ERROR_MESSAGE);
                         return;
                     }

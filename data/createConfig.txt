@@ -18,6 +18,9 @@
 /create thread th3
 /create thread th4
 /create thread th5
+/create thread th6
+/create thread th7
+/create thread th8
 /create body b1
 /create body b2
 /create body b3

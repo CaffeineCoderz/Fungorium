@@ -1,6 +1,5 @@
 package GUI.Views;
 
-import fungus.FungusBody;
 import fungus.FungusThread;
 import tektonTypes.Tekton;
 
@@ -38,11 +37,11 @@ public class ThreadView {
 
                 try {
                     if (thread.isBridge()) {
-                        System.out.println("Drawing bridge: " + threadName);
+                        // System.out.println("Drawing bridge: " + threadName);
                         drawBridgeThread(g2d, thread, objectPositions, tektonCardinalPoints, commandProcessor, 
                                 threadEndpoints);
                     } else {
-                        System.out.println("Drawing NON-bridge: " + threadName);
+                        // System.out.println("Drawing NON-bridge: " + threadName);
                         drawNonBridgeThread(g2d, thread, objectPositions, tektonCardinalPoints, commandProcessor, threadEndpoints);
                     }
 
