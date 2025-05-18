@@ -42,8 +42,8 @@ public class RenderMap extends JPanel {
                 cols = 25;
                 break;
             case LARGE:
-                rows = 50;
-                cols = 50;
+                rows = 35;
+                cols = 35;
                 break;
             default:
                 throw new IllegalArgumentException("Invalid map size");
