@@ -138,6 +138,7 @@ public class FungoriumGamePanel extends JPanel {
 
                     // --- Handle "waiting for target" actions first ---
                     if (waitingForTarget && growthThreadCalled) {
+                        int num = gameLogic.getCommandProcessor().getCreatedObjects().size();
                         try {
                             Object target = null;
                             if(clickedObjectName!=null){
@@ -154,6 +155,21 @@ public class FungoriumGamePanel extends JPanel {
                         }
                         waitingForTarget = false;
                         growthThreadCalled = false;
+                        try {
+                            Thread.sleep(200); // Wait for 0.2 seconds (200 milliseconds)
+                        } catch (InterruptedException ev) {
+                            ev.printStackTrace();
+                        }
+                        if(gameLogic.getCommandProcessor().getCreatedObjects().size() > num){
+                            System.out.println("Thread grown.");
+                            updateStatusPanels();
+                            positionDependentObjects();
+                            revalidate();
+                            repaint();
+                        }
+                        else{
+                            System.out.println("Thread not grown.");
+                        }
                         SwingUtilities.invokeLater(() -> {
                             guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
                         });
@@ -186,6 +202,7 @@ public class FungoriumGamePanel extends JPanel {
                         if (!gameLogic.getCommandProcessor().getCreatedObjects().containsKey(clickedObjectName)) {
                             System.out.println("Insect eaten.");
                             objectPositions.remove(clickedObjectName);
+                            positionInsects();
                         } else {
                             System.out.println("Insect not eaten.");
                         }
@@ -194,7 +211,7 @@ public class FungoriumGamePanel extends JPanel {
                     if (waitingForTarget && cutThreadCalled) {
                         try {
                             if (gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName) instanceof FungusThread) {
-                                String command = "cutthread " + clickedObjectName + " " + origin;
+                                String command = "cut " + clickedObjectName + " " + origin;
                                 gameLogic.getInputQueue().put(command);
                             } else {
                                 System.out.println("Invalid target for thread cutting.");
@@ -212,7 +229,7 @@ public class FungoriumGamePanel extends JPanel {
                     }
                     if (waitingForTarget && moveCalled) {
                         try {
-                            if (gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName) instanceof FungusThread) {
+                            if (clickedObjectName!=null&&gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName) instanceof FungusThread) {
                                 String command = "move " + origin + " " + clickedObjectName;
                                 gameLogic.getInputQueue().put(command);
                             } else {
@@ -226,6 +243,10 @@ public class FungoriumGamePanel extends JPanel {
                         SwingUtilities.invokeLater(() -> {
                             guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
                             updateStatusPanels();
+                            positionDependentObjects();
+                            positionInsects();
+                            revalidate();
+                            repaint();
                         });
                         return;
                     }
@@ -520,10 +541,10 @@ public class FungoriumGamePanel extends JPanel {
         // System.out.println("objectPositions size: " + objectPositions.size());
 
         // ! IDEIGLENES DE LEHET VÉGLEGES, mivel a speciesek dinamikusan vannak generálva ezért a Mainben hívott setterek előbb futnak le mint a player generálás, addig ez kelleni fog ide
-        if (initialPaint) {
-            gameLogic.getCommandProcessor().processConfigText("setInsectSpecies");
+        // if (initialPaint) {
+        //     gameLogic.getCommandProcessor().processConfigText("setInsectSpecies");
 
-        }
+        // }
 
         threadView.drawThreads(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(), tektonCardinalPoints, gameLogic.getCommandProcessor(), threadEndpoints);
         insectView.drawInsects(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects());
@@ -648,7 +669,7 @@ public class FungoriumGamePanel extends JPanel {
             }
         }
         if (!isAllDistancesCorrect()) {
-             System.out.println("Wrong calculation, so redraw");
+             // System.out.println("Wrong calculation, so redraw");
              return false;
         }
         return true;
@@ -1077,9 +1098,9 @@ public class FungoriumGamePanel extends JPanel {
                     int min = (t1.getNeighbours().size() >=9 || t2.getNeighbours().size() >=9) ? 5 : 4;
                     if (centerDistance < min || centerDistance > 6) {
                        
-                        System.err.println("Szomszéd távolsági hiba: " 
+                        /* System.err.println("Szomszéd távolsági hiba: " 
                             + tekt1 + " - " + tekt2 
-                            + " (" + centerDistance + " cella)");
+                            + " (" + centerDistance + " cella)"); */
 
                         problems++;
                       }
@@ -1087,9 +1108,9 @@ public class FungoriumGamePanel extends JPanel {
                     // Nem szomszédokra: minimum 7 cella (top-left pozíciók)
                     double edgeDistance = Math.hypot(p1.x - p2.x, p1.y - p2.y);
                     if (edgeDistance < 7) {
-                        System.err.println("Nem szomszéd távolsági hiba: " 
+                        /* System.err.println("Nem szomszéd távolsági hiba: " 
                             + tekt1 + " - " + tekt2 
-                            + " (" + edgeDistance + " cella)");
+                            + " (" + edgeDistance + " cella)"); */
                         problems++;
                     }
                 }
