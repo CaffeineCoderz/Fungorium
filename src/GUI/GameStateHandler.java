@@ -1,11 +1,9 @@
 package GUI;
 
-import javax.swing.JPanel;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.*;
 
-import commands.CommandProcessor;
 import logic.GameLogic;
 
 import javax.xml.transform.OutputKeys;
@@ -15,9 +13,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.awt.Point;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class GameStateHandler {

@@ -1,7 +1,6 @@
 package tektonTypes;
 
 import insect.Insect;
-import utils.Logger;
 
 public class DecreasingTekton extends Tekton{
 

@@ -1,25 +1,22 @@
-import java.util.Scanner;
-
 import javax.swing.SwingUtilities;
 
-import GUI.FungoriumGamePanel;
 import GUI.MainMenu;
 import commands.CommandProcessor;
-import commands.Tester;
 import logic.GameLogic;
 
 public class main {
     public static void main(String[] args) {
         GameLogic gameLogic = new GameLogic();
         CommandProcessor commandProcessor = gameLogic.getCommandProcessor();
-        //commandProcessor.processConfigText("configWithoutStatus");
-        commandProcessor.processConfigText("TwelveNeighbour");
+        commandProcessor.processConfigText("configWithoutStatus");
+        //commandProcessor.processConfigText("threadConfig");
+        //commandProcessor.processConfigText("TwelveNeighbour");
         // commandProcessor.processConfigText("setConfig");
 
         //FungoriumGamePanel.createAndShowGUI(commandProcessor);
         SwingUtilities.invokeLater(() -> new MainMenu(gameLogic).setVisible(true));
 
-        /* Curr we only need the GUI
+        /*
         Scanner scanner = new Scanner(System.in);
         int choice = 0;
 
