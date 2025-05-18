@@ -31,6 +31,7 @@ public class Settings {
         JButton SetTypeAndNameButton = createStyledButton("Játekosok típusa és neve");
         JButton LoadButton = createStyledButton("Load Game");
         JButton Rounds = createStyledButton("Körök száma: " + gameLogic.getGameTime());
+        JButton MapSize = createStyledButton("Pálya mérete: " + gameLogic.getMapSize());
         // JButton button5 = createStyledButton("Gomb 5");
         // JButton button6 = createStyledButton("Gomb 6");
 
@@ -51,9 +52,9 @@ public class Settings {
         gbc.gridy = 1;
         buttonPanel.add(Rounds, gbc);
 
-        // gbc.gridx = 0;
-        // gbc.gridy = 2;
-        // buttonPanel.add(button5, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        buttonPanel.add(MapSize, gbc);
 
         // gbc.gridx = 1;
         // gbc.gridy = 2;
@@ -110,6 +111,25 @@ public class Settings {
             }
         });
         
+        MapSize.addActionListener(e -> {
+            String[] options = {"small", "medium", "large"};
+            String current = gameLogic.getMapSize().name().toLowerCase();
+            String selected = (String) JOptionPane.showInputDialog(
+                settingsFrame,
+                "Válaszd ki a pályaméretet:",
+                "Pályaméret",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                current
+            );
+            if (selected != null) {
+                RenderMap.MapSize chosen = RenderMap.MapSize.valueOf(selected.toUpperCase());
+                gameLogic.setMapSize(chosen);
+                MapSize.setText("Pályaméret: " + selected);
+            }
+        });
+
         SetTypeAndNameButton.addActionListener(e -> {
             // getter kell hozzá!
             java.util.Map<String, Object> playerMap = gameLogic.getPlayers(); 
