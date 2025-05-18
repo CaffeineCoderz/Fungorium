@@ -1,5 +1,5 @@
 /create tekton t1
-/create onethreadtekton t2
+/create othreadtekton t2
 /create onlythreadtekton t3
 /create decomptekton t4
 /create feedthreadtekton t5
@@ -29,9 +29,10 @@
 /set Fungus1 addthread th1
 /set t7 addthread th1
 /set th1 addtekton t7
-/set th1 prevBody b1
+/set th1 prevbody b1
 /set b1 addthread th1
 /create thread th2
+/set th1 next th2
 /set th2 species Fungus1
 /set Fungus1 addthread th2
 /set th2 prevbody b1
@@ -45,9 +46,10 @@
 /set th3 species Fungus3
 /set Fungus3 addthread th3
 /set th3 addtekton t4
-/set th3 prevBody b2
+/set th3 prevbody b2
 /set b2 addthread th3
 /create thread th4
+/set th3 next th4
 /set th4 species Fungus3
 /set Fungus3 addthread th4
 /set th4 prevbody b1
@@ -56,9 +58,10 @@
 /set th4 addtekton t5
 /set th4 bridge true
 /create insect i1
+/set i1 effect stun
 /set i1 species Insect2
 /set Insect2 addinsect i1
-/set i1 thread th1
+/set i1 thread th2
 /set i1 tekton t7
 /set t7 addinsect i1
 /create insect i2
