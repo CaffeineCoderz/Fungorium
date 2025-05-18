@@ -29,13 +29,14 @@
 /set Fungus1 addthread th1
 /set t7 addthread th1
 /set th1 addtekton t7
-/set th1 prevBody b1
+/set th1 prevbody b1
 /set b1 addthread th1
 /create thread th2
 /set th2 species Fungus1
 /set Fungus1 addthread th2
 /set th2 prevbody b1
 /set th2 prev th1
+/set th1 next th2
 /set th2 addtekton t7
 /set th2 addtekton t3
 /set t7 addthread th2
@@ -45,13 +46,15 @@
 /set th3 species Fungus3
 /set Fungus3 addthread th3
 /set th3 addtekton t4
-/set th3 prevBody b2
+/set th3 prevbody b2
+
 /set b2 addthread th3
 /create thread th4
 /set th4 species Fungus3
 /set Fungus3 addthread th4
 /set th4 prevbody b1
 /set th4 prev th3
+/set th3 next th4
 /set th4 addtekton t4
 /set th4 addtekton t5
 /set th4 bridge true
