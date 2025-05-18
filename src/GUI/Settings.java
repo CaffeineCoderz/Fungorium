@@ -170,6 +170,12 @@ public class Settings {
                             "Hiba", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
+                    if (fungusCount+insectCount > 8) {
+                        JOptionPane.showMessageDialog(settingsFrame,
+                            "Maximum 8 játékos engedélyezett!",
+                            "Hiba", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
                     ((JDialog)SwingUtilities.getWindowAncestor(playerList)).dispose();
                 });
 
