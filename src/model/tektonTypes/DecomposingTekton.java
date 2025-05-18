@@ -1,5 +1,7 @@
 package tektonTypes;
 
+import utils.Logger;
+
 import fungus.FungusThread;
 
 public class DecomposingTekton extends Tekton{

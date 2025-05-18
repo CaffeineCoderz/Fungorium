@@ -2,10 +2,14 @@ package insect;
 
 import commands.CommandProcessor;
 import fungus.FungusThread;
+import interfaces.iControl;
 import sporeTypes.MultiplyInsectSpore;
 import sporeTypes.Spore;
 import tektonTypes.DecreasingTekton;
 import tektonTypes.Tekton;
+import utils.*;
+
+import insect.InsectEffects;
 
 // ! - Az elrágott fonalak nem pusztulnak el azonnal, hanem csak egy kis idő elteltével (ez fonaltípustól függő idő). 
 // ! A fonalak képesek megenni a tektonjukon található bénult rovarokat. Ilyenkor a rovar elpusztul, a fonal pedig gombatestet növeszthet.

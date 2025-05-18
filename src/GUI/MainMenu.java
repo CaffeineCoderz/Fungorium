@@ -126,6 +126,7 @@ public class MainMenu extends JFrame {
         gameGUIBuilder.createAndShowGUI();
         gameLogic.initializePlayers();
         gameGUIBuilder.assignPlayerColors();
+        gameLogic.getCommandProcessor().processConfigText("configWithoutStatus");
         Thread gameThread = new Thread(() -> gameLogic.startGame());
         gameThread.start();
         dispose();

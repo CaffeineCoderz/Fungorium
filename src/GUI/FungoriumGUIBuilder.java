@@ -25,16 +25,29 @@ public class FungoriumGUIBuilder {
     private JButton moveButton;
     private JButton eatSporeButton;
 
+    // Színek 
+    // FONTOS: SORRENDET NE CSERÉLD MEG, különben a játékban nem fog működni
     private Color[] colors = {
-        new Color(255, 182, 193), // Light Pink
-        new Color(144, 238, 144), // Light Green
-        new Color(173, 216, 230), // Light Blue
-        new Color(255, 255, 153), // Light Yellow
-        new Color(255, 204, 153), // Light Orange
-        new Color(221, 160, 221), // Plum (Light Purple)
-        new Color(224, 255, 255), // Light Cyan
-        new Color(255, 222, 173)  // Navajo White (Light Beige)
+        new Color(255, 182, 193), // ! Light Pink FUNGUS
+        new Color(255, 222, 173),  // ?  Light Beige INSECT
+        new Color(144, 238, 144), // ! Light Green
+        new Color(222, 76,73), // ? Light Red INSECT
+        new Color(55, 81,250), // ! Light Blue
+        new Color(255, 204, 153), // ? Light Orange INSECT
+        new Color(221, 160, 221), // ! Light Purple
+        new Color(224, 255, 255), // ? Light Cyan INSECT
     };
+
+    private final Color LIGHT_PINK = colors[0];
+    private final Color LIGHT_BEIGE = colors[1];
+    private final Color LIGHT_GREEN = colors[2];
+    private final Color LIGHT_RED = colors[3];
+    private final Color LIGHT_BLUE = colors[4];
+    private final Color LIGHT_ORANGE = colors[5];
+    private final Color LIGHT_PURPLE = colors[6];
+    private final Color LIGHT_CYAN = colors[7]; 
+
+
     private HashMap<String, Color> playerColors = new HashMap<>();
 
     public FungoriumGUIBuilder(GameLogic gameLogic, GameStateHandler saver) {
@@ -228,12 +241,13 @@ public class FungoriumGUIBuilder {
         boolean insectPicked = false;
         boolean fungusTurn = true; // Tesztelés
         boolean insectsTurn = true; // Tesztelés
+        boolean myTurn = false;
         if(gameLogic.getCurrentSpecies()!= null) {
-            if(gameLogic.getCurrentSpecies().equals("Fungus")) {
+            if(gameLogic.getCurrentSpecies().contains("Fungus")) {
                 fungusTurn = true;
                 insectsTurn = false;
             }
-            else if(gameLogic.getCurrentSpecies().equals("Insect")) {
+            else if(gameLogic.getCurrentSpecies().contains("Insect")) {
                 insectsTurn = true;
                 fungusTurn = false;
             }
@@ -244,19 +258,30 @@ public class FungoriumGUIBuilder {
 
         if (gamePanel.getSelectedObjects() != null && !gamePanel.getSelectedObjects().isEmpty()) {
             String objName = gamePanel.getSelectedObjects().get(0);
+            if(gamePanel.getSelectedObjects().size() > 1) {
+                objName = gamePanel.getSelectedObjects().get(1);
+            }
             String status = gamePanel.getStatusText(objName);
-            if (status.contains("Thread:")) {
+            String[] lines = status.split("\\R"); // \R mindenféle sortörést kezel
+            String secondLine = lines.length > 1 ? lines[1].trim() : "";
+            if (secondLine.contains("Thread:")) {
                 threadPicked = true;
-            } else if (status.contains("Body:")) {
+            } else if (secondLine.contains("Body:")) {
                 bodyPicked = true;
-            } else if (status.contains("Spore:")) {
+            } else if (secondLine.contains("Spore:")) {
                 sporePicked = true;
-            } else if (status.contains("Tekton:")) {
+            } else if (secondLine.contains("Tekton:")) {
                 tektonPicked = true;
-            } else if (status.contains("Insect:")) {
+            } else if (secondLine.contains("Insect:")) {
                 insectPicked = true;
             }
+            if(status.contains(gameLogic.getCurrentSpecies())) {
+                myTurn = true;
+            }else {
+                myTurn = false;
+            }
         }
+        
         // Láthatósági logika – ide mehet külön osztály vagy állapotkezelő
         growThreadButton.setEnabled(false);
         growBodyButton.setEnabled(false);
@@ -278,20 +303,23 @@ public class FungoriumGUIBuilder {
             cutThreadButton.setVisible(false);
             moveButton.setVisible(false);
             eatSporeButton.setVisible(false);
-            if (threadPicked) {
-                growThreadButton.setEnabled(true);
-                growBodyButton.setEnabled(true);
-                eatInsectButton.setEnabled(true);
-            }
-            if (bodyPicked) {
-                growThreadButton.setEnabled(true);
-                sporulateButton.setEnabled(true);
-            }
-            else if(!bodyPicked && !threadPicked) {
-                growThreadButton.setEnabled(false);
-                sporulateButton.setEnabled(false);
-                growBodyButton.setEnabled(false);
-                eatInsectButton.setEnabled(false);
+            //System.out.println(myTurn);
+            if(myTurn){
+                if (threadPicked) {
+                    growThreadButton.setEnabled(true);
+                    growBodyButton.setEnabled(true);
+                    eatInsectButton.setEnabled(true);
+                }
+                if (bodyPicked) {
+                    growThreadButton.setEnabled(true);
+                    sporulateButton.setEnabled(true);
+                }
+                else if(!bodyPicked && !threadPicked) {
+                    growThreadButton.setEnabled(false);
+                    sporulateButton.setEnabled(false);
+                    growBodyButton.setEnabled(false);
+                    eatInsectButton.setEnabled(false);
+                }
             }
         }
         if (insectsTurn) {
@@ -299,11 +327,12 @@ public class FungoriumGUIBuilder {
             growBodyButton.setVisible(false);
             eatInsectButton.setVisible(false);
             sporulateButton.setVisible(false);
-            System.out.println(insectPicked);
-            if(insectPicked) {
-                cutThreadButton.setEnabled(true);
-                moveButton.setEnabled(true);
-                eatSporeButton.setEnabled(true);
+            if(myTurn){
+                if(insectPicked) {
+                    cutThreadButton.setEnabled(true);
+                    moveButton.setEnabled(true);
+                    eatSporeButton.setEnabled(true);
+                }
             }
         }
 
@@ -317,5 +346,48 @@ public class FungoriumGUIBuilder {
 
         panel.revalidate();
         panel.repaint();
+    }
+
+
+    public String getSpeciesStringColor(String species) {
+        Color playerColor = playerColors.get(species);
+        if (playerColor == null || species == null) {
+            return "Insect1"; // Default image
+        }
+
+        // Determine group
+        String group = "Other";
+        if (species.contains("Fungus")) {
+            group = "Fungus";
+        } else if (species.contains("Insect")) {
+            group = "Insect";
+        }
+
+        // Map color to string for each group
+        switch (group) {
+            case "Fungus":
+                if (playerColor.equals(LIGHT_PINK))
+                    return "LightPink";
+                if (playerColor.equals(LIGHT_GREEN))
+                    return "LightGreen";
+                if (playerColor.equals(LIGHT_BLUE))
+                    return "LightBlue";
+                if (playerColor.equals(LIGHT_PURPLE))
+                    return "LightPurple";
+                return "Fungus1";
+            case "Insect":
+                if (playerColor.equals(LIGHT_BEIGE))
+                    return "LightBeige";
+                if (playerColor.equals(LIGHT_CYAN))
+                    return "LightCyan";
+                if (playerColor.equals(LIGHT_ORANGE))
+                    return "LightOrange";
+                if (playerColor.equals(LIGHT_RED))
+                    return "LightRed";
+                return "Insect1";
+            default:
+                System.out.println("Unknown species: " + species);
+                return "DID NOT MATCH";
+        }
     }
 }
