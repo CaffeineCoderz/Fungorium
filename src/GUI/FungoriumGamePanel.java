@@ -103,7 +103,11 @@ public class FungoriumGamePanel extends JPanel {
         // Set the size of the map size in each view
         bodyView.setMapSize(gameLogic.getMapSize());
         sporeView.setMapSize(gameLogic.getMapSize());
+
+        // Insect View Setup
         insectView.setMapSize(gameLogic.getMapSize());
+        insectView.setCommandProcessor(gameLogic.getCommandProcessor());
+        insectView.setGuiBuilder(guiBuilder);
 
         // Initialize the status view
 
@@ -230,14 +234,13 @@ public class FungoriumGamePanel extends JPanel {
 
                     // --- GUI gombok frissítése ---
                     if (controlPanel != null && guiBuilder != null) {
-                        SwingUtilities.invokeLater(() -> {
-                            guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
-                            updateStatusPanels();
-                        });
-                    }
-                    // Ha nincs kiválasztott objektum, alaphelyzetbe állítjuk a gombokat
-                    if (controlPanel != null && clickedObjectName == null) {
-                        resetActionButtons();
+                        if (clickedObjectName != null) {
+                            SwingUtilities.invokeLater(() -> {
+                                guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+                            });
+                        } else {
+                            resetActionButtons();
+                        }
                     }
                 }
             }
@@ -324,7 +327,7 @@ public class FungoriumGamePanel extends JPanel {
     // Metódus a gombok alaphelyzetbe állításához (pl. ha nincs kiválasztott objektum)
     private void resetActionButtons() {
         if (controlPanel != null && guiBuilder != null) {
-            controlPanel.removeAll();
+            //controlPanel.removeAll();
             SwingUtilities.invokeLater(() -> {
                 guiBuilder.updateActionButtons(controlPanel, this);
             }); // A builder metódusát hívjuk
@@ -454,7 +457,7 @@ public class FungoriumGamePanel extends JPanel {
         }
 
         // Draw the grid (optional) RED
-        drawGrid(g2d);
+        //drawGrid(g2d);
 
         // Draw all objects
         tektonView.drawTektons(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(),
@@ -469,6 +472,9 @@ public class FungoriumGamePanel extends JPanel {
         }
         
         // System.out.println("objectPositions size: " + objectPositions.size());
+
+        // ! IDEIGLENES DE LEHET VÉGLEGES, mivel a speciesek dinamikusan vannak generálva ezért a Mainben hívott setterek előbb futnak le mint a player generálás, addig ez kelleni fog ide
+        gameLogic.getCommandProcessor().processConfigText("setInsectSpecies");
 
         threadView.drawThreads(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(), tektonCardinalPoints, gameLogic.getCommandProcessor(), threadEndpoints);
         insectView.drawInsects(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects());
