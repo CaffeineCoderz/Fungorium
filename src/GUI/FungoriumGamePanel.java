@@ -12,6 +12,7 @@ import insect.Insect;
 import logic.GameLogic;
 import sporeTypes.Spore;
 import tektonTypes.*;
+import GUI.RenderMap.MapSize;
 import GUI.Views.*;
 import utils.*;
 
@@ -363,7 +364,41 @@ public class FungoriumGamePanel extends JPanel {
 
             // Alapértelmezett ellenőrzés
             if (point.distance(objectPos) <= 20) {
-                return objectName;
+                if(gameLogic.getCommandProcessor().getCreatedObjects().get(objectName) instanceof FungusBody){
+                    if(point.distance(objectPos) <= 15 && gameLogic.getMapSize() == MapSize.SMALL){
+                        return objectName;
+                    }
+                    else if(point.distance(objectPos) <= 10 && gameLogic.getMapSize() == MapSize.MEDIUM){
+                        return objectName;
+                    }
+                    else if(point.distance(objectPos) <= 7 && gameLogic.getMapSize() == MapSize.LARGE){
+                        return objectName;
+                    }
+                }
+
+                if(gameLogic.getCommandProcessor().getCreatedObjects().get(objectName) instanceof Insect){
+                    if(point.distance(objectPos) <= 15 && gameLogic.getMapSize() == MapSize.SMALL){
+                        return objectName;
+                    }
+                    else if(point.distance(objectPos) <= 10 && gameLogic.getMapSize() == MapSize.MEDIUM){
+                        return objectName;
+                    }
+                    else if(point.distance(objectPos) <= 7 && gameLogic.getMapSize() == MapSize.LARGE){
+                        return objectName;
+                    }
+                }
+
+                if(gameLogic.getCommandProcessor().getCreatedObjects().get(objectName) instanceof Spore){
+                    if(point.distance(objectPos) <= 6 && gameLogic.getMapSize() == MapSize.SMALL){
+                        return objectName;
+                    }
+                    else if(point.distance(objectPos) <= 5 && gameLogic.getMapSize() == MapSize.MEDIUM){
+                        return objectName;
+                    }
+                    else if(point.distance(objectPos) <= 3 && gameLogic.getMapSize() == MapSize.LARGE){
+                        return objectName;
+                    }
+                }
             }
             // Thread kezelés
             if (objectName.startsWith("th")) {
@@ -415,13 +450,11 @@ public class FungoriumGamePanel extends JPanel {
             }
         }
 
-        // A többi objektum kezelése (tekton, body stb.)
         for (Map.Entry<String, Point> entry : objectPositions.entrySet()) {
             String objectName = entry.getKey();
             Point objectPos = entry.getValue();
 
             if (objectName.endsWith("_center")) {
-                // Tekton kezelése (ugyanaz marad)
                 String tektonName = objectName.replace("_center", "");
                 Object obj = gameLogic.getCommandProcessor().getCreatedObjects().get(tektonName);
                 if (obj instanceof Tekton) {
