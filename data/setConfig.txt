@@ -99,13 +99,6 @@
 /set b5 tekton t4
 /set th10 addtekton t4
 /set t4 addthread th10
-<<<<<<< HEAD
-/set t7 addneighbour t8
-/set t4 addneighbour t7
-/set t5 addneighbour t8
-/set t6 addneighbour t9
-/set t9 addneighbour t5
-=======
 /set th6 species sp2
 /set th6 prevbody b2
 /set th6 addtekton t2
@@ -120,4 +113,3 @@
 /set th8 prev th7
 /set th8 addtekton t6
 /set th8 prevbody b2
->>>>>>> 49101caf502c02ed60ec6ecdc4d5206c9c899cfa

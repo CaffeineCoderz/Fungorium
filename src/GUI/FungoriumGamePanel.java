@@ -98,11 +98,7 @@ public class FungoriumGamePanel extends JPanel {
         this.guiBuilder = guiBuilder;
         setLayout(null); // Absolute positioning for overlay panels
         setPreferredSize(new Dimension(800, 800));
-<<<<<<< HEAD
-        renderMap = new RenderMap(RenderMap.MapSize.SMALL);
-=======
-        renderMap = new RenderMap(gameLogic.getMapSize());
->>>>>>> 49101caf502c02ed60ec6ecdc4d5206c9c899cfa
+        renderMap = new RenderMap(RenderMap.MapSize.MEDIUM);
 
         // Initialize the status view
 
@@ -601,7 +597,6 @@ public class FungoriumGamePanel extends JPanel {
             Tekton tekton = (Tekton) entry.getValue();
                 topLeft = calculateGroupedPosition(tekton, tiles);
             
-
             if (isWithinBounds(topLeft, TEKTON_CELLS, renderMap.getCols(), renderMap.getRows()) 
                 && isAreaFree(topLeft, TEKTON_CELLS)) {
 
@@ -1024,10 +1019,6 @@ public class FungoriumGamePanel extends JPanel {
     }
     //?
     private Point findFallbackPosition(Tekton tekton, List<Tekton> neighbors, int minDistance) {
-<<<<<<< HEAD
-=======
-        // System.out.println("FallBack");
->>>>>>> 49101caf502c02ed60ec6ecdc4d5206c9c899cfa
         // Dinamikus irányok generálása
         int[][] dynamicDirections = isSpecialCase(neighbors.get(0).getNeighbours().size()) ?  directions : // Használjuk a fix mátrixot 4,8,12 esetén
         generatePolygonDirections(neighbors.get(0).getNeighbours().size());
@@ -1056,10 +1047,6 @@ public class FungoriumGamePanel extends JPanel {
     }
     //?
     private Point findOptimalRandomPosition(List<Point> tiles, List<Tekton> otherTektons) {
-<<<<<<< HEAD
-=======
-        // System.out.println("FallBack");
->>>>>>> 49101caf502c02ed60ec6ecdc4d5206c9c899cfa
         int maxAttempts = 100;
         List<Point> validPositions = new ArrayList<>();
         int minDistance = TEKTON_CELLS + 1; // 3+1=4 cella minimális távolság
@@ -1106,7 +1093,6 @@ public class FungoriumGamePanel extends JPanel {
         return false;
     } 
 
-
     private boolean isPositionValid(Point pos) {
         // Szigorúbb távolságellenőrzés
         int buffer = 1; // Dinamikus buffer
@@ -1129,7 +1115,6 @@ public class FungoriumGamePanel extends JPanel {
         int cellHeight = getHeight() / renderMap.getRows();
 
         Map<String, Point> newEntries = new HashMap<>();
-        List<String> keysToRemove = new ArrayList<>();
 
         for (Map.Entry<String, Point> entry : objectPositions.entrySet()) {
             String name = entry.getKey();
@@ -1328,15 +1313,15 @@ public class FungoriumGamePanel extends JPanel {
     }
 
     public void endTurnLogic(){
-        try {
+        /*try {
         gameLogic.getInputQueue().put("next");
         SwingUtilities.invokeLater(() -> {
             guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
         });
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
-        //breakTektonEvent();
+        }*/
+        breakTektonEvent();
     }
     private void breakTektonEvent(){
         List<Map.Entry<String, Object>> listOfTektons = gameLogic.getCommandProcessor().getCreatedObjects()
