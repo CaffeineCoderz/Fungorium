@@ -89,6 +89,7 @@ public class FungoriumGamePanel extends JPanel {
 
 
     private String currentPlayerName = "";
+    private String currentRound = "";
 
     public FungoriumGamePanel(GameLogic gameLogic, FungoriumGUIBuilder guiBuilder) {
         this.gameLogic = gameLogic;
@@ -499,7 +500,8 @@ public class FungoriumGamePanel extends JPanel {
             Color borderColor = (getGuiBuilder() != null) ? getGuiBuilder().getPlayerColor(currentPlayerName)
                     : Color.GRAY;
             g2.setColor(borderColor);
-            g2.drawString(currentPlayerName, 10, 790);
+            currentRound = " - " + (gameLogic.getRound() + 1) + " round";
+            g2.drawString(currentPlayerName + currentRound, 10, 40);
         }
     }
 
