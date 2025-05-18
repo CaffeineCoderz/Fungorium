@@ -161,7 +161,7 @@ public class FungoriumGamePanel extends JPanel {
                     }
                     if (waitingForTarget && eatInsectCalled) {
                         try {
-                            if (gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName) instanceof Insect) {
+                            if (clickedObjectName != null && gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName) instanceof Insect) {
                                 String command = "eatinsect " + clickedObjectName + " " + origin;
                                 gameLogic.getInputQueue().put(command);
                             } else {
