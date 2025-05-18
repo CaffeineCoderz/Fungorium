@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-
+import utils.*;
 import GUI.FungoriumGamePanel;
 import GUI.RenderMap;
 import commands.CommandProcessor;
@@ -28,7 +28,7 @@ public class GameLogic {
     private BlockingQueue<String> inputQueue = new LinkedBlockingQueue<>();
     // Map
     private Map<String, Tekton> tektons = new HashMap<>();
-
+    private Boolean tektonBreak = false;
     private CommandProcessor commandProcessor;
 
     private Scanner scanner;
@@ -52,6 +52,12 @@ public class GameLogic {
         this.gamePanel = panel;
     }
 
+    public void setBreak(Boolean sss){
+        tektonBreak = sss;
+    }
+    public Boolean getBreaking(){
+        return tektonBreak;
+    }
     public FungoriumGamePanel getGamePanel() {
         return gamePanel;
     }
@@ -434,6 +440,12 @@ public class GameLogic {
                     ((InsectSpecies) playerObj).timeElapsed();
                 }
             }
+            
+            int chanceofBreaking = RandomGenerator.generateRandomNumber(0, 100);
+            if (chanceofBreaking < 5) {
+                tektonBreak = true;
+                System.out.println("There will be a tekton break!");
+            }
 
             round++;
             gameTime--;
@@ -443,6 +455,10 @@ public class GameLogic {
                 break;
             }
         }
+    }
+
+    public int getRound() {
+        return round;
     }
 
     /**

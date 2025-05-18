@@ -6,9 +6,11 @@ import insect.Insect;
 
 import sporeTypes.Spore;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import commands.CommandProcessor;
+import utils.Logger;
 
 public class Tekton {
     private Boolean canGrowBody;
@@ -289,6 +291,10 @@ public class Tekton {
         }
         for (int i = spores.size() - 1; i >= 0; i--) {
             Spore spore = spores.get(i);
+            String objKey = commandProcessor.findByObject(spore);
+            if (objKey != null) {
+                commandProcessor.getCreatedObjects().remove(objKey);
+            }
             spore.absorbed();
         }
         if (body != null) {
@@ -305,34 +311,16 @@ public class Tekton {
         // Létrehozzuk az új Tektonokat
         Tekton t1 = new Tekton(this);
         Tekton t2 = new Tekton(this);
-        t1.neighbours = new ArrayList<>();
         t2.neighbours = new ArrayList<>();
         
     
-        // Szomszédok felosztása
-        int mid = neighbours.size() / 2;
-        List<Tekton> t1Neighbours = new ArrayList<>(neighbours.subList(0, mid));
-        List<Tekton> t2Neighbours = new ArrayList<>(neighbours.subList(mid, neighbours.size()));
-    
+        // Szomszédok felosztása 
+        List<Tekton> t1Neighbours = new ArrayList<>(this.neighbours);
         // Az új Tektonok szomszédainak beállítása
         for (Tekton neighbour : t1Neighbours) {
             neighbour.removeNeighbour(this);
             neighbour.addNeighbour(t1);
-            t1.addNeighbour(neighbour);
         }
-    
-        for (Tekton neighbour : t2Neighbours) {
-            neighbour.removeNeighbour(this);
-            neighbour.addNeighbour(t2);
-            t2.addNeighbour(neighbour);
-        }
-    
-        // Az új Tektonok egymás szomszédai lesznek
-        t1.addNeighbour(t2);
-        t2.addNeighbour(t1);
-        t1.getThreads().clear();
-        t2.getThreads().clear();
-        
         String objKey = commandProcessor.findByObject(this);
         commandProcessor.getCreatedObjects().remove(objKey);
         // Az eredeti Tekton szomszédainak törlése

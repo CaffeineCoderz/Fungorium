@@ -5,10 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import commands.CommandProcessor;
+import fungus.FungusThread;
 import insect.*;
 import tektonTypes.DecomposingTekton;
 import tektonTypes.FeedThreadTekton;
+import tektonTypes.OnlyThreadTekton;
 import tektonTypes.Tekton;
+import utils.Logger;
 
 public class FungusSpecies implements iControl {
     // Game Logic

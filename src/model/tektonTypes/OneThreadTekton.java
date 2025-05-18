@@ -1,6 +1,7 @@
 package tektonTypes;
 
 import fungus.FungusThread;
+import utils.Logger;
 
 public class OneThreadTekton extends Tekton {
     public OneThreadTekton() {
