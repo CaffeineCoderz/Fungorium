@@ -101,7 +101,11 @@ public class FungoriumGamePanel extends JPanel {
         // Set the size of the map size in each view
         bodyView.setMapSize(gameLogic.getMapSize());
         sporeView.setMapSize(gameLogic.getMapSize());
+
+        // Insect View Setup
         insectView.setMapSize(gameLogic.getMapSize());
+        insectView.setCommandProcessor(gameLogic.getCommandProcessor());
+        insectView.setGuiBuilder(guiBuilder);
 
         // Initialize the status view
 
@@ -451,7 +455,7 @@ public class FungoriumGamePanel extends JPanel {
         }
 
         // Draw the grid (optional) RED
-        drawGrid(g2d);
+        //drawGrid(g2d);
 
         // Draw all objects
         tektonView.drawTektons(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(),
@@ -466,6 +470,9 @@ public class FungoriumGamePanel extends JPanel {
         }
         
         // System.out.println("objectPositions size: " + objectPositions.size());
+
+        // ! IDEIGLENES DE LEHET VÉGLEGES, mivel a speciesek dinamikusan vannak generálva ezért a Mainben hívott setterek előbb futnak le mint a player generálás, addig ez kelleni fog ide
+        gameLogic.getCommandProcessor().processConfigText("setInsectSpecies");
 
         threadView.drawThreads(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(), tektonCardinalPoints, gameLogic.getCommandProcessor(), threadEndpoints);
         insectView.drawInsects(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects());

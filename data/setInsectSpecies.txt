@@ -1,0 +1,2 @@
+/set i1 species Insect2
+/set i2 species Insect4
