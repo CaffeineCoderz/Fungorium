@@ -24,6 +24,7 @@ public class GameLogic {
     private int playerCount = 4; // A játékosok száma
     private int gameTime = 10; // A játék időtartama
     private int round = 0; // Az eltelt idő
+    private boolean IsLoaded = false; // Ha a játék betöltve van
     private String currentSpecies; // Az aktuális játékos
     private BlockingQueue<String> inputQueue = new LinkedBlockingQueue<>();
     // Map
@@ -39,6 +40,9 @@ public class GameLogic {
         return mapSize;
     }
 
+    public void setIsLoaded(boolean isLoaded) {
+        IsLoaded = isLoaded;
+    }
     public void setMapSize(RenderMap.MapSize mapSize) {
         this.mapSize = mapSize;
     }
@@ -172,7 +176,7 @@ public class GameLogic {
         //selectPlayers(scanner);
 
         while (gameTime > 0) {
-            takeTurn(scanner);
+            takeTurn(scanner, IsLoaded);
         }
         new ResultScreen(commandProcessor).setVisible(true);
     }
@@ -384,13 +388,27 @@ public class GameLogic {
      * 
      * @param scanner The scanner to read user input.
      */
-    public void takeTurn(Scanner scanner) {
+    public void takeTurn(Scanner scanner, boolean IsLoaded) {
         while (gameTime > 0) {
             System.out.println("---------> Round: " + (round + 1) + " <---------");
             boolean skipRound = false;
             // Iterate through each player and prompt for commands
             for (String playerName : players.keySet()) {
-                currentSpecies = playerName;
+                if(IsLoaded){
+                    if(!playerName.equals(currentSpecies)){
+                        System.out.println("It's " + playerName + " and " + currentSpecies );  
+                        //itt kene eliteralni a kövi jatekosig
+                        continue;
+                    }else{
+                        IsLoaded = false;
+                        // Color playerColor = gamePanel.getGuiBuilder().getPlayerColor(playerName);
+                        // gamePanel.setPlayerBorderColor(playerColor);
+                        // gamePanel.setCurrentPlayerName(playerName);
+                        skipRound = false;
+                    }
+                }else{
+                    currentSpecies = playerName;
+                }
                 if (skipRound) {
                     break; // Ha a kört át kell ugrani, kilépünk a játékosok ciklusából
                 }

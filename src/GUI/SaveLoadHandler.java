@@ -35,10 +35,10 @@ public void saveGame(String filename) {
         out.writeObject(gamePanel.getSelectedObjects());
         out.writeObject(gamePanel.getOccupiedCells());
         System.out.println("objectPositions: " + gamePanel.getObjectPositions());
-System.out.println("threadEndpoints: " + gamePanel.getThreadEndpoints());
-System.out.println("tektonCardinalPoints: " + gamePanel.getTektonCardinalPoints());
-System.out.println("selectedObjects: " + gamePanel.getSelectedObjects());
-System.out.println("occupiedCells: " + gamePanel.getOccupiedCells());
+        System.out.println("threadEndpoints: " + gamePanel.getThreadEndpoints());
+        System.out.println("tektonCardinalPoints: " + gamePanel.getTektonCardinalPoints());
+        System.out.println("selectedObjects: " + gamePanel.getSelectedObjects());
+        System.out.println("occupiedCells: " + gamePanel.getOccupiedCells());
         System.out.println("Game saved successfully.");
     } catch (Exception e) {
         System.err.println("Error saving game: " + e.getMessage());
@@ -75,7 +75,8 @@ public void loadGame(String filename) {
         } else {
             gamePanel.setSelectedObjects(new ArrayList<>());
         }
-        gamePanel.setOccupiedCells((Set<java.awt.Point>) in.readObject());                   
+        gamePanel.setOccupiedCells((Set<java.awt.Point>) in.readObject());     
+        System.out.println("Soron következő játékos: " + gameLogic.getCurrentSpecies());              
         System.out.println("Game loaded successfully.");
     } catch (Exception e) {
         e.printStackTrace();

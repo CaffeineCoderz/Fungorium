@@ -136,7 +136,7 @@ public class Settings {
             if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
                 String filename = fileChooser.getSelectedFile().getAbsolutePath();
                 Thread gameThread = new Thread(() -> gameLogic.startGame());
-
+                gameLogic.setIsLoaded(true);
 
                 // Játék GUI indítása betöltés után, mint a MainMenu-ban:
                 settingsFrame.dispose(); // Bezárja a Settings ablakot
