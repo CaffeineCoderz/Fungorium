@@ -25,16 +25,19 @@ public class FungoriumGUIBuilder {
     private JButton moveButton;
     private JButton eatSporeButton;
 
+    // Színek 
+    // FONTOS: SORRENDET NE CSERÉLD MEG, különben a játékban nem fog működni
     private Color[] colors = {
-        new Color(255, 182, 193), // Light Pink
-        new Color(144, 238, 144), // Light Green
-        new Color(173, 216, 230), // Light Blue
-        new Color(255, 255, 153), // Light Yellow
-        new Color(255, 204, 153), // Light Orange
-        new Color(221, 160, 221), // Plum (Light Purple)
-        new Color(224, 255, 255), // Light Cyan
-        new Color(255, 222, 173)  // Navajo White (Light Beige)
+        new Color(255, 182, 193), // ! Light Pink FUNGUS
+        new Color(255, 222, 173),  // ?  Light Beige INSECT
+        new Color(144, 238, 144), // ! Light Green
+        new Color(222, 76,73), // ? Light Red INSECT
+        new Color(55, 81,250), // ! Light Blue
+        new Color(255, 204, 153), // ? Light Orange INSECT
+        new Color(221, 160, 221), // ! Light Purple
+        new Color(224, 255, 255), // ? Light Cyan INSECT
     };
+    
     private HashMap<String, Color> playerColors = new HashMap<>();
 
     public FungoriumGUIBuilder(GameLogic gameLogic, GameStateHandler saver) {
