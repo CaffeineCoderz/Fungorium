@@ -48,7 +48,9 @@ public class BodyView {
                 FungusBody body = (FungusBody) entry.getValue();
 
                 String speciesColor = guiBuilder.getSpeciesStringColor(cmdproc.findByObject(body.getSpecies()));
-
+                if(speciesColor == "DID NOT MATCH" || speciesColor == null) {
+                    speciesColor = "Body1";
+                }
                 if(mapSize == MapSize.SMALL) {
                     g2d.drawImage(images.get(speciesColor), pos.x - BODY_SIZE / 2, pos.y - BODY_SIZE / 2, BODY_SIZE,
                             BODY_SIZE, null);
@@ -75,7 +77,7 @@ public class BodyView {
     private void loadImages() {
         try {
             // Load fungus body image
-            //images.put("Body1", ImageIO.read(new File("src/resources/fungusBody.png")));
+            images.put("Body1", ImageIO.read(new File("src/resources/fungusBody.png")));
             
             images.put("LightBlue", ImageIO.read(new File("src/resources/bodies/LightBlue.png")));
             images.put("LightGreen", ImageIO.read(new File("src/resources/bodies/LightGreen.png")));

@@ -108,3 +108,5 @@
 /set th8 prev th7
 /set th8 addtekton t6
 /set th8 prevbody b2
+/set b3 species Fungus1
+/set b5 species Fungus3
