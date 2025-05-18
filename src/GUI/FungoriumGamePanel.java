@@ -645,9 +645,9 @@ public class FungoriumGamePanel extends JPanel {
         int[][] dynamicDirections = isSpecialCase(neighbors.get(0).getNeighbours().size()) ?  directions :// Használjuk a fix mátrixot 4,8,12 esetén
         generatePolygonDirections(neighbors.get(0).getNeighbours().size());
         // Normál elhelyezési logika
-        List<int[]> dynamicDirectionsList = Arrays.asList(dynamicDirections);
-        Collections.shuffle(dynamicDirectionsList);
-        dynamicDirections = dynamicDirectionsList.toArray(new int[0][]);
+        dynamicDirections = Arrays.stream(dynamicDirections)
+            .sorted((a, b) -> ThreadLocalRandom.current().nextInt(-1, 2))
+            .toArray(int[][]::new);
         for (Tekton neighbor : neighbors) {
             Point neighborPos = getTektonPosition(neighbor);
             if (neighborPos == null) continue;
@@ -1079,7 +1079,7 @@ public class FungoriumGamePanel extends JPanel {
         objectPositions.put(newTektons.get(1).getKey(), newPointt2);
         
          // Szomszédságok automatikus beállítása
-        setNeighborsForNewTekton((Tekton) newTektons.get(1).getValue(), newPointt2,3, 7);
+        setNeighborsForNewTekton((Tekton) newTektons.get(1).getValue(), newPointt2,3, 6);
         
         calculateTektonCardinalPoints();
 
@@ -1090,7 +1090,7 @@ public class FungoriumGamePanel extends JPanel {
             .getCreatedObjects()
             .values()
             .stream()
-            .filter(obj -> obj instanceof Tekton && !((Tekton)obj != newTekton))
+            .filter(obj -> obj instanceof Tekton && !((Tekton)obj == newTekton))
             .map(obj -> (Tekton)obj)
             .collect(Collectors.toList());
 
