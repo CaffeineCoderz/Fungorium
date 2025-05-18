@@ -864,6 +864,12 @@ public class FungoriumGamePanel extends JPanel {
         do {
             offsetX = (int) (Math.random() * radius * 2 - radius);
             offsetY = (int) (Math.random() * radius * 2 - radius);
+            
+            // Check if the position is free
+            Point newPos = new Point(centerX + offsetX, centerY + offsetY);
+            if (gameLogic.getCommandProcessor().getCreatedObjects().get(getObjectAtPoint(newPos)) instanceof Spore) {
+                continue; // recalulate the position
+            }
         } while (offsetX * offsetX + offsetY * offsetY < radius * radius);
 
         objectPositions.put(name, new Point(centerX + offsetX, centerY + offsetY));
