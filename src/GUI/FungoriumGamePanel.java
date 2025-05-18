@@ -228,14 +228,13 @@ public class FungoriumGamePanel extends JPanel {
 
                     // --- GUI gombok frissítése ---
                     if (controlPanel != null && guiBuilder != null) {
-                        SwingUtilities.invokeLater(() -> {
-                            guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
-                            updateStatusPanels();
-                        });
-                    }
-                    // Ha nincs kiválasztott objektum, alaphelyzetbe állítjuk a gombokat
-                    if (controlPanel != null && clickedObjectName == null) {
-                        resetActionButtons();
+                        if (clickedObjectName != null) {
+                            SwingUtilities.invokeLater(() -> {
+                                guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+                            });
+                        } else {
+                            resetActionButtons();
+                        }
                     }
                 }
             }
@@ -322,7 +321,7 @@ public class FungoriumGamePanel extends JPanel {
     // Metódus a gombok alaphelyzetbe állításához (pl. ha nincs kiválasztott objektum)
     private void resetActionButtons() {
         if (controlPanel != null && guiBuilder != null) {
-            controlPanel.removeAll();
+            //controlPanel.removeAll();
             SwingUtilities.invokeLater(() -> {
                 guiBuilder.updateActionButtons(controlPanel, this);
             }); // A builder metódusát hívjuk
