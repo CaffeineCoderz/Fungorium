@@ -648,4 +648,17 @@ public class GameLogic {
         }}
         return false;
     }
+    public Map<String, Tekton> getTektons() {
+        return tektons;
+    }
+    public void setTektons(Map<String, Tekton> tektons) {
+        this.tektons = tektons;
+    }
+    public void setRound(int round) {
+        this.round = round;
+    }
+    public void setCurrentSpecies(String species) {
+        this.currentSpecies = species;
+    }
+
 }

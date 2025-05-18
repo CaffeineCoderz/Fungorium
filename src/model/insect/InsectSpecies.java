@@ -10,8 +10,10 @@ import interfaces.iControl;
 import sporeTypes.Spore;
 import logic.*;
 import utils.*;
+import java.io.Serializable;
 
-public class InsectSpecies implements iControl{
+public class InsectSpecies implements iControl, Serializable {
+    private static final long serialVersionUID = 1L;
     // Game Logic
     Integer id;
     

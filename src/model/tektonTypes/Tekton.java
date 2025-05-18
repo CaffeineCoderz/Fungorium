@@ -11,8 +11,11 @@ import java.util.List;
 
 import commands.CommandProcessor;
 import utils.Logger;
+import java.io.Serializable;
 
-public class Tekton {
+public class Tekton implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private Boolean canGrowBody;
     private Boolean canGrowThread;
     private List<Spore> spores;

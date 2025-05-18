@@ -2,9 +2,10 @@ package tektonTypes;
 
 import insect.Insect;
 import utils.Logger;
+import java.io.Serializable;
 
-public class DecreasingTekton extends Tekton{
-
+public class DecreasingTekton extends Tekton implements Serializable {
+    private static final long serialVersionUID = 1L;
     public DecreasingTekton(){
         super(true, true);
     }

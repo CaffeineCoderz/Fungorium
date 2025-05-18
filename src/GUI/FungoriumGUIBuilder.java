@@ -24,6 +24,8 @@ public class FungoriumGUIBuilder {
     private JButton cutThreadButton;
     private JButton moveButton;
     private JButton eatSporeButton;
+    private final SaveLoadHandler saveLoadHandler;
+
 
     // Színek 
     // FONTOS: SORRENDET NE CSERÉLD MEG, különben a játékban nem fog működni
@@ -52,7 +54,8 @@ public class FungoriumGUIBuilder {
 
     public FungoriumGUIBuilder(GameLogic gameLogic, GameStateHandler saver) {
         this.gameLogic = gameLogic;
-        this.saver = saver;
+        this.saver = saver; // <-- EZ NEM KELL
+        this.saveLoadHandler = new SaveLoadHandler(gameLogic); // <-- EZ KELL
     }
 
     public void createAndShowGUI() {
@@ -178,7 +181,7 @@ public class FungoriumGUIBuilder {
 
             panel.add(createUpdateButton(gamePanel));
             panel.add(createSaveButton(gamePanel));
-            panel.add(createLoadButton(gamePanel));
+            //panel.add(createLoadButton(gamePanel));
 
             return panel;
     }
@@ -195,23 +198,27 @@ public class FungoriumGUIBuilder {
         JButton button = createImageButton("src/resources/buttons/save1.png", 110, 230);
         button.setToolTipText("Save Game");
         button.addActionListener(e -> {
-            saver.saveGameState(gamePanel.getObjectPositions(), "gameState.xml");
-            JOptionPane.showMessageDialog(gamePanel, "Game state saved to gameState.xml");
+            JFileChooser fileChooser = new JFileChooser();
+            if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+                String filename = fileChooser.getSelectedFile().getAbsolutePath();
+                saveLoadHandler.saveGame(filename); // <-- EZT HASZNÁLD
+                JOptionPane.showMessageDialog(gamePanel, "Game saved to: " + filename);
+            }
         });
         return button;
     }
 
-    private JButton createLoadButton(FungoriumGamePanel gamePanel) {
-        JButton button = createImageButton("src/resources/buttons/load.png", 64, 64);
-        button.setToolTipText("Load Game");
-        button.addActionListener(e -> {
-            Map<String, Point> loadedPositions = saver.loadGameState("gameState.xml");
-            gamePanel.setObjectPositions(loadedPositions);
-            gamePanel.updateGameState();
-            JOptionPane.showMessageDialog(gamePanel, "Game state loaded from gameState.xml");
-        });
-        return button;
-    }
+    // private JButton createLoadButton(FungoriumGamePanel gamePanel) {
+    //     JButton button = createImageButton("src/resources/buttons/load.png", 64, 64);
+    //     button.setToolTipText("Load Game");
+    //     button.addActionListener(e -> {
+    //         Map<String, Point> loadedPositions = saver.loadGameState("gameState.xml");
+    //         gamePanel.setObjectPositions(loadedPositions);
+    //         gamePanel.updateGameState();
+    //         JOptionPane.showMessageDialog(gamePanel, "Game state loaded from gameState.xml");
+    //     });
+    //     return button;
+    // }
 
     private JButton createImageButton(String path, int width, int height) {
         JButton button = new JButton();
@@ -232,7 +239,7 @@ public class FungoriumGUIBuilder {
         panel.removeAll();
         panel.add(createUpdateButton(gamePanel));
         panel.add(createSaveButton(gamePanel));
-        panel.add(createLoadButton(gamePanel));
+        //panel.add(createLoadButton(gamePanel));
         // Itt a gombok létrehozásának és hozzáadásának logikája
         boolean threadPicked = false;
         boolean bodyPicked = false;

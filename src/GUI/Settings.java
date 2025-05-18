@@ -130,6 +130,22 @@ public class Settings {
             }
         });
 
+        LoadButton.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
+                String filename = fileChooser.getSelectedFile().getAbsolutePath();
+                SaveLoadHandler saveLoadHandler = new SaveLoadHandler(gameLogic);
+                saveLoadHandler.loadGame(filename);
+
+                // Játék GUI indítása betöltés után:
+                settingsFrame.dispose(); // Bezárja a Settings ablakot
+                FungoriumGUIBuilder builder = new FungoriumGUIBuilder(gameLogic, null);
+                builder.createAndShowGUI();
+
+                JOptionPane.showMessageDialog(parent, "Játék betöltve: " + filename);
+            }
+        });
+
         SetTypeAndNameButton.addActionListener(e -> {
             // getter kell hozzá!
             java.util.Map<String, Object> playerMap = gameLogic.getPlayers(); 
