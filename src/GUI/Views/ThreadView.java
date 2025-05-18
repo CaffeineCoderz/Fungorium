@@ -8,13 +8,16 @@ import java.awt.geom.Line2D;
 import java.util.List;
 import java.util.Map;
 
+import GUI.FungoriumGUIBuilder;
 import commands.CommandProcessor;
 
 public class ThreadView {
     private static final int THREAD_WIDTH = 3;
-    private static final Color THREAD_COLOR = new Color(150, 75, 0);
-    private Color[] colors = {Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.CYAN, Color.MAGENTA};
-    
+    private FungoriumGUIBuilder guiBuilder;
+
+    public void setGuiBuilder(FungoriumGUIBuilder builder) {
+        this.guiBuilder = builder;
+    }
     /**
      * Draws all FungusThreads in the game world.
      *
@@ -77,7 +80,9 @@ public class ThreadView {
             String threadName = commandProcessor.findByObject(thread);
             Point startPoint = threadEndpoints.get(threadName+"_start");
             Point endPoint = threadEndpoints.get(threadName+"_end");
-            drawLine(g2d, startPoint, endPoint);
+            drawLine(g2d, startPoint, endPoint,
+                    guiBuilder.getPlayerColor(commandProcessor.findByObject(thread.getSpecies())));
+
         }
     }
 
@@ -119,7 +124,8 @@ public class ThreadView {
         );
         
         if (controlPoint != null) {
-            drawLine(g2d, controlPoint, tektonPos);
+            drawLine(g2d, controlPoint, tektonPos, 
+                    guiBuilder.getPlayerColor(commandProcessor.findByObject(thread.getSpecies())));
         }
     }
 
@@ -161,10 +167,9 @@ public class ThreadView {
         return closest;
     }
 
-    private void drawLine(Graphics2D g2d, Point start, Point end) {
+    private void drawLine(Graphics2D g2d, Point start, Point end, Color color) {
         if (start != null && end != null) {
-            int randomIndex = (int) (Math.random() * colors.length);
-            g2d.setColor(colors[randomIndex]);
+            g2d.setColor(color);
             g2d.setStroke(new BasicStroke(THREAD_WIDTH));
             g2d.draw(new Line2D.Double(start.x, start.y, end.x, end.y));
         }

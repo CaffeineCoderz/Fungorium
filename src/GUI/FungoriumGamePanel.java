@@ -107,6 +107,9 @@ public class FungoriumGamePanel extends JPanel {
         insectView.setCommandProcessor(gameLogic.getCommandProcessor());
         insectView.setGuiBuilder(guiBuilder);
 
+        // Thread View Setup
+        threadView.setGuiBuilder(guiBuilder);
+
         // Initialize the status view
 
         statusView1 = new StatusView();
