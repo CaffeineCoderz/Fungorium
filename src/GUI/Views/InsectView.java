@@ -134,7 +134,7 @@ public class InsectView {
     private void loadImages() {
         try {
             // Load insect image
-            images.put("Insect1",ImageIO.read(new File("src/resources/insect.png")));
+            //images.put("Insect1",ImageIO.read(new File("src/resources/insect.png")));
 
             // LightBeige images
             images.put("LightBeige", ImageIO.read(new File("src/resources/insects/LightBeige.png")));

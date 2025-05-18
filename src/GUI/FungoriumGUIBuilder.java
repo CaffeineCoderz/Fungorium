@@ -351,16 +351,17 @@ public class FungoriumGUIBuilder {
 
     public String getSpeciesStringColor(String species) {
         Color playerColor = playerColors.get(species);
-        if (playerColor == null || species == null) {
-            return "Insect1"; // Default image
-        }
 
         // Determine group
         String group = "Other";
-        if (species.contains("Fungus")) {
-            group = "Fungus";
-        } else if (species.contains("Insect")) {
-            group = "Insect";
+        if(species != null){
+            if (species.contains("Fungus")) {
+                group = "Fungus";
+            } else if (species.contains("Insect") && species != null) {
+                group = "Insect";
+            } 
+        }else{
+            System.out.println("Állítsd be a species-t, mert a getSpeciesStringColor-ban null: " + species);
         }
 
         // Map color to string for each group
