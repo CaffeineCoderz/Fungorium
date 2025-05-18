@@ -47,7 +47,6 @@
 /set Fungus3 addthread th3
 /set th3 addtekton t4
 /set th3 prevbody b2
-
 /set b2 addthread th3
 /create thread th4
 /set th4 species Fungus3
