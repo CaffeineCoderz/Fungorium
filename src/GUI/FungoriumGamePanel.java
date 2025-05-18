@@ -98,7 +98,7 @@ public class FungoriumGamePanel extends JPanel {
         this.guiBuilder = guiBuilder;
         setLayout(null); // Absolute positioning for overlay panels
         setPreferredSize(new Dimension(800, 800));
-        renderMap = new RenderMap(RenderMap.MapSize.MEDIUM);
+        renderMap = new RenderMap(gameLogic.getMapSize());
 
         // Set the size of the map size in each view
         bodyView.setMapSize(gameLogic.getMapSize());
@@ -1330,15 +1330,18 @@ public class FungoriumGamePanel extends JPanel {
     }
 
     public void endTurnLogic(){
-        /*try {
+        try {
         gameLogic.getInputQueue().put("next");
         SwingUtilities.invokeLater(() -> {
             guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
         });
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }*/
-        breakTektonEvent();
+        }
+        if (gameLogic.getBreaking()) {
+            breakTektonEvent();
+            gameLogic.setBreak(false);
+        }
     }
     private void breakTektonEvent(){
         List<Map.Entry<String, Object>> listOfTektons = gameLogic.getCommandProcessor().getCreatedObjects()
