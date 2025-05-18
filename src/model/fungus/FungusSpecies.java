@@ -492,7 +492,7 @@ public class FungusSpecies implements iControl {
                     break;
                 }
             }
-
+            
             originthread.destroy();
         }
 
@@ -563,6 +563,7 @@ public class FungusSpecies implements iControl {
         //! ide lehet beimplementálni, hogy sorba a következő ebből a bodyból eredendő threadek body-ja nullra legyen állítva
         fb.getTekton().setBody(null);
         fb.setTekton(null);
+        deleteBody(fb);
     }
 
     /**

@@ -475,7 +475,10 @@ public class FungoriumGamePanel extends JPanel {
         // System.out.println("objectPositions size: " + objectPositions.size());
 
         // ! IDEIGLENES DE LEHET VÉGLEGES, mivel a speciesek dinamikusan vannak generálva ezért a Mainben hívott setterek előbb futnak le mint a player generálás, addig ez kelleni fog ide
-        gameLogic.getCommandProcessor().processConfigText("setInsectSpecies");
+        if (initialPaint) {
+            gameLogic.getCommandProcessor().processConfigText("setInsectSpecies");
+
+        }
 
         threadView.drawThreads(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(), tektonCardinalPoints, gameLogic.getCommandProcessor(), threadEndpoints);
         insectView.drawInsects(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects());
@@ -661,7 +664,7 @@ public class FungoriumGamePanel extends JPanel {
     private void positionFungusThread(String name, FungusThread thread) {
         List<Tekton> tektons = thread.getTektons();
         if (tektons.isEmpty()) return;
-
+        System.out.println(name);
         if (thread.isBridge()) {
             if (tektons.size() >= 2) {
                 Tekton t1 = tektons.get(0);
@@ -1356,6 +1359,17 @@ public class FungoriumGamePanel extends JPanel {
         String[] parts = new String[2];
         parts[1] = listOfTektons.get(randomIndex).getKey();
         //Törés a modellben
+        Tekton origTekton = (Tekton) listOfTektons.get(randomIndex).getValue();
+        List<FungusThread> threads = origTekton.getThreads();
+        for (FungusThread thread : threads) {
+            String objKey = gameLogic.getCommandProcessor().findByObject(thread);
+            gameLogic.getCommandProcessor().getCreatedObjects().remove(objKey);
+        }
+        List<Spore> spores = origTekton.getSpores();
+        for (Spore spore : spores) {
+            String objKey = gameLogic.getCommandProcessor().findByObject(spore);
+            gameLogic.getCommandProcessor().getCreatedObjects().remove(objKey);
+        }
         gameLogic.getCommandProcessor().processBreakCommand(parts);
 
         Map<String, Object> currentObjects = gameLogic.getCommandProcessor().getCreatedObjects();
@@ -1367,6 +1381,7 @@ public class FungoriumGamePanel extends JPanel {
         Point newPointt1 = objectPositions.get(parts[1]);
 
         objectPositions.put(newTektons.get(0).getKey(), newPointt1);
+        
         
         livingObjecstUpdate();
 
@@ -1386,7 +1401,7 @@ public class FungoriumGamePanel extends JPanel {
         setNeighborsForNewTekton((Tekton) newTektons.get(1).getValue(), newPointt2,3, 6);
         
         calculateTektonCardinalPoints();
-
+        positionDependentObjects();
         repaint();
     }
     private void setNeighborsForNewTekton(Tekton newTekton, Point newTektonPos, int minDist, int maxDist) {
@@ -1431,7 +1446,16 @@ public class FungoriumGamePanel extends JPanel {
         while (iterator.hasNext()) {
             Map.Entry<String, Point> entry = iterator.next();
             if (!currentObjects.containsKey(entry.getKey())) {
+                System.out.println("Remove: " + entry.getKey());
                 iterator.remove();
+            }
+        }
+        Iterator<Map.Entry<String, Point>> iterator2 = threadEndpoints.entrySet().iterator();
+        while (iterator2.hasNext()) {
+            Map.Entry<String, Point> entry = iterator2.next();
+            if (!currentObjects.containsKey(entry.getKey())) {
+                System.out.println("Remove: " + entry.getKey());
+                iterator2.remove();
             }
         }
     }
