@@ -850,8 +850,10 @@ public class FungoriumGamePanel extends JPanel {
     }
 
     private void positionSpore(String name, Spore spore) {
+        
         Tekton tekton = spore.getTekton();
         Point pos = getTektonPosition(tekton);
+        System.out.println("Spore: " + name + " tekton: " + tekton + " pos: " + pos);
         if (pos == null) return;
 
         int cellWidth = getWidth() / renderMap.getCols();
@@ -1506,6 +1508,7 @@ public class FungoriumGamePanel extends JPanel {
             SwingUtilities.invokeLater(() -> {
                 guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
                 updateStatusPanels();
+                positionDependentObjects();
                 revalidate();
                 repaint();
             });
