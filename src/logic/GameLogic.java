@@ -457,6 +457,10 @@ public class GameLogic {
         }
     }
 
+    public int getRound() {
+        return round;
+    }
+
     /**
      * Ends the game and determines the winners.
      * 
