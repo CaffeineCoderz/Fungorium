@@ -850,7 +850,6 @@ public class FungoriumGamePanel extends JPanel {
     }
 
     private void positionSpore(String name, Spore spore) {
-        
         Tekton tekton = spore.getTekton();
         Point pos = getTektonPosition(tekton);
         System.out.println("Spore: " + name + " tekton: " + tekton + " pos: " + pos);
@@ -862,22 +861,36 @@ public class FungoriumGamePanel extends JPanel {
         int centerX = pos.y * cellWidth + (cellWidth * TEKTON_CELLS / 2);
         int centerY = pos.x * cellHeight + (cellHeight * TEKTON_CELLS / 2);
 
-        int radius = Math.min(cellWidth, cellHeight)* TEKTON_CELLS/2;
+        int radius = Math.min(cellWidth, cellHeight) * TEKTON_CELLS / 2;
         radius -= radius * 0.2;
 
         int offsetX, offsetY;
+        Point candidate;
+        int maxTries = 100;
+        int tries = 0;
+        boolean valid;
+
         do {
             offsetX = (int) (Math.random() * radius * 2 - radius);
             offsetY = (int) (Math.random() * radius * 2 - radius);
-            
-            // Check if the position is free
-            Point newPos = new Point(centerX + offsetX, centerY + offsetY);
-            if (gameLogic.getCommandProcessor().getCreatedObjects().get(getObjectAtPoint(newPos)) instanceof Spore) {
-                continue; // recalulate the position
-            }
-        } while (offsetX * offsetX + offsetY * offsetY < radius * radius);
+            candidate = new Point(centerX + offsetX, centerY + offsetY);
 
-        objectPositions.put(name, new Point(centerX + offsetX, centerY + offsetY));
+            // Csak akkor fogadjuk el, ha elég messze van a többi spórától
+            valid = true;
+            for (Map.Entry<String, Point> entry : objectPositions.entrySet()) {
+                if (entry.getKey().equals(name)) continue;
+                Object obj = gameLogic.getCommandProcessor().getCreatedObjects().get(entry.getKey());
+                if (obj instanceof Spore) {
+                    if (candidate.distance(entry.getValue()) < sporeView.getSporeSize() + 1) {
+                        valid = false;
+                        break;
+                    }
+                }
+            }
+            tries++;
+        } while ((offsetX * offsetX + offsetY * offsetY < radius * radius || !valid) && tries < maxTries);
+
+        objectPositions.put(name, candidate);
     }
 
     private void positionInsects() {
@@ -1500,27 +1513,28 @@ public class FungoriumGamePanel extends JPanel {
         gameLogic.getInputQueue().put("growbody "+ origin);
         SwingUtilities.invokeLater(() -> {
             guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+            updateStatusPanels();
+            revalidate();
+            repaint();
         });
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        updateStatusPanels();
-        revalidate();
-        repaint();
     }
     public void sporulateLogic(){ // Ezt az objektumot választotta ki kiindulásnak
         try {
             gameLogic.getInputQueue().put("sporulate "+ origin);
             SwingUtilities.invokeLater(() -> {
                 guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+                updateStatusPanels();
+                positionDependentObjects();
+                revalidate();
+                repaint();
             });
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        updateStatusPanels();
-        positionDependentObjects();
-        revalidate();
-        repaint();
+
     }
 
     public void eatInsectLogic(){
