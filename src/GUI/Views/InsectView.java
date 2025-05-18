@@ -8,11 +8,12 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import GUI.RenderMap.MapSize;
 import insect.*;
 
 public class InsectView {
     private static final int INSECT_SIZE = 34;
-
+    private MapSize mapSize;
     private Map<String, Image> images;
 
     public InsectView(){
@@ -36,7 +37,18 @@ public class InsectView {
 
                 // Draw insect base
                 if (images.get("Insect1") != null) {
-                    g2d.drawImage(images.get("Insect1"), pos.x - INSECT_SIZE / 2, pos.y - INSECT_SIZE / 2, INSECT_SIZE, INSECT_SIZE, null);
+                    if(mapSize == MapSize.SMALL) {
+                        g2d.drawImage(images.get("Insect1"), pos.x - INSECT_SIZE / 2, pos.y - INSECT_SIZE / 2, INSECT_SIZE,
+                                INSECT_SIZE, null);
+                    } else if (mapSize == MapSize.MEDIUM) {
+                        int NEW_INSECT_SIZE = INSECT_SIZE * 4 / 5;
+                        g2d.drawImage(images.get("Insect1"), pos.x - NEW_INSECT_SIZE / 2, pos.y - NEW_INSECT_SIZE / 2, NEW_INSECT_SIZE, NEW_INSECT_SIZE, null);
+                    } else if (mapSize == MapSize.LARGE) {
+                        int NEW_INSECT_SIZE = INSECT_SIZE * 5 / 7;
+                        g2d.drawImage(images.get("Insect1"), pos.x - NEW_INSECT_SIZE / 2, pos.y - NEW_INSECT_SIZE / 2,
+                                NEW_INSECT_SIZE, NEW_INSECT_SIZE, null);
+                    }
+                    //g2d.drawImage(images.get("Insect1"), pos.x - INSECT_SIZE / 2, pos.y - INSECT_SIZE / 2, INSECT_SIZE, INSECT_SIZE, null);
                 } else {
                     g2d.setColor(new Color(150, 100, 50));
                     g2d.fill(new Ellipse2D.Double(pos.x - INSECT_SIZE / 2, pos.y - INSECT_SIZE / 2, INSECT_SIZE, INSECT_SIZE));
@@ -85,4 +97,7 @@ public class InsectView {
         }
     }
 
+    public void setMapSize(MapSize mapSize) {
+        this.mapSize = mapSize;
+    }
 }
