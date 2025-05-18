@@ -98,6 +98,11 @@ public class FungoriumGamePanel extends JPanel {
         setPreferredSize(new Dimension(800, 800));
         renderMap = new RenderMap(gameLogic.getMapSize());
 
+        // Set the size of the map size in each view
+        bodyView.setMapSize(gameLogic.getMapSize());
+        sporeView.setMapSize(gameLogic.getMapSize());
+        insectView.setMapSize(gameLogic.getMapSize());
+
         // Initialize the status view
 
         statusView1 = new StatusView();
@@ -441,7 +446,7 @@ public class FungoriumGamePanel extends JPanel {
         }
 
         // Draw the grid (optional) RED
-        //drawGrid(g2d);
+        drawGrid(g2d);
 
         // Draw all objects
         tektonView.drawTektons(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(),
