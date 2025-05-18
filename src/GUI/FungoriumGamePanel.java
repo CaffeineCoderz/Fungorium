@@ -1446,6 +1446,9 @@ public class FungoriumGamePanel extends JPanel {
         gameLogic.getInputQueue().put("growbody "+ origin);
         SwingUtilities.invokeLater(() -> {
             guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+            updateStatusPanels();
+            revalidate();
+            repaint();
         });
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -1456,6 +1459,9 @@ public class FungoriumGamePanel extends JPanel {
             gameLogic.getInputQueue().put("sporulate "+ origin);
             SwingUtilities.invokeLater(() -> {
                 guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+                updateStatusPanels();
+                revalidate();
+                repaint();
             });
         } catch (InterruptedException e) {
             e.printStackTrace();
