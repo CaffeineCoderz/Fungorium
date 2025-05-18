@@ -137,10 +137,14 @@ public class Settings {
                 SaveLoadHandler saveLoadHandler = new SaveLoadHandler(gameLogic);
                 saveLoadHandler.loadGame(filename);
 
-                // Játék GUI indítása betöltés után:
+                // Játék GUI indítása betöltés után, mint a MainMenu-ban:
                 settingsFrame.dispose(); // Bezárja a Settings ablakot
                 FungoriumGUIBuilder builder = new FungoriumGUIBuilder(gameLogic, null);
                 builder.createAndShowGUI();
+                builder.assignPlayerColors();
+                gameLogic.getCommandProcessor().processConfigText("configWithoutStatus");
+                Thread gameThread = new Thread(() -> gameLogic.startGame());
+                gameThread.start();
 
                 JOptionPane.showMessageDialog(parent, "Játék betöltve: " + filename);
             }
