@@ -51,13 +51,21 @@ public class FungoriumGUIBuilder {
 
 
     private HashMap<String, Color> playerColors = new HashMap<>();
+    public FungoriumGamePanel gamePanel = null;
 
-    public FungoriumGUIBuilder(GameLogic gameLogic, GameStateHandler saver) {
+    public FungoriumGUIBuilder(GameLogic gameLogic, FungoriumGamePanel GP) {
+        if(GP != null) {
+            gamePanel = GP;
+        }else {
+            gamePanel = new FungoriumGamePanel(gameLogic, this);
+        }
         this.gameLogic = gameLogic;
-        this.saver = saver; // <-- EZ NEM KELL
-        this.saveLoadHandler = new SaveLoadHandler(gameLogic); // <-- EZ KELL
+        this.saveLoadHandler = new SaveLoadHandler(gameLogic, gamePanel); // <-- EZ KELL
     }
 
+    public FungoriumGamePanel getGamePanel() {
+        return gamePanel;
+    }
     public void createAndShowGUI() {
         JFrame frame = createMainFrame();
 
@@ -97,7 +105,6 @@ public class FungoriumGUIBuilder {
 
         // Háttérszál a betöltéshez
         new Thread(() -> {
-            FungoriumGamePanel gamePanel = new FungoriumGamePanel(gameLogic, this);
             gameLogic.setGamePanel(gamePanel);
             JPanel controlPanel = createControlPanel(frame, gamePanel);
 

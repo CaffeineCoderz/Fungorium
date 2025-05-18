@@ -6,6 +6,7 @@ import java.awt.*;
 public class Settings {
 
     public static void showSettings(JFrame parent, GameLogic gameLogic) {
+        FungoriumGamePanel gamePanel = new FungoriumGamePanel(gameLogic, null);
         // Új ablak létrehozása
         JFrame settingsFrame = new JFrame("Beállítások");
         settingsFrame.setSize(800, 800);
@@ -134,16 +135,17 @@ public class Settings {
             JFileChooser fileChooser = new JFileChooser();
             if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
                 String filename = fileChooser.getSelectedFile().getAbsolutePath();
-                SaveLoadHandler saveLoadHandler = new SaveLoadHandler(gameLogic);
-                saveLoadHandler.loadGame(filename);
+                Thread gameThread = new Thread(() -> gameLogic.startGame());
+
 
                 // Játék GUI indítása betöltés után, mint a MainMenu-ban:
                 settingsFrame.dispose(); // Bezárja a Settings ablakot
                 FungoriumGUIBuilder builder = new FungoriumGUIBuilder(gameLogic, null);
+                SaveLoadHandler saveLoadHandler = new SaveLoadHandler(gameLogic, builder.getGamePanel());
+                saveLoadHandler.loadGame(filename);
                 builder.createAndShowGUI();
                 builder.assignPlayerColors();
                 gameLogic.getCommandProcessor().processConfigText("configWithoutStatus");
-                Thread gameThread = new Thread(() -> gameLogic.startGame());
                 gameThread.start();
 
                 JOptionPane.showMessageDialog(parent, "Játék betöltve: " + filename);
