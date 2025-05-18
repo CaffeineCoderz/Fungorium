@@ -8,19 +8,30 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import GUI.FungoriumGUIBuilder;
 import GUI.RenderMap.MapSize;
+import commands.CommandProcessor;
 import fungus.*;
 
 public class BodyView {
     private static final int BODY_SIZE = 45;
     private Map<String, Image> images;
     private MapSize mapSize;
+    private FungoriumGUIBuilder guiBuilder;
+    private CommandProcessor cmdproc;
 
     public BodyView(){
         images = new HashMap<>();
         loadImages();
     }
 
+    public void setGuiBuilder(FungoriumGUIBuilder builder) {
+        this.guiBuilder = builder;
+    }
+    public void setCommandProcessor(CommandProcessor cmdproc) {
+        this.cmdproc = cmdproc;
+    }
+    
     /**
      * Draws all FungusBody objects in the game.
      *
@@ -34,27 +45,22 @@ public class BodyView {
             if (entry.getValue() instanceof FungusBody) {
                 String name = entry.getKey();
                 Point pos = objectPositions.getOrDefault(name, new Point(100, 100));
+                FungusBody body = (FungusBody) entry.getValue();
 
-                // Draw fungus body image
-                if (images.get("Body1") != null) {
-                    if(mapSize == MapSize.SMALL) {
-                        g2d.drawImage(images.get("Body1"), pos.x - BODY_SIZE / 2, pos.y - BODY_SIZE / 2, BODY_SIZE,
-                                BODY_SIZE, null);
-                    } else if (mapSize == MapSize.MEDIUM) {
-                        int NEW_BODY_SIZE = BODY_SIZE * 3 / 5;
-                        g2d.drawImage(images.get("Body1"), pos.x - NEW_BODY_SIZE / 2, pos.y - NEW_BODY_SIZE / 2, NEW_BODY_SIZE, NEW_BODY_SIZE, null);
-                    } else  if (mapSize == MapSize.LARGE) {
-                        int NEW_BODY_SIZE = BODY_SIZE * 4 / 7;
-                        g2d.drawImage(images.get("Body1"), pos.x - NEW_BODY_SIZE / 2, pos.y - NEW_BODY_SIZE / 2,
-                                NEW_BODY_SIZE, NEW_BODY_SIZE, null);
-                    } 
-                    //g2d.drawImage(images.get("Body1"), pos.x - BODY_SIZE / 2, pos.y - BODY_SIZE / 2, BODY_SIZE, BODY_SIZE, null);
-                } else {
-                    g2d.setColor(new Color(100, 50, 0));
-                    g2d.fill(new Ellipse2D.Double(pos.x - BODY_SIZE / 2, pos.y - BODY_SIZE / 2, BODY_SIZE, BODY_SIZE));
-                    g2d.setColor(Color.WHITE);
-                    g2d.draw(new Ellipse2D.Double(pos.x - BODY_SIZE / 2, pos.y - BODY_SIZE / 2, BODY_SIZE, BODY_SIZE));
-                }
+                String speciesColor = guiBuilder.getSpeciesStringColor(cmdproc.findByObject(body.getSpecies()));
+
+                if(mapSize == MapSize.SMALL) {
+                    g2d.drawImage(images.get(speciesColor), pos.x - BODY_SIZE / 2, pos.y - BODY_SIZE / 2, BODY_SIZE,
+                            BODY_SIZE, null);
+                } else if (mapSize == MapSize.MEDIUM) {
+                    int NEW_BODY_SIZE = BODY_SIZE * 3 / 5;
+                    g2d.drawImage(images.get(speciesColor), pos.x - NEW_BODY_SIZE / 2, pos.y - NEW_BODY_SIZE / 2, NEW_BODY_SIZE, NEW_BODY_SIZE, null);
+                } else  if (mapSize == MapSize.LARGE) {
+                    int NEW_BODY_SIZE = BODY_SIZE * 4 / 7;
+                    g2d.drawImage(images.get(speciesColor), pos.x - NEW_BODY_SIZE / 2, pos.y - NEW_BODY_SIZE / 2,
+                            NEW_BODY_SIZE, NEW_BODY_SIZE, null);
+                } 
+                
 
                 // Draw body name
                 g2d.drawString(name, pos.x - BODY_SIZE / 2 + 5, pos.y - BODY_SIZE / 2 + 15);
@@ -69,7 +75,12 @@ public class BodyView {
     private void loadImages() {
         try {
             // Load fungus body image
-            images.put("Body1", ImageIO.read(new File("src/resources/fungusBody.png")));
+            //images.put("Body1", ImageIO.read(new File("src/resources/fungusBody.png")));
+            
+            images.put("LightBlue", ImageIO.read(new File("src/resources/bodies/LightBlue.png")));
+            images.put("LightGreen", ImageIO.read(new File("src/resources/bodies/LightGreen.png")));
+            images.put("LightPink", ImageIO.read(new File("src/resources/bodies/LightPink.png")));
+            images.put("LightPurple", ImageIO.read(new File("src/resources/bodies/LightPurple.png")));
         } catch (Exception e) {
             System.err.println("Error loading resources: " + e.getMessage());
         }

@@ -99,7 +99,13 @@ public class FungoriumGamePanel extends JPanel {
         renderMap = new RenderMap(gameLogic.getMapSize());
 
         // Set the size of the map size in each view
+        
+        // Body View Setup
         bodyView.setMapSize(gameLogic.getMapSize());
+        bodyView.setCommandProcessor(gameLogic.getCommandProcessor());
+        bodyView.setGuiBuilder(guiBuilder);
+        
+        // Spore View Setup
         sporeView.setMapSize(gameLogic.getMapSize());
 
         // Insect View Setup
