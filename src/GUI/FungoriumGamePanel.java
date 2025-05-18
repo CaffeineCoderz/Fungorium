@@ -11,7 +11,7 @@ import fungus.FungusThread;
 import insect.Insect;
 import logic.GameLogic;
 import sporeTypes.Spore;
-import tektonTypes.Tekton;
+import tektonTypes.*;
 import GUI.Views.*;
 import utils.*;
 
@@ -52,7 +52,7 @@ public class FungoriumGamePanel extends JPanel {
     private boolean waitingForTarget = false;
     private boolean cutThreadCalled = false;
     private boolean moveCalled = false;
-    private String origin;
+    public String origin;
 
     // Sizes
     private static final int THREAD_WIDTH = 3;
@@ -100,6 +100,11 @@ public class FungoriumGamePanel extends JPanel {
         setPreferredSize(new Dimension(800, 800));
         renderMap = new RenderMap(RenderMap.MapSize.MEDIUM);
 
+        // Set the size of the map size in each view
+        bodyView.setMapSize(gameLogic.getMapSize());
+        sporeView.setMapSize(gameLogic.getMapSize());
+        insectView.setMapSize(gameLogic.getMapSize());
+
         // Initialize the status view
 
         statusView1 = new StatusView();
@@ -119,7 +124,8 @@ public class FungoriumGamePanel extends JPanel {
                     // --- Handle "waiting for target" actions first ---
                     if (waitingForTarget && growthThreadCalled) {
                         try {
-                            if (gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName) instanceof Tekton) {
+                            Object target = gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName);
+                            if (target instanceof Tekton|| target instanceof OneThreadTekton || target instanceof DecomposingTekton || target instanceof DecreasingTekton|| target instanceof FeedThreadTekton|| target instanceof OnlyThreadTekton) {
                                 String command = "growthread " + clickedObjectName + " " + origin;
                                 gameLogic.getInputQueue().put(command);
                             } else {
@@ -154,6 +160,11 @@ public class FungoriumGamePanel extends JPanel {
                         });
                         revalidate();
                         repaint();
+                        try {
+                            Thread.sleep(200); // Wait for 0.2 seconds (200 milliseconds)
+                        } catch (InterruptedException ev) {
+                            ev.printStackTrace();
+                        }
                         if (!gameLogic.getCommandProcessor().getCreatedObjects().containsKey(clickedObjectName)) {
                             System.out.println("Insect eaten.");
                             objectPositions.remove(clickedObjectName);
@@ -443,7 +454,7 @@ public class FungoriumGamePanel extends JPanel {
         }
 
         // Draw the grid (optional) RED
-        //drawGrid(g2d);
+        drawGrid(g2d);
 
         // Draw all objects
         tektonView.drawTektons(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(),

@@ -8,16 +8,19 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import GUI.RenderMap.MapSize;
 import fungus.*;
 
 public class BodyView {
     private static final int BODY_SIZE = 45;
     private Map<String, Image> images;
+    private MapSize mapSize;
 
     public BodyView(){
         images = new HashMap<>();
         loadImages();
     }
+
     /**
      * Draws all FungusBody objects in the game.
      *
@@ -34,8 +37,18 @@ public class BodyView {
 
                 // Draw fungus body image
                 if (images.get("Body1") != null) {
-                    g2d.drawImage(images.get("Body1"), pos.x - BODY_SIZE / 2, pos.y - BODY_SIZE / 2, BODY_SIZE, BODY_SIZE,
-                            null);
+                    if(mapSize == MapSize.SMALL) {
+                        g2d.drawImage(images.get("Body1"), pos.x - BODY_SIZE / 2, pos.y - BODY_SIZE / 2, BODY_SIZE,
+                                BODY_SIZE, null);
+                    } else if (mapSize == MapSize.MEDIUM) {
+                        int NEW_BODY_SIZE = BODY_SIZE * 3 / 5;
+                        g2d.drawImage(images.get("Body1"), pos.x - NEW_BODY_SIZE / 2, pos.y - NEW_BODY_SIZE / 2, NEW_BODY_SIZE, NEW_BODY_SIZE, null);
+                    } else  if (mapSize == MapSize.LARGE) {
+                        int NEW_BODY_SIZE = BODY_SIZE * 4 / 7;
+                        g2d.drawImage(images.get("Body1"), pos.x - NEW_BODY_SIZE / 2, pos.y - NEW_BODY_SIZE / 2,
+                                NEW_BODY_SIZE, NEW_BODY_SIZE, null);
+                    } 
+                    //g2d.drawImage(images.get("Body1"), pos.x - BODY_SIZE / 2, pos.y - BODY_SIZE / 2, BODY_SIZE, BODY_SIZE, null);
                 } else {
                     g2d.setColor(new Color(100, 50, 0));
                     g2d.fill(new Ellipse2D.Double(pos.x - BODY_SIZE / 2, pos.y - BODY_SIZE / 2, BODY_SIZE, BODY_SIZE));
@@ -48,6 +61,11 @@ public class BodyView {
             }
         }
     }
+
+    public void setMapSize(MapSize mapSize) {
+        this.mapSize = mapSize;
+    }
+
     private void loadImages() {
         try {
             // Load fungus body image

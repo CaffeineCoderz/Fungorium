@@ -384,12 +384,7 @@ public class GameLogic {
             boolean skipRound = false;
             // Iterate through each player and prompt for commands
             for (String playerName : players.keySet()) {
-                Object species = commandProcessor.getCreatedObjects().get(playerName);
-                if(species instanceof FungusSpecies) {
-                    currentSpecies = "Fungus";
-                } else if (species instanceof InsectSpecies) {
-                    currentSpecies = "Insect";
-                }
+                currentSpecies = playerName;
                 if (skipRound) {
                     break; // Ha a kört át kell ugrani, kilépünk a játékosok ciklusából
                 }
