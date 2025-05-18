@@ -129,7 +129,10 @@ public class FungoriumGamePanel extends JPanel {
                     // --- Handle "waiting for target" actions first ---
                     if (waitingForTarget && growthThreadCalled) {
                         try {
-                            Object target = gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName);
+                            Object target = null;
+                            if(clickedObjectName!=null){
+                                target = gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName);
+                            }
                             if (target instanceof Tekton|| target instanceof OneThreadTekton || target instanceof DecomposingTekton || target instanceof DecreasingTekton|| target instanceof FeedThreadTekton|| target instanceof OnlyThreadTekton) {
                                 String command = "growthread " + clickedObjectName + " " + origin;
                                 gameLogic.getInputQueue().put(command);
@@ -1443,6 +1446,7 @@ public class FungoriumGamePanel extends JPanel {
     }
     public void growBodyLogic(){ // Ezt az objektumot választotta ki kiindulásnak
         try {
+        System.out.println("growbody called" + origin);
         gameLogic.getInputQueue().put("growbody "+ origin);
         SwingUtilities.invokeLater(() -> {
             guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
