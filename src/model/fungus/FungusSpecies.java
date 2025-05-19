@@ -471,40 +471,64 @@ public class FungusSpecies implements iControl, Serializable {
      * @param ft the FungusThread instance to be destroyed.
      */
     public void destroyThread(FungusThread ft) {
-        if (ft.getIsDying() && ft.getLifeSpan() != null) {
+        if (ft.getIsDying() && ft.getLifeSpan() != null&& ft.getLifeSpan() > 0) {
             ft.decreaseLife();
             return;
         }
         if (ft.getLifeSpan()!= null && ft.getLifeSpan() == 0) {
             FungusThread originthread = ft;
-            while (ft.getNext() != null || ft.getNext().getMyBody() != null) {
-                if(ft.isBridge()){
+            Boolean check = true;
+            while (check==true) {
+                if(ft != null && ft.getNext() != null && ft.getNext().getMyBody() != null) {
+                    check = false;
+                    if(ft.getNext()==null||ft.getNext().getMyBody()==null){
+                        break;
+                    }
+                }
+                if(ft!=null&&ft.isBridge()){
                     ft.setIsDying(true);
                 }else{
-                    if (ft.getTekton() instanceof FeedThreadTekton) {
+                    if (ft != null&&ft.getTekton() instanceof FeedThreadTekton) {
                         ft.setIsDying(false);    
                     } else{
-                        ft.setIsDying(true);
-                    }
+                        if(ft!= null){
+                            ft.setIsDying(true);
+                    }}}
                     
-            }   
+               
+            if(ft!= null){
                 ft.setPrevBody(null);
                 ft = ft.getNext();
             }
-            while(ft.getPrev() != null || ft.getPrev().getMyBody() != null) {
-                if(ft.isBridge()){
+            check = true;
+            }
+            
+            while(check) {
+                if(ft != null && ft.getPrev() != null && ft.getPrev().getMyBody() != null) {
+                    check = false;
+                    if(ft.getPrev()==null||ft.getPrev().getMyBody()==null){
+                        break;
+                    }
+                if(ft!= null&&ft.isBridge()){
                     ft.setIsDying(true);
                 }else{
-                    if (ft.getTekton() instanceof FeedThreadTekton) {
+                    if (ft!=null&&ft.getTekton() instanceof FeedThreadTekton) {
                         ft.setIsDying(false);    
                     } else{
-                        ft.setIsDying(true);
+                        if(ft!= null){
+                            ft.setIsDying(true);
+                        }
                     }
                     
                 }
-                ft.setNextBody(null);
-                ft = ft.getPrev();
+                if(ft!= null){
+                    ft.setNextBody(null);
+                    ft = ft.getPrev();
+                }
+                }
+                
             }
+            
             deleteThread(originthread);
             boolean success;
             for (FungusBody body : bodies) {

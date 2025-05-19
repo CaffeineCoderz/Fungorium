@@ -164,6 +164,7 @@ public class FungoriumGamePanel extends JPanel {
                     // --- Handle "waiting for target" actions first ---
                     if (waitingForTarget && growthThreadCalled) {
                         int num = gameLogic.getCommandProcessor().getCreatedObjects().size();
+                        System.out.println("Clicked object name: " + num);
                         Object target = null;
                         boolean callednext= false;
                         try {
@@ -172,6 +173,7 @@ public class FungoriumGamePanel extends JPanel {
                             }
                             if (target instanceof Tekton|| target instanceof OneThreadTekton || target instanceof DecomposingTekton || target instanceof DecreasingTekton|| target instanceof FeedThreadTekton|| target instanceof OnlyThreadTekton) {
                                 String command = "growthread " + clickedObjectName + " " + origin;
+                                System.out.println("Command: " + command);
                                 gameLogic.getInputQueue().put(command);
                             
                             } else {
@@ -183,10 +185,11 @@ public class FungoriumGamePanel extends JPanel {
                         waitingForTarget = false;
                         growthThreadCalled = false;
                         try {
-                            Thread.sleep(200); // Wait for 0.2 seconds (200 milliseconds)
+                            Thread.sleep(800); // Wait for 0.8 seconds (800 milliseconds)
                         } catch (InterruptedException ev) {
                             ev.printStackTrace();
                         }
+                        System.out.println("Num: " + num);
                         System.out.println("Clicked object name: " + clickedObjectName);
                         if(gameLogic.getCommandProcessor().getCreatedObjects().size() > num){
                             //System.out.println("Thread grown.");
@@ -249,13 +252,14 @@ public class FungoriumGamePanel extends JPanel {
                             positionDependentObjects();
                             revalidate();
                             repaint();
+                            growThreadRepeated = false; 
+                            waitingForTarget = false; 
                             try{
                                 gameLogic.getInputQueue().put("next");
                             } catch (InterruptedException ev) {
                                 ev.printStackTrace();
                             }    
-                            growThreadRepeated = false; 
-                            waitingForTarget = false;      
+                                 
                         }
                         else{
                             JOptionPane.showMessageDialog(FungoriumGamePanel.this, "Thread not grown.");
@@ -301,6 +305,7 @@ public class FungoriumGamePanel extends JPanel {
                             //System.out.println("Spore eaten.");
                             objectPositions.remove(clickedObjectName);
                             positionDependentObjects();
+                            endTurnLogic();
                         }
                         else{
                             JOptionPane.showMessageDialog(FungoriumGamePanel.this, "Spore not eaten.");
