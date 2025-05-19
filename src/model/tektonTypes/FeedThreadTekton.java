@@ -3,8 +3,10 @@ package tektonTypes;
 import fungus.FungusThread;
 import utils.Logger;
 
-public class FeedThreadTekton extends Tekton {
+import java.io.Serializable;
 
+public class FeedThreadTekton extends Tekton implements Serializable {
+    private static final long serialVersionUID = 1L;
     private static Logger log;
 
     public FeedThreadTekton() {

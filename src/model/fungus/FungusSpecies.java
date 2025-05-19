@@ -12,8 +12,10 @@ import tektonTypes.FeedThreadTekton;
 import tektonTypes.OnlyThreadTekton;
 import tektonTypes.Tekton;
 import utils.Logger;
+import java.io.Serializable;
 
-public class FungusSpecies implements iControl {
+public class FungusSpecies implements iControl, Serializable {
+    private static final long serialVersionUID = 1L;
     // Game Logic
     Integer id;
 
