@@ -1,4 +1,2 @@
-1.: Voluptatem unde laborum reprehenderit.
-2.: Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. 
-3.: In id cursus mi pretium tellus duis convallis.
-4.: xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+5.: Mentés esetén a program a következő játékos körével folytatja, amit 
+betöltéskor az "end turn" gomb lenyomásával kell elinditani egyből a betöltés után
