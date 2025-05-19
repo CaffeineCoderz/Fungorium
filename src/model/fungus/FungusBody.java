@@ -138,7 +138,7 @@ public class FungusBody implements Serializable {
     
                 for (Tekton neighbour : current.getNeighbours()) {
                     if (neighbour != this.tekton && !visited.contains(neighbour)) {
-                        Spore tempSpore = new Spore();
+                        Spore tempSpore = RandomGenerator.generateRandomSpore();
                         neighbour.addSpore(tempSpore);
                         tempSpore.setTekton(neighbour);
                         sporeCount--;

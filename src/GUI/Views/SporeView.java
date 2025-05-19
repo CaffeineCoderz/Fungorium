@@ -97,6 +97,14 @@ public class SporeView {
             g2d.draw(new Ellipse2D.Double(x, y, width, height));
         }
     }
+    /**
+     * Loads the spore images from the resources folder.
+     *
+     * <p>
+     * Tries to load the images for the different spore types. If an image cannot
+     * be loaded, an error message is printed to the standard error stream.
+     * </p>
+     */
     private void loadImages() {
         try {
             // Load spore images
@@ -113,7 +121,25 @@ public class SporeView {
         }
     }
 
+    /**
+     * Sets the current map size for this view.
+     *
+     * This method is used to notify the view that the map size has changed.
+     * The view will then adjust the size of the spore images and their positions
+     * accordingly.
+     *
+     * @param mapSize the new map size
+     */
     public void setMapSize(MapSize mapSize) {
         this.mapSize = mapSize;
+    }
+
+    /**
+     * Returns the default size of a spore image in pixels.
+     *
+     * @return the default size of a spore image in pixels
+     */
+    public int getSporeSize() {
+        return SPORE_SIZE;
     }
 }

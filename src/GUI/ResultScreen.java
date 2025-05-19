@@ -143,6 +143,17 @@ public class ResultScreen extends JFrame {
         add(mainPanel);
     }
 
+    /**
+     * Style a JButton with the following properties:
+     * <ul>
+     *  <li>Font: SansSerif, bold, 18 points</li>
+     *  <li>Background color: #1E90FF (light blue)</li>
+     *  <li>Foreground color: white</li>
+     *  <li>Focus painting disabled</li>
+     *  <li>Margin: 8 pixels top and bottom, 16 pixels left and right</li>
+     * </ul>
+     * @param button the JButton to style
+     */
     private void styleButton(JButton button) {
         button.setFont(new Font("SansSerif", Font.BOLD, 18));
         button.setBackground(new Color(30, 144, 255));
@@ -150,6 +161,18 @@ public class ResultScreen extends JFrame {
         button.setFocusPainted(false);
         button.setMargin(new Insets(8, 16, 8, 16));
     }
+
+    /**
+     * Styles a JLabel to visually differentiate the first-place winner from others.
+     * <ul>
+     *  <li>If the index is 0, the label is styled with a bold font size of 28 and white color.</li>
+     *  <li>Otherwise, the label is styled with a plain font size of 20 and light gray color.</li>
+     * </ul>
+     * The label text is centered horizontally.
+     * 
+     * @param label the JLabel to be styled
+     * @param index the position of the winner in the ranking list
+     */
 
     private void styleWinnerLabel(JLabel label, int index) {
         if (index == 0) {

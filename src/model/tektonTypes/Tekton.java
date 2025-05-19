@@ -283,32 +283,37 @@ public class Tekton implements Serializable {
             Insect insect = insects.get(i);
             insect.deadInsect(commandProcessor);
         }
-        for (FungusThread ft : threads) {
+        for (int i = threads.size() -1; i>=0; i--) {
+            FungusThread ft = threads.get(i);
             ft.setIsDying(true);
             ft.setLifeSpan(0);
             ft.getSpecies().destroyThread(ft);
+            ft.getTektons().get(0).removeThread(ft);
+            if (ft.isBridge()) {
+                ft.getTektons().get(1).removeThread(ft);
+            }
+            ft.getTektons().clear();
             String objKey = commandProcessor.findByObject(ft);
             if (objKey != null) {
                 commandProcessor.getCreatedObjects().remove(objKey);
-            }
+                commandProcessor.getCreatedObjects().remove(objKey);
+            }else System.out.println("Not found");
         }
+        threads.clear();
         for (int i = spores.size() - 1; i >= 0; i--) {
             Spore spore = spores.get(i);
+            spore.absorbed();
             String objKey = commandProcessor.findByObject(spore);
             if (objKey != null) {
                 commandProcessor.getCreatedObjects().remove(objKey);
             }
-            spore.absorbed();
         }
         if (body != null) {
+            body.getSpecies().destroyBody(body);
             String objKey = commandProcessor.findByObject(body);
             if (objKey != null) {
                 commandProcessor.getCreatedObjects().remove(objKey);
             }
-            body.getSpecies().deleteBody(body);
-            body.setSporulateLeft(0);
-            body.getSpecies().destroyBody(body);
-            
         }
     
         // Létrehozzuk az új Tektonokat
