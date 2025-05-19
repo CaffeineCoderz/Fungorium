@@ -900,44 +900,6 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
-    /*private void positionFungusThread(String name, FungusThread thread) {
-        List<Tekton> tektons = thread.getTektons();
-        if (tektons.isEmpty()) return;
-        //System.out.println(name);
-        if (thread.isBridge()) {
-            if (tektons.size() >= 2) {
-                Tekton t1 = tektons.get(0);
-                Tekton t2 = tektons.get(1);
-                Point p1 = findClosestCardinalPoint(t1, objectPositions.get(gameLogic.getCommandProcessor().findByObject(t2)));
-                Point p2 = findClosestCardinalPoint(t2, objectPositions.get(gameLogic.getCommandProcessor().findByObject(t1)));
-
-                if (p1 != null && p2 != null) {
-                    objectPositions.put(name, new Point((p1.x + p2.x) / 2, (p1.y + p2.y) / 2));
-                    threadEndpoints.put(name + "_start", p1);
-                    threadEndpoints.put(name + "_end", p2);
-                } else {
-                    System.err.println("Control points could not be calculated for thread: " + name);
-                }
-            }
-        } else {
-            Tekton tekton = tektons.get(0);
-            FungusBody body = thread.getMyBody();
-
-            // NEM FELTÉTLEN VAN OTT BODY
-            //if (body == null) return;
-
-            Point center = getTektonCenter(tekton);
-            Point control = findClosestCardinalPoint(tekton, center);
-
-            if (center != null && control != null) {
-                objectPositions.put(name, new Point((center.x + control.x) / 2, (center.y + control.y) / 2));
-                threadEndpoints.put(name + "_start", center);
-                threadEndpoints.put(name + "_end", control);
-            } else {
-                System.err.println("Control points could not be calculated for thread: " + name);
-            }
-        }
-    }*/
     
     /**
      * Positions a FungusThread in the game world.
@@ -2033,6 +1995,13 @@ public class FungoriumGamePanel extends JPanel {
             breakTektonEvent();
             gameLogic.setBreak(false);
         }
+        if (gameLogic.isNewRound()) {
+            livingObjecstUpdate();
+            gameLogic.setNewRound(false);
+        }
+        positionDependentObjects();
+        revalidate();
+        repaint();
         gameLogic.getInputQueue().put("next");
         SwingUtilities.invokeLater(() -> {
             guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
