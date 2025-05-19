@@ -333,7 +333,7 @@ public class FungusSpecies implements iControl, Serializable {
         Integer atleast = 2;
         boolean enoughSpore = thread.getTekton().isThereEnoughSpore(atleast);
         if (enoughSpore) {
-            FungusBody fb = new FungusBody(null, null);
+            FungusBody fb = new FungusBody(0, 4);
             thread.getTekton().setBody(fb);
             for (Integer i = 0; i < atleast; i++) {
                 thread.getTekton().getSpores().get(0).absorbed();
