@@ -253,7 +253,9 @@ public class FungoriumGamePanel extends JPanel {
                                 gameLogic.getInputQueue().put("next");
                             } catch (InterruptedException ev) {
                                 ev.printStackTrace();
-                            }           
+                            }    
+                            growThreadRepeated = false; 
+                            waitingForTarget = false;      
                         }
                         else{
                             JOptionPane.showMessageDialog(FungoriumGamePanel.this, "Thread not grown.");
@@ -262,7 +264,7 @@ public class FungoriumGamePanel extends JPanel {
                             guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
                         });
                         
-                        growThreadRepeated = false;
+                        
                         return;
                     }
                     if(waitingForTarget && eatSporeCalled){
@@ -2099,6 +2101,8 @@ public class FungoriumGamePanel extends JPanel {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        waitingForTarget=false;
+        growThreadRepeated=false;
         
     }
     /**
