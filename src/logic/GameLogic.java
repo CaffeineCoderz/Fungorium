@@ -198,7 +198,7 @@ public class GameLogic {
         while (gameTime > 0) {
             takeTurn(scanner, IsLoaded);
         }
-        new ResultScreen(commandProcessor).setVisible(true);
+        new ResultScreen(commandProcessor,this).setVisible(true);
     }
 
     /**
