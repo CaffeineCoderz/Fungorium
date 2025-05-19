@@ -416,6 +416,7 @@ public class GameLogic {
                     Color playerColor = gamePanel.getGuiBuilder().getPlayerColor(playerName);
                     gamePanel.setPlayerBorderColor(playerColor);
                     gamePanel.setCurrentPlayerName(playerName);
+                    System.out.println("It's ----->" + playerName + "'s turn.");
                 }
                 Object player = players.get(playerName);
                 System.out.println("It's " + playerName + "'s turn. Enter a command:");
