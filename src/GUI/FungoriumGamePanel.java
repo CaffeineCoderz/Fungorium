@@ -132,6 +132,29 @@ public class FungoriumGamePanel extends JPanel {
 
         addMouseListener(
             new MouseAdapter() {
+/**
+ * Handles mouse click events on the game panel.
+ * <p>
+ * This method determines the object at the clicked point and executes
+ * actions based on the current state of the game and user interaction.
+ * If the game is in a "waiting for target" state due to a previous action
+ * (such as growing a thread, eating an insect, cutting a thread, or moving),
+ * it attempts to execute the corresponding game command after validating
+ * the clicked target. If not in a waiting state, it updates the selection
+ * for status panels and refreshes GUI buttons accordingly.
+ *
+ * @param e The MouseEvent that triggered this method.
+ * <ul>
+ * <li>If the clicked target is valid for the current action, a command is
+ * sent to the game logic to execute the action.</li>
+ * <li>If invalid, a message is shown to the user.</li>
+ * <li>After executing or attempting the action, the game state and GUI are
+ * updated to reflect any changes.</li>
+ * <li>If not targeting an action, it updates the selected objects and
+ * refreshes the status panels.</li>
+ * </ul>
+ */
+
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     Point clickPoint = e.getPoint();
@@ -367,6 +390,10 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
+    /**
+     * Visszaadja a jelenleg kiválasztott objektumok nevét.
+     * @return a kiválasztott objektumok nevét tartalmazó lista
+     */
     public List<String> getSelectedObjects() {
         return selectedObjects;
     }
@@ -382,11 +409,28 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
+/**
+ * Sets the current player's name and repaints the panel.
+ * 
+ * @param name The name of the current player.
+ */
+
     public void setCurrentPlayerName(String name) {
         this.currentPlayerName = name;
         repaint();
     }
 
+    /**
+     * Updates the status views according to the currently selected objects.
+     * If there are no selected objects, the status views are hidden.
+     * If there is one selected object, its status is displayed in the first
+     * status view.
+     * If there are two selected objects, their statuses are displayed in the
+     * first and second status views.
+     * If there are more than two selected objects, the status of the third
+     * object is displayed in the first status view, and the second status
+     * view is hidden.
+     */
     private void updateStatusPanels() {
         // System.out.println("updateStatusPanels called. selectedObjects: " +
         // selectedObjects);
@@ -422,6 +466,13 @@ public class FungoriumGamePanel extends JPanel {
         statusView2.repaint();
     }
 
+    /**
+     * Executes the /status command for the given object name and returns the
+     * output as a string.
+     * 
+     * @param objectName the name of the object for which to get the status
+     * @return the status of the object as a string
+     */
     protected String getStatusText(String objectName) {
         String command = "/status " + objectName;
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -723,6 +774,18 @@ public class FungoriumGamePanel extends JPanel {
         positionInsects();
     }
 
+    /**
+     * Initializes the positions of Tektons in the game world.
+     * 
+     * This method first clears the occupied cells and then positions all
+     * Tektons in the order of the number of their neighbors. It uses the
+     * placeTekton method to place each Tekton. If the positions do not satisfy
+     * all the distance constraints, it returns false and forces recalculation
+     * of positions.
+     * 
+     * @return true if the positions of Tektons satisfy all distance constraints,
+     *         false otherwise
+     */
     private boolean initializeTektonPlacement() {
         List<Point> tiles = renderMap.getTiles();
         occupiedCells.clear();
@@ -747,6 +810,17 @@ public class FungoriumGamePanel extends JPanel {
         return true;
     }
 
+    /**
+     * Places a Tekton in the game world.
+     * 
+     * This method tries to place a Tekton in the game world by finding a free
+     * area large enough to hold the Tekton. If the Tekton is placed
+     * successfully, it marks the cells occupied by the Tekton as occupied.
+     * Otherwise, it prints an error message.
+     * 
+     * @param entry the Map.Entry containing the Tekton object to be placed
+     * @param tiles the list of available tiles in the game world
+     */
     private void placeTekton(Map.Entry<String, Object> entry, List<Point> tiles) {
         boolean placed = false;
         int retries = 0;
@@ -774,6 +848,15 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
+/**
+ * Positions all dependent objects in the game world.
+ * 
+ * This method processes all created objects and assigns them positions based 
+ * on their type and characteristics. It prioritizes positioning bridge threads 
+ * first, followed by non-bridge threads. Spores and FungusBodies are positioned 
+ * in their original order without additional sorting.
+ */
+
     private void positionDependentObjects() {
         // 1. Bridge threadek először
         gameLogic.getCommandProcessor().getCreatedObjects().entrySet().stream()
@@ -797,6 +880,16 @@ public class FungoriumGamePanel extends JPanel {
         });
     }
 
+    /**
+     * Positions a FungusBody in the game world.
+     * 
+     * If the FungusBody is associated with a Tekton, it is positioned at the
+     * center of that Tekton. If the Tekton is not found, the FungusBody is not
+     * positioned.
+     * 
+     * @param name the name of the FungusBody to be positioned.
+     * @param body the FungusBody to be positioned.
+     */
     private void positionFungusBody(String name, FungusBody body) {
         Tekton tekton = body.getTekton();
         if (tekton != null) {
@@ -808,6 +901,17 @@ public class FungoriumGamePanel extends JPanel {
     }
 
     
+    /**
+     * Positions a FungusThread in the game world.
+     * 
+     * This method processes a FungusThread object and assigns it a position based
+     * on its type and characteristics. It takes into account whether the thread is
+     * a bridge, whether its next or previous thread is a bridge, and assigns the
+     * position accordingly.
+     * 
+     * @param name the name of the FungusThread to be positioned.
+     * @param thread the FungusThread to be positioned.
+     */
     private void positionFungusThread(String name, FungusThread thread) {
         List<Tekton> tektons = thread.getTektons();
         if (tektons.isEmpty()) return;
@@ -855,6 +959,17 @@ public class FungoriumGamePanel extends JPanel {
         setThreadPoints(name, center, bridgeConnectionPoint);
     }
 
+    /**
+     * Handles the case when the previous thread is a bridge.
+     * 
+     * It finds the two endpoints of the bridge and the center of the current
+     * thread's tekton. It calculates which endpoint is closer to the center, and
+     * assigns the position of the current thread to be halfway between that
+     * endpoint and the center.
+     * 
+     * @param name the name of the current thread.
+     * @param thread the current thread.
+     */
     private void handlePrevBridgeCase(String name, FungusThread thread) {
         FungusThread prevBridge = thread.getPrev();
         String prevName = gameLogic.getCommandProcessor().findByObject(prevBridge);
@@ -871,6 +986,18 @@ public class FungoriumGamePanel extends JPanel {
         setThreadPoints(name, closer, targetCenter);
     }
 
+    /**
+     * Handles the case when the next thread is not a bridge.
+     * 
+     * It calculates the direction vector from the start to the end of the next
+     * thread and adds this vector to the start of the next thread to get the
+     * connection point. It then assigns the position of the current thread to
+     * be halfway between the center of the current thread's tekton and this
+     * connection point.
+     * 
+     * @param name the name of the current thread.
+     * @param thread the current thread.
+     */
     private void handleNextNonBridgeCase(String name, FungusThread thread) {
         FungusThread nextThread = thread.getNext();
         String nextName = gameLogic.getCommandProcessor().findByObject(nextThread);
@@ -887,6 +1014,17 @@ public class FungoriumGamePanel extends JPanel {
         setThreadPoints(name, center, connectionPoint);
     }
 
+    /**
+     * Handles the case when the previous thread is not a bridge.
+     * 
+     * It calculates the direction vector from the start to the end of the previous
+     * thread and adds this vector to the end of the previous thread to get the
+     * connection point. It then assigns the position of the current thread to
+     * be at this connection point and the center of the current thread's tekton.
+     * 
+     * @param name the name of the current thread.
+     * @param thread the current thread.
+     */
     private void handlePrevNonBridgeCase(String name, FungusThread thread) {
         FungusThread prevThread = thread.getPrev();
         String prevName = gameLogic.getCommandProcessor().findByObject(prevThread);
@@ -905,6 +1043,17 @@ public class FungoriumGamePanel extends JPanel {
         setThreadPoints(name, connectionPoint, center);
     }
 
+/**
+ * Handles the positioning of a FungusThread that acts as a bridge between two Tektons.
+ * 
+ * It retrieves the two Tektons associated with the bridge thread and calculates the closest
+ * cardinal points for each Tekton. If valid points are found, it sets the thread's start 
+ * and end positions to these points.
+ * 
+ * @param name the name of the bridge thread.
+ * @param thread the FungusThread object representing the bridge.
+ */
+
     private void handleBridgeCase(String name, FungusThread thread) {
         if (thread.getTektons().size() >= 2) {
             Tekton t1 = thread.getTektons().get(0);
@@ -919,6 +1068,19 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
+/**
+ * Handles the default positioning of a FungusThread that is not a bridge
+ * and has no immediate bridge connections.
+ * 
+ * This method calculates the position for a standard FungusThread by 
+ * finding the center of its associated Tekton and determining the 
+ * closest cardinal control point. It then sets the thread's start 
+ * and end points based on these calculated positions.
+ * 
+ * @param name the name of the FungusThread to be positioned.
+ * @param thread the FungusThread to be positioned.
+ */
+
     private void handleDefaultCase(String name, FungusThread thread) {
         Tekton tekton = thread.getTektons().get(0);
         Point center = getTektonCenter(tekton);
@@ -927,6 +1089,14 @@ public class FungoriumGamePanel extends JPanel {
         setThreadPoints(name, center, control);
     }
 
+    /**
+     * Sets the start and end points of a FungusThread and updates the object positions
+     * map with the center of the thread.
+     * 
+     * @param threadName the name of the FungusThread to be updated.
+     * @param start the start point of the thread.
+     * @param end the end point of the thread.
+     */
     private void setThreadPoints(String threadName, Point start, Point end) {
         threadEndpoints.put(threadName + "_start", start);
         threadEndpoints.put(threadName + "_end", end);
@@ -936,6 +1106,20 @@ public class FungoriumGamePanel extends JPanel {
         ));
     }
     // ehhez képi illusztráció #269 pullban
+    
+    /**
+     * Calculates the position of a newly grown FungusThread based on its prev thread and the tekton it is connected to.
+     * It handles 3 cases: 
+     * 1. prev thread is a bridge and the new thread is connected to a new tekton. 
+     *    In this case it calculates the closest endpoint to the new tekton and grows from there to the center of the new tekton.
+     * 2. prev thread is not a bridge and the new thread is connected to a new tekton.
+     *    In this case it calculates the closest endpoint to the new tekton and grows from there to the closest cardinal point of the new tekton.
+     * 3. prev thread is not a bridge and the new thread is connected to the same tekton.
+     *    In this case it grows from the center of the tekton to one of its cardinal points, but not the one it came from.
+     * 
+     * @param name the name of the newly grown FungusThread.
+     * @param thread the FungusThread object representing the newly grown thread.
+     */
     public void calculateGrownThreadPositions(String name, FungusThread thread){
         if (thread.getPrev() != null) {
             String prevThreadName = gameLogic.getCommandProcessor().findByObject(thread.getPrev());
@@ -1042,6 +1226,13 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
+    /**
+     * Positions a Spore object on the panel based on the position of its associated
+     * Tekton object and the size of the panel.
+     *
+     * @param name the name of the Spore object to be positioned
+     * @param spore the Spore object to be positioned
+     */
     private void positionSpore(String name, Spore spore) {
         Tekton tekton = spore.getTekton();
         Point pos = getTektonPosition(tekton);
@@ -1086,7 +1277,25 @@ public class FungoriumGamePanel extends JPanel {
         objectPositions.put(name, candidate);
     }
 
-    private void positionInsects() {
+    /**
+     * Positions Insect objects on the panel based on the positions of their associated
+     * FungusThread objects.
+     * 
+     * <p>
+     * The algorithm works as follows:
+     * <ol>
+     * <li>First, it groups all Insect objects by their associated FungusThread objects.
+     * <li>Then, it iterates over all groups and positions each Insect object on the
+     * panel by offsetting it from the center of its associated FungusThread object in
+     * the direction of the FungusThread.
+     * </ol>
+     * 
+     * <p>
+     * The maximum number of Insect objects that can be positioned on a single
+     * FungusThread is 3. If there are more than 3 Insect objects associated with a
+     * single FungusThread, only the first 3 are positioned, and the rest are ignored.
+     **/
+       private void positionInsects() {
         // 1. Threadenként gyűjtsük a rovarokat
         Map<String, List<String>> threadToInsects = new HashMap<>();
         for (Map.Entry<String, Object> entry : gameLogic.getCommandProcessor().getCreatedObjects().entrySet()) {
@@ -1144,6 +1353,20 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
+/**
+ * Finds the closest cardinal point associated with a given Tekton to the specified target point.
+ *
+ * <p>
+ * The function calculates the pixel position of the target point based on the dimensions of the
+ * render map and compares it against the list of cardinal points associated with the given
+ * Tekton. It returns the cardinal point that is closest to the target point.
+ * </p>
+ *
+ * @param tekton the Tekton object whose cardinal points are being evaluated
+ * @param targetPoint the target point to which the distance is being measured
+ * @return the closest cardinal point to the target point, or null if no valid points are found
+ */
+
     private Point findClosestCardinalPoint(
             Tekton tekton,
             Point targetPoint) {
@@ -1178,6 +1401,13 @@ public class FungoriumGamePanel extends JPanel {
         return closest;
     }
     
+/**
+ * Verifies the connections of all FungusThread objects in the game world, including
+ * connections to Tekton objects and to other FungusThread and FungusBody objects.
+ * 
+ * This method is used for debugging purposes and is not part of the normal game
+ * logic.
+ */
     private void verifyThreadConnections() {
         System.out.println("\n=== THREAD CONNECTION VERIFICATION ===");
         for (Map.Entry<String, Object> entry : gameLogic.getCommandProcessor().getCreatedObjects().entrySet()) {
@@ -1209,6 +1439,20 @@ public class FungoriumGamePanel extends JPanel {
             }
         }
     }
+/**
+ * Generates an array of direction vectors representing the vertices of a 
+ * regular polygon with a specified number of sides.
+ * 
+ * Each direction vector is calculated based on the angle from the center 
+ * of the polygon, ensuring that the polygon is centered and oriented 
+ * such that one vertex is at the top. The radius of the polygon increases 
+ * slightly with the number of sides.
+ * 
+ * @param sides the number of sides of the polygon
+ * @return a 2D array where each element is a pair of integers representing 
+ *         the x and y components of a direction vector to a vertex
+ */
+
     private static int[][] generatePolygonDirections(int sides) {
         int[][] dirs = new int[sides][2];
         double angleStep = 2 * Math.PI / sides;
@@ -1222,6 +1466,17 @@ public class FungoriumGamePanel extends JPanel {
         return dirs;
     }
 
+    /**
+     * Determines if the given number of sides is a special case for the
+     * purposes of generating a regular polygon with the generatePolygonDirections
+     * method. A special case is when the number of sides is 4 or less, or
+     * exactly 8. In this case, special adjustments are needed to ensure that
+     * the generated polygon is aesthetically pleasing and does not exceed the
+     * boundaries of the game panel.
+     *
+     * @param sides the number of sides of the polygon
+     * @return true if the given number of sides is a special case, false otherwise
+     */
     private static boolean isSpecialCase(int sides) {
         return sides <= 4 || sides == 8;
     }
@@ -1271,6 +1526,14 @@ public class FungoriumGamePanel extends JPanel {
         return findFallbackPosition(tekton, neighbors, placementDistance+1);
     }
     
+    /**
+     * Ellenőrzi, hogy a Tektonok közötti távolságok megfelelnek-e a szabályoknak.
+     * Ha bármelyik Tekton helytelenül van elhelyezve, akkor false értéket ad vissza.
+     * A szabályok a következők:
+     * - Szomszédok esetén: 4-6 cella
+     * - Nem szomszédok esetén: minimum 7 cella
+     * @return true, ha minden Tekton helyes pozícióban van, false egyébként
+     */
     private Boolean isAllDistancesCorrect() {
         Map<String, Object> objects = gameLogic.getCommandProcessor().getCreatedObjects();
         List<Tekton> allTektons = new ArrayList<>();
@@ -1331,12 +1594,33 @@ public class FungoriumGamePanel extends JPanel {
         }
         return true;
     }
+/**
+ * Calculates the placement distance for a given Tekton object based on its number of neighbors.
+ * The distance is scaled up with the number of neighbors to ensure appropriate spacing.
+ *
+ * @param tekton The Tekton object for which to calculate the placement distance.
+ * @return The calculated placement distance.
+ */
+
     private int calculatePlacementDistance(Tekton tekton) {
         int neighborCount = tekton.getNeighbours().size();
         // Erősebb skálázás több szomszédnál
         return 2 + (int)(neighborCount * 0.2);
     }
     //?
+    
+    /**
+     * Finds a fallback position for a Tekton object when the normal placement logic fails.
+     * This method tries to find a valid position by moving in a series of concentric circles
+     * around each of the Tekton's neighbors. If no valid position is found, it falls back to
+     * finding an optimal random position.
+     * 
+     * @param tekton The Tekton object for which to find a fallback position.
+     * @param neighbors The list of Tekton objects that are neighbors of the given Tekton.
+     * @param minDistance The minimum distance from any other Tekton that the fallback position
+     *                    must satisfy.
+     * @return The fallback position for the given Tekton, or null if no valid position can be found.
+     */
     private Point findFallbackPosition(Tekton tekton, List<Tekton> neighbors, int minDistance) {
         // Dinamikus irányok generálása
         int[][] dynamicDirections = isSpecialCase(neighbors.get(0).getNeighbours().size()) ?  directions : // Használjuk a fix mátrixot 4,8,12 esetén
@@ -1365,6 +1649,18 @@ public class FungoriumGamePanel extends JPanel {
         .collect(Collectors.toList()));
     }
     //?
+    
+    /**
+     * Finds an optimal random position for a Tekton object in the game world.
+     * This method first tries to find a position that is far enough from all other
+     * Tektons, and if that fails, it falls back to finding any valid position.
+     * If no valid position can be found, it returns the first tile in the list.
+     * 
+     * @param tiles The list of all tiles in the game world.
+     * @param otherTektons The list of all other Tekton objects in the game world.
+     * @return The optimal random position for the Tekton object, or the first tile
+     *         in the list if no valid position can be found.
+     */
     private Point findOptimalRandomPosition(List<Point> tiles, List<Tekton> otherTektons) {
         int maxAttempts = 100;
         List<Point> validPositions = new ArrayList<>();
@@ -1395,9 +1691,35 @@ public class FungoriumGamePanel extends JPanel {
         return tiles.get(0); // Vésztartalék
     }
     //?
+    
+/**
+ * Checks if the given position is adjacent to any of the specified Tekton objects.
+ *
+ * This method determines adjacency by checking if the position is within a
+ * certain distance of any Tekton in the provided list.
+ *
+ * @param pos The position to check for adjacency.
+ * @param tektonsToCheck The list of Tekton objects to check against.
+ * @return true if the position is adjacent to any Tekton in the list, false otherwise.
+ */
+
     private boolean isAdjacentToOtherTekton(Point pos, List<Tekton> tektonsToCheck) {
         return isWithinDistance(pos, tektonsToCheck, TEKTON_CELLS + 1);
     }
+    
+    /**
+     * Checks if the given position is within a certain distance of any Tekton
+     * in the provided list.
+     * 
+     * This method determines adjacency by checking if the position is within a
+     * certain distance of any Tekton in the provided list.
+     * 
+     * @param pos The position to check for adjacency.
+     * @param tektonsToCheck The list of Tekton objects to check against.
+     * @param minDistance The minimum distance required for adjacency.
+     * @return true if the position is adjacent to any Tekton in the list, false
+     *         otherwise.
+     */
     private boolean isWithinDistance(Point pos, List<Tekton> tektonsToCheck, int minDistance) {
         for (Tekton tekton : tektonsToCheck) {
             Point tektonPos = getTektonPosition(tekton);
@@ -1411,6 +1733,19 @@ public class FungoriumGamePanel extends JPanel {
         }
         return false;
     } 
+
+/**
+ * Checks if the specified position is valid within the game world.
+ *
+ * This method verifies that the given position is within the bounds of the
+ * game map and that the area around the position is free for placement.
+ * The position is considered valid if it is non-negative, fits within the
+ * map's dimensions considering an effective size buffer, and does not
+ * overlap with any occupied areas.
+ *
+ * @param pos The position to validate.
+ * @return true if the position is valid and free for use, false otherwise.
+ */
 
     private boolean isPositionValid(Point pos) {
         // Szigorúbb távolságellenőrzés
@@ -1478,6 +1813,19 @@ public class FungoriumGamePanel extends JPanel {
         */
         objectPositions.putAll(newEntries);
     }
+
+/**
+ * Calculates the center point of a given FungusThread.
+ *
+ * This method retrieves the position of the thread from the objectPositions map
+ * and calculates its center based on the starting and ending points. If the
+ * thread or its position cannot be found, it logs an appropriate message and
+ * returns null.
+ *
+ * @param thread the FungusThread for which the center point is to be calculated.
+ * @return the Point representing the center of the FungusThread, or null if the
+ *         thread or its position cannot be found.
+ */
 
     private Point calculateThreadCenter(FungusThread thread) {
         if (thread == null) {
@@ -1634,6 +1982,13 @@ public class FungoriumGamePanel extends JPanel {
         return objectPositions;
     }
 
+    /**
+     * Ends the current turn and triggers the next one. This method is called
+     * whenever the "End Turn" button is clicked. If the "Break Tekton" flag is
+     * set, it triggers the breaking of a random Tekton and then sets the flag
+     * to false. Finally, it updates the action buttons on the control panel to
+     * reflect the new game state.
+     */
     public void endTurnLogic(){
         try {
         if (gameLogic.getBreaking()) {
@@ -1653,6 +2008,13 @@ public class FungoriumGamePanel extends JPanel {
         }
         
     }
+    /**
+     * Triggers the breaking of a random Tekton.
+     * This method first creates a list of all Tektons in the game world and
+     * shuffles it. Then it selects the first Tekton from the list and removes its
+     * threads and spores from the game world. Finally, it triggers the breaking
+     * of the Tekton and updates the positions of all objects in the game world.
+     */
     private void breakTektonEvent(){
         List<Map.Entry<String, Object>> listOfTektons = gameLogic.getCommandProcessor().getCreatedObjects()
             .entrySet().stream()
@@ -1709,6 +2071,21 @@ public class FungoriumGamePanel extends JPanel {
         positionDependentObjects();
         repaint();
     }
+/**
+ * Sets the neighbors for a newly created Tekton based on its position and
+ * distance constraints.
+ * 
+ * This method iterates through all existing Tektons in the game, calculating
+ * the distance from each to the new Tekton. If the distance is within the
+ * specified minimum and maximum distance range, the Tektons are set as neighbors
+ * of each other.
+ * 
+ * @param newTekton the newly created Tekton for which neighbors are to be set
+ * @param newTektonPos the position of the new Tekton in the game world
+ * @param minDist the minimum distance required for a Tekton to be considered a neighbor
+ * @param maxDist the maximum distance allowed for a Tekton to be considered a neighbor
+ */
+
     private void setNeighborsForNewTekton(Tekton newTekton, Point newTektonPos, int minDist, int maxDist) {
         List<Tekton> allTektons = gameLogic.getCommandProcessor()
             .getCreatedObjects()
@@ -1745,6 +2122,14 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
     
+    /**
+     * Updates the objectPositions and threadEndpoints maps by removing any
+     * entries that no longer exist in the currentObjects map.
+     * 
+     * This method is used to clean up the object positions and thread endpoints
+     * after a game state has been loaded from a save file. It is called in the
+     * constructor of the GamePanel class.
+     */
     private void livingObjecstUpdate(){
         Map<String, Object> currentObjects = gameLogic.getCommandProcessor().getCreatedObjects();
         Iterator<Map.Entry<String, Point>> iterator = objectPositions.entrySet().iterator();
@@ -1764,12 +2149,35 @@ public class FungoriumGamePanel extends JPanel {
             }
         }
     }
+/**
+ * Starts the process of growing a new thread from the currently selected
+ * object. This method is called when the user selects the "Grow thread" action
+ * button.
+ * 
+ * The method sets the waitingForTarget flag to true, indicating that the
+ * program is waiting for the user to select a target object in the game world.
+ * It also displays a message dialog to the user, instructing them to select a
+ * target object.
+ */
     public void growThreadLogic(){ // Ezt az objektumot választotta ki kiindulásnak
         waitingForTarget = true; // Most várunk egy célkijelölést
         growthThreadCalled=true;
         // Esetleg üzenet a felhasználónak:
         JOptionPane.showMessageDialog(this, "Válassz ki egy cél objektumot a térképen!");
     }
+    /**
+     * Starts the process of growing a new body from the currently selected
+     * object. This method is called when the user selects the "Grow body" action
+     * button.
+     * 
+     * The method adds the "growbody" command to the input queue of the game
+     * logic, with the currently selected object as the parameter. After that,
+     * it waits for 0.5 seconds (500 milliseconds) to allow the game logic to
+     * process the command. Finally, it updates the action buttons, status
+     * panels, and positions of dependent objects, and repaints the panel.
+     * 
+     * @see #growThreadLogic()
+     */
     public void growBodyLogic(){ // Ezt az objektumot választotta ki kiindulásnak
         try {
         //System.out.println("growbody called" + origin);
@@ -1791,6 +2199,16 @@ public class FungoriumGamePanel extends JPanel {
             e.printStackTrace();
         }
     }
+    /**
+     * Starts the process of sporing the currently selected object. This method
+     * is called when the user selects the "Sporulate" action button.
+     * 
+     * The method adds the "sporulate" command to the input queue of the game
+     * logic, with the currently selected object as the parameter. After that,
+     * it waits for 0.5 seconds (500 milliseconds) to allow the game logic to
+     * process the command. Finally, it updates the action buttons, status
+     * panels, and positions of dependent objects, and repaints the panel.
+     */
     public void sporulateLogic(){ // Ezt az objektumot választotta ki kiindulásnak
         try {
             gameLogic.getInputQueue().put("sporulate "+ origin);
@@ -1807,12 +2225,33 @@ public class FungoriumGamePanel extends JPanel {
 
     }
 
+    /**
+     * Starts the process of eating an insect from the currently selected
+     * object. This method is called when the user selects the "Eat insect" action
+     * button.
+     * 
+     * The method adds the "eatinsect" command to the input queue of the game
+     * logic, with the currently selected object as the parameter. After that,
+     * it waits for 0.5 seconds (500 milliseconds) to allow the game logic to
+     * process the command. Finally, it updates the action buttons, status
+     * panels, and positions of dependent objects, and repaints the panel.
+     */
     public void eatInsectLogic(){
         waitingForTarget = true; // Most várunk egy célkijelölést
         eatInsectCalled=true;
         // Esetleg üzenet a felhasználónak:
         JOptionPane.showMessageDialog(this, "Válaszd ki a megevendő rovart a térképen!");
     }
+    /**
+     * Starts the process of cutting a FungusThread object from the currently
+     * selected object. This method is called when the user selects the "Cut
+     * thread" action button.
+     * 
+     * The method sets the waitingForTarget flag to true, indicating that the
+     * program is waiting for the user to select a target object in the game
+     * world. It also displays a message dialog to the user, instructing them to
+     * select a target object.
+     */
     public void cutThreadLogic(){
         waitingForTarget = true; // Most várunk egy célkijelölést
         cutThreadCalled=true;
@@ -1820,44 +2259,146 @@ public class FungoriumGamePanel extends JPanel {
         JOptionPane.showMessageDialog(this, "Válaszd ki a elvágandó fonalat a térképen!");
     }
 
+/**
+ * Initiates the process of moving an insect to a target location.
+ * This method sets the waitingForTarget and moveCalled flags to true,
+ * indicating that the program is waiting for the user to select a target
+ * location on the game map. It also displays a message dialog to the user,
+ * instructing them to select a target location.
+ */
+
     public void moveLogic(){
         waitingForTarget = true; // Most várunk egy célkijelölést
         moveCalled=true;
         // Esetleg üzenet a felhasználónak:
         JOptionPane.showMessageDialog(this, "Válaszd ki a célhelyet a térképen!");
     }
+
+    
+    /**
+     * Starts the process of growing a new FungusThread object from the currently
+     * selected object, as if the user had clicked the "Grow thread" action button
+     * again.
+     * 
+     * The method sets the waitingForTarget flag to true, indicating that the
+     * program is waiting for the user to select a target object in the game world.
+     * It also displays a message dialog to the user, instructing them to select a
+     * target object.
+     */
     public void growThreadRecalled(){
         waitingForTarget = true; // Most várunk egy célkijelölést
         growThreadRepeated=true;
         // Esetleg üzenet a felhasználónak:
         JOptionPane.showMessageDialog(this, "Válassz ki egy cél objektumot a térképen!");
     }
+/**
+ * Sets the border color of the player's panel.
+ *
+ * This method changes the border color of the current player's panel
+ * to the specified color and repaints the panel to reflect the change.
+ *
+ * @param color the new border color to be set.
+ */
+
+/**
+ * Sets the border color of the player's panel.
+ *
+ * This method changes the border color of the current player's panel
+ * to the specified color and repaints the panel to reflect the change.
+ *
+ * @param color the new border color to be set.
+ */
+
     public void setPlayerBorderColor(Color color) {
         setBorder(BorderFactory.createLineBorder(color, 6));
         repaint();
     }
 
+    /**
+     * Returns the FungoriumGUIBuilder object used to build the game's UI.
+     * This method is used to access the GUI builder object from outside the
+     * FungoriumGamePanel class.
+     * @return the FungoriumGUIBuilder object used to build the game's UI.
+     */
     public FungoriumGUIBuilder getGuiBuilder() {
         return guiBuilder;
     }
+    /**
+     * Returns the map of thread endpoints. The keys of the map are the names of
+     * the threads, and the values are the endpoints of the threads as Point
+     * objects. The endpoints are stored as "threadName_start" and
+     * "threadName_end".
+     * 
+     * @return the map of thread endpoints.
+     */
     public Map<String, Point> getThreadEndpoints() {
         return threadEndpoints;
     }
+    /**
+     * Sets the map of thread endpoints. The keys of the map are the names of
+     * the threads, and the values are the endpoints of the threads as Point
+     * objects. The endpoints are stored as "threadName_start" and
+     * "threadName_end". This method is used to update the thread endpoints
+     * map when the game state is loaded from a file.
+     * @param threadEndpoints the new map of thread endpoints.
+     */
     public void setThreadEndpoints(Map<String, Point> threadEndpoints) {
         this.threadEndpoints = threadEndpoints;
     }
+    /**
+     * Returns the map of cardinal points of Tektons. The keys of the map are the
+     * names of the Tektons, and the values are lists of Point objects
+     * representing the cardinal points of the Tektons. This map is used to
+     * position the Tektons in the game world.
+     * @return the map of cardinal points of Tektons.
+     */
     public Map<String, List<Point>> getTektonCardinalPoints() {
         return tektonCardinalPoints;
     }
+    /**
+     * Sets the map of cardinal points of Tektons. The keys of the map are the
+     * names of the Tektons, and the values are lists of Point objects
+     * representing the cardinal points of the Tektons. This map is used to
+     * position the Tektons in the game world. This method is used to update the
+     * tekton cardinal points map when the game state is loaded from a file.
+     * @param tektonCardinalPoints the new map of cardinal points of Tektons.
+     */
     public void setTektonCardinalPoints(Map<String, List<Point>> tektonCardinalPoints) {
         this.tektonCardinalPoints = tektonCardinalPoints;
     }
+    /**
+     * Returns the set of occupied cells in the game world. The occupied cells
+     * are the cells where Tektons are placed. This set is used to position the
+     * Tektons in the game world.
+     * @return the set of occupied cells in the game world.
+     */
     public Set<Point> getOccupiedCells() {
         return occupiedCells;
     }
+/**
+ * Sets the occupied cells in the game world.
+ *
+ * This method updates the set of occupied cells with the provided set.
+ * The occupied cells are the locations where Tektons are placed, and
+ * this set is used to track and manage their positions within the game
+ * world.
+ *
+ * @param occupiedCells the new set of occupied cells to be set.
+ */
+
     public void setOccupiedCells(Set<Point> occupiedCells) {
         this.occupiedCells = occupiedCells;
     }
+/**
+ * Sets the list of currently selected objects.
+ * 
+ * This method updates the list of selected objects with the provided list.
+ * If the provided list is null, it initializes an empty list.
+ *
+ * @param selectedObjects the list of object names to be set as selected,
+ *                        or null to clear the selection.
+ */
+
     public void setSelectedObjects(List<String> selectedObjects) {
         this.selectedObjects = selectedObjects != null ? new ArrayList<>(selectedObjects) : new ArrayList<>();
     }
