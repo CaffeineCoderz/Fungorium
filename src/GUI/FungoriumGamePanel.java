@@ -147,12 +147,7 @@ public class FungoriumGamePanel extends JPanel {
                             if (target instanceof Tekton|| target instanceof OneThreadTekton || target instanceof DecomposingTekton || target instanceof DecreasingTekton|| target instanceof FeedThreadTekton|| target instanceof OnlyThreadTekton) {
                                 String command = "growthread " + clickedObjectName + " " + origin;
                                 gameLogic.getInputQueue().put(command);
-                                FungusThread thread = null;
-                                Object threadObj = gameLogic.getCommandProcessor().getCreatedObjects().get(origin);
-                                if (threadObj instanceof FungusThread) {
-                                    thread = (FungusThread) threadObj;
-                                }
-                                calculateGrownThreadPositions(clickedObjectName, thread, clickPoint);
+                            
                             } else {
                                 JOptionPane.showMessageDialog(FungoriumGamePanel.this, "Invalid target for thread growth.");
                             }
@@ -550,7 +545,7 @@ public class FungoriumGamePanel extends JPanel {
         if (initialPaint) {
             gameLogic.getCommandProcessor().processConfigText("configWithoutStatus");
 
-        // }
+         }
 
         threadView.drawThreads(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(), tektonCardinalPoints, gameLogic.getCommandProcessor(), threadEndpoints);
         insectView.drawInsects(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects());
@@ -773,7 +768,7 @@ public class FungoriumGamePanel extends JPanel {
     }
 
     // ehhez képi illusztráció #269 pullban
-    public void calculateGrownThreadPositions(String name, FungusThread thread, Point clickPoint){
+    public void calculateGrownThreadPositions(String name, FungusThread thread){
         if (thread.getPrev() != null) {
             String prevThreadName = gameLogic.getCommandProcessor().findByObject(thread.getPrev());
             FungusThread prevThread = thread.getPrev();
@@ -804,17 +799,14 @@ public class FungoriumGamePanel extends JPanel {
                 Point prevEnd = threadEndpoints.get(prevThreadName + "_end");
                 Point targetCenter = getTektonCenter(targetTekton);
 
-                // Itt a kattintáshoz legközelebbi kardinális pontot választjuk
-                Point targetCardinal = findClosestCardinalPoint(targetTekton, clickPoint);
-
                 // Válaszd ki a közelebbi végpontot
-                Point closer = (prevStart.distance(targetCardinal) < prevEnd.distance(targetCardinal)) ? prevStart
+                Point closer = (prevStart.distance(targetCenter) < prevEnd.distance(targetCenter)) ? prevStart
                         : prevEnd;
                 // Itt closer-től targetCenter-ig lehet növeszteni
                 // Például:
-                objectPositions.put(name, new Point((closer.x + targetCardinal.x) / 2, (closer.y + targetCardinal.y) / 2));
+                objectPositions.put(name, new Point((closer.x + targetCenter.x) / 2, (closer.y + targetCenter.y) / 2));
                 threadEndpoints.put(name + "_start", closer);
-                threadEndpoints.put(name + "_end", targetCardinal);
+                threadEndpoints.put(name + "_end", targetCenter);
             }
             // 2. eshetőség
             // prevthread nem bridge és egy másik tektonhoz növesztettünk, ekkor megkeressük
