@@ -696,18 +696,26 @@ public class FungoriumGamePanel extends JPanel {
     }
 
     private void positionDependentObjects() {
-        for (Map.Entry<String, Object> entry : gameLogic.getCommandProcessor().getCreatedObjects().entrySet()) {
-            Object obj = entry.getValue();
-            String name = entry.getKey();
+        // 1. Bridge threadek először
+        gameLogic.getCommandProcessor().getCreatedObjects().entrySet().stream()
+            .filter(entry -> entry.getValue() instanceof FungusThread)
+            .filter(entry -> ((FungusThread) entry.getValue()).isBridge())
+            .forEach(entry -> positionFungusThread(entry.getKey(), (FungusThread) entry.getValue()));
 
+        // 2. Nem-bridge threadek
+        gameLogic.getCommandProcessor().getCreatedObjects().entrySet().stream()
+            .filter(entry -> entry.getValue() instanceof FungusThread)
+            .filter(entry -> !((FungusThread) entry.getValue()).isBridge())
+            .forEach(entry -> positionFungusThread(entry.getKey(), (FungusThread) entry.getValue()));
+
+        // 3. Spore-ok és Body-k eredeti sorrendben (nincs rendezés)
+        gameLogic.getCommandProcessor().getCreatedObjects().forEach((name, obj) -> {
             if (obj instanceof Spore) {
                 positionSpore(name, (Spore) obj);
-            } else if (obj instanceof FungusThread) {
-                positionFungusThread(name, (FungusThread) obj);
             } else if (obj instanceof FungusBody) {
                 positionFungusBody(name, (FungusBody) obj);
             }
-        }
+        });
     }
 
     private void positionFungusBody(String name, FungusBody body) {
@@ -720,7 +728,7 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
-    private void positionFungusThread(String name, FungusThread thread) {
+    /*private void positionFungusThread(String name, FungusThread thread) {
         List<Tekton> tektons = thread.getTektons();
         if (tektons.isEmpty()) return;
         System.out.println(name);
@@ -757,8 +765,135 @@ public class FungoriumGamePanel extends JPanel {
                 System.err.println("Control points could not be calculated for thread: " + name);
             }
         }
+    }*/
+    
+    private void positionFungusThread(String name, FungusThread thread) {
+        List<Tekton> tektons = thread.getTektons();
+        if (tektons.isEmpty()) return;
+
+        // 1. Ha maga a szál híd
+        if (thread.isBridge()) {
+            handleBridgeCase(name, thread);
+        }// 2. Ha következő szál híd
+        else if (thread.getNext() != null && thread.getNext().isBridge()) {
+            handleNextBridgeCase(name, thread);
+        }
+        // 2. Ha előző szál híd
+        else if (thread.getPrev() != null && thread.getPrev().isBridge()) {
+            handlePrevBridgeCase(name, thread);
+        }
+        // 4. Ha előző szál nem híd
+        else if (thread.getPrev() != null && !thread.getPrev().isBridge()) {
+            handlePrevNonBridgeCase(name, thread);
+        }
+        // 3. Ha következő szál nem híd
+        else if (thread.getNext() != null && !thread.getNext().isBridge()) {
+            handleNextNonBridgeCase(name, thread);
+        }
+        
+        // 6. Alapértelmezett eset: sima szál
+        else {
+            handleDefaultCase(name, thread);
+        }
     }
 
+    // Segédmetódusok
+    private void handleNextBridgeCase(String name, FungusThread thread) {
+        FungusThread nextBridge = thread.getNext();
+        String nextName = gameLogic.getCommandProcessor().findByObject(nextBridge);
+        
+        Point bridgeStart = threadEndpoints.get(nextName + "_start");
+        Point bridgeEnd = threadEndpoints.get(nextName + "_end");
+        
+        Tekton tekton = thread.getTektons().get(0);
+        Point center = getTektonCenter(tekton);
+        
+        Point bridgeConnectionPoint = (bridgeStart.distance(center) < bridgeEnd.distance(center)) 
+            ? bridgeStart : bridgeEnd;
+            
+        setThreadPoints(name, center, bridgeConnectionPoint);
+    }
+
+    private void handlePrevBridgeCase(String name, FungusThread thread) {
+        FungusThread prevBridge = thread.getPrev();
+        String prevName = gameLogic.getCommandProcessor().findByObject(prevBridge);
+
+        Point bridgeStart = threadEndpoints.get(prevName + "_start");
+        Point bridgeEnd = threadEndpoints.get(prevName + "_end");
+        
+        Tekton tekton = thread.getTektons().get(0);
+        Point targetCenter = getTektonCenter(tekton);
+        
+        Point closer = (bridgeStart.distance(targetCenter) < bridgeEnd.distance(targetCenter)) 
+            ? bridgeStart : bridgeEnd;
+
+        setThreadPoints(name, closer, targetCenter);
+    }
+
+    private void handleNextNonBridgeCase(String name, FungusThread thread) {
+        FungusThread nextThread = thread.getNext();
+        String nextName = gameLogic.getCommandProcessor().findByObject(nextThread);
+        
+        Point nextStart = threadEndpoints.get(nextName + "_start");
+        Point nextEnd = threadEndpoints.get(nextName + "_end");
+        
+        Tekton tekton = thread.getTektons().get(0);
+        Point center = getTektonCenter(tekton);
+        
+        Point dirPoint = new Point(nextEnd.x - nextStart.x, nextEnd.y - nextStart.y);
+
+        Point connectionPoint = new Point(nextStart.x + dirPoint.x, nextStart.y+ dirPoint.y);
+        setThreadPoints(name, center, connectionPoint);
+    }
+
+    private void handlePrevNonBridgeCase(String name, FungusThread thread) {
+        FungusThread prevThread = thread.getPrev();
+        String prevName = gameLogic.getCommandProcessor().findByObject(prevThread);
+        
+        Point prevStart = threadEndpoints.get(prevName + "_start");
+        Point prevEnd = threadEndpoints.get(prevName + "_end");
+        
+        Tekton tekton = thread.getTektons().get(0);
+        Point center = getTektonCenter(tekton);
+
+        
+        Point dirPoint = new Point(prevEnd.x - prevStart.x, prevEnd.y - prevStart.y);
+
+        Point connectionPoint = new Point(prevEnd.x + dirPoint.x, prevEnd.y+ dirPoint.y);
+
+        setThreadPoints(name, connectionPoint, center);
+    }
+
+    private void handleBridgeCase(String name, FungusThread thread) {
+        if (thread.getTektons().size() >= 2) {
+            Tekton t1 = thread.getTektons().get(0);
+            Tekton t2 = thread.getTektons().get(1);
+            
+            Point p1 = findClosestCardinalPoint(t1, objectPositions.get(gameLogic.getCommandProcessor().findByObject(t2)));
+            Point p2 = findClosestCardinalPoint(t2, objectPositions.get(gameLogic.getCommandProcessor().findByObject(t1)));
+
+            if (p1 != null && p2 != null) {
+                setThreadPoints(name, p1, p2);
+            }
+        }
+    }
+
+    private void handleDefaultCase(String name, FungusThread thread) {
+        Tekton tekton = thread.getTektons().get(0);
+        Point center = getTektonCenter(tekton);
+        Point control = findClosestCardinalPoint(tekton, center);
+        
+        setThreadPoints(name, center, control);
+    }
+
+    private void setThreadPoints(String threadName, Point start, Point end) {
+        threadEndpoints.put(threadName + "_start", start);
+        threadEndpoints.put(threadName + "_end", end);
+        objectPositions.put(threadName, new Point(
+            (start.x + end.x)/2, 
+            (start.y + end.y)/2
+        ));
+    }
     // ehhez képi illusztráció #269 pullban
     public void calculateGrownThreadPositions(String name, FungusThread thread){
         if (thread.getPrev() != null) {
