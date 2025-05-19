@@ -8,13 +8,16 @@ import sporeTypes.Spore;
 import tektonTypes.DecreasingTekton;
 import tektonTypes.Tekton;
 import utils.*;
+import java.io.Serializable;
 
 import insect.InsectEffects;
 
 // ! - Az elrágott fonalak nem pusztulnak el azonnal, hanem csak egy kis idő elteltével (ez fonaltípustól függő idő). 
 // ! A fonalak képesek megenni a tektonjukon található bénult rovarokat. Ilyenkor a rovar elpusztul, a fonal pedig gombatestet növeszthet.
 
-public class Insect {
+public class Insect implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private Integer movingEffectTimer;
     private Integer abilityEffectTimer;
     private Boolean canCut;

@@ -6,12 +6,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
+import java.io.Serializable;
 
 import sporeTypes.Spore;
 import tektonTypes.Tekton;
 import utils.*;
 
-public class FungusBody {
+public class FungusBody implements Serializable {
+    private static final long serialVersionUID = 1L;
     private Integer sporeCount;
     private Integer sporulateLeft;
     private List<FungusThread> threads;

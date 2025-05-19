@@ -2,8 +2,11 @@ package tektonTypes;
 
 import fungus.FungusBody;
 import utils.*;
+import java.io.Serializable;
 
-public class OnlyThreadTekton extends Tekton{
+public class OnlyThreadTekton extends Tekton implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     public OnlyThreadTekton() {
         super(false, true);
     }

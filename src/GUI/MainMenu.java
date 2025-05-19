@@ -20,7 +20,7 @@ public class MainMenu extends JFrame {
     public MainMenu(GameLogic gameLogic) {
         this.gameLogic = gameLogic;
         this.saver = new GameStateHandler(gameLogic);
-        this.gameGUIBuilder = new FungoriumGUIBuilder(gameLogic, saver);
+        this.gameGUIBuilder = new FungoriumGUIBuilder(gameLogic, null);
         setTitle("Fungorium - Főmenü");
         setSize(800, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

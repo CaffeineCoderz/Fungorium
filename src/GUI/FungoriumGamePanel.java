@@ -1408,7 +1408,10 @@ public class FungoriumGamePanel extends JPanel {
      */
 
     public void setObjectPositions(Map<String, Point> newPositions) {
-        this.objectPositions = newPositions;
+        this.objectPositions = newPositions != null ? new TreeMap<>(newPositions) : new TreeMap<>();
+        this.occupiedCells.clear();
+        this.shouldRecalculatePositions = false;
+        repaint();
     }
 
     /**
@@ -1611,5 +1614,26 @@ public class FungoriumGamePanel extends JPanel {
 
     public FungoriumGUIBuilder getGuiBuilder() {
         return guiBuilder;
+    }
+    public Map<String, Point> getThreadEndpoints() {
+        return threadEndpoints;
+    }
+    public void setThreadEndpoints(Map<String, Point> threadEndpoints) {
+        this.threadEndpoints = threadEndpoints;
+    }
+    public Map<String, List<Point>> getTektonCardinalPoints() {
+        return tektonCardinalPoints;
+    }
+    public void setTektonCardinalPoints(Map<String, List<Point>> tektonCardinalPoints) {
+        this.tektonCardinalPoints = tektonCardinalPoints;
+    }
+    public Set<Point> getOccupiedCells() {
+        return occupiedCells;
+    }
+    public void setOccupiedCells(Set<Point> occupiedCells) {
+        this.occupiedCells = occupiedCells;
+    }
+    public void setSelectedObjects(List<String> selectedObjects) {
+        this.selectedObjects = selectedObjects != null ? new ArrayList<>(selectedObjects) : new ArrayList<>();
     }
 }

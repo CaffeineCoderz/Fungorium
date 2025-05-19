@@ -4,8 +4,12 @@ import utils.*;
 import insect.Insect;
 import tektonTypes.*;
 
-public class SlowSpore extends Spore{
-    
+import java.io.Serializable;
+
+public class SlowSpore extends Spore implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     /*
         Default constructor for the SlowSpore class.
      */
