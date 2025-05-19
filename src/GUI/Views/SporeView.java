@@ -8,10 +8,12 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import GUI.RenderMap.MapSize;
 import sporeTypes.*;
 
 public class SporeView {
     private static final int SPORE_SIZE = 10;
+    private MapSize mapSize;
 
     private Map<String, Image> images;
 
@@ -41,7 +43,19 @@ public class SporeView {
                 Object spore = entry.getValue();
 
                 // Draw spore image
-                drawSporeImage(g2d, spore, pos.x - SPORE_SIZE / 2, pos.y - SPORE_SIZE / 2, SPORE_SIZE, SPORE_SIZE);
+                if(mapSize == MapSize.SMALL) {
+                    g2d.drawImage(images.get("defaultSpore"), pos.x - SPORE_SIZE / 2, pos.y - SPORE_SIZE / 2, SPORE_SIZE,
+                            SPORE_SIZE, null);
+                } else if (mapSize == MapSize.MEDIUM) {
+                    int NEW_SPORE_SIZE = SPORE_SIZE *   4 / 5;
+                    drawSporeImage(g2d, spore, pos.x - NEW_SPORE_SIZE / 2, pos.y - NEW_SPORE_SIZE / 2, NEW_SPORE_SIZE,
+                            NEW_SPORE_SIZE);
+                } else if (mapSize == MapSize.LARGE) {
+                    int NEW_SPORE_SIZE = SPORE_SIZE * 5 / 7;
+                    drawSporeImage(g2d, spore, pos.x - NEW_SPORE_SIZE / 2, pos.y - NEW_SPORE_SIZE / 2, NEW_SPORE_SIZE,
+                            NEW_SPORE_SIZE);
+                }
+                //drawSporeImage(g2d, spore, pos.x - SPORE_SIZE / 2, pos.y - SPORE_SIZE / 2, SPORE_SIZE, SPORE_SIZE);
 
                 // Draw spore name
                 g2d.setColor(Color.WHITE);
@@ -99,4 +113,11 @@ public class SporeView {
         }
     }
 
+    public void setMapSize(MapSize mapSize) {
+        this.mapSize = mapSize;
+    }
+
+    public int getSporeSize() {
+        return SPORE_SIZE;
+    }
 }

@@ -6,8 +6,9 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-
+import utils.*;
 import GUI.FungoriumGamePanel;
+import GUI.RenderMap;
 import commands.CommandProcessor;
 import fungus.FungusSpecies;
 import fungus.FungusThread;
@@ -23,16 +24,28 @@ public class GameLogic {
     private int playerCount = 4; // A játékosok száma
     private int gameTime = 10; // A játék időtartama
     private int round = 0; // Az eltelt idő
+    private boolean IsLoaded = false; // Ha a játék betöltve van
     private String currentSpecies; // Az aktuális játékos
     private BlockingQueue<String> inputQueue = new LinkedBlockingQueue<>();
     // Map
     private Map<String, Tekton> tektons = new HashMap<>();
-
+    private Boolean tektonBreak = false;
     private CommandProcessor commandProcessor;
 
     private Scanner scanner;
     private FungoriumGamePanel gamePanel;
+    private RenderMap.MapSize mapSize = RenderMap.MapSize.MEDIUM;
 
+    public RenderMap.MapSize getMapSize() {
+        return mapSize;
+    }
+
+    public void setIsLoaded(boolean isLoaded) {
+        IsLoaded = isLoaded;
+    }
+    public void setMapSize(RenderMap.MapSize mapSize) {
+        this.mapSize = mapSize;
+    }
     
     public GameLogic() {
         // Initialize the command processor
@@ -43,6 +56,12 @@ public class GameLogic {
         this.gamePanel = panel;
     }
 
+    public void setBreak(Boolean sss){
+        tektonBreak = sss;
+    }
+    public Boolean getBreaking(){
+        return tektonBreak;
+    }
     public FungoriumGamePanel getGamePanel() {
         return gamePanel;
     }
@@ -157,7 +176,7 @@ public class GameLogic {
         //selectPlayers(scanner);
 
         while (gameTime > 0) {
-            takeTurn(scanner);
+            takeTurn(scanner, IsLoaded);
         }
         new ResultScreen(commandProcessor).setVisible(true);
     }
@@ -369,17 +388,26 @@ public class GameLogic {
      * 
      * @param scanner The scanner to read user input.
      */
-    public void takeTurn(Scanner scanner) {
+    public void takeTurn(Scanner scanner, boolean IsLoaded) {
         while (gameTime > 0) {
             System.out.println("---------> Round: " + (round + 1) + " <---------");
             boolean skipRound = false;
             // Iterate through each player and prompt for commands
             for (String playerName : players.keySet()) {
-                Object species = commandProcessor.getCreatedObjects().get(playerName);
-                if(species instanceof FungusSpecies) {
-                    currentSpecies = "Fungus";
-                } else if (species instanceof InsectSpecies) {
-                    currentSpecies = "Insect";
+                if(IsLoaded){
+                    if(!playerName.equals(currentSpecies)){
+                        System.out.println("It's " + playerName + " and " + currentSpecies );  
+                        //itt kene eliteralni a kövi jatekosig
+                        continue;
+                    }else{
+                        IsLoaded = false;
+                        // Color playerColor = gamePanel.getGuiBuilder().getPlayerColor(playerName);
+                        // gamePanel.setPlayerBorderColor(playerColor);
+                        // gamePanel.setCurrentPlayerName(playerName);
+                        skipRound = false;
+                    }
+                }else{
+                    currentSpecies = playerName;
                 }
                 if (skipRound) {
                     break; // Ha a kört át kell ugrani, kilépünk a játékosok ciklusából
@@ -388,6 +416,7 @@ public class GameLogic {
                     Color playerColor = gamePanel.getGuiBuilder().getPlayerColor(playerName);
                     gamePanel.setPlayerBorderColor(playerColor);
                     gamePanel.setCurrentPlayerName(playerName);
+                    System.out.println("It's ----->" + playerName + "'s turn.");
                 }
                 Object player = players.get(playerName);
                 System.out.println("It's " + playerName + "'s turn. Enter a command:");
@@ -430,6 +459,12 @@ public class GameLogic {
                     ((InsectSpecies) playerObj).timeElapsed();
                 }
             }
+            
+            int chanceofBreaking = RandomGenerator.generateRandomNumber(0, 100);
+            if (chanceofBreaking < 5) {
+                tektonBreak = true;
+                System.out.println("There will be a tekton break!");
+            }
 
             round++;
             gameTime--;
@@ -439,6 +474,10 @@ public class GameLogic {
                 break;
             }
         }
+    }
+
+    public int getRound() {
+        return round;
     }
 
     /**
@@ -628,4 +667,17 @@ public class GameLogic {
         }}
         return false;
     }
+    public Map<String, Tekton> getTektons() {
+        return tektons;
+    }
+    public void setTektons(Map<String, Tekton> tektons) {
+        this.tektons = tektons;
+    }
+    public void setRound(int round) {
+        this.round = round;
+    }
+    public void setCurrentSpecies(String species) {
+        this.currentSpecies = species;
+    }
+
 }

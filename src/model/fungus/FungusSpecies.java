@@ -5,12 +5,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import commands.CommandProcessor;
+import fungus.FungusThread;
 import insect.*;
 import tektonTypes.DecomposingTekton;
 import tektonTypes.FeedThreadTekton;
+import tektonTypes.OnlyThreadTekton;
 import tektonTypes.Tekton;
+import utils.Logger;
+import java.io.Serializable;
 
-public class FungusSpecies implements iControl {
+public class FungusSpecies implements iControl, Serializable {
+    private static final long serialVersionUID = 1L;
     // Game Logic
     Integer id;
 
@@ -489,7 +494,7 @@ public class FungusSpecies implements iControl {
                     break;
                 }
             }
-
+            
             originthread.destroy();
         }
 
@@ -560,6 +565,7 @@ public class FungusSpecies implements iControl {
         //! ide lehet beimplementálni, hogy sorba a következő ebből a bodyból eredendő threadek body-ja nullra legyen állítva
         fb.getTekton().setBody(null);
         fb.setTekton(null);
+        deleteBody(fb);
     }
 
     /**

@@ -6,11 +6,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
+import java.io.Serializable;
 
 import sporeTypes.Spore;
 import tektonTypes.Tekton;
+import utils.*;
 
-public class FungusBody {
+public class FungusBody implements Serializable {
+    private static final long serialVersionUID = 1L;
     private Integer sporeCount;
     private Integer sporulateLeft;
     private List<FungusThread> threads;
@@ -135,7 +138,7 @@ public class FungusBody {
     
                 for (Tekton neighbour : current.getNeighbours()) {
                     if (neighbour != this.tekton && !visited.contains(neighbour)) {
-                        Spore tempSpore = new Spore();
+                        Spore tempSpore = RandomGenerator.generateRandomSpore();
                         neighbour.addSpore(tempSpore);
                         tempSpore.setTekton(neighbour);
                         sporeCount--;

@@ -6,11 +6,16 @@ import insect.Insect;
 
 import sporeTypes.Spore;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import commands.CommandProcessor;
+import utils.Logger;
+import java.io.Serializable;
 
-public class Tekton {
+public class Tekton implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private Boolean canGrowBody;
     private Boolean canGrowThread;
     private List<Spore> spores;
@@ -278,61 +283,52 @@ public class Tekton {
             Insect insect = insects.get(i);
             insect.deadInsect(commandProcessor);
         }
-        for (FungusThread ft : threads) {
+        for (int i = threads.size() -1; i>=0; i--) {
+            FungusThread ft = threads.get(i);
             ft.setIsDying(true);
             ft.setLifeSpan(0);
             ft.getSpecies().destroyThread(ft);
+            ft.getTektons().get(0).removeThread(ft);
+            if (ft.isBridge()) {
+                ft.getTektons().get(1).removeThread(ft);
+            }
+            ft.getTektons().clear();
             String objKey = commandProcessor.findByObject(ft);
+            if (objKey != null) {
+                commandProcessor.getCreatedObjects().remove(objKey);
+                commandProcessor.getCreatedObjects().remove(objKey);
+            }else System.out.println("Not found");
+        }
+        threads.clear();
+        for (int i = spores.size() - 1; i >= 0; i--) {
+            Spore spore = spores.get(i);
+            spore.absorbed();
+            String objKey = commandProcessor.findByObject(spore);
             if (objKey != null) {
                 commandProcessor.getCreatedObjects().remove(objKey);
             }
         }
-        for (int i = spores.size() - 1; i >= 0; i--) {
-            Spore spore = spores.get(i);
-            spore.absorbed();
-        }
         if (body != null) {
+            body.getSpecies().destroyBody(body);
             String objKey = commandProcessor.findByObject(body);
             if (objKey != null) {
                 commandProcessor.getCreatedObjects().remove(objKey);
             }
-            body.getSpecies().deleteBody(body);
-            body.setSporulateLeft(0);
-            body.getSpecies().destroyBody(body);
-            
         }
     
         // Létrehozzuk az új Tektonokat
         Tekton t1 = new Tekton(this);
         Tekton t2 = new Tekton(this);
-        t1.neighbours = new ArrayList<>();
         t2.neighbours = new ArrayList<>();
         
     
-        // Szomszédok felosztása
-        int mid = neighbours.size() / 2;
-        List<Tekton> t1Neighbours = new ArrayList<>(neighbours.subList(0, mid));
-        List<Tekton> t2Neighbours = new ArrayList<>(neighbours.subList(mid, neighbours.size()));
-    
+        // Szomszédok felosztása 
+        List<Tekton> t1Neighbours = new ArrayList<>(this.neighbours);
         // Az új Tektonok szomszédainak beállítása
         for (Tekton neighbour : t1Neighbours) {
             neighbour.removeNeighbour(this);
             neighbour.addNeighbour(t1);
-            t1.addNeighbour(neighbour);
         }
-    
-        for (Tekton neighbour : t2Neighbours) {
-            neighbour.removeNeighbour(this);
-            neighbour.addNeighbour(t2);
-            t2.addNeighbour(neighbour);
-        }
-    
-        // Az új Tektonok egymás szomszédai lesznek
-        t1.addNeighbour(t2);
-        t2.addNeighbour(t1);
-        t1.getThreads().clear();
-        t2.getThreads().clear();
-        
         String objKey = commandProcessor.findByObject(this);
         commandProcessor.getCreatedObjects().remove(objKey);
         // Az eredeti Tekton szomszédainak törlése

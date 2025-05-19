@@ -6,6 +6,7 @@ import java.awt.*;
 public class Settings {
 
     public static void showSettings(JFrame parent, GameLogic gameLogic) {
+        FungoriumGamePanel gamePanel = new FungoriumGamePanel(gameLogic, null);
         // Új ablak létrehozása
         JFrame settingsFrame = new JFrame("Beállítások");
         settingsFrame.setSize(800, 800);
@@ -31,6 +32,7 @@ public class Settings {
         JButton SetTypeAndNameButton = createStyledButton("Játekosok típusa és neve");
         JButton LoadButton = createStyledButton("Load Game");
         JButton Rounds = createStyledButton("Körök száma: " + gameLogic.getGameTime());
+        JButton MapSize = createStyledButton("Pálya mérete: " + gameLogic.getMapSize());
         // JButton button5 = createStyledButton("Gomb 5");
         // JButton button6 = createStyledButton("Gomb 6");
 
@@ -51,9 +53,9 @@ public class Settings {
         gbc.gridy = 1;
         buttonPanel.add(Rounds, gbc);
 
-        // gbc.gridx = 0;
-        // gbc.gridy = 2;
-        // buttonPanel.add(button5, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        buttonPanel.add(MapSize, gbc);
 
         // gbc.gridx = 1;
         // gbc.gridy = 2;
@@ -110,6 +112,46 @@ public class Settings {
             }
         });
         
+        MapSize.addActionListener(e -> {
+            String[] options = {"small", "medium", "large"};
+            String current = gameLogic.getMapSize().name().toLowerCase();
+            String selected = (String) JOptionPane.showInputDialog(
+                settingsFrame,
+                "Válaszd ki a pályaméretet:",
+                "Pályaméret",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                current
+            );
+            if (selected != null) {
+                RenderMap.MapSize chosen = RenderMap.MapSize.valueOf(selected.toUpperCase());
+                gameLogic.setMapSize(chosen);
+                MapSize.setText("Pályaméret: " + selected);
+            }
+        });
+
+        LoadButton.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
+                String filename = fileChooser.getSelectedFile().getAbsolutePath();
+                Thread gameThread = new Thread(() -> gameLogic.startGame());
+                gameLogic.setIsLoaded(true);
+
+                // Játék GUI indítása betöltés után, mint a MainMenu-ban:
+                settingsFrame.dispose(); // Bezárja a Settings ablakot
+                FungoriumGUIBuilder builder = new FungoriumGUIBuilder(gameLogic, null);
+                SaveLoadHandler saveLoadHandler = new SaveLoadHandler(gameLogic, builder.getGamePanel());
+                saveLoadHandler.loadGame(filename);
+                builder.createAndShowGUI();
+                builder.assignPlayerColors();
+                gameLogic.getCommandProcessor().processConfigText("configWithoutStatus");
+                gameThread.start();
+
+                JOptionPane.showMessageDialog(parent, "Játék betöltve: " + filename);
+            }
+        });
+
         SetTypeAndNameButton.addActionListener(e -> {
             // getter kell hozzá!
             java.util.Map<String, Object> playerMap = gameLogic.getPlayers(); 
@@ -167,6 +209,12 @@ public class Settings {
                     if (fungusCount < 2 || insectCount < 2) {
                         JOptionPane.showMessageDialog(settingsFrame,
                             "Legalább 2 FUNGUS és 2 INSECT játékos szükséges!",
+                            "Hiba", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    if (fungusCount+insectCount > 8) {
+                        JOptionPane.showMessageDialog(settingsFrame,
+                            "Maximum 8 játékos engedélyezett!",
                             "Hiba", JOptionPane.ERROR_MESSAGE);
                         return;
                     }

@@ -1,4 +1,7 @@
 /create tekton t1
+/create tekton t7
+/create tekton t8
+/create tekton t9
 /create decomptekton t2
 /create decreasetekton t3
 /create feedthreadtekton t4
@@ -6,10 +9,6 @@
 /create onlythreadtekton t6
 /create insect i1
 /create insect i2
-/create fungusspecies sp1
-/create fungusspecies sp2
-/create insectspecies sp3
-/create insectspecies sp4
 /create thread th1
 /create thread th2
 /create thread th3
