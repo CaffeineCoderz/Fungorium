@@ -141,22 +141,23 @@ public class MainMenu extends JFrame {
         String currentWorkingDirectory = System.getProperty("user.dir");
         System.out.println("Current Working Directory: " + currentWorkingDirectory);
 
-        StringBuilder rulesText = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader("src/GUI/DATA/GameRules.txt"))) {
+        StringBuilder rulesHtml = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new FileReader("src/GUI/DATA/GameRules.html"))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                rulesText.append(line).append("\n");
+                rulesHtml.append(line).append("\n");
             }
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Hiba történt a játékszabályok fájl beolvasása közben!\nKeresett hely: " + currentWorkingDirectory + "\\GameRules.txt", "Hiba", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Hiba történt a játékszabályok fájl beolvasása közben!\nKeresett hely: "
+                    + currentWorkingDirectory + "\\GameRules.html", "Hiba", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
             return;
         }
 
-        JTextArea textArea = new JTextArea(rulesText.toString());
-        textArea.setEditable(false);
-        JScrollPane scrollPane = new JScrollPane(textArea);
-        scrollPane.setPreferredSize(new Dimension(350, 250));
+        JEditorPane editorPane = new JEditorPane("text/html", rulesHtml.toString());
+        editorPane.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(editorPane);
+        scrollPane.setPreferredSize(new Dimension(500, 400));
 
         JOptionPane.showMessageDialog(this, scrollPane, "Játékszabályok", JOptionPane.INFORMATION_MESSAGE);
     }

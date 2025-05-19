@@ -918,18 +918,59 @@ public class FungoriumGamePanel extends JPanel {
     }
 
     private void positionInsects() {
+        // 1. Threadenként gyűjtsük a rovarokat
+        Map<String, List<String>> threadToInsects = new HashMap<>();
         for (Map.Entry<String, Object> entry : gameLogic.getCommandProcessor().getCreatedObjects().entrySet()) {
             if (entry.getValue() instanceof Insect) {
                 Insect insect = (Insect) entry.getValue();
                 FungusThread thread = insect.getThread();
-
                 if (thread != null) {
                     String threadName = gameLogic.getCommandProcessor().findByObject(thread);
-                    if (threadName != null && objectPositions.containsKey(threadName)) {
-                        Point threadPos = objectPositions.get(threadName);
-                        objectPositions.put(entry.getKey(), new Point(threadPos.x, threadPos.y - 13));
+                    if (threadName != null) {
+                        threadToInsects.computeIfAbsent(threadName, k -> new ArrayList<>()).add(entry.getKey());
                     }
                 }
+            }
+        }
+    
+        // 2. Minden threadre helyezzük el a rovarokat
+        for (Map.Entry<String, List<String>> e : threadToInsects.entrySet()) {
+            String threadName = e.getKey();
+            List<String> insects = e.getValue();
+            if (!objectPositions.containsKey(threadName) || insects.isEmpty()) continue;
+    
+            // Thread végpontjai
+            Point start = threadEndpoints.get(threadName + "_start");
+            Point end = threadEndpoints.get(threadName + "_end");
+            Point center = objectPositions.get(threadName);
+    
+            if (start == null || end == null || center == null) continue;
+    
+            // Thread irányvektor
+            double dx = end.x - start.x;
+            double dy = end.y - start.y;
+            double length = Math.hypot(dx, dy);
+            if (length == 0)
+                length = 1; // elkerülni a 0-val osztást
+
+            // Irányvektor (unit vector) a thread mentén
+            double dirX = dx / length;
+            double dirY = dy / length;
+            int offset = 18; // mennyire tolja el a rovart a középponttól
+
+            // Max 3 rovar
+            for (int i = 0; i < Math.min(3, insects.size()); i++) {
+                String insectName = insects.get(i);
+                int px = center.x;
+                int py = center.y;
+                if (i == 1) { // előre a thread mentén
+                    px += (int) (dirX * offset);
+                    py += (int) (dirY * offset);
+                } else if (i == 2) { // hátra a thread mentén
+                    px -= (int) (dirX * offset);
+                    py -= (int) (dirY * offset);
+                }
+                objectPositions.put(insectName, new Point(px, py));
             }
         }
     }

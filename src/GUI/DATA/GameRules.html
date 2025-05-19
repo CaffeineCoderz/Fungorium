@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Fungorium – Játékszabályok</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f8f8f8; color: #222; margin: 20px; }
+        h1, h2, h3 { color: #2a5d8f; }
+        ul, ol { margin-left: 1.5em; }
+        hr { margin: 2em 0; }
+        code { background: #eee; padding: 2px 4px; border-radius: 3px; }
+        .tip { color: #197d30; }
+    </style>
+</head>
+<body>
+<h1>Fungorium – Játékszabályok</h1>
+
+<h2>Alapok</h2>
+<ul>
+    <li><strong>A színes keret</strong> a játéktábla körül mutatja, hogy éppen melyik játékos van soron.</li>
+    <li><strong>Minden játékos csak a saját színével jelölt objektumokat</strong> (gombatest, fonal, rovar, spóra) kezelheti, azaz csak a saját dolgait növesztheti, mozgathatja vagy használhatja fel.</li>
+</ul>
+<hr>
+
+<h2>Főbb fogalmak</h2>
+<ul>
+    <li><strong>Tekton</strong>: A pálya mezői, amelyeken gombák és rovarok élhetnek.</li>
+    <li><strong>Gombatest (FungusBody)</strong>: Egy tektonon legfeljebb egy nőhet.</li>
+    <li><strong>Gombafonal (FungusThread)</strong>: A gombatestből nőhet, összeköti a tektonokat.</li>
+    <li><strong>Spóra (Spore)</strong>: A gombatestek termelik, különböző hatásokat fejtenek ki.</li>
+    <li><strong>Rovar (Insect)</strong>: A rovarfajok egyedei, mozoghatnak a fonalakon és tektonokon.</li>
+</ul>
+<hr>
+
+<h2>Növesztés szabályai</h2>
+
+<h3>Gombatest növesztése (<code>growbody</code>)</h3>
+<ul>
+    <li>Csak olyan tektonon lehet új gombatestet növeszteni, amelyen még nincs gombatest.</li>
+    <li>A tektonnak szomszédosnak kell lennie egy olyan tektonnal, ahol már van saját gombafonal vagy gombatest.</li>
+    <li>Egyes tekton típusokon nem lehet gombatestet növeszteni (pl. OnlyThreadTekton).</li>
+    <li>A növesztéshez ki kell választani egy megfelelő tekton objektumot a térképen.</li>
+</ul>
+
+<h3>Gombafonal növesztése (<code>growthread</code>)</h3>
+<ul>
+    <li>Csak olyan tektonra lehet fonalat növeszteni, amely szomszédos a kiindulási gombatesttel vagy fonallal.</li>
+    <li>Egy tektonon több fonal is lehet, de bizonyos típusok (pl. OneThreadTekton) csak egyet engednek.</li>
+    <li>A növesztéshez először ki kell választani a kiinduló objektumot (gombatest vagy fonal), majd a cél tekton objektumot.</li>
+</ul>
+
+<h3>Spóraszórás (<code>sporulate</code>)</h3>
+<ul>
+    <li>Csak akkor lehet spórát szórni, ha a gombatest már elég ideje létezik (sporulateleft &gt; 0).</li>
+    <li>A spóra a kiválasztott gombatest szomszédos tektonjaira kerülhet.</li>
+</ul>
+<hr>
+
+<h2>Rovarok és akcióik</h2>
+<ul>
+    <li><strong>Mozgás</strong>: A rovarok a fonalakon keresztül mozoghatnak, a mozgás sebességét befolyásolhatják a spórák.</li>
+    <li><strong>Fonal elvágása</strong>: Egy rovar elvághat egy fonalat, ha azon tartózkodik.</li>
+    <li><strong>Rovar megevése</strong>: Egy gombafonál megehet egy rovart, ha az bénítva van és rajta tartózkodik.</li>
+</ul>
+<hr>
+
+<h2>Gombok és kiválasztás</h2>
+<ul>
+    <li><strong>Objektum kiválasztása</strong>: Kattints a térképen egy objektumra (tekton, fonal, gombatest, rovar, spóra), hogy kijelöld.</li>
+    <li><strong>Akciógombok</strong>: A kijelölt objektum(ok) alapján jelennek meg a lehetséges akciók (pl. "Növesztés", "Spóraszórás", "Mozgás" stb.).</li>
+    <li><strong>Cél kiválasztása</strong>: Egyes akciók (pl. fonal növesztése, rovar mozgatása) után a játék felszólít, hogy válassz cél objektumot a térképen.</li>
+</ul>
+<hr>
+
+<h2>Játék menete</h2>
+<ol>
+    <li><strong>Körök</strong>: A játék körökre oszlik, minden játékos egymás után lép.</li>
+    <li><strong>Lépés</strong>: Egy körben a játékos kiválaszt egy vagy több objektumot, majd végrehajt egy akciót (pl. növeszt, mozgat, spórát szór).</li>
+    <li><strong>Feltételek ellenőrzése</strong>: Az akciók csak akkor hajthatók végre, ha teljesülnek a feltételek (pl. szomszédos tekton, nincs már ott gombatest stb.).</li>
+    <li><strong>Kör vége</strong>: A játékos a "Kör vége" gombbal zárhatja a körét, ekkor a következő játékos következik.</li>
+    <li><strong>Győzelem</strong>: A játék végén a legtöbb pontot szerző faj nyer.</li>
+</ol>
+<hr>
+
+<h2>Tippek</h2>
+<ul>
+    <li class="tip">Mindig figyeld, hogy melyik objektum van kijelölve, mert az határozza meg, milyen akciókat hajthatsz végre!</li>
+    <li class="tip">Ha egy akció nem hajtható végre, a játék hibaüzenetet ír ki.</li>
+    <li class="tip">A színes keret mutatja, hogy éppen melyik játékos van soron.</li>
+</ul>
+</body>
+</html>
