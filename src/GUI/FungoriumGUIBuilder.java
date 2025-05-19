@@ -134,6 +134,13 @@ public class FungoriumGUIBuilder {
         return playerColors.getOrDefault(playerName, Color.GRAY);
     }
 
+    public HashMap<String, Color> getPlayerColors() {
+        return playerColors;
+    }
+
+    public void setPlayerColors(HashMap<String, Color> colors) {
+        this.playerColors = colors;
+    }
     public void assignPlayerColors() {
         System.out.println("Assigning player colors...");
         playerColors.clear();

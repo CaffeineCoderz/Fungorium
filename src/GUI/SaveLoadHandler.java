@@ -4,9 +4,11 @@ import logic.GameLogic;
 import tektonTypes.Tekton;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.awt.Color;
 
 public class SaveLoadHandler {
 private GameLogic gameLogic;
@@ -34,6 +36,7 @@ public void saveGame(String filename) {
         out.writeObject(gamePanel.getTektonCardinalPoints());
         out.writeObject(gamePanel.getSelectedObjects());
         out.writeObject(gamePanel.getOccupiedCells());
+        out.writeObject(((FungoriumGUIBuilder)gamePanel.getGuiBuilder()).getPlayerColors()); // playerColors mentése
         System.out.println("objectPositions: " + gamePanel.getObjectPositions());
         System.out.println("threadEndpoints: " + gamePanel.getThreadEndpoints());
         System.out.println("tektonCardinalPoints: " + gamePanel.getTektonCardinalPoints());
@@ -75,7 +78,11 @@ public void loadGame(String filename) {
         } else {
             gamePanel.setSelectedObjects(new ArrayList<>());
         }
-        gamePanel.setOccupiedCells((Set<java.awt.Point>) in.readObject());     
+        gamePanel.setOccupiedCells((Set<java.awt.Point>) in.readObject());
+        Object pcObj = in.readObject();
+        if (pcObj instanceof HashMap) {
+            ((FungoriumGUIBuilder)gamePanel.getGuiBuilder()).setPlayerColors((HashMap<String, Color>) pcObj);
+        }
         System.out.println("Soron következő játékos: " + gameLogic.getCurrentSpecies());              
         System.out.println("Game loaded successfully.");
     } catch (Exception e) {
