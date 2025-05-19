@@ -19,6 +19,7 @@ public class Settings {
         // Új ablak létrehozása
         JFrame settingsFrame = new JFrame("Beállítások");
         settingsFrame.setSize(800, 800);
+        settingsFrame.setResizable(false);
         settingsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         settingsFrame.setLocationRelativeTo(parent);
 
