@@ -106,7 +106,8 @@ public class FungoriumGUIBuilder {
         frame.getContentPane().setLayout(new BorderLayout());
         frame.getContentPane().add(loadingPanel, BorderLayout.CENTER);
         frame.pack();
-        frame.setLocationRelativeTo(null);
+        // frame.setLocationRelativeTo(null);
+        frame.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width - frame.getWidth()) / 2, 0); 
         frame.setResizable(false);
         frame.setVisible(true);
 
@@ -256,6 +257,7 @@ public class FungoriumGUIBuilder {
         JFrame frame = new JFrame("Fungorium Game");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         ToolTipManager.sharedInstance().setInitialDelay(100);
+        frame.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width - frame.getWidth()) / 2, 0);
         return frame;
     }
 
@@ -290,6 +292,7 @@ public class FungoriumGUIBuilder {
             moveButton.addActionListener(e -> gamePanel.moveLogic());
             eatSporeButton = createImageButton("src/resources/buttons/eat1.png", 110, 220);
             eatSporeButton.setToolTipText("Eat Spore");
+            eatSporeButton.addActionListener(e -> gamePanel.eatSporeLogic());
 
             panel.add(createUpdateButton(gamePanel));
             panel.add(createSaveButton(gamePanel));

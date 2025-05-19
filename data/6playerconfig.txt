@@ -8,8 +8,6 @@
 /create tekton t8
 /create tekton t9
 /create tekton t10
-/create tekton t11
-/create tekton t12
 /set t1 addneighbour t2
 /set t1 addneighbour t5
 /set t1 addneighbour t3
@@ -18,13 +16,8 @@
 /set t5 addneighbour t6
 /set t2 addneighbour t8
 /set t5 addneighbour t4
-/set t8 addneighbour t9
-/set t9 addneighbour t10
-/set t10 addneighbour t4
-/set t6 addneighbour t11
-/set t11 addneighbour t12
-/set t12 addneighbour t10
-
+/set t9 addneighbour t8
+/set t10 addneighbour t9
 /create body b1
 /create body b2
 /create body b3
@@ -38,8 +31,8 @@
 /set t7 body b1
 /set b2 tekton t4
 /set t4 body b2
-/set b3 tekton t9
-/set t9 body b3
+/set b3 tekton t10
+/set t10 body b3
 
 /create thread th1
 /create thread th2
@@ -76,16 +69,20 @@
 /set b2 addthread th3
 /set th3 next th4
 /set th4 prev th3
-/set th4 prevbody b2
+/set th4 prevbody b1
 /set th4 addtekton t4
 /set th4 addtekton t5
 /set t4 addthread th3
 /set t4 addthread th4
 /set th4 bridge true
-/set th5 addtekton t9
+/set th5 addtekton t10
 /set th5 prevbody b3
 /set b3 addthread th5
-/set th6 addtekton t11
+/set th5 next th6
+/set th6 addtekton t10
+/set th6 addtekton t9
+/set th6 prevbody b3
+/set th6 prev th5
 
 /create insect i1
 /create insect i2
@@ -103,18 +100,14 @@
 /set i2 tekton t4
 /set t4 addinsect i2
 /set i3 thread th5
-/set i3 tekton t9
-/set t9 addinsect i3
-/set i3 thread th6
-/set i3 tekton t11
-/set t11 addinsect i3
+/set i3 tekton t10
+/set t10 addinsect i3
+
 
 /create spore s1
 /create spore s2
 /create spore s3
 /create spore s4
-/create spore s5
-/create spore s6
 /set s1 tekton t3
 /set t3 addspore s1
 /set s2 tekton t5
@@ -123,10 +116,6 @@
 /set t9 addspore s3
 /set s4 tekton t10
 /set t10 addspore s4
-/set s5 tekton t6
-/set t6 addspore s5
-/set s6 tekton t12
-/set t12 addspore s6
 /set b1 sporecount 1
 /set b2 sporecount 1
 /set b3 sporecount 1
