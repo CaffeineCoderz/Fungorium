@@ -344,7 +344,7 @@ public class FungoriumGamePanel extends JPanel {
                     }
                     if (waitingForTarget && cutThreadCalled) {
                         try {
-                            if (gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName) instanceof FungusThread) {
+                            if (clickedObjectName!=null&&gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName) instanceof FungusThread) {
                                 String command = "cut " + clickedObjectName + " " + origin;
                                 gameLogic.getInputQueue().put(command);
                             } else {
