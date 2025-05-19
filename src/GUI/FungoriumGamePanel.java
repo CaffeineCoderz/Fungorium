@@ -2308,6 +2308,18 @@ public class FungoriumGamePanel extends JPanel {
         // Esetleg üzenet a felhasználónak:
         JOptionPane.showMessageDialog(this, "Válaszd ki a célhelyet a térképen!");
     }
+
+    
+    /**
+     * Starts the process of growing a new FungusThread object from the currently
+     * selected object, as if the user had clicked the "Grow thread" action button
+     * again.
+     * 
+     * The method sets the waitingForTarget flag to true, indicating that the
+     * program is waiting for the user to select a target object in the game world.
+     * It also displays a message dialog to the user, instructing them to select a
+     * target object.
+     */
     public void growThreadRecalled(){
         waitingForTarget = true; // Most várunk egy célkijelölést
         growThreadRepeated=true;
