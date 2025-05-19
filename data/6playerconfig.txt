@@ -28,23 +28,18 @@
 /create body b1
 /create body b2
 /create body b3
-/create body b4
 /set b1 species Fungus1
 /set b2 species Fungus3
 /set b3 species Fungus5
-/set b4 species Fungus5
 /set Fungus1 addbody b1
 /set Fungus3 addbody b2
 /set Fungus5 addbody b3
-/set Fungus5 addbody b4
 /set b1 tekton t7
 /set t7 body b1
 /set b2 tekton t4
 /set t4 body b2
 /set b3 tekton t9
 /set t9 body b3
-/set b4 tekton t11
-/set t11 body b4
 
 /create thread th1
 /create thread th2
@@ -91,8 +86,6 @@
 /set th5 prevbody b3
 /set b3 addthread th5
 /set th6 addtekton t11
-/set th6 prevbody b4
-/set b4 addthread th6
 
 /create insect i1
 /create insect i2
@@ -137,4 +130,3 @@
 /set b1 sporecount 1
 /set b2 sporecount 1
 /set b3 sporecount 1
-/set b4 sporecount 1
