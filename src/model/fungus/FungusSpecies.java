@@ -424,7 +424,7 @@ public class FungusSpecies implements iControl, Serializable {
         // bodies iterálása Iteratorral
         List<FungusBody> toRemove = new ArrayList<>();
         for (FungusBody body : bodies) {
-            if (body.getSporulateLeft() == 0) {
+            if (body.getSporulateLeft() <= 0) {
                 String objKey = cmdproc.findByObject(body);
                 if (objKey != null) {
                     cmdproc.getCreatedObjects().remove(objKey);
@@ -442,15 +442,24 @@ public class FungusSpecies implements iControl, Serializable {
         while (threadIterator.hasNext()) {
             FungusThread thread = threadIterator.next();
             destroyThread(thread);
+            if (thread.getLifeSpan() != null && thread.getLifeSpan() == 0) {
+                for (Tekton tekton : thread.getTektons()) {
+                List<Insect> insects = tekton.getInsects();
+                    for (Insect insect : insects) {
+                        if (insect.getThread() == thread) {
+                            insect.deadInsect(cmdproc);
+                        }
+                    }
+                }
+            }
+            
             String objKey = cmdproc.findByObject(thread);
             if (thread.getLifeSpan() != null) {
                 if (objKey != null && thread.getLifeSpan() == 0) {
                     cmdproc.getCreatedObjects().remove(objKey);
                 }
             }
-            // Ha destroyThread vagy más logika miatt törölni kellene, akkor:
-            // threadIterator.remove();
-            // Csak akkor használd, ha tényleg törölni akarod a listából!
+            
         }
     }
 

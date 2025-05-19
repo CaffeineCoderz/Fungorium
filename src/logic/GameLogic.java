@@ -485,6 +485,7 @@ public class GameLogic {
                 }
             }
             
+            
             int chanceofBreaking = RandomGenerator.generateRandomNumber(0, 100);
             if (chanceofBreaking < 5) {
                 tektonBreak = true;
