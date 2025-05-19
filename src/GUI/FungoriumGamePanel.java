@@ -1995,6 +1995,10 @@ public class FungoriumGamePanel extends JPanel {
             breakTektonEvent();
             gameLogic.setBreak(false);
         }
+        if (gameLogic.isNewRound()) {
+            livingObjecstUpdate();
+            gameLogic.setNewRound(false);
+        }
         positionDependentObjects();
         revalidate();
         repaint();

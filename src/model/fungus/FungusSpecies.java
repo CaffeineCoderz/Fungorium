@@ -3,6 +3,7 @@ package fungus;
 import interfaces.iControl;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
 
 import commands.CommandProcessor;
 import fungus.FungusThread;
@@ -420,28 +421,34 @@ public class FungusSpecies implements iControl, Serializable {
     }
 
     public void timeElapsed(CommandProcessor cmdproc) {
-        List<FungusBody> removeBodies = new ArrayList<>();
-        for (FungusBody body : bodies) {
-            if (body.getSporulateLeft()==0) {;
+        // bodies iterálása Iteratorral
+        Iterator<FungusBody> bodyIterator = bodies.iterator();
+        while (bodyIterator.hasNext()) {
+            FungusBody body = bodyIterator.next();
+            if (body.getSporulateLeft() == 0) {
                 String objKey = cmdproc.findByObject(body);
                 if (objKey != null) {
                     cmdproc.getCreatedObjects().remove(objKey);
                 }
                 destroyBody(body);
-                removeBodies.add(body);
-            }else {
+            } else {
                 body.produceSpore();
             }
         }
-        bodies.removeAll(removeBodies);
-        for (FungusThread thread : threads) {
+        // threads iterálása Iteratorral
+        Iterator<FungusThread> threadIterator = threads.iterator();
+        while (threadIterator.hasNext()) {
+            FungusThread thread = threadIterator.next();
             destroyThread(thread);
             String objKey = cmdproc.findByObject(thread);
-            if(thread.getLifeSpan()!=null){
-                if (objKey != null &&  thread.getLifeSpan() == 0) {
+            if (thread.getLifeSpan() != null) {
+                if (objKey != null && thread.getLifeSpan() == 0) {
                     cmdproc.getCreatedObjects().remove(objKey);
                 }
             }
+            // Ha destroyThread vagy más logika miatt törölni kellene, akkor:
+            // threadIterator.remove();
+            // Csak akkor használd, ha tényleg törölni akarod a listából!
         }
     }
 

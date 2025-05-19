@@ -29,7 +29,10 @@ public class GameLogic {
     private BlockingQueue<String> inputQueue = new LinkedBlockingQueue<>();
     // Map
     private Map<String, Tekton> tektons = new HashMap<>();
+    
     private Boolean tektonBreak = false;
+    private Boolean newRound = false;
+
     private CommandProcessor commandProcessor;
 
     private Scanner scanner;
@@ -61,6 +64,12 @@ public class GameLogic {
     }
     public Boolean getBreaking(){
         return tektonBreak;
+    }
+    public void setNewRound(Boolean sss){
+        newRound = sss;
+    }
+    public Boolean isNewRound(){
+        return newRound;
     }
     public FungoriumGamePanel getGamePanel() {
         return gamePanel;
@@ -470,7 +479,7 @@ public class GameLogic {
             // Update game state after all players have taken their turns
             for (Object playerObj : players.values()) {
                 if (playerObj instanceof FungusSpecies) {
-                    ((FungusSpecies) playerObj).timeElapsed();
+                    ((FungusSpecies) playerObj).timeElapsed(commandProcessor);
                 } else if (playerObj instanceof InsectSpecies) {
                     ((InsectSpecies) playerObj).timeElapsed();
                 }
@@ -483,6 +492,7 @@ public class GameLogic {
             }
 
             round++;
+            newRound = true;
             gameTime--;
 
             if (gameTime <= 0) {
