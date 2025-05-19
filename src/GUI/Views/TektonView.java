@@ -112,6 +112,10 @@ public class TektonView {
     public static int getTektonSize() {
         return TEKTON_SIZE;
     }
+    /**
+     * Loads the circular tekton images from the resources folder.
+     * If the images are not found, a log message is printed.
+     */
     private void loadImages() {
         try {
             // * Load CIRCULAR tekton images
@@ -126,6 +130,13 @@ public class TektonView {
             System.err.println("Error loading resources: " + e.getMessage());
         }
     }
+    /**
+     * Creates a circular image from a given input image by masking the non-circular parts and
+     * applying a semi-transparent black layer to reduce the brightness of the image.
+     * 
+     * @param input the input image to be modified
+     * @return the circular image
+     */
     private BufferedImage createCircularImage(BufferedImage input) {
         int size = Math.min(input.getWidth(), input.getHeight());
         BufferedImage circleBuffer = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
