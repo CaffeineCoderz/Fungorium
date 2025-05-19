@@ -54,6 +54,7 @@ public class FungoriumGamePanel extends JPanel {
     private boolean cutThreadCalled = false;
     private boolean moveCalled = false;
     public String origin;
+    private boolean growThreadRepeated= false;
 
     // Sizes
     private static final int THREAD_WIDTH = 3;
@@ -139,8 +140,9 @@ public class FungoriumGamePanel extends JPanel {
                     // --- Handle "waiting for target" actions first ---
                     if (waitingForTarget && growthThreadCalled) {
                         int num = gameLogic.getCommandProcessor().getCreatedObjects().size();
+                        Object target = null;
+                        boolean callednext= false;
                         try {
-                            Object target = null;
                             if(clickedObjectName!=null){
                                 target = gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName);
                             }
@@ -163,10 +165,63 @@ public class FungoriumGamePanel extends JPanel {
                         }
                         if(gameLogic.getCommandProcessor().getCreatedObjects().size() > num){
                             //System.out.println("Thread grown.");
+                            
                             updateStatusPanels();
                             positionDependentObjects();
                             revalidate();
                             repaint();
+                            Tekton tekton = (Tekton) target;
+                            if(tekton.getSpores().size()>0&&!growThreadRepeated){
+                                callednext = true;
+                                growThreadRecalled();
+                            }
+                            
+                        }
+                        else{
+                            JOptionPane.showMessageDialog(FungoriumGamePanel.this, "Thread not grown. Again");
+                        }
+                        SwingUtilities.invokeLater(() -> {
+                            guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
+                        });
+                        if(!callednext){
+                            try{
+                                gameLogic.getInputQueue().put("next");
+                            } catch (InterruptedException ev) {
+                                ev.printStackTrace();
+                            }
+                        }
+                        return;
+                    }
+                    if(waitingForTarget && growThreadRepeated) {
+                        int num = gameLogic.getCommandProcessor().getCreatedObjects().size();
+                        origin = "th"+ gameLogic.getCommandProcessor().countObjectsOfType(FungusThread.class);
+                        System.out.println("Origin: " + origin);
+                        Object target = null;
+                        try {
+                            if(clickedObjectName!=null){
+                                target = gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName);
+                            }
+                            if (target instanceof Tekton|| target instanceof OneThreadTekton || target instanceof DecomposingTekton || target instanceof DecreasingTekton|| target instanceof FeedThreadTekton|| target instanceof OnlyThreadTekton) {
+                                String command = "growthread " + clickedObjectName + " " + origin;
+                                gameLogic.getInputQueue().put(command);
+                            } else {
+                                JOptionPane.showMessageDialog(FungoriumGamePanel.this, "Invalid target for thread growth.");
+                            }
+                        } catch (InterruptedException er) {
+                            er.printStackTrace();
+                        }
+                        try {
+                            Thread.sleep(200); // Wait for 0.2 seconds (200 milliseconds)
+                        } catch (InterruptedException ev) {
+                            ev.printStackTrace();
+                        }
+                        if(gameLogic.getCommandProcessor().getCreatedObjects().size() > num){
+                            //System.out.println("Thread grown.");
+                            
+                            updateStatusPanels();
+                            positionDependentObjects();
+                            revalidate();
+                            repaint();              
                         }
                         else{
                             JOptionPane.showMessageDialog(FungoriumGamePanel.this, "Thread not grown.");
@@ -174,6 +229,12 @@ public class FungoriumGamePanel extends JPanel {
                         SwingUtilities.invokeLater(() -> {
                             guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
                         });
+                        try{
+                                gameLogic.getInputQueue().put("next");
+                            } catch (InterruptedException ev) {
+                                ev.printStackTrace();
+                            }
+                        growThreadRepeated = false;
                         return;
                     }
                     if (waitingForTarget && eatInsectCalled) {
@@ -207,6 +268,11 @@ public class FungoriumGamePanel extends JPanel {
                         } else {
                             JOptionPane.showMessageDialog(FungoriumGamePanel.this, "Insect not eaten.");
                         }
+                        try{
+                                gameLogic.getInputQueue().put("next");
+                            } catch (InterruptedException ev) {
+                                ev.printStackTrace();
+                            }
                         return;
                     }
                     if (waitingForTarget && cutThreadCalled) {
@@ -226,6 +292,11 @@ public class FungoriumGamePanel extends JPanel {
                             guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
                             updateStatusPanels();
                         });
+                        try{
+                                gameLogic.getInputQueue().put("next");
+                            } catch (InterruptedException ev) {
+                                ev.printStackTrace();
+                            }
                         return;
                     }
                     if (waitingForTarget && moveCalled) {
@@ -249,6 +320,11 @@ public class FungoriumGamePanel extends JPanel {
                             revalidate();
                             repaint();
                         });
+                        try{
+                                gameLogic.getInputQueue().put("next");
+                            } catch (InterruptedException ev) {
+                                ev.printStackTrace();
+                            }
                         return;
                     }
 
@@ -263,6 +339,7 @@ public class FungoriumGamePanel extends JPanel {
                         }
                         updateStatusPanels();
                         origin = clickedObjectName;
+                        System.out.println(origin);
                     } else {
                         selectedObjects.clear();
                         updateStatusPanels();
@@ -1749,7 +1826,12 @@ public class FungoriumGamePanel extends JPanel {
         // Esetleg üzenet a felhasználónak:
         JOptionPane.showMessageDialog(this, "Válaszd ki a célhelyet a térképen!");
     }
-
+    public void growThreadRecalled(){
+        waitingForTarget = true; // Most várunk egy célkijelölést
+        growThreadRepeated=true;
+        // Esetleg üzenet a felhasználónak:
+        JOptionPane.showMessageDialog(this, "Válassz ki egy cél objektumot a térképen!");
+    }
     public void setPlayerBorderColor(Color color) {
         setBorder(BorderFactory.createLineBorder(color, 6));
         repaint();
