@@ -148,7 +148,7 @@ public class FungoriumGamePanel extends JPanel {
                                 String command = "growthread " + clickedObjectName + " " + origin;
                                 gameLogic.getInputQueue().put(command);
                             } else {
-                                System.out.println("Invalid target for thread growth.");
+                                JOptionPane.showMessageDialog(FungoriumGamePanel.this, "Invalid target for thread growth.");
                             }
                         } catch (InterruptedException er) {
                             er.printStackTrace();
@@ -161,14 +161,14 @@ public class FungoriumGamePanel extends JPanel {
                             ev.printStackTrace();
                         }
                         if(gameLogic.getCommandProcessor().getCreatedObjects().size() > num){
-                            System.out.println("Thread grown.");
+                            //System.out.println("Thread grown.");
                             updateStatusPanels();
                             positionDependentObjects();
                             revalidate();
                             repaint();
                         }
                         else{
-                            System.out.println("Thread not grown.");
+                            JOptionPane.showMessageDialog(FungoriumGamePanel.this, "Thread not grown.");
                         }
                         SwingUtilities.invokeLater(() -> {
                             guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
@@ -181,7 +181,7 @@ public class FungoriumGamePanel extends JPanel {
                                 String command = "eatinsect " + clickedObjectName + " " + origin;
                                 gameLogic.getInputQueue().put(command);
                             } else {
-                                System.out.println("Invalid target for insect eating.");
+                                JOptionPane.showMessageDialog(FungoriumGamePanel.this, "Invalid target for insect eating.");
                             }
                         } catch (InterruptedException er) {
                             er.printStackTrace();
@@ -200,11 +200,11 @@ public class FungoriumGamePanel extends JPanel {
                             ev.printStackTrace();
                         }
                         if (!gameLogic.getCommandProcessor().getCreatedObjects().containsKey(clickedObjectName)) {
-                            System.out.println("Insect eaten.");
+                            //System.out.println("Insect eaten.");
                             objectPositions.remove(clickedObjectName);
                             positionInsects();
                         } else {
-                            System.out.println("Insect not eaten.");
+                            JOptionPane.showMessageDialog(FungoriumGamePanel.this, "Insect not eaten.");
                         }
                         return;
                     }
@@ -214,7 +214,7 @@ public class FungoriumGamePanel extends JPanel {
                                 String command = "cut " + clickedObjectName + " " + origin;
                                 gameLogic.getInputQueue().put(command);
                             } else {
-                                System.out.println("Invalid target for thread cutting.");
+                                JOptionPane.showMessageDialog(FungoriumGamePanel.this, "Invalid target for thread cutting.");
                             }
                         } catch (InterruptedException er) {
                             er.printStackTrace();
@@ -233,7 +233,7 @@ public class FungoriumGamePanel extends JPanel {
                                 String command = "move " + origin + " " + clickedObjectName;
                                 gameLogic.getInputQueue().put(command);
                             } else {
-                                System.out.println("Invalid target for moving.");
+                                JOptionPane.showMessageDialog(FungoriumGamePanel.this, "Invalid target for moving.");
                             }
                         } catch (InterruptedException er) {
                             er.printStackTrace();
@@ -730,7 +730,7 @@ public class FungoriumGamePanel extends JPanel {
     private void positionFungusThread(String name, FungusThread thread) {
         List<Tekton> tektons = thread.getTektons();
         if (tektons.isEmpty()) return;
-        System.out.println(name);
+        //System.out.println(name);
         if (thread.isBridge()) {
             if (tektons.size() >= 2) {
                 Tekton t1 = tektons.get(0);
@@ -876,7 +876,7 @@ public class FungoriumGamePanel extends JPanel {
     private void positionSpore(String name, Spore spore) {
         Tekton tekton = spore.getTekton();
         Point pos = getTektonPosition(tekton);
-        System.out.println("Spore: " + name + " tekton: " + tekton + " pos: " + pos);
+        //System.out.println("Spore: " + name + " tekton: " + tekton + " pos: " + pos);
         if (pos == null) return;
 
         int cellWidth = getWidth() / renderMap.getCols();
@@ -1600,11 +1600,18 @@ public class FungoriumGamePanel extends JPanel {
     }
     public void growBodyLogic(){ // Ezt az objektumot választotta ki kiindulásnak
         try {
-        System.out.println("growbody called" + origin);
+        //System.out.println("growbody called" + origin);
         gameLogic.getInputQueue().put("growbody "+ origin);
+        try {
+            Thread.sleep(200); // Wait for 0.5 seconds (500 milliseconds)
+        } catch (InterruptedException ev) {
+            ev.printStackTrace();
+        }
+        
         SwingUtilities.invokeLater(() -> {
             guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
             updateStatusPanels();
+            positionDependentObjects();
             revalidate();
             repaint();
         });

@@ -12,6 +12,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Consumer;
+import java.util.ArrayList;
 
 // Model
 import fungus.*;
@@ -812,6 +813,20 @@ public class CommandProcessor {
             if (nBody == null) {
                 System.out.println("Hiba: Nem lehetett gombatestet növeszteni a megadott paraméterekkel.");
                 return;
+            }
+            List<String> toRemove = new ArrayList<>();
+            for (Object o : createdObjects.values()) {
+                if (o instanceof Spore || o instanceof SlowSpore || o instanceof FastSpore
+                        || o instanceof StunSpore || o instanceof DisableCutSpore) {
+                    Spore spore = (Spore) o;
+                    String objKey = findByObject(spore);
+                    if (spore.getTekton() == null) {
+                        toRemove.add(objKey);
+                    }
+                }
+            }
+            for (String key : toRemove) {
+                createdObjects.remove(key);
             }
             createdObjects.put(bodyName, nBody);
         } else {
