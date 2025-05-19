@@ -301,6 +301,7 @@ public class FungoriumGamePanel extends JPanel {
                             //System.out.println("Spore eaten.");
                             objectPositions.remove(clickedObjectName);
                             positionDependentObjects();
+                            endTurnLogic();
                         }
                         else{
                             JOptionPane.showMessageDialog(FungoriumGamePanel.this, "Spore not eaten.");
