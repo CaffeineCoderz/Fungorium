@@ -15,6 +15,12 @@ public class ThreadView {
     private static final int THREAD_WIDTH = 3;
     private FungoriumGUIBuilder guiBuilder;
 
+/**
+ * Sets the FungoriumGUIBuilder for this view.
+ *
+ * @param builder the FungoriumGUIBuilder to set
+ */
+
     public void setGuiBuilder(FungoriumGUIBuilder builder) {
         this.guiBuilder = builder;
     }
@@ -57,6 +63,19 @@ public class ThreadView {
             }
         }
     }
+/**
+ * Draws a line between two points with the specified color and width.
+ *
+ * This method uses the provided Graphics2D object to draw a line from the
+ * starting point to the ending point. The color and stroke width of the
+ * line are set based on the given parameters.
+ *
+ * @param g2d   the Graphics2D object used for drawing the line
+ * @param start the starting point of the line
+ * @param end   the ending point of the line
+ * @param color the color of the line
+ */
+
     private void drawLine(Graphics2D g2d, Point start, Point end, Color color) {
         if (start != null && end != null) {
             g2d.setColor(color);

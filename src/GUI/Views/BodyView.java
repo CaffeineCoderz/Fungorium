@@ -25,9 +25,23 @@ public class BodyView {
         loadImages();
     }
 
+    /**
+     * Sets the FungoriumGUIBuilder object used to build the game's UI.
+     * This method is used to access the GUI builder object from outside the
+     * BodyView class.
+     * @param builder the FungoriumGUIBuilder object used to build the game's UI.
+     */
     public void setGuiBuilder(FungoriumGUIBuilder builder) {
         this.guiBuilder = builder;
     }
+    /**
+     * Sets the CommandProcessor object used to process commands.
+     * This method is used to access the command processor object from outside the
+     * BodyView class.
+     * 
+     * @param cmdproc the CommandProcessor object used to process commands.
+     */
+
     public void setCommandProcessor(CommandProcessor cmdproc) {
         this.cmdproc = cmdproc;
     }
@@ -70,10 +84,22 @@ public class BodyView {
         }
     }
 
+    /**
+     * Sets the MapSize of the game map.
+     * This method is used to set the size of the game map based on the user's
+     * preference. The game map size can be set to SMALL, MEDIUM, or LARGE.
+     * @param mapSize the MapSize of the game map
+     */
     public void setMapSize(MapSize mapSize) {
         this.mapSize = mapSize;
     }
 
+    /**
+     * Loads all the images needed for the BodyView class.
+     *
+     * Loads all the images for the different fungus body species.
+     * If any of the images are not found, it logs an error message.
+     */
     private void loadImages() {
         try {
             // Load fungus body image
