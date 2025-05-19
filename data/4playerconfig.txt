@@ -1,4 +1,4 @@
-/create tekton t1
+/create onlythreadtekton t1
 /create onethreadtekton t2
 /create tekton t3
 /create decomptekton t4
@@ -58,7 +58,6 @@
 /set th4 addtekton t5
 /set th4 bridge true
 /create insect i1
-/set i1 effect stun
 /set i1 species Insect2
 /set Insect2 addinsect i1
 /set i1 thread th2
@@ -75,7 +74,7 @@
 /create spore s3
 /set s1 tekton t3
 /set t3 addspore s1
-/set s2 tekton t3
-/set t3 addspore s2
-/set s3 tekton t3
-/set t3 addspore s3
+/set s2 tekton t5
+/set t5 addspore s2
+/set b1 sporecount 1
+/set b2 sporecount 1
