@@ -644,13 +644,13 @@ public class FungoriumGamePanel extends JPanel {
         drawTiledBackground(g2d);
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        if (shouldRecalculatePositions && !initialPaint) {
+        if (shouldRecalculatePositions && !initialPaint || objectPositions.isEmpty()) {
             calculateObjectPositions();
             shouldRecalculatePositions = false;
         }
-        if(objectPositions.isEmpty()){
+        /*if(objectPositions.isEmpty()){
             calculateObjectPositions();
-        }
+        }*/
 
         // Draw the grid (optional) RED
         //drawGrid(g2d);
@@ -2278,7 +2278,7 @@ public class FungoriumGamePanel extends JPanel {
         JOptionPane.showMessageDialog(this, "Válaszd ki a célhelyet a térképen!");
     }
 
-    
+
     /**
      * Starts the process of growing a new FungusThread object from the currently
      * selected object, as if the user had clicked the "Grow thread" action button

@@ -133,8 +133,8 @@ public class FungoriumGUIBuilder {
                 frame.getContentPane().removeAll();
                 frame.getContentPane().add(gamePanel, BorderLayout.CENTER);
                 frame.getContentPane().add(controlPanel, BorderLayout.SOUTH);
-                frame.revalidate();
-                frame.repaint();
+                //frame.revalidate();
+                //frame.repaint();
                 frame.pack();
 
                 // Itt már biztosan létezik a gamePanel!
