@@ -148,7 +148,6 @@ public class FungoriumGamePanel extends JPanel {
                                 String command = "growthread " + clickedObjectName + " " + origin;
                                 gameLogic.getInputQueue().put(command);
                             
-                            
                             } else {
                                 JOptionPane.showMessageDialog(FungoriumGamePanel.this, "Invalid target for thread growth.");
                             }
