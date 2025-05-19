@@ -77,5 +77,6 @@
 /set t3 addspore s1
 /set s2 tekton t5
 /set t5 addspore s2
-/set b1 sporecount 1
+/set b1 sporecount 2
+/set b1 sporulateleft 1
 /set b2 sporecount 1

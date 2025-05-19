@@ -78,6 +78,23 @@ public class InsectView {
         }
     }
 
+/**
+ * Draws an insect on the board, using a specific image based on its effect
+ * and species.
+ *
+ * Depending on the effect currently applied to the insect, this method
+ * selects the corresponding image and draws it at the specified position.
+ * If a specific effect image is not available, it defaults to the species
+ * image. Logs a message if the image for the insect's effect or species is
+ * not found.
+ *
+ * @param g2d         the Graphics2D object used for drawing
+ * @param insect      the Insect object to be drawn
+ * @param pos         the position on the board where the insect should be drawn
+ * @param SIZE        the size of the image to be drawn
+ * @param speciesName the name of the species the insect belongs to
+ */
+
     public void drawInsectBasedOnEffect(Graphics2D g2d, Insect insect, Point pos, int SIZE, String speciesName) {
         // Draw insect based on its effect and Species Color
         String speciesColor = guiBuilder.getSpeciesStringColor(speciesName);
@@ -131,6 +148,12 @@ public class InsectView {
         }
     }
 
+    /**
+     * Loads all the images needed for the InsectView class.
+     *
+     * Loads all the images for the different insect species and their effects.
+     * If any of the images are not found, it logs an error message.
+     */
     private void loadImages() {
         try {
             // Load insect image
@@ -169,14 +192,30 @@ public class InsectView {
         }
     }
 
+    /**
+     * Set the size of the map.
+     *
+     * @param mapSize the new size of the map
+     */
     public void setMapSize(MapSize mapSize) {
         this.mapSize = mapSize;
     }
 
+    /**
+     * Set the FungoriumGUIBuilder object used to build the game's UI.
+     * This method is used to access the GUI builder object from outside the
+     * InsectView class.
+     * @param guiBuilder the FungoriumGUIBuilder object used to build the game's UI.
+     */
     public void setGuiBuilder(FungoriumGUIBuilder guiBuilder) {
         this.guiBuilder = guiBuilder;
     }
 
+    /**
+     * Set the CommandProcessor object used to process commands.
+     *
+     * @param cmdproc the CommandProcessor object used to process commands
+     */
     public void setCommandProcessor(CommandProcessor cmdproc) {
         this.cmdproc = cmdproc; 
     }
