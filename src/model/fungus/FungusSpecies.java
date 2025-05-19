@@ -451,6 +451,7 @@ public class FungusSpecies implements iControl, Serializable {
                         }
                     }
                 }
+                threadIterator.remove();
             }
             
             String objKey = cmdproc.findByObject(thread);
@@ -459,7 +460,6 @@ public class FungusSpecies implements iControl, Serializable {
                     cmdproc.getCreatedObjects().remove(objKey);
                 }
             }
-            
         }
     }
 
@@ -471,27 +471,27 @@ public class FungusSpecies implements iControl, Serializable {
      * @param ft the FungusThread instance to be destroyed.
      */
     public void destroyThread(FungusThread ft) {
-        if (ft.getIsDying() && ft.getLifeSpan() != null) {
+        if (ft.getIsDying() && ft.getLifeSpan() > 0) {
             ft.decreaseLife();
             return;
         }
-        if (ft.getLifeSpan()!= null && ft.getLifeSpan() == 0) {
+        if (ft.getLifeSpan() != null && ft.getLifeSpan() <= 0) {
             FungusThread originthread = ft;
-            while (ft.getNext() != null || ft.getNext().getMyBody() != null) {
+            while (ft.getNext() != null) {
+                ft.setPrevBody(null);
                 if(ft.isBridge()){
                     ft.setIsDying(true);
                 }else{
-                    if (ft.getTekton() instanceof FeedThreadTekton) {
+                    if(ft.getTekton() instanceof FeedThreadTekton) {
                         ft.setIsDying(false);    
                     } else{
                         ft.setIsDying(true);
                     }
-                    
-            }   
-                ft.setPrevBody(null);
+                }   
                 ft = ft.getNext();
             }
-            while(ft.getPrev() != null || ft.getPrev().getMyBody() != null) {
+            while(ft.getPrev() != null) {
+                ft.setNextBody(null);
                 if(ft.isBridge()){
                     ft.setIsDying(true);
                 }else{
@@ -502,10 +502,9 @@ public class FungusSpecies implements iControl, Serializable {
                     }
                     
                 }
-                ft.setNextBody(null);
+                
                 ft = ft.getPrev();
             }
-            deleteThread(originthread);
             boolean success;
             for (FungusBody body : bodies) {
                 success = body.removeThread(originthread);
