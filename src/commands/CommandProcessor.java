@@ -927,13 +927,15 @@ public class CommandProcessor {
                 if (newInsect != null) {
                     String newInsectName = generateUniqueName("i", countObjectsOfType(Insect.class));
                     createdObjects.put(newInsectName, newInsect);
-                    // System.out.println("Új rovar jött létre: " + newInsectName);
+                    //System.out.println("Új rovar jött létre: " + newInsectName);
                 }
             } else {
                 insect.consumeSpore(spore);
+                
             }
+            createdObjects.remove(SporeName);
             // Debug purposes
-            // System.out.println("Az Insect megette a Spore-t!");
+             //System.out.println("Az Insect megette a Spore-t!");
         } else {
             System.out.println("Hiba: Ez az objektum nem ehető: " + objSpore);
         }

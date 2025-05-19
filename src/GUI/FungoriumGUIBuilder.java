@@ -292,6 +292,7 @@ public class FungoriumGUIBuilder {
             moveButton.addActionListener(e -> gamePanel.moveLogic());
             eatSporeButton = createImageButton("src/resources/buttons/eat1.png", 110, 220);
             eatSporeButton.setToolTipText("Eat Spore");
+            eatSporeButton.addActionListener(e -> gamePanel.eatSporeLogic());
 
             panel.add(createUpdateButton(gamePanel));
             panel.add(createSaveButton(gamePanel));
