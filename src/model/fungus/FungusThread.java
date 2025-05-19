@@ -311,6 +311,7 @@ public class FungusThread implements Serializable {
         for (Tekton tekton : tektons) {
             tekton.removeThread(this);
         }
+        tektons.clear();
         if(this.getPrev() != null){
             this.getPrev().setNextThread(null);
         }

@@ -1999,7 +1999,12 @@ public class FungoriumGamePanel extends JPanel {
             livingObjecstUpdate();
             gameLogic.setNewRound(false);
         }
+        calculateTektonCardinalPoints();
+        
         positionDependentObjects();
+        
+        positionInsects();
+        
         revalidate();
         repaint();
         gameLogic.getInputQueue().put("next");
