@@ -4,28 +4,33 @@ import javax.swing.*;
 import commands.CommandProcessor;
 import fungus.FungusSpecies;
 import insect.InsectSpecies;
+import logic.GameLogic;
 
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class ResultScreen extends JFrame {
-    public ResultScreen(CommandProcessor commandProcessor) {
+    public ResultScreen(CommandProcessor commandProcessor, GameLogic gameLogic) {
         List<FungusSpecies> fungusList = new ArrayList<>();
         List<InsectSpecies> insectList = new ArrayList<>();
 
         // Szétválogatás és gyűjtés
-        for (Object obj : commandProcessor.getCreatedObjects().values()) {
+        for (Object obj : gameLogic.getPlayers().values()) {
             if (obj instanceof FungusSpecies) {
                 fungusList.add((FungusSpecies) obj);
-                System.out.println("Fungus bekerült: " + commandProcessor.findByObject(obj) + " pont: " + ((FungusSpecies)obj).getScore());
+                System.out.println("Fungus bekerült: " + gameLogic.getPlayers().entrySet().stream()
+                        .filter(e -> e.getValue() == obj)
+                        .map(e -> e.getKey())
+                        .findFirst().orElse("?") + " pont: " + ((FungusSpecies)obj).getScore());
             }
             if (obj instanceof InsectSpecies) {
                 insectList.add((InsectSpecies) obj);
-                System.out.println("Insect bekerült: " + commandProcessor.findByObject(obj) + " pont: " + ((InsectSpecies)obj).getScore());
+                System.out.println("Insect bekerült: " + gameLogic.getPlayers().entrySet().stream()
+                        .filter(e -> e.getValue() == obj)
+                        .map(e -> e.getKey())
+                        .findFirst().orElse("?") + " pont: " + ((InsectSpecies)obj).getScore());
             }
         }
 
