@@ -4,10 +4,14 @@ import insect.Insect;
 import tektonTypes.Tekton;
 import utils.*;
 
+import java.io.Serializable;
+
 /**
  * Spore class. This represents a spore, which has been dispersed to the tekton. This spore can be consumed by insects
  */
-public class Spore {
+public class Spore implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private Integer nutritionValue;
     private Tekton myTekton;
     /**
@@ -56,7 +60,7 @@ public class Spore {
      * It is used whenever a spore has destroyed, because it is consumed or the tekton it is staying on breaks.
      * Removes itself from the tekton it is staying on. 
      */
-    public void absorbed() {
+    public void absorbed(){ 
         myTekton.removeSpore(this);
         myTekton = null;
     }

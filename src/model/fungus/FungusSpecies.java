@@ -12,8 +12,10 @@ import tektonTypes.FeedThreadTekton;
 import tektonTypes.OnlyThreadTekton;
 import tektonTypes.Tekton;
 import utils.Logger;
+import java.io.Serializable;
 
-public class FungusSpecies implements iControl {
+public class FungusSpecies implements iControl, Serializable {
+    private static final long serialVersionUID = 1L;
     // Game Logic
     Integer id;
 
@@ -338,6 +340,7 @@ public class FungusSpecies implements iControl {
             }
             fb.setTekton(thread.getTekton());
             fb.addThread(thread);
+            fb.setSpecies(this);
             thread.setMyBody(fb);
             thread.setConnected(true);
             //Ha a prev null, akkor tudjuk, hogy a fonál elején vagyunk, és beállítjuk,

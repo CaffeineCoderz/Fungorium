@@ -148,7 +148,7 @@ public class FungoriumGamePanel extends JPanel {
                                 String command = "growthread " + clickedObjectName + " " + origin;
                                 gameLogic.getInputQueue().put(command);
                             } else {
-                                System.out.println("Invalid target for thread growth.");
+                                JOptionPane.showMessageDialog(FungoriumGamePanel.this, "Invalid target for thread growth.");
                             }
                         } catch (InterruptedException er) {
                             er.printStackTrace();
@@ -161,14 +161,14 @@ public class FungoriumGamePanel extends JPanel {
                             ev.printStackTrace();
                         }
                         if(gameLogic.getCommandProcessor().getCreatedObjects().size() > num){
-                            System.out.println("Thread grown.");
+                            //System.out.println("Thread grown.");
                             updateStatusPanels();
                             positionDependentObjects();
                             revalidate();
                             repaint();
                         }
                         else{
-                            System.out.println("Thread not grown.");
+                            JOptionPane.showMessageDialog(FungoriumGamePanel.this, "Thread not grown.");
                         }
                         SwingUtilities.invokeLater(() -> {
                             guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
@@ -181,7 +181,7 @@ public class FungoriumGamePanel extends JPanel {
                                 String command = "eatinsect " + clickedObjectName + " " + origin;
                                 gameLogic.getInputQueue().put(command);
                             } else {
-                                System.out.println("Invalid target for insect eating.");
+                                JOptionPane.showMessageDialog(FungoriumGamePanel.this, "Invalid target for insect eating.");
                             }
                         } catch (InterruptedException er) {
                             er.printStackTrace();
@@ -200,11 +200,11 @@ public class FungoriumGamePanel extends JPanel {
                             ev.printStackTrace();
                         }
                         if (!gameLogic.getCommandProcessor().getCreatedObjects().containsKey(clickedObjectName)) {
-                            System.out.println("Insect eaten.");
+                            //System.out.println("Insect eaten.");
                             objectPositions.remove(clickedObjectName);
                             positionInsects();
                         } else {
-                            System.out.println("Insect not eaten.");
+                            JOptionPane.showMessageDialog(FungoriumGamePanel.this, "Insect not eaten.");
                         }
                         return;
                     }
@@ -214,7 +214,7 @@ public class FungoriumGamePanel extends JPanel {
                                 String command = "cut " + clickedObjectName + " " + origin;
                                 gameLogic.getInputQueue().put(command);
                             } else {
-                                System.out.println("Invalid target for thread cutting.");
+                                JOptionPane.showMessageDialog(FungoriumGamePanel.this, "Invalid target for thread cutting.");
                             }
                         } catch (InterruptedException er) {
                             er.printStackTrace();
@@ -233,7 +233,7 @@ public class FungoriumGamePanel extends JPanel {
                                 String command = "move " + origin + " " + clickedObjectName;
                                 gameLogic.getInputQueue().put(command);
                             } else {
-                                System.out.println("Invalid target for moving.");
+                                JOptionPane.showMessageDialog(FungoriumGamePanel.this, "Invalid target for moving.");
                             }
                         } catch (InterruptedException er) {
                             er.printStackTrace();
@@ -731,7 +731,7 @@ public class FungoriumGamePanel extends JPanel {
     /*private void positionFungusThread(String name, FungusThread thread) {
         List<Tekton> tektons = thread.getTektons();
         if (tektons.isEmpty()) return;
-        System.out.println(name);
+        //System.out.println(name);
         if (thread.isBridge()) {
             if (tektons.size() >= 2) {
                 Tekton t1 = tektons.get(0);
@@ -1004,7 +1004,7 @@ public class FungoriumGamePanel extends JPanel {
     private void positionSpore(String name, Spore spore) {
         Tekton tekton = spore.getTekton();
         Point pos = getTektonPosition(tekton);
-        System.out.println("Spore: " + name + " tekton: " + tekton + " pos: " + pos);
+        //System.out.println("Spore: " + name + " tekton: " + tekton + " pos: " + pos);
         if (pos == null) return;
 
         int cellWidth = getWidth() / renderMap.getCols();
@@ -1046,18 +1046,59 @@ public class FungoriumGamePanel extends JPanel {
     }
 
     private void positionInsects() {
+        // 1. Threadenként gyűjtsük a rovarokat
+        Map<String, List<String>> threadToInsects = new HashMap<>();
         for (Map.Entry<String, Object> entry : gameLogic.getCommandProcessor().getCreatedObjects().entrySet()) {
             if (entry.getValue() instanceof Insect) {
                 Insect insect = (Insect) entry.getValue();
                 FungusThread thread = insect.getThread();
-
                 if (thread != null) {
                     String threadName = gameLogic.getCommandProcessor().findByObject(thread);
-                    if (threadName != null && objectPositions.containsKey(threadName)) {
-                        Point threadPos = objectPositions.get(threadName);
-                        objectPositions.put(entry.getKey(), new Point(threadPos.x, threadPos.y - 13));
+                    if (threadName != null) {
+                        threadToInsects.computeIfAbsent(threadName, k -> new ArrayList<>()).add(entry.getKey());
                     }
                 }
+            }
+        }
+    
+        // 2. Minden threadre helyezzük el a rovarokat
+        for (Map.Entry<String, List<String>> e : threadToInsects.entrySet()) {
+            String threadName = e.getKey();
+            List<String> insects = e.getValue();
+            if (!objectPositions.containsKey(threadName) || insects.isEmpty()) continue;
+    
+            // Thread végpontjai
+            Point start = threadEndpoints.get(threadName + "_start");
+            Point end = threadEndpoints.get(threadName + "_end");
+            Point center = objectPositions.get(threadName);
+    
+            if (start == null || end == null || center == null) continue;
+    
+            // Thread irányvektor
+            double dx = end.x - start.x;
+            double dy = end.y - start.y;
+            double length = Math.hypot(dx, dy);
+            if (length == 0)
+                length = 1; // elkerülni a 0-val osztást
+
+            // Irányvektor (unit vector) a thread mentén
+            double dirX = dx / length;
+            double dirY = dy / length;
+            int offset = 18; // mennyire tolja el a rovart a középponttól
+
+            // Max 3 rovar
+            for (int i = 0; i < Math.min(3, insects.size()); i++) {
+                String insectName = insects.get(i);
+                int px = center.x;
+                int py = center.y;
+                if (i == 1) { // előre a thread mentén
+                    px += (int) (dirX * offset);
+                    py += (int) (dirY * offset);
+                } else if (i == 2) { // hátra a thread mentén
+                    px -= (int) (dirX * offset);
+                    py -= (int) (dirY * offset);
+                }
+                objectPositions.put(insectName, new Point(px, py));
             }
         }
     }
@@ -1536,7 +1577,10 @@ public class FungoriumGamePanel extends JPanel {
      */
 
     public void setObjectPositions(Map<String, Point> newPositions) {
-        this.objectPositions = newPositions;
+        this.objectPositions = newPositions != null ? new TreeMap<>(newPositions) : new TreeMap<>();
+        this.occupiedCells.clear();
+        this.shouldRecalculatePositions = false;
+        repaint();
     }
 
     /**
@@ -1684,11 +1728,18 @@ public class FungoriumGamePanel extends JPanel {
     }
     public void growBodyLogic(){ // Ezt az objektumot választotta ki kiindulásnak
         try {
-        System.out.println("growbody called" + origin);
+        //System.out.println("growbody called" + origin);
         gameLogic.getInputQueue().put("growbody "+ origin);
+        try {
+            Thread.sleep(200); // Wait for 0.5 seconds (500 milliseconds)
+        } catch (InterruptedException ev) {
+            ev.printStackTrace();
+        }
+        
         SwingUtilities.invokeLater(() -> {
             guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
             updateStatusPanels();
+            positionDependentObjects();
             revalidate();
             repaint();
         });
@@ -1739,5 +1790,26 @@ public class FungoriumGamePanel extends JPanel {
 
     public FungoriumGUIBuilder getGuiBuilder() {
         return guiBuilder;
+    }
+    public Map<String, Point> getThreadEndpoints() {
+        return threadEndpoints;
+    }
+    public void setThreadEndpoints(Map<String, Point> threadEndpoints) {
+        this.threadEndpoints = threadEndpoints;
+    }
+    public Map<String, List<Point>> getTektonCardinalPoints() {
+        return tektonCardinalPoints;
+    }
+    public void setTektonCardinalPoints(Map<String, List<Point>> tektonCardinalPoints) {
+        this.tektonCardinalPoints = tektonCardinalPoints;
+    }
+    public Set<Point> getOccupiedCells() {
+        return occupiedCells;
+    }
+    public void setOccupiedCells(Set<Point> occupiedCells) {
+        this.occupiedCells = occupiedCells;
+    }
+    public void setSelectedObjects(List<String> selectedObjects) {
+        this.selectedObjects = selectedObjects != null ? new ArrayList<>(selectedObjects) : new ArrayList<>();
     }
 }

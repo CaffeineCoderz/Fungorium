@@ -4,9 +4,11 @@ import insect.Insect;
 import utils.Logger;
 import tektonTypes.*;
 
-public class StunSpore extends Spore{
-    
-    
+import java.io.Serializable;
+
+public class StunSpore extends Spore implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     public StunSpore(){    }
 
     /**
