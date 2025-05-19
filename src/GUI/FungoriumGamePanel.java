@@ -892,15 +892,14 @@ public class FungoriumGamePanel extends JPanel {
         }
     }
 
-/**
- * Positions all dependent objects in the game world.
- * 
- * This method processes all created objects and assigns them positions based 
- * on their type and characteristics. It prioritizes positioning bridge threads 
- * first, followed by non-bridge threads. Spores and FungusBodies are positioned 
- * in their original order without additional sorting.
- */
-
+    /**
+     * Positions all dependent objects in the game world.
+     * 
+     * This method processes all created objects and assigns them positions based 
+     * on their type and characteristics. It prioritizes positioning bridge threads 
+     * first, followed by non-bridge threads. Spores and FungusBodies are positioned 
+     * in their original order without additional sorting.
+     */
     private void positionDependentObjects() {
         // 1. Bridge threadek először
         gameLogic.getCommandProcessor().getCreatedObjects().entrySet().stream()
@@ -962,27 +961,32 @@ public class FungoriumGamePanel extends JPanel {
 
         // 1. Ha maga a szál híd
         if (thread.isBridge()) {
+            //System.out.println("handleBridgeCase" + name);
             handleBridgeCase(name, thread);
         }// 2. Ha következő szál híd
         else if (thread.getNext() != null && thread.getNext().isBridge()) {
+            //System.out.println("handleNextBridgeCase"   + name);
             handleNextBridgeCase(name, thread);
         }
-        // 2. Ha előző szál híd
+        // 3. Ha előző szál híd
         else if (thread.getPrev() != null && thread.getPrev().isBridge()) {
+            //System.out.println("handlePrevBridgeCase" + name);
             handlePrevBridgeCase(name, thread);
         }
         // 4. Ha előző szál nem híd
         else if (thread.getPrev() != null && !thread.getPrev().isBridge()) {
+            //System.out.println("handlePrevNonBridgeCase" + name);
             handlePrevNonBridgeCase(name, thread);
         }
-        // 3. Ha következő szál nem híd
+        // 5. Ha következő szál nem híd
         else if (thread.getNext() != null && !thread.getNext().isBridge()) {
+            //System.out.println("handleNextNonBridgeCase" + name);
             handleNextNonBridgeCase(name, thread);
         }
-        
         // 6. Alapértelmezett eset: sima szál
         else {
             handleDefaultCase(name, thread);
+            //System.out.println("handleDefaultCase" + name);
         }
     }
 
@@ -1043,24 +1047,11 @@ public class FungoriumGamePanel extends JPanel {
      * @param thread the current thread.
      */
     private void handleNextNonBridgeCase(String name, FungusThread thread) {
-        FungusThread nextThread = thread.getNext();
-        String nextName = gameLogic.getCommandProcessor().findByObject(nextThread);
-        
-        Point nextStart = threadEndpoints.get(nextName + "_start");
-        Point nextEnd = threadEndpoints.get(nextName + "_end");
-        
         Tekton tekton = thread.getTektons().get(0);
         Point center = getTektonCenter(tekton);
+        Point control = findClosestCardinalPoint(tekton, center);
         
-        if (nextStart == null || nextEnd == null) {
-                //System.err.println("handleNextNonBridgeCase: nextStart or nextEnd is null for thread " + nextName);
-                return;
-            }
-
-        Point dirPoint = new Point(nextEnd.x - nextStart.x, nextEnd.y - nextStart.y);
-
-        Point connectionPoint = new Point(nextStart.x + dirPoint.x, nextStart.y+ dirPoint.y);
-        setThreadPoints(name, center, connectionPoint);
+        setThreadPoints(name, control, center);
     }
 
     /**
@@ -1085,6 +1076,7 @@ public class FungoriumGamePanel extends JPanel {
         Point center = getTektonCenter(tekton);
 
         if (prevStart == null || prevEnd == null) {
+            handleDefaultCase(name, thread);
             //System.err.println("handlePrevNonBridgeCase: prevStart or prevEnd is null for thread " + prevName);
             return;
         }
@@ -2209,7 +2201,7 @@ public class FungoriumGamePanel extends JPanel {
         while (iterator.hasNext()) {
             Map.Entry<String, Point> entry = iterator.next();
             if (!currentObjects.containsKey(entry.getKey())) {
-                System.out.println("Remove: " + entry.getKey());
+                //System.out.println("Remove: " + entry.getKey());
                 iterator.remove();
             }
         }
@@ -2217,7 +2209,7 @@ public class FungoriumGamePanel extends JPanel {
         while (iterator2.hasNext()) {
             Map.Entry<String, Point> entry = iterator2.next();
             if (!currentObjects.containsKey(entry.getKey())) {
-                System.out.println("Remove: " + entry.getKey());
+                //System.out.println("Remove: " + entry.getKey());
                 iterator2.remove();
             }
         }
