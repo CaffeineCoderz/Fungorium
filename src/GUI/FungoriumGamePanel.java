@@ -147,6 +147,7 @@ public class FungoriumGamePanel extends JPanel {
                             if (target instanceof Tekton|| target instanceof OneThreadTekton || target instanceof DecomposingTekton || target instanceof DecreasingTekton|| target instanceof FeedThreadTekton|| target instanceof OnlyThreadTekton) {
                                 String command = "growthread " + clickedObjectName + " " + origin;
                                 gameLogic.getInputQueue().put(command);
+                            
                             } else {
                                 JOptionPane.showMessageDialog(FungoriumGamePanel.this, "Invalid target for thread growth.");
                             }
@@ -539,6 +540,7 @@ public class FungoriumGamePanel extends JPanel {
         }
         
         // System.out.println("objectPositions size: " + objectPositions.size());
+
         threadView.drawThreads(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(), tektonCardinalPoints, gameLogic.getCommandProcessor(), threadEndpoints);
         insectView.drawInsects(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects());
         bodyView.drawBodies(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects());
