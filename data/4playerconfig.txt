@@ -1,6 +1,6 @@
 /create tekton t1
-/create othreadtekton t2
-/create onlythreadtekton t3
+/create onethreadtekton t2
+/create tekton t3
 /create decomptekton t4
 /create feedthreadtekton t5
 /create decreasetekton t6
@@ -70,3 +70,12 @@
 /set i2 thread th3
 /set i2 tekton t4
 /set t4 addinsect i2
+/create spore s1
+/create spore s2
+/create spore s3
+/set s1 tekton t3
+/set t3 addspore s1
+/set s2 tekton t3
+/set t3 addspore s2
+/set s3 tekton t3
+/set t3 addspore s3

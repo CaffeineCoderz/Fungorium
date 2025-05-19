@@ -338,6 +338,7 @@ public class FungusSpecies implements iControl {
             }
             fb.setTekton(thread.getTekton());
             fb.addThread(thread);
+            fb.setSpecies(this);
             thread.setMyBody(fb);
             thread.setConnected(true);
             //Ha a prev null, akkor tudjuk, hogy a fonál elején vagyunk, és beállítjuk,

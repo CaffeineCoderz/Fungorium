@@ -56,7 +56,7 @@ public class Spore {
      * It is used whenever a spore has destroyed, because it is consumed or the tekton it is staying on breaks.
      * Removes itself from the tekton it is staying on. 
      */
-    public void absorbed() {
+    public void absorbed(){ 
         myTekton.removeSpore(this);
         myTekton = null;
     }
