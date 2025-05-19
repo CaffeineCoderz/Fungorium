@@ -1008,6 +1008,11 @@ public class FungoriumGamePanel extends JPanel {
         Tekton tekton = thread.getTektons().get(0);
         Point center = getTektonCenter(tekton);
         
+        if (nextStart == null || nextEnd == null) {
+                //System.err.println("handleNextNonBridgeCase: nextStart or nextEnd is null for thread " + nextName);
+                return;
+            }
+
         Point dirPoint = new Point(nextEnd.x - nextStart.x, nextEnd.y - nextStart.y);
 
         Point connectionPoint = new Point(nextStart.x + dirPoint.x, nextStart.y+ dirPoint.y);
@@ -1035,6 +1040,10 @@ public class FungoriumGamePanel extends JPanel {
         Tekton tekton = thread.getTektons().get(0);
         Point center = getTektonCenter(tekton);
 
+        if (prevStart == null || prevEnd == null) {
+            //System.err.println("handlePrevNonBridgeCase: prevStart or prevEnd is null for thread " + prevName);
+            return;
+        }
         
         Point dirPoint = new Point(prevEnd.x - prevStart.x, prevEnd.y - prevStart.y);
 
@@ -1055,18 +1064,29 @@ public class FungoriumGamePanel extends JPanel {
  */
 
     private void handleBridgeCase(String name, FungusThread thread) {
-        if (thread.getTektons().size() >= 2) {
-            Tekton t1 = thread.getTektons().get(0);
-            Tekton t2 = thread.getTektons().get(1);
-            
-            Point p1 = findClosestCardinalPoint(t1, objectPositions.get(gameLogic.getCommandProcessor().findByObject(t2)));
-            Point p2 = findClosestCardinalPoint(t2, objectPositions.get(gameLogic.getCommandProcessor().findByObject(t1)));
+    if (thread.getTektons().size() >= 2) {
+        Tekton t1 = thread.getTektons().get(0);
+        Tekton t2 = thread.getTektons().get(1);
 
-            if (p1 != null && p2 != null) {
-                setThreadPoints(name, p1, p2);
-            }
+        String t1Name = gameLogic.getCommandProcessor().findByObject(t1);
+        String t2Name = gameLogic.getCommandProcessor().findByObject(t2);
+
+        Point t2Pos = objectPositions.get(t2Name);
+        Point t1Pos = objectPositions.get(t1Name);
+
+        if (t1Pos == null || t2Pos == null) {
+            System.err.println("handleBridgeCase: t1Pos or t2Pos is null for " + t1Name + " or " + t2Name);
+            return;
+        }
+
+        Point p1 = findClosestCardinalPoint(t1, t2Pos);
+        Point p2 = findClosestCardinalPoint(t2, t1Pos);
+
+        if (p1 != null && p2 != null) {
+            setThreadPoints(name, p1, p2);
         }
     }
+}
 
 /**
  * Handles the default positioning of a FungusThread that is not a bridge
