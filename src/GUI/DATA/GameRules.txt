@@ -1,2 +1,4 @@
 5.: Mentés esetén a program a következő játékos körével folytatja, amit 
 betöltéskor az "end turn" gomb lenyomásával kell elinditani egyből a betöltés után
+6.: A mentéshez elkell nevezni a fájlt és menteni kell miután rákattintottunk a mentés ikonra a játékban.
+7.: Betöltéshez az elmentett fájlt kell megnyitni a beállításokból, majd mitán a játék betöltött "end turn" gombra rákattintani.
