@@ -107,6 +107,7 @@ public class FungoriumGUIBuilder {
         frame.getContentPane().add(loadingPanel, BorderLayout.CENTER);
         frame.pack();
         frame.setLocationRelativeTo(null);
+        frame.setResizable(false);
         frame.setVisible(true);
 
         // Kép
