@@ -5,6 +5,15 @@ import java.awt.*;
 
 public class Settings {
 
+    /**
+     * A beállítások ablakot megjeleníti a felhasználónak, ahol a játék beállításait módosíthatja.
+     * A beállítások ablakban a felhasználó megadhatja a játékosok számát, a körök számát, a pályaméretet,
+     * valamint betölthet egy elmentett játékot.
+     * Ha a felhasználó módosítja a beállításokat, azok azonnal érvénybe lépnek.
+     * A beállítások ablakban a felhasználó visszatérhet a főmenübe, ahol új játékot indíthat.
+     * @param parent a szülő ablak, amelyikből a beállítások ablakot megnyitották
+     * @param gameLogic a játéklogika, amelyben a beállításokat tároljuk
+     */
     public static void showSettings(JFrame parent, GameLogic gameLogic) {
         FungoriumGamePanel gamePanel = new FungoriumGamePanel(gameLogic, null);
         // Új ablak létrehozása
@@ -154,6 +163,12 @@ public class Settings {
 
         }
 
+        /**
+         * Creates a styled JButton with the given text.
+         * The button has a SansSerif font, white foreground, no focus painting, white background, 2px white border, and a preferred size of 250x40.
+         * @param text the text to be displayed on the button
+         * @return the created JButton
+         */
     private static JButton createStyledButton(String text) {
         JButton button = new JButton(text);
         button.setFont(new Font("SansSerif", Font.PLAIN, 14)); // Kisebb betűméret
