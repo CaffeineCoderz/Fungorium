@@ -28,27 +28,27 @@ public class FungoriumGUIBuilder {
 
 
     // Színek 
-    // FONTOS: SORRENDET NE CSERÉLD MEG, különben a játékban nem fog működni
-    private Color[] colors = {
-        new Color(255, 182, 193), // ! Light Pink FUNGUS
-        new Color(255, 222, 173),  // ?  Light Beige INSECT
-        new Color(144, 238, 144), // ! Light Green
-        new Color(222, 76,73), // ? Light Red INSECT
-        new Color(55, 81,250), // ! Light Blue
-        new Color(255, 204, 153), // ? Light Orange INSECT
-        new Color(221, 160, 221), // ! Light Purple
-        new Color(224, 255, 255), // ? Light Cyan INSECT
+    private Color[] fungusColors = {
+            new Color(255, 182, 193), // Light Pink
+            new Color(144, 238, 144), // Light Green
+            new Color(55, 81, 250), // Light Blue
+            new Color(221, 160, 221) // Light Purple
+    };
+    private Color[] insectColors = {
+            new Color(255, 222, 173), // Light Beige
+            new Color(222, 76, 73), // Light Red
+            new Color(255, 204, 153), // Light Orange
+            new Color(224, 255, 255) // Light Cyan
     };
 
-    private final Color LIGHT_PINK = colors[0];
-    private final Color LIGHT_BEIGE = colors[1];
-    private final Color LIGHT_GREEN = colors[2];
-    private final Color LIGHT_RED = colors[3];
-    private final Color LIGHT_BLUE = colors[4];
-    private final Color LIGHT_ORANGE = colors[5];
-    private final Color LIGHT_PURPLE = colors[6];
-    private final Color LIGHT_CYAN = colors[7]; 
-
+    private final Color LIGHT_PINK   = fungusColors[0];
+    private final Color LIGHT_GREEN  = fungusColors[1];
+    private final Color LIGHT_BLUE   = fungusColors[2];
+    private final Color LIGHT_PURPLE = fungusColors[3];
+    private final Color LIGHT_BEIGE  = insectColors[0];
+    private final Color LIGHT_RED    = insectColors[1];
+    private final Color LIGHT_ORANGE = insectColors[2];
+    private final Color LIGHT_CYAN   = insectColors[3];
 
     private HashMap<String, Color> playerColors = new HashMap<>();
     public FungoriumGamePanel gamePanel = null;
@@ -60,7 +60,7 @@ public class FungoriumGUIBuilder {
             gamePanel = new FungoriumGamePanel(gameLogic, this);
         }
         this.gameLogic = gameLogic;
-        this.saveLoadHandler = new SaveLoadHandler(gameLogic, gamePanel); // <-- EZ KELL
+        this.saveLoadHandler = new SaveLoadHandler(gameLogic, gamePanel);
     }
 
     public FungoriumGamePanel getGamePanel() {
@@ -141,6 +141,7 @@ public class FungoriumGUIBuilder {
     public void setPlayerColors(HashMap<String, Color> colors) {
         this.playerColors = colors;
     }
+    
     public void assignPlayerColors() {
         System.out.println("Assigning player colors...");
         playerColors.clear();
@@ -149,17 +150,54 @@ public class FungoriumGUIBuilder {
             System.out.println("No players found.");
             return;
         }
-        int colorIndex = 0;
+        int fungusIndex = 0;
+        int insectIndex = 0;
         for (Map.Entry<String, Object> entry : players.entrySet()) {
-            if (playerColors.size() < colors.length) {
-                playerColors.put(entry.getKey(), colors[colorIndex++]);
-                System.out.println("Player: " + entry.getKey() + ", Color: " + colors[colorIndex - 1]);
+            String name = entry.getKey();
+            Color color;
+            if (name.contains("Fungus")) {
+                if (fungusIndex < fungusColors.length) {
+                    color = fungusColors[fungusIndex++];
+                } else {
+                    System.out.println("Túl sok player, nincs ennyi szín az assignPlayerColors-ban.");
+                    color = Color.BLACK;
+                }
+            } else if (name.contains("Insect")) {
+                if (insectIndex < insectColors.length) {
+                    color = insectColors[insectIndex++];
+                } else {
+                    System.out.println("Túl sok player, nincs ennyi szín az assignPlayerColors-ban.");
+                    color = Color.BLACK;
+                }
             } else {
-                playerColors.put(entry.getKey(), Color.BLACK);
+                color = Color.GRAY;
             }
+            playerColors.put(name, color);
+            //System.out.println("Player: " + name + ", Color: " + color);
+            //System.out.println("Ez a szín: " + getColorName(color));
         }
     }
 
+    private String getColorName(Color color) {
+        if (color.equals(LIGHT_PINK))
+            return "Light Pink";
+        if (color.equals(LIGHT_BEIGE))
+            return "Light Beige";
+        if (color.equals(LIGHT_GREEN))
+            return "Light Green";
+        if (color.equals(LIGHT_RED))
+            return "Light Red";
+        if (color.equals(LIGHT_BLUE))
+            return "Light Blue";
+        if (color.equals(LIGHT_ORANGE))
+            return "Light Orange";
+        if (color.equals(LIGHT_PURPLE))
+            return "Light Purple";
+        if (color.equals(LIGHT_CYAN))
+            return "Light Cyan";
+        // Ha nem ismert, akkor RGB értékkel tér vissza
+        return "RGB(" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + ")";
+    }
 
     private JFrame createMainFrame() {
         JFrame frame = new JFrame("Fungorium Game");

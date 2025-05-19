@@ -126,7 +126,19 @@ public class MainMenu extends JFrame {
         gameGUIBuilder.createAndShowGUI();
         gameLogic.initializePlayers();
         gameGUIBuilder.assignPlayerColors();
-        gameLogic.getCommandProcessor().processConfigText("configWithoutStatus");
+        if(gameLogic.getPlayersCount() == 4){
+            gameLogic.getCommandProcessor().processConfigText("4playerconfig");
+        } else if(gameLogic.getPlayersCount() == 5){
+            gameLogic.getCommandProcessor().processConfigText("5playerconfig");
+        } else if(gameLogic.getPlayersCount() == 6){
+            gameLogic.getCommandProcessor().processConfigText("6playerconfig");
+        } else if(gameLogic.getPlayersCount() == 7){
+            gameLogic.getCommandProcessor().processConfigText("7playerconfig");
+        } else if(gameLogic.getPlayersCount() == 8){
+            gameLogic.getCommandProcessor().processConfigText("8playerconfig");
+        } else {
+            gameLogic.getCommandProcessor().processConfigText("configWithoutStatus");
+        }
         Thread gameThread = new Thread(() -> gameLogic.startGame());
         gameThread.start();
         dispose();
