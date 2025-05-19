@@ -2323,6 +2323,15 @@ public class FungoriumGamePanel extends JPanel {
  * @param color the new border color to be set.
  */
 
+/**
+ * Sets the border color of the player's panel.
+ *
+ * This method changes the border color of the current player's panel
+ * to the specified color and repaints the panel to reflect the change.
+ *
+ * @param color the new border color to be set.
+ */
+
     public void setPlayerBorderColor(Color color) {
         setBorder(BorderFactory.createLineBorder(color, 6));
         repaint();
