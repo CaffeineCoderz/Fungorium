@@ -96,13 +96,13 @@
 
 /create insect i1
 /create insect i2
-/create insect i4
+/create insect i3
 /set i1 species Insect2
 /set i2 species Insect4
-/set i4 species Insect6
+/set i3 species Insect6
 /set Insect2 addinsect i1
 /set Insect4 addinsect i2
-/set Insect6 addinsect i4
+/set Insect6 addinsect i3
 /set i1 thread th2
 /set i1 tekton t7
 /set t7 addinsect i1
@@ -112,9 +112,9 @@
 /set i3 thread th5
 /set i3 tekton t9
 /set t9 addinsect i3
-/set i4 thread th6
-/set i4 tekton t11
-/set t11 addinsect i4
+/set i3 thread th6
+/set i3 tekton t11
+/set t11 addinsect i3
 
 /create spore s1
 /create spore s2
