@@ -80,22 +80,17 @@
 
 /create insect i1
 /create insect i2
-/create insect i3
 /set i1 species Insect2
 /set i2 species Insect4
-/set i3 species Insect5
 /set Insect2 addinsect i1
 /set Insect4 addinsect i2
-/set Insect5 addinsect i3
 /set i1 thread th2
 /set i1 tekton t7
 /set t7 addinsect i1
 /set i2 thread th3
 /set i2 tekton t4
 /set t4 addinsect i2
-/set i3 thread th5
-/set i3 tekton t9
-/set t9 addinsect i3
+
 
 /create spore s1
 /create spore s2
