@@ -961,32 +961,32 @@ public class FungoriumGamePanel extends JPanel {
 
         // 1. Ha maga a szál híd
         if (thread.isBridge()) {
-            System.out.println("handleBridgeCase" + name);
+            //System.out.println("handleBridgeCase" + name);
             handleBridgeCase(name, thread);
         }// 2. Ha következő szál híd
         else if (thread.getNext() != null && thread.getNext().isBridge()) {
-            System.out.println("handleNextBridgeCase"   + name);
+            //System.out.println("handleNextBridgeCase"   + name);
             handleNextBridgeCase(name, thread);
         }
-        // 2. Ha előző szál híd
+        // 3. Ha előző szál híd
         else if (thread.getPrev() != null && thread.getPrev().isBridge()) {
-            System.out.println("handlePrevBridgeCase" + name);
+            //System.out.println("handlePrevBridgeCase" + name);
             handlePrevBridgeCase(name, thread);
         }
         // 4. Ha előző szál nem híd
         else if (thread.getPrev() != null && !thread.getPrev().isBridge()) {
-            System.out.println("handlePrevNonBridgeCase" + name);
+            //System.out.println("handlePrevNonBridgeCase" + name);
             handlePrevNonBridgeCase(name, thread);
         }
-        // 3. Ha következő szál nem híd
+        // 5. Ha következő szál nem híd
         else if (thread.getNext() != null && !thread.getNext().isBridge()) {
-            System.out.println("handleNextNonBridgeCase" + name);
+            //System.out.println("handleNextNonBridgeCase" + name);
             handleNextNonBridgeCase(name, thread);
         }
         // 6. Alapértelmezett eset: sima szál
         else {
             handleDefaultCase(name, thread);
-            System.out.println("handleDefaultCase" + name);
+            //System.out.println("handleDefaultCase" + name);
         }
     }
 
@@ -2201,7 +2201,7 @@ public class FungoriumGamePanel extends JPanel {
         while (iterator.hasNext()) {
             Map.Entry<String, Point> entry = iterator.next();
             if (!currentObjects.containsKey(entry.getKey())) {
-                System.out.println("Remove: " + entry.getKey());
+                //System.out.println("Remove: " + entry.getKey());
                 iterator.remove();
             }
         }
@@ -2209,7 +2209,7 @@ public class FungoriumGamePanel extends JPanel {
         while (iterator2.hasNext()) {
             Map.Entry<String, Point> entry = iterator2.next();
             if (!currentObjects.containsKey(entry.getKey())) {
-                System.out.println("Remove: " + entry.getKey());
+                //System.out.println("Remove: " + entry.getKey());
                 iterator2.remove();
             }
         }
