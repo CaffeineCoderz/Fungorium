@@ -73,12 +73,9 @@
 /set t4 addinsect i2
 /create spore s1
 /create spore s2
-/create spore s3
 /set s1 tekton t3
 /set t3 addspore s1
 /set s2 tekton t5
-/set s3 tekton t4
-/set t4 addspore s3
 /set t5 addspore s2
 /set b1 sporecount 1
 /set b2 sporecount 1
