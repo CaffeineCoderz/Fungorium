@@ -19,7 +19,6 @@
 /set t8 addneighbour t9
 /set t9 addneighbour t10
 /set t10 addneighbour t4
-
 /create body b1
 /create body b2
 /create body b3

@@ -422,18 +422,20 @@ public class FungusSpecies implements iControl, Serializable {
 
     public void timeElapsed(CommandProcessor cmdproc) {
         // bodies iterálása Iteratorral
-        Iterator<FungusBody> bodyIterator = bodies.iterator();
-        while (bodyIterator.hasNext()) {
-            FungusBody body = bodyIterator.next();
+        List<FungusBody> toRemove = new ArrayList<>();
+        for (FungusBody body : bodies) {
             if (body.getSporulateLeft() == 0) {
                 String objKey = cmdproc.findByObject(body);
                 if (objKey != null) {
                     cmdproc.getCreatedObjects().remove(objKey);
                 }
-                destroyBody(body);
+                toRemove.add(body);
             } else {
                 body.produceSpore();
             }
+        }
+        for (FungusBody body : toRemove) {
+            destroyBody(body);
         }
         // threads iterálása Iteratorral
         Iterator<FungusThread> threadIterator = threads.iterator();
