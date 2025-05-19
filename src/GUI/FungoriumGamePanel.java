@@ -141,6 +141,7 @@ public class FungoriumGamePanel extends JPanel {
                     if (waitingForTarget && growthThreadCalled) {
                         int num = gameLogic.getCommandProcessor().getCreatedObjects().size();
                         Object target = null;
+                        boolean callednext= false;
                         try {
                             if(clickedObjectName!=null){
                                 target = gameLogic.getCommandProcessor().getCreatedObjects().get(clickedObjectName);
@@ -170,16 +171,24 @@ public class FungoriumGamePanel extends JPanel {
                             repaint();
                             Tekton tekton = (Tekton) target;
                             if(tekton.getSpores().size()>0&&!growThreadRepeated){
+                                callednext = true;
                                 growThreadRecalled();
                             }
                             
                         }
                         else{
-                            JOptionPane.showMessageDialog(FungoriumGamePanel.this, "Thread not grown.");
+                            JOptionPane.showMessageDialog(FungoriumGamePanel.this, "Thread not grown. Again");
                         }
                         SwingUtilities.invokeLater(() -> {
                             guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
                         });
+                        if(!callednext){
+                            try{
+                                gameLogic.getInputQueue().put("next");
+                            } catch (InterruptedException ev) {
+                                ev.printStackTrace();
+                            }
+                        }
                         return;
                     }
                     if(waitingForTarget && growThreadRepeated) {
@@ -219,6 +228,12 @@ public class FungoriumGamePanel extends JPanel {
                         SwingUtilities.invokeLater(() -> {
                             guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
                         });
+                        try{
+                                gameLogic.getInputQueue().put("next");
+                            } catch (InterruptedException ev) {
+                                ev.printStackTrace();
+                            }
+                        growThreadRepeated = false;
                         return;
                     }
                     if (waitingForTarget && eatInsectCalled) {
@@ -252,6 +267,11 @@ public class FungoriumGamePanel extends JPanel {
                         } else {
                             JOptionPane.showMessageDialog(FungoriumGamePanel.this, "Insect not eaten.");
                         }
+                        try{
+                                gameLogic.getInputQueue().put("next");
+                            } catch (InterruptedException ev) {
+                                ev.printStackTrace();
+                            }
                         return;
                     }
                     if (waitingForTarget && cutThreadCalled) {
@@ -271,6 +291,11 @@ public class FungoriumGamePanel extends JPanel {
                             guiBuilder.updateActionButtons(controlPanel, FungoriumGamePanel.this);
                             updateStatusPanels();
                         });
+                        try{
+                                gameLogic.getInputQueue().put("next");
+                            } catch (InterruptedException ev) {
+                                ev.printStackTrace();
+                            }
                         return;
                     }
                     if (waitingForTarget && moveCalled) {
@@ -294,6 +319,11 @@ public class FungoriumGamePanel extends JPanel {
                             revalidate();
                             repaint();
                         });
+                        try{
+                                gameLogic.getInputQueue().put("next");
+                            } catch (InterruptedException ev) {
+                                ev.printStackTrace();
+                            }
                         return;
                     }
 
