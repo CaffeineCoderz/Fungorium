@@ -133,16 +133,16 @@ public class ResultScreen extends JFrame {
         mainPanel.add(winnersPanel, BorderLayout.CENTER);
 
         // Vissza a főmenübe gomb
-        JButton backToMenuButton = new JButton("Vissza a főmenübe");
-        styleButton(backToMenuButton);
-        backToMenuButton.addActionListener(e -> {
-            //new MainMenu(commandP).setVisible(true);
-            dispose();
-        });
+        // JButton backToMenuButton = new JButton("Vissza a főmenübe");
+        // styleButton(backToMenuButton);
+        // backToMenuButton.addActionListener(e -> {
+        //     //new MainMenu(commandP).setVisible(true);
+        //     dispose();
+        // });
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
-        buttonPanel.add(backToMenuButton);
+        //buttonPanel.add(backToMenuButton);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         add(mainPanel);
