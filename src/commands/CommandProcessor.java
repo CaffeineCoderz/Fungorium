@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import fungus.*;
 import insect.InsectSpecies;
 import insect.Insect;
+import insect.InsectEffects;
 import logic.GameLogic;
 import sporeTypes.*;
 import tektonTypes.*;
@@ -1543,18 +1544,23 @@ public class CommandProcessor {
         if (objInsect instanceof Insect && objThread instanceof FungusThread) {
             Insect insect = (Insect) objInsect;
             FungusThread thread = (FungusThread) objThread;
-            insect.deadInsect(this);        
-            if (thread.getTekton().canGrowBody() && thread.getTekton() != null) {
-                FungusBody b = new FungusBody();
-                thread.getSpecies().addBody(b);
-                thread.getTekton().setBody(b);
-                String baseName = "b";
-                int fungusBodyCount = countObjectsOfType(FungusBody.class);
-                String bodyname = generateUniqueName(baseName, fungusBodyCount);
-                getCreatedObjects().put(bodyname, b);
-                thread.getSpecies().addBody(null);
+            if(insect.gEffect() == InsectEffects.STUN){
+                insect.deadInsect(this);        
+                if (thread.getTekton().canGrowBody() && thread.getTekton() != null) {
+                    FungusBody b = new FungusBody();
+                    thread.getSpecies().addBody(b);
+                    thread.getTekton().setBody(b);
+                    String baseName = "b";
+                    int fungusBodyCount = countObjectsOfType(FungusBody.class);
+                    String bodyname = generateUniqueName(baseName, fungusBodyCount);
+                    getCreatedObjects().put(bodyname, b);
+                    thread.getSpecies().addBody(null);
+                } else {
+                    System.out.println("Hiba: Nem lehet ide body-t növeszteni.");
+                    return;
+                }
             } else {
-                System.out.println("Hiba: Nem lehet ide body-t növeszteni.");
+                System.out.println("A rovar nem STUN hatás alatt van, nem lehet megenni.");
                 return;
             }
         } else {

@@ -132,10 +132,6 @@ public class MainMenu extends JFrame {
             gameLogic.getCommandProcessor().processConfigText("5playerconfig");
         } else if(gameLogic.getPlayersCount() == 6){
             gameLogic.getCommandProcessor().processConfigText("6playerconfig");
-        } else if(gameLogic.getPlayersCount() == 7){
-            gameLogic.getCommandProcessor().processConfigText("7playerconfig");
-        } else if(gameLogic.getPlayersCount() == 8){
-            gameLogic.getCommandProcessor().processConfigText("8playerconfig");
         } else {
             gameLogic.getCommandProcessor().processConfigText("configWithoutStatus");
         }

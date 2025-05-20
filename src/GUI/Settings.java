@@ -94,17 +94,24 @@ public class Settings {
         settingsFrame.setVisible(true);
         
         PlayerCountButton.addActionListener(e -> {
-            
-            String input = JOptionPane.showInputDialog(settingsFrame, "Add meg a játékosok számát(4-8):", gameLogic.getPlayersCount());
-            int playersCount = Integer.parseInt(input.trim());
-            if(playersCount < 4 || playersCount > 8) {
-                JOptionPane.showMessageDialog(settingsFrame, "A játékosok száma legyen 4 és 8 között!", "Hiba", JOptionPane.ERROR_MESSAGE);
-                return;
+            String input = JOptionPane.showInputDialog(settingsFrame, "Add meg a játékosok számát(4-6):",
+                    gameLogic.getPlayersCount());
+            if (input != null) {
+                try {
+                    int playersCount = Integer.parseInt(input.trim());
+                    if (playersCount < 4 || playersCount > 6) {
+                        JOptionPane.showMessageDialog(settingsFrame, "A játékosok száma legyen 4 és 6 között!", "Hiba",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    gameLogic.setPlayersCount(playersCount);
+                    PlayerCountButton.setText("Játékosok száma: " + playersCount);
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(settingsFrame, "Érvénytelen szám!", "Hiba",
+                            JOptionPane.ERROR_MESSAGE);
+                }
             }
-            gameLogic.setPlayersCount(playersCount);
-            PlayerCountButton.setText("Játékosok száma: " + playersCount);
         });
-
         Rounds.addActionListener(e -> {
             String input = JOptionPane.showInputDialog(settingsFrame, "Add meg a körök számát:", gameLogic.getGameTime());
             if (input != null) {

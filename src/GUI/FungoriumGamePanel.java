@@ -133,29 +133,6 @@ public class FungoriumGamePanel extends JPanel {
 
         addMouseListener(
             new MouseAdapter() {
-/**
- * Handles mouse click events on the game panel.
- * <p>
- * This method determines the object at the clicked point and executes
- * actions based on the current state of the game and user interaction.
- * If the game is in a "waiting for target" state due to a previous action
- * (such as growing a thread, eating an insect, cutting a thread, or moving),
- * it attempts to execute the corresponding game command after validating
- * the clicked target. If not in a waiting state, it updates the selection
- * for status panels and refreshes GUI buttons accordingly.
- *
- * @param e The MouseEvent that triggered this method.
- * <ul>
- * <li>If the clicked target is valid for the current action, a command is
- * sent to the game logic to execute the action.</li>
- * <li>If invalid, a message is shown to the user.</li>
- * <li>After executing or attempting the action, the game state and GUI are
- * updated to reflect any changes.</li>
- * <li>If not targeting an action, it updates the selected objects and
- * refreshes the status panels.</li>
- * </ul>
- */
-
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     Point clickPoint = e.getPoint();
@@ -725,13 +702,14 @@ public class FungoriumGamePanel extends JPanel {
         tektonView.drawTektons(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects(),
         getWidth() / renderMap.getCols(), getHeight() / renderMap.getRows(), TEKTON_CELLS);
 
-        // Égtáji pontok (zöld pontok) rajzolása
-        g2d.setColor(Color.GREEN);
-        for (List<Point> points : tektonCardinalPoints.values()) {
-            for (Point p : points) {
-                g2d.fill(new Ellipse2D.Double(p.x - 5, p.y - 5, 10, 10));
-            }
-        }
+        // KARDINÁLIS PONTOK KIRAJZOLÁSA
+        // Égtáji pontok (zöld pontok) rajzolása 
+        // g2d.setColor(Color.GREEN);
+        // for (List<Point> points : tektonCardinalPoints.values()) {
+        //     for (Point p : points) {
+        //         g2d.fill(new Ellipse2D.Double(p.x - 5, p.y - 5, 10, 10));
+        //     }
+        // }
         
         // System.out.println("objectPositions size: " + objectPositions.size());
 
@@ -740,15 +718,16 @@ public class FungoriumGamePanel extends JPanel {
         bodyView.drawBodies(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects());
         sporeView.drawSpores(g2d, objectPositions, gameLogic.getCommandProcessor().getCreatedObjects());
         
-        g2d.setColor(Color.RED);
-        for (Map.Entry<String, Point> entry : objectPositions.entrySet()) {
-            //System.out.println("Object: " + entry.getKey() + " at " + entry.getValue());
-            if (entry.getKey().startsWith("th")) { // threads
-                Point p = entry.getValue();
-                // System.out.println("Thread: " + entry.getKey() + " at " + p);
-                g2d.fillOval(p.x - 3, p.y - 3, 6, 6);
-            }
-        }
+        // THREAD KÖZÉPPONT KIRAJZOLÁSA
+        // g2d.setColor(Color.RED); 
+        // for (Map.Entry<String, Point> entry : objectPositions.entrySet()) {
+        //     //System.out.println("Object: " + entry.getKey() + " at " + entry.getValue());
+        //     if (entry.getKey().startsWith("th")) { // threads
+        //         Point p = entry.getValue();
+        //         // System.out.println("Thread: " + entry.getKey() + " at " + p);
+        //         g2d.fillOval(p.x - 3, p.y - 3, 6, 6);
+        //     }
+        // }
 
         if (initialPaint) {
             initialPaint = false;
@@ -1358,20 +1337,6 @@ public class FungoriumGamePanel extends JPanel {
     /**
      * Positions Insect objects on the panel based on the positions of their associated
      * FungusThread objects.
-     * 
-     * <p>
-     * The algorithm works as follows:
-     * <ol>
-     * <li>First, it groups all Insect objects by their associated FungusThread objects.
-     * <li>Then, it iterates over all groups and positions each Insect object on the
-     * panel by offsetting it from the center of its associated FungusThread object in
-     * the direction of the FungusThread.
-     * </ol>
-     * 
-     * <p>
-     * The maximum number of Insect objects that can be positioned on a single
-     * FungusThread is 3. If there are more than 3 Insect objects associated with a
-     * single FungusThread, only the first 3 are positioned, and the rest are ignored.
      **/
        private void positionInsects() {
         // 1. Threadenként gyűjtsük a rovarokat
@@ -1434,11 +1399,9 @@ public class FungoriumGamePanel extends JPanel {
 /**
  * Finds the closest cardinal point associated with a given Tekton to the specified target point.
  *
- * <p>
  * The function calculates the pixel position of the target point based on the dimensions of the
  * render map and compares it against the list of cardinal points associated with the given
  * Tekton. It returns the cardinal point that is closest to the target point.
- * </p>
  *
  * @param tekton the Tekton object whose cardinal points are being evaluated
  * @param targetPoint the target point to which the distance is being measured

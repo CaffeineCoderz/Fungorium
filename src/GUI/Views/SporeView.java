@@ -100,10 +100,8 @@ public class SporeView {
     /**
      * Loads the spore images from the resources folder.
      *
-     * <p>
      * Tries to load the images for the different spore types. If an image cannot
      * be loaded, an error message is printed to the standard error stream.
-     * </p>
      */
     private void loadImages() {
         try {

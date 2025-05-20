@@ -73,16 +73,6 @@ public class FungoriumGUIBuilder {
     /**
      * Creates and shows the main GUI frame, using the given GameLogic
      * instance to get the game panel and set up the control panel.
-     * <p>
-     * First, a loading panel is displayed with a loading image and a
-     * "Loading Fungorium..." label, while a separate thread is started
-     * to load the game panel and set up the control panel. Once the
-     * loading is complete, the loading panel is replaced with the game
-     * panel and control panel in the main frame.
-     * <p>
-     * The game panel is set up with its control panel, and the first
-     * player's name is set as the current player name, with their
-     * corresponding color as the player border color.
      */
     public void createAndShowGUI() {
         JFrame frame = createMainFrame();
