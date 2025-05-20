@@ -292,6 +292,7 @@ public class Insect implements Serializable {
     public Insect consumeMultiplySpore(Spore s) {
         MultiplyInsectSpore m = (MultiplyInsectSpore) s;
         addScore(m.getNutValue());
+        
         return m.consumeMultiply(this);
     }
 

@@ -3,6 +3,7 @@ package fungus;
 import interfaces.iControl;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
 
 import commands.CommandProcessor;
 import fungus.FungusThread;
@@ -333,13 +334,14 @@ public class FungusSpecies implements iControl, Serializable {
         Integer atleast = 2;
         boolean enoughSpore = thread.getTekton().isThereEnoughSpore(atleast);
         if (enoughSpore) {
-            FungusBody fb = new FungusBody(null, null);
+            FungusBody fb = new FungusBody(0, 4);
             thread.getTekton().setBody(fb);
             for (Integer i = 0; i < atleast; i++) {
                 thread.getTekton().getSpores().get(0).absorbed();
             }
             fb.setTekton(thread.getTekton());
             fb.addThread(thread);
+            fb.setSpecies(this);
             thread.setMyBody(fb);
             thread.setConnected(true);
             //Ha a prev null, akkor tudjuk, hogy a fonál elején vagyunk, és beállítjuk,
@@ -419,25 +421,42 @@ public class FungusSpecies implements iControl, Serializable {
     }
 
     public void timeElapsed(CommandProcessor cmdproc) {
-        List<FungusBody> removeBodies = new ArrayList<>();
+        // bodies iterálása Iteratorral
+        List<FungusBody> toRemove = new ArrayList<>();
         for (FungusBody body : bodies) {
-            if (body.getSporulateLeft()==0) {;
+            if (body.getSporulateLeft() <= 0) {
                 String objKey = cmdproc.findByObject(body);
                 if (objKey != null) {
                     cmdproc.getCreatedObjects().remove(objKey);
                 }
-                destroyBody(body);
-                removeBodies.add(body);
-            }else {
+                toRemove.add(body);
+            } else {
                 body.produceSpore();
             }
         }
-        bodies.removeAll(removeBodies);
-        for (FungusThread thread : threads) {
+        for (FungusBody body : toRemove) {
+            destroyBody(body);
+        }
+        // threads iterálása Iteratorral
+        Iterator<FungusThread> threadIterator = threads.iterator();
+        while (threadIterator.hasNext()) {
+            FungusThread thread = threadIterator.next();
             destroyThread(thread);
+            if (thread.getLifeSpan() != null && thread.getLifeSpan() == 0) {
+                for (Tekton tekton : thread.getTektons()) {
+                List<Insect> insects = tekton.getInsects();
+                    for (Insect insect : insects) {
+                        if (insect.getThread() == thread) {
+                            insect.deadInsect(cmdproc);
+                        }
+                    }
+                }
+                threadIterator.remove();
+            }
+            
             String objKey = cmdproc.findByObject(thread);
-            if(thread.getLifeSpan()!=null){
-                if (objKey != null &&  thread.getLifeSpan() == 0) {
+            if (thread.getLifeSpan() != null) {
+                if (objKey != null && thread.getLifeSpan() == 0) {
                     cmdproc.getCreatedObjects().remove(objKey);
                 }
             }
@@ -452,27 +471,27 @@ public class FungusSpecies implements iControl, Serializable {
      * @param ft the FungusThread instance to be destroyed.
      */
     public void destroyThread(FungusThread ft) {
-        if (ft.getIsDying() && ft.getLifeSpan() != null) {
+        if (ft.getIsDying() && ft.getLifeSpan() > 0) {
             ft.decreaseLife();
             return;
         }
-        if (ft.getLifeSpan()!= null && ft.getLifeSpan() == 0) {
+        if (ft.getLifeSpan() != null && ft.getLifeSpan() <= 0) {
             FungusThread originthread = ft;
-            while (ft.getNext() != null || ft.getNext().getMyBody() != null) {
+            while (ft.getNext() != null) {
+                ft.setPrevBody(null);
                 if(ft.isBridge()){
                     ft.setIsDying(true);
                 }else{
-                    if (ft.getTekton() instanceof FeedThreadTekton) {
+                    if(ft.getTekton() instanceof FeedThreadTekton) {
                         ft.setIsDying(false);    
                     } else{
                         ft.setIsDying(true);
                     }
-                    
-            }   
-                ft.setPrevBody(null);
+                }   
                 ft = ft.getNext();
             }
-            while(ft.getPrev() != null || ft.getPrev().getMyBody() != null) {
+            while(ft.getPrev() != null) {
+                ft.setNextBody(null);
                 if(ft.isBridge()){
                     ft.setIsDying(true);
                 }else{
@@ -483,10 +502,9 @@ public class FungusSpecies implements iControl, Serializable {
                     }
                     
                 }
-                ft.setNextBody(null);
+                
                 ft = ft.getPrev();
             }
-            deleteThread(originthread);
             boolean success;
             for (FungusBody body : bodies) {
                 success = body.removeThread(originthread);

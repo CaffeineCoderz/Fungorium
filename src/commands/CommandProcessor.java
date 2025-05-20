@@ -12,11 +12,13 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Consumer;
+import java.util.ArrayList;
 
 // Model
 import fungus.*;
 import insect.InsectSpecies;
 import insect.Insect;
+import insect.InsectEffects;
 import logic.GameLogic;
 import sporeTypes.*;
 import tektonTypes.*;
@@ -813,6 +815,20 @@ public class CommandProcessor {
                 System.out.println("Hiba: Nem lehetett gombatestet növeszteni a megadott paraméterekkel.");
                 return;
             }
+            List<String> toRemove = new ArrayList<>();
+            for (Object o : createdObjects.values()) {
+                if (o instanceof Spore || o instanceof SlowSpore || o instanceof FastSpore
+                        || o instanceof StunSpore || o instanceof DisableCutSpore) {
+                    Spore spore = (Spore) o;
+                    String objKey = findByObject(spore);
+                    if (spore.getTekton() == null) {
+                        toRemove.add(objKey);
+                    }
+                }
+            }
+            for (String key : toRemove) {
+                createdObjects.remove(key);
+            }
             createdObjects.put(bodyName, nBody);
         } else {
             System.out.println("Hiba: Nem lehet növeszteni ezt az objektumot: " + threadName);
@@ -912,13 +928,15 @@ public class CommandProcessor {
                 if (newInsect != null) {
                     String newInsectName = generateUniqueName("i", countObjectsOfType(Insect.class));
                     createdObjects.put(newInsectName, newInsect);
-                    // System.out.println("Új rovar jött létre: " + newInsectName);
+                    //System.out.println("Új rovar jött létre: " + newInsectName);
                 }
             } else {
                 insect.consumeSpore(spore);
+                
             }
+            createdObjects.remove(SporeName);
             // Debug purposes
-            // System.out.println("Az Insect megette a Spore-t!");
+             //System.out.println("Az Insect megette a Spore-t!");
         } else {
             System.out.println("Hiba: Ez az objektum nem ehető: " + objSpore);
         }
@@ -1526,18 +1544,23 @@ public class CommandProcessor {
         if (objInsect instanceof Insect && objThread instanceof FungusThread) {
             Insect insect = (Insect) objInsect;
             FungusThread thread = (FungusThread) objThread;
-            insect.deadInsect(this);        
-            if (thread.getTekton().canGrowBody() && thread.getTekton() != null) {
-                FungusBody b = new FungusBody();
-                thread.getSpecies().addBody(b);
-                thread.getTekton().setBody(b);
-                String baseName = "b";
-                int fungusBodyCount = countObjectsOfType(FungusBody.class);
-                String bodyname = generateUniqueName(baseName, fungusBodyCount);
-                getCreatedObjects().put(bodyname, b);
-                thread.getSpecies().addBody(null);
+            if(insect.gEffect() == InsectEffects.STUN){
+                insect.deadInsect(this);        
+                if (thread.getTekton().canGrowBody() && thread.getTekton() != null) {
+                    FungusBody b = new FungusBody();
+                    thread.getSpecies().addBody(b);
+                    thread.getTekton().setBody(b);
+                    String baseName = "b";
+                    int fungusBodyCount = countObjectsOfType(FungusBody.class);
+                    String bodyname = generateUniqueName(baseName, fungusBodyCount);
+                    getCreatedObjects().put(bodyname, b);
+                    thread.getSpecies().addBody(null);
+                } else {
+                    System.out.println("Hiba: Nem lehet ide body-t növeszteni.");
+                    return;
+                }
             } else {
-                System.out.println("Hiba: Nem lehet ide body-t növeszteni.");
+                System.out.println("A rovar nem STUN hatás alatt van, nem lehet megenni.");
                 return;
             }
         } else {

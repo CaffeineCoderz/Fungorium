@@ -29,7 +29,10 @@ public class GameLogic {
     private BlockingQueue<String> inputQueue = new LinkedBlockingQueue<>();
     // Map
     private Map<String, Tekton> tektons = new HashMap<>();
+    
     private Boolean tektonBreak = false;
+    private Boolean newRound = false;
+
     private CommandProcessor commandProcessor;
 
     private Scanner scanner;
@@ -61,6 +64,12 @@ public class GameLogic {
     }
     public Boolean getBreaking(){
         return tektonBreak;
+    }
+    public void setNewRound(Boolean sss){
+        newRound = sss;
+    }
+    public Boolean isNewRound(){
+        return newRound;
     }
     public FungoriumGamePanel getGamePanel() {
         return gamePanel;
@@ -150,9 +159,20 @@ public class GameLogic {
         return players.get(id);
     }
 
+    /**
+     * Gets the scanner to read user input.
+     * 
+     * @return The scanner to read user input.
+     */
     public Scanner getScanner() {
         return scanner;
     }
+
+/**
+ * Initializes the players for the game, alternating between 
+ * Fungus and Insect types. Each player is assigned a unique 
+ * identifier based on their type and position in the sequence.
+ */
 
     public void initializePlayers() {
         for (int i = 0; i < playerCount; i++) {
@@ -178,9 +198,14 @@ public class GameLogic {
         while (gameTime > 0) {
             takeTurn(scanner, IsLoaded);
         }
-        new ResultScreen(commandProcessor).setVisible(true);
+        new ResultScreen(commandProcessor,this).setVisible(true);
     }
 
+    /**
+     * Prints a guide to the game to the console, with the game title centered and
+     * surrounded by arrows. The guide includes the goal of the game, how to win, and
+     * how to control the game. The guide is formatted to fit within a fixed width.
+     */
     public void printGuide() {
         String[] guideLines = {
                 "The goal of the game is to achieve the highest score possible.",
@@ -454,11 +479,12 @@ public class GameLogic {
             // Update game state after all players have taken their turns
             for (Object playerObj : players.values()) {
                 if (playerObj instanceof FungusSpecies) {
-                    ((FungusSpecies) playerObj).timeElapsed();
+                    ((FungusSpecies) playerObj).timeElapsed(commandProcessor);
                 } else if (playerObj instanceof InsectSpecies) {
                     ((InsectSpecies) playerObj).timeElapsed();
                 }
             }
+            
             
             int chanceofBreaking = RandomGenerator.generateRandomNumber(0, 100);
             if (chanceofBreaking < 5) {
@@ -467,6 +493,7 @@ public class GameLogic {
             }
 
             round++;
+            newRound = true;
             gameTime--;
 
             if (gameTime <= 0) {
@@ -516,6 +543,15 @@ public class GameLogic {
         System.out.println("<------------------------------------------------->");
     }
 
+    /**
+     * Moves the specified Insect to the specified FungusThread.
+     * Checks if the Insect can reach the specified FungusThread.
+     * If the Insect can reach the specified FungusThread, the Insect is moved to the specified FungusThread.
+     * If the Insect cannot reach the specified FungusThread, the method prints an error message.
+     * 
+     * @param insect the Insect to move.
+     * @param toThread the FungusThread to move the Insect to.
+     */
     public void MoveInsect(Insect insect, FungusThread toThread){
         if(canReachThread(insect, toThread)){
             insect.move(toThread);
@@ -602,6 +638,16 @@ public class GameLogic {
         return players;
     }
 
+    /**
+     * Checks if the specified FungusThread can be reached from the body of the specified FungusThread.
+     * The method checks if the specified FungusThread is reachable from the body of the specified FungusThread.
+     * If the specified FungusThread is reachable, the method returns true, otherwise it returns false.
+     * 
+     * @param toThread the FungusThread to check if it can be reached from the body of the specified FungusThread.
+     * @param temp the FungusThread from which the body is checked.
+     * @param distance the maximum distance from the body of the specified FungusThread to check for reachability.
+     * @return true if the specified FungusThread can be reached from the body of the specified FungusThread, false otherwise.
+     */
     private Boolean canReachFromBody(FungusThread toThread, FungusThread temp, Integer distance) {
         if(temp.getMyBody()!= null){
             for (FungusThread bodyThreads : temp.getMyBody().getThreads()) {

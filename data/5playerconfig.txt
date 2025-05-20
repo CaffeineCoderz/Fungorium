@@ -6,6 +6,8 @@
 /create decreasetekton t6
 /create tekton t7
 /create tekton t8
+/create tekton t9
+/create tekton t10
 /set t1 addneighbour t2
 /set t1 addneighbour t5
 /set t1 addneighbour t3
@@ -14,69 +16,100 @@
 /set t5 addneighbour t6
 /set t2 addneighbour t8
 /set t5 addneighbour t4
+/set t9 addneighbour t8
+/set t10 addneighbour t9
 /create body b1
 /create body b2
+/create body b3
 /set b1 species Fungus1
 /set b2 species Fungus3
+/set b3 species Fungus5
 /set Fungus1 addbody b1
 /set Fungus3 addbody b2
+/set Fungus5 addbody b3
 /set b1 tekton t7
 /set t7 body b1
 /set b2 tekton t4
 /set t4 body b2
+/set b3 tekton t10
+/set t10 body b3
+
 /create thread th1
+/create thread th2
+/create thread th3
+/create thread th4
+/create thread th5
+/create thread th6
 /set th1 species Fungus1
+/set th2 species Fungus1
+/set th3 species Fungus3
+/set th4 species Fungus3
+/set th5 species Fungus5
+/set th6 species Fungus5
 /set Fungus1 addthread th1
+/set Fungus1 addthread th2
+/set Fungus3 addthread th3
+/set Fungus3 addthread th4
+/set Fungus5 addthread th5
+/set Fungus5 addthread th6
 /set t7 addthread th1
 /set th1 addtekton t7
 /set th1 prevbody b1
 /set b1 addthread th1
-/create thread th2
 /set th1 next th2
-/set th2 species Fungus1
-/set Fungus1 addthread th2
-/set th2 prevbody b1
 /set th2 prev th1
-/set th1 next th2
+/set th2 prevbody b1
 /set th2 addtekton t7
 /set th2 addtekton t3
 /set t7 addthread th2
 /set t3 addthread th2
 /set th2 bridge true
-/create thread th3
-/set th3 species Fungus3
-/set Fungus3 addthread th3
 /set th3 addtekton t4
 /set th3 prevbody b2
 /set b2 addthread th3
-/create thread th4
 /set th3 next th4
-/set th4 species Fungus3
-/set Fungus3 addthread th4
-/set th4 prevbody b2
 /set th4 prev th3
-/set th3 next th4
+/set th4 prevbody b1
 /set th4 addtekton t4
 /set th4 addtekton t5
+/set t4 addthread th3
+/set t4 addthread th4
 /set th4 bridge true
+/set th5 addtekton t10
+/set th5 prevbody b3
+/set b3 addthread th5
+/set th5 next th6
+/set th6 addtekton t10
+/set th6 addtekton t9
+/set th6 prevbody b3
+/set th6 prev th5
+
 /create insect i1
+/create insect i2
 /set i1 species Insect2
+/set i2 species Insect4
 /set Insect2 addinsect i1
+/set Insect4 addinsect i2
 /set i1 thread th2
 /set i1 tekton t7
 /set t7 addinsect i1
-/create insect i2
-/set i2 species Insect4
-/set Insect4 addinsect i2
 /set i2 thread th3
 /set i2 tekton t4
 /set t4 addinsect i2
+
+
 /create spore s1
 /create spore s2
+/create spore s3
+/create spore s4
 /set s1 tekton t3
 /set t3 addspore s1
 /set s2 tekton t5
 /set t5 addspore s2
-/set b1 sporecount 2
-/set b1 sporulateleft 1
+/set s3 tekton t9
+/set t9 addspore s3
+/set s4 tekton t10
+/set t10 addspore s4
+/set b1 sporecount 1
 /set b2 sporecount 1
+/set b3 sporecount 1
